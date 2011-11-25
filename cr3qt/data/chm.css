@@ -2,8 +2,10 @@ head, style, form, script { display: none; }
 
 body { $def.all } 
 
+DocFragment { page-break-before: always }
+
 p { $def.all } 
-*.justindent { text-align: justify; text-indent: 1.2em; margin-top:0em; margin-bottom: 0em }
+*.justindent { text-align: justify; text-indent: 1.3em; margin-top:0em; margin-bottom: 0em }
 
 empty-line { height: 0.2em; } 
 
@@ -28,15 +30,20 @@ big { font-size: 130%; }
 sub { vertical-align: sub; font-size: 70% } 
 sup { vertical-align: super; font-size: 70% } 
 tt, samp, kbd, code, pre { font-family: "Courier New", "Courier", monospace; } 
+
 pre { display: block; 
-   margin-top: 0.5em; 
-   margin-bottom: 0.5em; 
    white-space: pre; 
-   text-align: left; 
-  /* background-color: #BFBFBF; */ 
+   $pre.all
    } 
 
 nobr { display: inline; hyphenate: none; white-space: nowrap; } 
+
+h1 { font-size: 150% } 
+h2 { font-size: 135% } 
+h3 { font-size: 125% } 
+h4 { font-size: 125% } 
+h5 { font-size: 115% } 
+h6 { font-size: 105% } 
 
 h1,h2 { 
    display: block; 
@@ -46,12 +53,6 @@ h3,h4,h5,h6 {
    display: block; 
    $subtitle.all
    } 
-h1 { font-size: 150% } 
-h2 { font-size: 135% } 
-h3 { font-size: 125% } 
-h4 { font-size: 125% } 
-h5 { font-size: 115% } 
-h6 { font-size: 105% } 
 
 ul, ol, dl { 
    display: block; 
@@ -62,15 +63,15 @@ ul, ol, dl {
 
 li { 
    display: list-item; 
-   text-indent: 0em;
    margin-top: 0.3em; 
    margin-bottom: 0.3em; 
+   text-indent: 0em;
    } 
 
 
-dl { margin-left: 0em; list-style-type: disc } 
+dl { margin-left: 0em; } 
 dt { display: block; margin-left: 0em; margin-top:0.3em; font-weight: bold; } 
-dd { display: block; margin-left: 1.3em } 
+dd { display: block; text-indent: 1.3em; } 
 
 a { display:inline; text-decoration: underline;  } 
 
