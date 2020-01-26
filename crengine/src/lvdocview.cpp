@@ -3753,8 +3753,7 @@ static bool needToConvertBookmarks(CRFileHistRecord* historyRecord)
     if(historyRecord) {
         gDOMVersionRequested = historyRecord->getDOMversion();
         if(gDOMVersionRequested < 20180528) {
-            convertBookmarks = gDOMVersionRequested < 20180528 &&
-                    historyRecord->getBookmarks().length() > 1;
+            convertBookmarks = historyRecord->getBookmarks().length() > 1;
         }
     } else
         gDOMVersionRequested = gDOMVersionCurrent;
@@ -3824,6 +3823,7 @@ bool LVDocView::LoadDocument(const lChar16 * fname, bool metadataOnly) {
             if(convertBookmarks) {
                 record->convertBookmarks(m_doc);
                 record->setDOMversion(gDOMVersionCurrent);
+                gDOMVersionRequested = gDOMVersionCurrent;
                 m_doc_props->setInt(PROP_RENDER_BLOCK_RENDERING_FLAGS, DEF_RENDER_BLOCK_RENDERING_FLAGS);
                 //FIXME: need to reload file after this
             }
@@ -3878,9 +3878,11 @@ bool LVDocView::LoadDocument(const lChar16 * fname, bool metadataOnly) {
 	if (LoadDocument(stream, metadataOnly)) {
 		m_filename = lString16(fname);
 		m_stream.Clear();
+
         if(convertBookmarks) {
             record->convertBookmarks(m_doc);
             record->setDOMversion(gDOMVersionCurrent);
+            gDOMVersionRequested = gDOMVersionCurrent;
             m_doc_props->setIntDef(PROP_RENDER_BLOCK_RENDERING_FLAGS, DEF_RENDER_BLOCK_RENDERING_FLAGS);
             //FIXME: need to reload file after this
         }
