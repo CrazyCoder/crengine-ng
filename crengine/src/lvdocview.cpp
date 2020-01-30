@@ -431,9 +431,8 @@ void LVDocView::setPageMargins(lvRect rc) {
     }
     if (align > rc.right)
         align = rc.right;
-    rc.left += align;
+    //rc.left += align;
     rc.right -= align;
-
     if (m_pageMargins.left + m_pageMargins.right != rc.left + rc.right
             || m_pageMargins.top + m_pageMargins.bottom != rc.top + rc.bottom) {
 
@@ -6261,6 +6260,7 @@ bool LVDocView::propApply(lString8 name, lString16 value) {
 CRPropRef LVDocView::propsApply(CRPropRef props) {
     CRLog::trace("LVDocView::propsApply( %d items )", props->getCount());
     CRPropRef unknown = LVCreatePropsContainer();
+    bool needUpdateMargins = false;
     for (int i = 0; i < props->getCount(); i++) {
         lString8 name(props->getName(i));
         lString16 value = props->getValue(i);
@@ -6355,6 +6355,7 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
         } else if (name == PROP_PAGE_MARGIN_TOP || name
                    == PROP_PAGE_MARGIN_LEFT || name == PROP_PAGE_MARGIN_RIGHT
                    || name == PROP_PAGE_MARGIN_BOTTOM) {
+#if 0
             int margin = props->getIntDef(name.c_str(), 8);
             int maxmargin = (name == PROP_PAGE_MARGIN_LEFT || name == PROP_PAGE_MARGIN_RIGHT) ? m_dx / 3 : m_dy / 3;
             if (margin > maxmargin)
@@ -6369,8 +6370,12 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
             else if (name == PROP_PAGE_MARGIN_RIGHT)
                 rc.right = margin;
             setPageMargins(rc);
+#else
+            needUpdateMargins = true;
+#endif
         } else if (name == PROP_FONT_FACE) {
             setDefaultFontFace(UnicodeToUtf8(value));
+            needUpdateMargins = true;
         } else if (name == PROP_FALLBACK_FONT_FACE) {
             lString8 oldFace = fontMan->GetFallbackFontFace();
             if ( UnicodeToUtf8(value)!=oldFace )
@@ -6479,6 +6484,7 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
                 gFlgFloatingPunctuationEnabled = value;
                 REQUEST_RENDER("propsApply floating punct")
             }
+            needUpdateMargins = true;
         } else if (name == PROP_RENDER_BLOCK_RENDERING_FLAGS) {
             int value = props->getIntDef(PROP_RENDER_BLOCK_RENDERING_FLAGS, BLOCK_RENDERING_FLAGS_DEFAULT);
             value = validateBlockRenderingFlags(value);
@@ -6534,6 +6540,8 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
         m_props->setString(name.c_str(), value);
         //}
     }
+    if (needUpdateMargins)
+        updatePageMargins();
     return unknown;
 }
 
