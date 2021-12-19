@@ -19999,7 +19999,7 @@ void runBasicTinyDomUnitTests()
 
 void runCHMUnitTest()
 {
-#if CHM_SUPPORT_ENABLED==1
+#if USE_CHM==1
 #if BUILD_LITE!=1
     LVStreamRef stream = LVOpenFileStream("/home/lve/src/test/mysql.chm", LVOM_READ);
     MYASSERT ( !stream.isNull(), "container stream opened" );

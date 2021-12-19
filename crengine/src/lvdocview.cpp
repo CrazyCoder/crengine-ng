@@ -4548,7 +4548,7 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
             }
         }
 
-#if CHM_SUPPORT_ENABLED==1
+#if USE_CHM==1
         if ( DetectCHMFormat( m_stream ) ) {
 			// CHM
 			CRLog::info("CHM format detected");
@@ -4581,7 +4581,7 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
 		}
 #endif
 
-#if ENABLE_ANTIWORD==1
+#if USE_ANTIWORD==1
         if ( DetectWordFormat( m_stream ) ) {
             // DOC
             CRLog::info("Word format detected");

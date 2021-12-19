@@ -33,4 +33,4 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(langstat ${SRC_LIST} ${crengine_part_SRC_LIST})
-target_link_libraries(langstat ${STD_LIBS})
+target_link_libraries(langstat ${ZLIB_LIBRARIES} ${UTF8PROC_LIBRARIES})

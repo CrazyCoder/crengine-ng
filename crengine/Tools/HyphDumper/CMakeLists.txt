@@ -16,4 +16,4 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(hyph_dumper ${SRC_LIST})
-target_link_libraries(hyph_dumper crengine ${STD_LIBS})
+target_link_libraries(hyph_dumper crengine-ng ${CRENGINE_NG_LIBS})

@@ -1,0 +1,32 @@
+#ifndef CRENGINE_NG_CONFIG_H
+#define CRENGINE_NG_CONFIG_H
+
+#cmakedefine CRE_NG_DATADIR "@CRE_NG_DATADIR@"
+#cmakedefine VERSION "@VERSION@"
+#cmakedefine FILEVERSION_V @FILEVERSION_V@
+#cmakedefine PRODUCTVERSION_V @PRODUCTVERSION_V@
+
+#cmakedefine01 BUILD_LITE
+
+#cmakedefine DOC_DATA_COMPRESSION_LEVEL @DOC_DATA_COMPRESSION_LEVEL@
+#cmakedefine01 USE_LOCALE_DATA
+#cmakedefine01 COLOR_BACKBUFFER
+#cmakedefine GRAY_BACKBUFFER_BITS @GRAY_BACKBUFFER_BITS@
+
+#cmakedefine01 USE_ZLIB
+#cmakedefine01 USE_LIBPNG
+#cmakedefine01 USE_LIBJPEG
+#cmakedefine01 USE_GIF
+#cmakedefine01 USE_FREETYPE
+#cmakedefine01 USE_HARFBUZZ
+#cmakedefine01 USE_LIBUNIBREAK
+#cmakedefine01 USE_FRIBIDI
+#cmakedefine01 USE_ZSTD
+#cmakedefine01 USE_FONTCONFIG
+#cmakedefine01 USE_UTF8PROC
+#cmakedefine01 USE_UNRAR
+#cmakedefine01 USE_NANOSVG
+#cmakedefine01 USE_CHM
+#cmakedefine01 USE_ANTIWORD
+
+#endif  // CRENGINE_NG_CONFIG_H

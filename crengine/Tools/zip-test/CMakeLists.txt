@@ -38,4 +38,4 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(zip-test ${SRC_LIST} ${crengine_part_SRC_LIST})
-target_link_libraries(zip-test ${STD_LIBS})
+target_link_libraries(zip-test ${ZLIB_LIBRARIES} ${UTF8PROC_LIBRARIES})

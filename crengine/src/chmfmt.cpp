@@ -1,6 +1,6 @@
 #include "../include/crsetup.h"
-//#define CHM_SUPPORT_ENABLED 1
-#if CHM_SUPPORT_ENABLED==1
+//#define USE_CHM 1
+#if USE_CHM==1
 #include "../include/chmfmt.h"
 #include "../include/lvnamedstream.h"
 #include "../include/lvstreamutils.h"

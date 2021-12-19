@@ -1,7 +1,5 @@
 project(blend-algo-test C)
 
-cmake_minimum_required(VERSION 2.6.2)
-
 include_directories(${CMAKE_BINARY_DIR})
 
 set(BLEND_GRAY_SRC_LIST

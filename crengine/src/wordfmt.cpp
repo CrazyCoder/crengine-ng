@@ -4,12 +4,12 @@
 #include "../include/lvtinydom.h"
 #include "../include/crlog.h"
 
-//#ifndef ENABLE_ANTIWORD
-//#define ENABLE_ANTIWORD 1
+//#ifndef USE_ANTIWORD
+//#define USE_ANTIWORD 1
 //#endif
 
 
-#if ENABLE_ANTIWORD==1
+#if USE_ANTIWORD==1
 #if defined(_DEBUG) && !defined(DEBUG)
 #define DEBUG
 #endif
@@ -831,6 +831,6 @@ bool ImportWordDocument( LVStreamRef stream, ldomDocument * m_doc, LVDocViewCall
 }
 
 
-#endif //ENABLE_ANTIWORD==1
+#endif //USE_ANTIWORD==1
 
 

@@ -37,4 +37,4 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(wtf8-test ${SRC_LIST} ${crengine_part_SRC_LIST})
-target_link_libraries(wtf8-test ${STD_LIBS})
+target_link_libraries(wtf8-test ${ZLIB_LIBRARIES} ${UTF8PROC_LIBRARIES})

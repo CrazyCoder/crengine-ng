@@ -24,10 +24,6 @@
 #include "lvnamedstream.h"
 #include "lvstream_types.h"
 
-//#ifdef _LINUX
-#undef USE_ANSI_FILES
-//#endif
-
 #if (USE_ANSI_FILES==1)
 
 #include <stdio.h>
