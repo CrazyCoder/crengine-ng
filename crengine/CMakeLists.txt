@@ -165,6 +165,16 @@ if (CRE_BUILD_STATIC)
   target_link_libraries(crengine-ng_static ${CRENGINE_NG_LIBS})
   list(APPEND cre_install_libs crengine-ng_static)
 endif (CRE_BUILD_STATIC)
+if (USE_CHM)
+  list(APPEND cre_install_libs ${CHM_LIBRARIES})
+endif()
+if (USE_ANTIWORD)
+  list(APPEND cre_install_libs ${ANTIWORD_LIBRARIES})
+endif()
+if (USE_UNRAR)
+  list(APPEND cre_install_libs ${UNRAR_LIBRARIES})
+endif()
+list(APPEND cre_install_libs qimagescale)
 
 if(BUILD_TOOLS)
   add_subdirectory(Tools)
@@ -188,13 +198,29 @@ if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
 endif()
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
+  include(CMakePackageConfigHelpers)
+  write_basic_package_version_file(
+    ${PROJECT_BINARY_DIR}/crengine-ng-config-version.cmake
+    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+    COMPATIBILITY SameMajorVersion)
+
   install(TARGETS ${cre_install_libs}
     EXPORT crengine-ng-targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     FRAMEWORK DESTINATION Library/Frameworks
-  )
+    COMPONENT libraries)
+  install(
+    EXPORT crengine-ng-targets
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/crengine-ng
+      FILE crengine-ng-config.cmake
+      COMPONENT headers)
+  install(
+    FILES ${PROJECT_BINARY_DIR}/crengine-ng-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/crengine-ng
+    COMPONENT headers)
+
   configure_file(crengine-ng.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc @ONLY)
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc
