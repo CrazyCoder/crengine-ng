@@ -12,10 +12,9 @@ ENDIF(${CMAKE_BUILD_TYPE} STREQUAL Release)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-SET (CHMLIB_SOURCES 
-    src/chm_lib.c  
-    src/lzx.c  
+SET (CHMLIB_SOURCES
+    src/chm_lib.c
+    src/lzx.c
 )
 
-ADD_LIBRARY(chmlib STATIC ${CHMLIB_SOURCES})
-
+ADD_LIBRARY(chmlib OBJECT ${CHMLIB_SOURCES})
