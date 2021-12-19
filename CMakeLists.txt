@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
-set(VERSION		"3.2.60")
-set(FILEVERSION_V	"3, 2, 60, 0")
-set(PRODUCTVERSION_V	"3, 2, 60, 0")
+set(VERSION		"4.0.0-rc1")
+set(FILEVERSION_V	"4, 0, 0, 0")
+set(PRODUCTVERSION_V	"4, 0, 0, 0")
 set(CRE_NG_DATADIR	${CMAKE_INSTALL_PREFIX}/share/crengine-ng)
 
 option(CRE_BUILD_SHARED "Building crengine-ng as a shared library" ON)
