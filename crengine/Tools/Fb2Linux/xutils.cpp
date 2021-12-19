@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "../include/xutils.h"
+#include "xutils.h"
 
 
 //#define DRAW_BY_LINE

@@ -17,7 +17,6 @@
 
 #ifdef LINUX
 
-#include "lvfnt.h"
 #include "lvdrawbuf.h"
 
 /**
