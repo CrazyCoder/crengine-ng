@@ -25,5 +25,3 @@ cr3gui/data/tessdata/
 *.orig
 *.rej
 /clang-analyzer-reports/
-/thirdparty
-/thirdparty_tmp
