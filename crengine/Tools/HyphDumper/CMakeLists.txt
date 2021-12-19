@@ -15,5 +15,12 @@ if(WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
 endif(WIN32)
 
+set(CRE_NG)
+if (CRE_BUILD_STATIC)
+  set(CRE_NG crengine-ng_static)
+elseif(CRE_BUILD_SHARED)
+  set(CRE_NG crengine-ng)
+endif()
+
 add_executable(hyph_dumper ${SRC_LIST})
-target_link_libraries(hyph_dumper crengine-ng ${CRENGINE_NG_LIBS})
+target_link_libraries(hyph_dumper ${CRE_NG} ${CRENGINE_NG_LIBS})

@@ -18,5 +18,12 @@ file(COPY fb2.css DESTINATION ${CMAKE_CURRENT_BINARY_DIR} USE_SOURCE_PERMISSIONS
 file(COPY example.fb2 DESTINATION ${CMAKE_CURRENT_BINARY_DIR} USE_SOURCE_PERMISSIONS)
 file(COPY "${CMAKE_SOURCE_DIR}/crengine/data/hyph/Russian_EnUS.pattern" DESTINATION ${CMAKE_CURRENT_BINARY_DIR} USE_SOURCE_PERMISSIONS)
 
+set(CRE_NG)
+if (CRE_BUILD_STATIC)
+  set(CRE_NG crengine-ng_static)
+elseif(CRE_BUILD_SHARED)
+  set(CRE_NG crengine-ng)
+endif()
+
 add_executable(fb2view ${SRC_LIST})
-target_link_libraries(fb2view crengine-ng ${CRENGINE_NG_LIBS} ${X11_LIBRARIES})
+target_link_libraries(fb2view ${CRE_NG} ${CRENGINE_NG_LIBS} ${X11_LIBRARIES})
