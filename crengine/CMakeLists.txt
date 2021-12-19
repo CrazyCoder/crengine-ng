@@ -174,7 +174,7 @@ endif()
 if (USE_UNRAR)
   list(APPEND cre_install_libs ${UNRAR_LIBRARIES})
 endif()
-list(APPEND cre_install_libs qimagescale)
+list(APPEND cre_install_libs ${QIMAGESCALE_LIBRARIES})
 
 if(BUILD_TOOLS)
   add_subdirectory(Tools)

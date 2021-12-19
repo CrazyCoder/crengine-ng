@@ -233,9 +233,9 @@ set(USE_UTF8PROC ${UTF8PROC_FOUND} CACHE STRING "Use utf8proc library")
 # unrar library
 if(USE_UNRAR)
   message("Will build static UNRAR library")
-  set(UNRAR_LIBRARIES unrar)
   include_directories(${CMAKE_SOURCE_DIR}/thirdparty/unrar)
   add_subdirectory(thirdparty/unrar)
+  set(UNRAR_LIBRARIES cre_unrar)
 else()
   set(UNRAR_LIBRARIES)
 endif(USE_UNRAR)
@@ -250,7 +250,7 @@ if (USE_CHM)
   message("Will build patched LIBCHM library")
   include_directories(${CMAKE_SOURCE_DIR}/thirdparty/chmlib/src)
   add_subdirectory(thirdparty/chmlib)
-  set(CHM_LIBRARIES chmlib)
+  set(CHM_LIBRARIES cre_chmlib)
 else()
   set(CHM_LIBRARIES)
 endif(USE_CHM)
@@ -261,13 +261,14 @@ if (USE_ANTIWORD)
   include_directories( ${CMAKE_SOURCE_DIR}/thirdparty/antiword )
   add_definitions(-DCR3_ANTIWORD_PATCH=1)
   add_subdirectory(thirdparty/antiword)
-  set(ANTIWORD_LIBRARIES antiword)
+  set(ANTIWORD_LIBRARIES cre_antiword)
 else()
   set(ANTIWORD_LIBRARIES)
 endif()
 
 # qimagescale library
 add_subdirectory(thirdparty/qimagescale)
+set(QIMAGESCALE_LIBRARIES cre_qimagescale)
 
 set(FONTCONFIG_MIN_VERSION "2.11.0")
 if (USE_FONTCONFIG)
@@ -303,7 +304,7 @@ set(CRENGINE_NG_LIBS
   ${ANTIWORD_LIBRARIES}
   ${FONTCONFIG_LIBRARIES}
   ${UNRAR_LIBRARIES}
-  qimagescale
+  ${QIMAGESCALE_LIBRARIES}
 )
 
 include_directories(crengine/include)
