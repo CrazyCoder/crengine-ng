@@ -29,7 +29,6 @@ set(CRENGINE_NG_SOURCES
     src/lvstream/lvcachedstream.cpp
     src/lvstream/lvzipdecodestream.cpp
     src/lvstream/lvziparc.cpp
-    src/lvstream/lvrararc.cpp
     src/lvstream/lvmemorystream.cpp
     src/lvstream/lvtcrstream.cpp
     src/lvstream/lvblockwritestream.cpp
@@ -170,9 +169,6 @@ if (USE_CHM)
 endif()
 if (USE_ANTIWORD)
   list(APPEND cre_install_libs ${ANTIWORD_LIBRARIES})
-endif()
-if (USE_UNRAR)
-  list(APPEND cre_install_libs ${UNRAR_LIBRARIES})
 endif()
 list(APPEND cre_install_libs ${QIMAGESCALE_LIBRARIES})
 

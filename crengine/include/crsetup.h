@@ -111,10 +111,6 @@
 #define USE_UTF8PROC 0
 #endif
 
-#ifndef USE_UNRAR
-#define USE_UNRAR 0
-#endif
-
 #ifndef USE_NANOSVG
 #define USE_NANOSVG 0
 #endif

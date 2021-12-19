@@ -27,10 +27,6 @@
 #include "lvziparc.h"
 #endif
 
-#if (USE_UNRAR==1)
-#include "lvrararc.h"
-#endif
-
 #include <stdio.h>
 
 #if !defined(__SYMBIAN32__) && defined(_WIN32)
@@ -141,12 +137,6 @@ LVContainerRef LVOpenArchieve( LVStreamRef stream )
         return ref;
 #endif
 
-#if (USE_UNRAR==1)
-    // try RAR
-    ref = LVRarArc::OpenArchieve( stream );
-    if (!ref.isNull())
-        return ref;
-#endif
     // not found: return null ref
     return ref;
 }
