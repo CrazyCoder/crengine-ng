@@ -111,6 +111,41 @@ if(USE_LOCALE_DATA)
       src/locale_data/crlocaledata.cpp)
 endif()
 
+set(PKG_CONFIG_REQUIRED_PRIVATE)
+set(PKG_CONFIG_LIBS_PRIVATE)
+
+if (USE_ZLIB)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "zlib")
+endif ()
+if (USE_LIBPNG)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libpng")
+endif ()
+if (USE_LIBJPEG)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libjpeg")
+endif()
+if (USE_FREETYPE)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "freetype2 >= ${FREETYPE_MIN_VERSION}")
+endif()
+if (USE_HARFBUZZ)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "harfbuzz >= ${HARFBUZZ_MIN_VERSION}")
+endif()
+if (USE_FRIBIDI)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "fribidi >= ${FRIBIDI_MIN_VERSION}")
+endif()
+if (USE_LIBUNIBREAK)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libunibreak >= ${LIBUNIBREAK_MIN_VERSION}")
+endif()
+if (USE_ZSTD)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libzstd >= ${ZSTD_MIN_VERSION}")
+endif()
+if (USE_UTF8PROC)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libutf8proc")
+endif()
+if (USE_FONTCONFIG)
+  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "fontconfig >= ${FONTCONFIG_MIN_VERSION}")
+endif()
+
+
 set(cre_install_libs)
 if (CRE_BUILD_SHARED)
   add_library(crengine-ng SHARED ${CRENGINE_NG_SOURCES})
@@ -136,6 +171,8 @@ endif(BUILD_TOOLS)
 # Installation
 include(GNUInstallDirs)
 
+string(REPLACE ";" ", " PKG_CONFIG_REQUIRED_PRIVATE "${PKG_CONFIG_REQUIRED_PRIVATE}")
+
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
   install(
     # Note the trailing slash in the argument to `DIRECTORY'!
@@ -156,6 +193,11 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     FRAMEWORK DESTINATION Library/Frameworks
   )
+  configure_file(crengine-ng.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc @ONLY)
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+    COMPONENT pkgconfig)
 endif()
 
 if(NOT SKIP_INSTALL_DATA AND NOT SKIP_INSTALL_ALL)

@@ -178,42 +178,47 @@ endif()
 set(USE_LIBJPEG ${JPEG_FOUND} CACHE STRING "Use jpeg library")
 
 # FreeType library
+set(FREETYPE_MIN_VERSION "2.10.0")
 if(WITH_FREETYPE STREQUAL "AUTO")
-  find_package(Freetype 2.10.0)
+  find_package(Freetype ${FREETYPE_MIN_VERSION})
 elseif(WITH_FREETYPE)
-  find_package(Freetype 2.10.0 REQUIRED)
+  find_package(Freetype ${FREETYPE_MIN_VERSION} REQUIRED)
 endif()
 set(USE_FREETYPE ${FREETYPE_FOUND} CACHE STRING "Use FreeType library")
 
 # HarfBuzz library
+set(HARFBUZZ_MIN_VERSION "2.6.0")
 if(WITH_HARFBUZZ STREQUAL "AUTO")
-  find_package(HarfBuzz 2.6.0)
+  find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION})
 elseif(WITH_HARFBUZZ)
-  find_package(HarfBuzz 2.6.0 REQUIRED)
+  find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION} REQUIRED)
 endif()
 set(USE_HARFBUZZ ${HarfBuzz_FOUND} CACHE STRING "Use HarfBuzz library")
 
 # FriBiDi library
+set(FRIBIDI_MIN_VERSION "1.0.0")
 if(WITH_FRIBIDI STREQUAL "AUTO")
-  find_package(FriBidi 1.0.0)
+  find_package(FriBidi ${FRIBIDI_MIN_VERSION})
 elseif(WITH_FRIBIDI)
-  find_package(FriBidi 1.0.0 REQUIRED)
+  find_package(FriBidi ${FRIBIDI_MIN_VERSION} REQUIRED)
 endif()
 set(USE_FRIBIDI ${FRIBIDI_FOUND} CACHE STRING "Use FriBiDi library")
 
 # libunibreak library
+set(LIBUNIBREAK_MIN_VERSION "4.0")
 if(WITH_LIBUNIBREAK STREQUAL "AUTO")
-  find_package(libunibreak 4.0)
+  find_package(libunibreak ${LIBUNIBREAK_MIN_VERSION})
 elseif(WITH_LIBUNIBREAK)
-  find_package(libunibreak 4.0 REQUIRED)
+  find_package(libunibreak ${LIBUNIBREAK_MIN_VERSION} REQUIRED)
 endif()
 set(USE_LIBUNIBREAK ${LIBUNIBREAK_FOUND} CACHE STRING "Use libunibreak library")
 
 # zstd library
+set(ZSTD_MIN_VERSION "1.4.0")
 if(WITH_ZSTD STREQUAL "AUTO")
-  find_package(ZSTD 1.4.0)
+  find_package(ZSTD ${ZSTD_MIN_VERSION})
 elseif(WITH_ZSTD)
-  find_package(ZSTD 1.4.0 REQUIRED)
+  find_package(ZSTD ${ZSTD_MIN_VERSION} REQUIRED)
 endif()
 set(USE_ZSTD ${ZSTD_FOUND} CACHE STRING "Use zstd library")
 
@@ -264,10 +269,11 @@ endif()
 # qimagescale library
 add_subdirectory(thirdparty/qimagescale)
 
+set(FONTCONFIG_MIN_VERSION "2.11.0")
 if (USE_FONTCONFIG)
-  find_package(FontConfig 2.11.0 REQUIRED)
+  find_package(FontConfig ${FONTCONFIG_MIN_VERSION} REQUIRED)
 else()
-    set(FONTCONFIG_LIBRARIES)
+  set(FONTCONFIG_LIBRARIES)
 endif()
 
 include_directories(
