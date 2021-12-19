@@ -306,8 +306,6 @@ set(CRENGINE_NG_LIBS
   qimagescale
 )
 
-configure_file(crengine-ng-config.h.cmake ${CMAKE_BINARY_DIR}/crengine/crengine-ng-config.h)
-
 include_directories(crengine/include)
 include_directories(${CMAKE_BINARY_DIR}/crengine)
 

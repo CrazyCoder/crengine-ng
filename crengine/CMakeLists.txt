@@ -1,4 +1,6 @@
 
+configure_file(crengine-ng-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h)
+
 set(CRENGINE_NG_SOURCES
     src/cp_stats.cpp
     src/lvstring.cpp
