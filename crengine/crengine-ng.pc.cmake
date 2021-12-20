@@ -10,4 +10,4 @@ Requires:
 Requires.private: @PKG_CONFIG_REQUIRED_PRIVATE@
 Libs: -L${libdir} -lcrengine-ng
 Libs.private: @PKG_CONFIG_LIBS_PRIVATE@
-Cflags: -I${includedir}/crengine-ng
+Cflags: -I${includedir}/crengine-ng @PC_PUBLIC_COMPILE_DEFINITIONS@

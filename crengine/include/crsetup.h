@@ -29,7 +29,6 @@
 #define CR_USE_THREADS                       0
 #endif // ANDROID
 
-#define LDOM_USE_OWN_MEM_MAN                 1
 #define USE_ANSI_FILES                       0
 #define GRAY_INVERSE                         0
 #define USE_FT_EMBOLDEN                      1
@@ -51,7 +50,6 @@
 
 #define CR_USE_THREADS                       0
 
-#define LDOM_USE_OWN_MEM_MAN                 1
 #define USE_ANSI_FILES                       0
 #define GRAY_INVERSE                         0
 #define USE_FT_EMBOLDEN                      1

@@ -1,6 +1,4 @@
 
-configure_file(crengine-ng-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h)
-
 set(CRENGINE_NG_SOURCES
     src/cp_stats.cpp
     src/lvstring.cpp
@@ -151,6 +149,8 @@ set(cre_install_libs)
 if (CRE_BUILD_SHARED)
   add_library(crengine-ng SHARED ${CRENGINE_NG_SOURCES})
   set_target_properties(crengine-ng PROPERTIES OUTPUT_NAME crengine-ng)
+  target_compile_definitions(crengine-ng PRIVATE ${PRIVATE_COMPILE_DEFINITIONS})
+  target_compile_definitions(crengine-ng PUBLIC ${PUBLIC_COMPILE_DEFINITIONS})
   target_link_libraries(crengine-ng ${CRENGINE_NG_LIBS})
   list(APPEND cre_install_libs crengine-ng)
 endif (CRE_BUILD_SHARED)
@@ -161,6 +161,8 @@ if (CRE_BUILD_STATIC)
   else()
     set_target_properties(crengine-ng_static PROPERTIES OUTPUT_NAME crengine-ng)
   endif()
+  target_compile_definitions(crengine-ng_static PRIVATE ${PRIVATE_COMPILE_DEFINITIONS})
+  target_compile_definitions(crengine-ng_static PUBLIC ${PUBLIC_COMPILE_DEFINITIONS})
   target_link_libraries(crengine-ng_static ${CRENGINE_NG_LIBS})
   list(APPEND cre_install_libs crengine-ng_static)
 endif (CRE_BUILD_STATIC)
@@ -181,25 +183,32 @@ include(GNUInstallDirs)
 
 string(REPLACE ";" ", " PKG_CONFIG_REQUIRED_PRIVATE "${PKG_CONFIG_REQUIRED_PRIVATE}")
 
+set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/crengine-ng)
+set(DATA_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/crengine-ng)
+if(WIN32 AND NOT CYGWIN)
+  set(DEF_CMAKE_INSTALL_DIR CMake)
+else()
+  set(DEF_CMAKE_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/crengine-ng)
+endif()
+set(CMAKE_INSTALL_DIR ${DEF_CMAKE_INSTALL_DIR} CACHE PATH "Installation directory for CMake files")
+
+set(CRE_NG_VERSION ${VERSION})
+set(CRE_NG_DATADIR ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR})
+configure_file(crengine-ng-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h)
+
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
   install(
     # Note the trailing slash in the argument to `DIRECTORY'!
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/crengine-ng
+      DESTINATION ${INCLUDE_INSTALL_DIR}
       COMPONENT headers)
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h
-      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/crengine-ng
+      DESTINATION ${INCLUDE_INSTALL_DIR}
       COMPONENT headers)
 endif()
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
-  include(CMakePackageConfigHelpers)
-  write_basic_package_version_file(
-    ${PROJECT_BINARY_DIR}/crengine-ng-config-version.cmake
-    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
-    COMPATIBILITY SameMajorVersion)
-
   install(TARGETS ${cre_install_libs}
     EXPORT crengine-ng-targets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -207,16 +216,31 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     FRAMEWORK DESTINATION Library/Frameworks
     COMPONENT libraries)
-  install(
-    EXPORT crengine-ng-targets
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/crengine-ng
-      FILE crengine-ng-config.cmake
-      COMPONENT headers)
-  install(
-    FILES ${PROJECT_BINARY_DIR}/crengine-ng-config-version.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/crengine-ng
+
+  install(EXPORT crengine-ng-targets
+    FILE crengine-ng-targets.cmake
+    NAMESPACE crengine-ng::
+    DESTINATION ${CMAKE_INSTALL_DIR}
     COMPONENT headers)
 
+  include(CMakePackageConfigHelpers)
+
+  configure_package_config_file(crengine-ng-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DIR}
+    PATH_VARS INCLUDE_INSTALL_DIR DATA_INSTALL_DIR)
+  write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config-version.cmake
+    VERSION ${VERSION}
+    COMPATIBILITY SameMajorVersion)
+
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.cmake
+          ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_DIR}
+    COMPONENT headers)
+
+  string(REPLACE ";" " " PC_PUBLIC_COMPILE_DEFINITIONS "${PUBLIC_COMPILE_DEFINITIONS}")
   configure_file(crengine-ng.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc @ONLY)
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc
@@ -225,12 +249,12 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
 endif()
 
 if(NOT SKIP_INSTALL_DATA AND NOT SKIP_INSTALL_ALL)
-    install(
-      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
-        DESTINATION ${CRE_NG_DATADIR}
-        COMPONENT css)
-    install(
-      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
-        DESTINATION ${CRE_NG_DATADIR}/hyph
-        COMPONENT css)
+  install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
+      DESTINATION ${DATA_INSTALL_DIR}
+      COMPONENT css)
+  install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
+      DESTINATION ${DATA_INSTALL_DIR}/hyph
+      COMPONENT css)
 endif()

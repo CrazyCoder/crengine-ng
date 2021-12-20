@@ -6,10 +6,6 @@ set(SRC_LIST
     my_hyphpatternreader.cpp
 )
 
-if(UNIX)
-    add_definitions(-DLINUX -D_LINUX)
-endif(UNIX)
-
 if(WIN32)
     add_definitions(-DWIN32 -D_CONSOLE)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")

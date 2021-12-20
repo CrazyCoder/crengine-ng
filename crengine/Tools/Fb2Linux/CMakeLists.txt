@@ -1,7 +1,5 @@
 
-if(UNIX)
-    add_definitions(-DLINUX -D_LINUX)
-else(UNIX)
+if(NOT UNIX)
 	message(FATAL_ERROR "This program availavle only for Unix/Linux!")
 endif(UNIX)
 
