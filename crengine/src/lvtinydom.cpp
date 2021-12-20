@@ -236,6 +236,7 @@ enum CacheFileBlockType {
 #include "../include/lvfileformatparser.h"
 #include "../include/lvxmlparser.h"
 #include "../include/lvhtmlparser.h"
+#include "textlang.h"
 
 #include <stddef.h>
 #include <math.h>

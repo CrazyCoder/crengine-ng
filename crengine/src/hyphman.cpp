@@ -42,7 +42,7 @@
 #include "../include/lvstring32collection.h"
 
 #include "../include/crlog.h"
-#include "../include/textlang.h"
+#include "textlang.h"
 
 
 #ifdef ANDROID

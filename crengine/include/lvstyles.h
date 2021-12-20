@@ -17,7 +17,6 @@
 #include "cssdef.h"
 #include "lvmemman.h"
 #include "lvrefcache.h"
-#include "lvtextfm.h"
 #include "lvfntman.h"
 #include "lvstring8collection.h"
 

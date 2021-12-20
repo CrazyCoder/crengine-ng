@@ -18,7 +18,6 @@
 #include "lvfont.h"
 #include "lvstring32collection.h"
 #include "lvbmpbuf.h"
-#include "textlang.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,6 +85,7 @@ extern "C" {
 #define LTEXT__AVAILABLE_BIT_31__    0x40000000
 #define LTEXT_LEGACY_RENDERING       0x80000000  // Legacy text rendering tweaks
 
+class TextLanfCfg;
 
 // Extra LTEXT properties we can request (via these values) and fetch from the node style,
 // mostly used for rare inherited CSS properties that don't need us to waste a bit for

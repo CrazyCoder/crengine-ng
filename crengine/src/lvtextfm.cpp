@@ -25,7 +25,7 @@
 #ifdef __cplusplus
 #include "../include/lvtinydom.h"
 #include "../include/lvrend.h"
-#include "../include/textlang.h"
+#include "textlang.h"
 #endif
 
 #if USE_HARFBUZZ==1

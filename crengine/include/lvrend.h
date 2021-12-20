@@ -15,7 +15,6 @@
 #define __LV_REND_H_INCLUDED__
 
 #include "lvtinydom.h"
-#include "textlang.h"
 
 // Current direction, from dir="ltr" or dir="rtl" element attribute
 // Should map directly to the RENDER_RECT_FLAG_DIRECTION_* below
@@ -62,6 +61,7 @@
 #define REQ_BASELINE_FOR_TABLE        2    // keep first baseline fed
 
 class FlowState;
+class TextLangCfg;
 
 // Footprint of block floats (from FlowState) on a final block,
 // to be passed to lvtextfm LFormattedText::Format().

@@ -1,7 +1,7 @@
 // IMPORTANT : when making changes in language detection logic and per-language
 // rules here, be sure to also bump FORMATTING_VERSION_ID in src/lvtinydom.cpp
 
-#include "../include/textlang.h"
+#include "textlang.h"
 #include "../include/hyphman.h"
 #include "../include/lvtinydom.h"
 #include "../include/fb2def.h"

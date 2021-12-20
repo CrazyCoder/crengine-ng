@@ -9,7 +9,7 @@
 #define __WOLUTIL_H_INCLUDED__
 
 #include "../include/crengine.h"
-
+#include "lvgraydrawbuf.h"
 
 
 class WOLBase {

@@ -23,6 +23,7 @@
 #include "lvfontcache.h"
 #include "lvstreamutils.h"
 #include "lvimg.h"
+#include "../textlang.h"
 
 
 #include "gammatbl.h"

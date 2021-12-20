@@ -19,6 +19,7 @@
 #include "../include/lvrend.h"
 #include "lvdrawbuf/lvinkmeasurementdrawbuf.h"
 #include "../include/crlog.h"
+#include "textlang.h"
 
 // Note about box model/sizing in crengine:
 // https://quirksmode.org/css/user-interface/boxsizing.html says:

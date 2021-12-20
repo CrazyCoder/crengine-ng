@@ -46,7 +46,7 @@
 
 #include "cssdef.h"
 #include "lvstyles.h"
-#include "textlang.h"
+#include "lvptrvec.h"
 
 class lxmlDocBase;
 struct ldomNode;

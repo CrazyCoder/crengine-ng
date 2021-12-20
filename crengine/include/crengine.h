@@ -140,23 +140,11 @@
 
 #include "crsetup.h"
 #include "lvtypes.h"
-#include "lvref.h"
 #include "lvstring.h"
-#include "lvarray.h"
-#include "lvbmpbuf.h"
-#include "lvfntman.h"
-#include "lvstyles.h"
 #include "lvdocview.h"
-#include "lvstsheet.h"
 #include "lvdrawbuf.h"
-#include "lvgraydrawbuf.h"
-#include "lvcolordrawbuf.h"
 #include "lvcontaineriteminfo.h"
 #include "lvstreamutils.h"
 #include "props.h"
-#include "w32utils.h"
-#include "crtxtenc.h"
-
-
 
 #endif//CRENGINE_H_INCLUDED

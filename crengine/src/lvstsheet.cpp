@@ -19,6 +19,7 @@
 #include "../include/lvstreamutils.h"
 #include "../include/lvxmlutils.h"
 #include "../include/lvrend.h"   // for -cr-only-if:
+#include "textlang.h"
 
 // define to dump all tokens
 //#define DUMP_CSS_PARSING

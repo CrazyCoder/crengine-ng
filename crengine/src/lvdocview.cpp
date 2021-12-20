@@ -19,7 +19,7 @@
 #include "../include/lvstyles.h"
 #include "../include/lvrend.h"
 #include "../include/lvstsheet.h"
-#include "../include/textlang.h"
+#include "textlang.h"
 #include "../include/lvdrawstatesaver.h"
 #include "../include/lvcontaineriteminfo.h"
 #include "../include/lvxmlutils.h"

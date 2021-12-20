@@ -31,6 +31,7 @@
 #include "lvxmlparsercallback.h"
 #include "dtddef.h"
 #include "lvstyles.h"
+#include "lvtextfm.h"
 #include "lvdrawbuf.h"
 #include "lvembeddedfont.h"
 #include "lvstsheet.h"
