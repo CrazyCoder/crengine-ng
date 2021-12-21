@@ -1,7 +1,7 @@
 
 if(NOT UNIX)
 	message(FATAL_ERROR "This program availavle only for Unix/Linux!")
-endif(UNIX)
+endif()
 
 find_package(X11 REQUIRED)
 
