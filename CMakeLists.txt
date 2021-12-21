@@ -64,6 +64,8 @@ option(BUILD_LITE  "Remove most features" OFF)
 
 set(PUBLIC_COMPILE_DEFINITIONS)
 set(PRIVATE_COMPILE_DEFINITIONS)
+set(PRIVATE_INCLUDE_DIRECTORIES)
+set(PRIVATE_LINK_LIBRARIES)
 
 if( ${CMAKE_SYSTEM} MATCHES "Darwin" )
   set(MAC 1)
@@ -173,7 +175,13 @@ set(COLOR_BACKBUFFER ${USE_COLOR_BACKBUFFER})
 
 # zlib library
 find_package(ZLIB REQUIRED)
-set(USE_ZLIB ${ZLIB_FOUND} CACHE STRING "Use zlib library")
+if (ZLIB_FOUND)
+  set(USE_ZLIB ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIR})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${ZLIB_LIBRARIES})
+else()
+  set(USE_ZLIB OFF)
+endif()
 
 # libpng library
 if(WITH_LIBPNG STREQUAL "AUTO")
@@ -181,7 +189,13 @@ if(WITH_LIBPNG STREQUAL "AUTO")
 elseif(WITH_LIBPNG)
   find_package(PNG REQUIRED)
 endif()
-set(USE_LIBPNG ${PNG_FOUND} CACHE STRING "Use libpng library")
+if (PNG_FOUND)
+  set(USE_LIBPNG ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${PNG_INCLUDE_DIR})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${PNG_LIBRARIES})
+else()
+  set(USE_LIBPNG OFF)
+endif()
 
 # jpeg library
 if(WITH_LIBJPEG STREQUAL "AUTO")
@@ -189,7 +203,13 @@ if(WITH_LIBJPEG STREQUAL "AUTO")
 elseif(WITH_LIBJPEG)
   find_package(JPEG REQUIRED)
 endif()
-set(USE_LIBJPEG ${JPEG_FOUND} CACHE STRING "Use jpeg library")
+if (JPEG_FOUND)
+  set(USE_LIBJPEG ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${JPEG_INCLUDE_DIR})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${JPEG_LIBRARIES})
+else()
+  set(USE_LIBJPEG OFF)
+endif()
 
 # FreeType library
 set(FREETYPE_MIN_VERSION "2.10.0")
@@ -198,7 +218,13 @@ if(WITH_FREETYPE STREQUAL "AUTO")
 elseif(WITH_FREETYPE)
   find_package(Freetype ${FREETYPE_MIN_VERSION} REQUIRED)
 endif()
-set(USE_FREETYPE ${FREETYPE_FOUND} CACHE STRING "Use FreeType library")
+if (FREETYPE_FOUND)
+  set(USE_FREETYPE ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${FREETYPE_INCLUDE_DIRS})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${FREETYPE_LIBRARIES})
+else()
+  set(USE_FREETYPE OFF)
+endif()
 
 # HarfBuzz library
 set(HARFBUZZ_MIN_VERSION "2.6.0")
@@ -207,7 +233,13 @@ if(WITH_HARFBUZZ STREQUAL "AUTO")
 elseif(WITH_HARFBUZZ)
   find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION} REQUIRED)
 endif()
-set(USE_HARFBUZZ ${HarfBuzz_FOUND} CACHE STRING "Use HarfBuzz library")
+if (HarfBuzz_FOUND)
+  set(USE_HARFBUZZ ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${HarfBuzz_INCLUDE_DIRS})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${HarfBuzz_LIBRARY})
+else()
+  set(USE_HARFBUZZ OFF)
+endif()
 
 # FriBiDi library
 set(FRIBIDI_MIN_VERSION "1.0.0")
@@ -216,7 +248,13 @@ if(WITH_FRIBIDI STREQUAL "AUTO")
 elseif(WITH_FRIBIDI)
   find_package(FriBidi ${FRIBIDI_MIN_VERSION} REQUIRED)
 endif()
-set(USE_FRIBIDI ${FRIBIDI_FOUND} CACHE STRING "Use FriBiDi library")
+if (FRIBIDI_FOUND)
+  set(USE_FRIBIDI ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${FRIBIDI_INCLUDE_DIR})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${FRIBIDI_LIBRARIES})
+else()
+  set(USE_FRIBIDI OFF)
+endif()
 
 # libunibreak library
 set(LIBUNIBREAK_MIN_VERSION "4.0")
@@ -225,7 +263,13 @@ if(WITH_LIBUNIBREAK STREQUAL "AUTO")
 elseif(WITH_LIBUNIBREAK)
   find_package(libunibreak ${LIBUNIBREAK_MIN_VERSION} REQUIRED)
 endif()
-set(USE_LIBUNIBREAK ${LIBUNIBREAK_FOUND} CACHE STRING "Use libunibreak library")
+if (LIBUNIBREAK_FOUND)
+  set(USE_LIBUNIBREAK ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${LIBUNIBREAK_INCLUDE_DIR})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${LIBUNIBREAK_LIBRARIES})
+else()
+  set(USE_LIBUNIBREAK OFF)
+endif()
 
 # zstd library
 set(ZSTD_MIN_VERSION "1.4.0")
@@ -234,7 +278,13 @@ if(WITH_ZSTD STREQUAL "AUTO")
 elseif(WITH_ZSTD)
   find_package(ZSTD ${ZSTD_MIN_VERSION} REQUIRED)
 endif()
-set(USE_ZSTD ${ZSTD_FOUND} CACHE STRING "Use zstd library")
+if (ZSTD_FOUND)
+  set(USE_ZSTD ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${ZSTD_INCLUDE_DIRS})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${ZSTD_LIBRARIES})
+else()
+  set(USE_ZSTD OFF)
+endif()
 
 # utf8proc library
 if(WITH_UTF8PROC STREQUAL "AUTO")
@@ -242,75 +292,48 @@ if(WITH_UTF8PROC STREQUAL "AUTO")
 elseif(WITH_UTF8PROC)
   find_package(utf8proc REQUIRED)
 endif()
-set(USE_UTF8PROC ${UTF8PROC_FOUND} CACHE STRING "Use utf8proc library")
+if (UTF8PROC_FOUND)
+  set(USE_UTF8PROC ON)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${UTF8PROC_INCLUDE_DIRS})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${UTF8PROC_LIBRARIES})
+else()
+  set(USE_UTF8PROC OFF)
+endif()
 
 # nanosvg library
 if(USE_NANOSVG)
-  include_directories(${CMAKE_SOURCE_DIR}/thirdparty/nanosvg/src)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/nanosvg/src)
 endif()
 
 # patched built-in libchm
 if (USE_CHM)
   message("Will build patched LIBCHM library")
-  include_directories(${CMAKE_SOURCE_DIR}/thirdparty/chmlib/src)
   add_subdirectory(thirdparty/chmlib)
-  set(CHM_LIBRARIES cre_chmlib)
-else()
-  set(CHM_LIBRARIES)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/chmlib/src)
+  list(APPEND PRIVATE_LINK_LIBRARIES cre_chmlib)
 endif(USE_CHM)
 
 # patched built-in antiword
 if (USE_ANTIWORD)
   message("Will build patched ANTIWORD library")
-  include_directories( ${CMAKE_SOURCE_DIR}/thirdparty/antiword )
   add_subdirectory(thirdparty/antiword)
-  set(ANTIWORD_LIBRARIES cre_antiword)
   target_compile_definitions(cre_antiword PRIVATE -DCR3_ANTIWORD_PATCH=1)
   list(APPEND PRIVATE_COMPILE_DEFINITIONS -DCR3_ANTIWORD_PATCH=1)
-else()
-  set(ANTIWORD_LIBRARIES)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/antiword)
+  list(APPEND PRIVATE_LINK_LIBRARIES cre_antiword)
 endif()
 
 # qimagescale library
 add_subdirectory(thirdparty/qimagescale)
-set(QIMAGESCALE_LIBRARIES cre_qimagescale)
+list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/qimagescale)
+list(APPEND PRIVATE_LINK_LIBRARIES cre_qimagescale)
 
 set(FONTCONFIG_MIN_VERSION "2.11.0")
 if (USE_FONTCONFIG)
   find_package(FontConfig ${FONTCONFIG_MIN_VERSION} REQUIRED)
-else()
-  set(FONTCONFIG_LIBRARIES)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${FONTCONFIG_INCLUDE_DIRS})
+  list(APPEND PRIVATE_LINK_LIBRARIES ${FONTCONFIG_LIBRARIES})
 endif()
-
-include_directories(
-  ${PNG_INCLUDE_DIR}
-  ${JPEG_INCLUDE_DIR}
-  ${ZLIB_INCLUDE_DIR}
-  ${FREETYPE_INCLUDE_DIRS}
-  ${HarfBuzz_INCLUDE_DIRS}
-  ${ANTIWORD_INCLUDE_DIR}
-  ${FRIBIDI_INCLUDE_DIR}
-  ${LIBUNIBREAK_INCLUDE_DIR}
-  ${ZSTD_INCLUDE_DIRS}
-  ${UTF8PROC_INCLUDE_DIRS}
-)
-
-set(CRENGINE_NG_LIBS
-  ${ZLIB_LIBRARIES}
-  ${PNG_LIBRARIES}
-  ${JPEG_LIBRARIES}
-  ${FREETYPE_LIBRARIES}
-  ${HarfBuzz_LIBRARY}
-  ${FRIBIDI_LIBRARIES}
-  ${LIBUNIBREAK_LIBRARIES}
-  ${ZSTD_LIBRARIES}
-  ${UTF8PROC_LIBRARIES}
-  ${CHM_LIBRARIES}
-  ${ANTIWORD_LIBRARIES}
-  ${FONTCONFIG_LIBRARIES}
-  ${UNRAR_LIBRARIES}
-  ${QIMAGESCALE_LIBRARIES}
-)
 
 include_directories(crengine/include)
 include_directories(${CMAKE_BINARY_DIR}/crengine)
