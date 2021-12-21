@@ -195,7 +195,7 @@ endif()
 set(CMAKE_INSTALL_DIR ${DEF_CMAKE_INSTALL_DIR} CACHE PATH "Installation directory for CMake files")
 
 set(CRE_NG_VERSION ${VERSION})
-set(CRE_NG_DATADIR ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR})
+set(CRE_NG_DATADIR ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/)
 configure_file(crengine-ng-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h)
 
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
