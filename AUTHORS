@@ -1,0 +1,29 @@
+Vadim Lopatin <coolreader.org@gmail.com>
+Aleksey Chernov <valexlin@gmail.com>
+Konstantin Potapov <pkbo@users.sourceforge.net>
+
+ From KOReader project:
+poire-z <poire-z@users.noreply.github.com>
+roshavagarga <roshavagarga@users.noreply.github.com>
+zwim <martin.zwicknagl@kirchbichl.net>
+NiLuJe <ninuje@gmail.com>
+
+ Other contributors:
+ourairquality <info@ourairquality.org>
+EXL <exlmotodev@gmail.com>
+Jellby <jellby@yahoo.com>
+Andrey Golovizin <ag@sologoc.com>
+Kirill Erofeev <erofeev.info@gmail.com>
+frankyifei <fredyifei@gmail.com>
+Alexander V. Nikolaev <avn@daemon.hole.ru>
+Carmina16 <mistresssilvara@hotmail.com>
+Qingping Hou <dave2008713@gmail.com>
+Strana (eng: Page) <strn@users.noreply.github.com>
+band-a-prend <torokhov-s-a@yandex.ru>
+data-man <datamanrb@gmail.com>
+jperon <cataclop@hotmail.com>
+macnuts <macnuts@gmx.com>
+phi <crispyfrog@163.com>
+
+This list of authors is obtained using a script crengine/Tools/getauthors/getauthos.sh
+Only commits related directly to the engine and hyphenation dictionaries were taken into account.
