@@ -11,7 +11,7 @@
 
 *******************************************************/
 
-#include "../include/txtselector.h"
+#include "txtselector.h"
 #include "../include/crlog.h"
 
 /// create selection tool for specified initial range (usually current page)

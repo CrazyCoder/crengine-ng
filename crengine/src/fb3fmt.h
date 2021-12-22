@@ -16,7 +16,7 @@
 
 #include "../include/crsetup.h"
 #include "../include/lvtinydom.h"
-#include "../include/lvopc.h"
+#include "lvopc.h"
 
 bool DetectFb3Format( LVStreamRef stream );
 bool ImportFb3Document( LVStreamRef stream, ldomDocument * doc, LVDocViewCallback * progressCallback, CacheLoadingCallback * formatCallback );

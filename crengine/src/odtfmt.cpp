@@ -10,13 +10,13 @@
     See LICENSE file for details.
 */
 
-#include "../include/odtfmt.h"
+#include "odtfmt.h"
 #include "../include/lvtinydom.h"
 #include "../include/fb2def.h"
-#include "../include/lvopc.h"
+#include "lvopc.h"
 #include "../include/lvstreamutils.h"
-#include "../include/lvxmlparser.h"
-#include "../include/lvxmlutils.h"
+#include "lvxml/lvxmlparser.h"
+#include "lvxml/lvxmlutils.h"
 #include "../include/crlog.h"
 #include "odxutil.h"
 

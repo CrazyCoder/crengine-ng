@@ -14,7 +14,7 @@
 #include "fb2coverpageparsercallback.h"
 #include "lvfileformatparser.h"
 #include "lvstreamutils.h"
-#include "lvbase64stream.h"
+#include "../lvstream/lvbase64stream.h"
 #include "crlog.h"
 
 FB2CoverpageParserCallback::FB2CoverpageParserCallback()

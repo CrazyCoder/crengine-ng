@@ -223,19 +223,19 @@ enum CacheFileBlockType {
 #include "../include/fb2def.h"
 #if BUILD_LITE!=1
 #include "../include/lvrend.h"
-#include "../include/chmfmt.h"
+#include "chmfmt.h"
 #endif
 #include "../include/crtest.h"
 #include "../include/crlog.h"
-#include "../include/lvstreamfragment.h"
+#include "lvstream/lvstreamfragment.h"
 #include "../include/lvcontaineriteminfo.h"
-#include "../include/lvstreambuffer.h"
+#include "lvstream/lvstreambuffer.h"
 #include "../include/lvstreamutils.h"
-#include "../include/lvbase64stream.h"
-#include "../include/lvxmlutils.h"
-#include "../include/lvfileformatparser.h"
-#include "../include/lvxmlparser.h"
-#include "../include/lvhtmlparser.h"
+#include "lvstream/lvbase64stream.h"
+#include "lvxml/lvxmlutils.h"
+#include "lvxml/lvfileformatparser.h"
+#include "lvxml/lvxmlparser.h"
+#include "lvxml/lvhtmlparser.h"
 #include "textlang.h"
 
 #include <stddef.h>

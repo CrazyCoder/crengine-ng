@@ -20,20 +20,20 @@ typedef struct {
 typedef unsigned int ucs4_t;
 
 #if GBK_ENCODING_SUPPORT == 1
-#include "../include/encodings/gbkext1.h"
-#include "../include/encodings/gbkext2.h"
-#include "../include/encodings/gb2312.h"
-#include "../include/encodings/cp936ext.h"
+#include "../encodings/gbkext1.h"
+#include "../encodings/gbkext2.h"
+#include "../encodings/gb2312.h"
+#include "../encodings/cp936ext.h"
 #endif
 #if JIS_ENCODING_SUPPORT == 1
-#include "../include/encodings/jisx0213.h"
+#include "../encodings/jisx0213.h"
 #endif
 #if BIG5_ENCODING_SUPPORT == 1
-#include "../include/encodings/big5.h"
-#include "../include/encodings/big5_2003.h"
+#include "../encodings/big5.h"
+#include "../encodings/big5_2003.h"
 #endif
 #if EUC_KR_ENCODING_SUPPORT == 1
-#include "../include/encodings/ksc5601.h"
+#include "../encodings/ksc5601.h"
 #endif
 
 #include "lvxmlutils.h"

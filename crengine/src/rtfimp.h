@@ -13,7 +13,7 @@
 #ifndef RTFIMP_H_INCLUDED
 #define RTFIMP_H_INCLUDED
 
-#include "lvfileparserbase.h"
+#include "lvxml/lvfileparserbase.h"
 #include "crtxtenc.h"
 #include <string.h>
 
@@ -127,7 +127,7 @@ enum rtf_cmd_id {
     RTF_##name,
 #define RTF_CHR( character, name, index ) \
     RTF_##name,
-#include "../include/rtfcmd.h"
+#include "rtfcmd.h"
     RTF_max // to fix 'comma at end of enumerator list' error in pedantic mode
 };
 

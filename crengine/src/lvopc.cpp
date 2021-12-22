@@ -10,7 +10,7 @@
     See LICENSE file for details.
 */
 
-#include "../include/lvopc.h"
+#include "lvopc.h"
 #include "../include/lvtinydom.h"
 #include "../include/lvstreamutils.h"
 #include "../include/crlog.h"

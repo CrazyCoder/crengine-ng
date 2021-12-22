@@ -31,7 +31,7 @@
 
 #if USE_LOCALE_DATA==1
 // fc-lang database
-#include "fc-lang-data.h"
+#include "../locale_data/fc-lang-data.h"
 #include "crlocaledata.h"
 #endif
 

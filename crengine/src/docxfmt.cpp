@@ -10,12 +10,12 @@
     See LICENSE file for details.
 */
 
-#include "../include/docxfmt.h"
+#include "docxfmt.h"
 #include "../include/lvtinydom.h"
 #include "../include/fb2def.h"
-#include "../include/lvopc.h"
+#include "lvopc.h"
 #include "../include/lvstreamutils.h"
-#include "../include/lvhtmlparser.h"
+#include "lvxml/lvhtmlparser.h"
 #include "../include/crlog.h"
 #include "odxutil.h"
 

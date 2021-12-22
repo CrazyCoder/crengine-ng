@@ -19,7 +19,7 @@
 #if !defined(DEBUG) && !defined(NDEBUG)
 #define NDEBUG
 #endif
-#include "../include/wordfmt.h"
+#include "wordfmt.h"
 
 #ifdef _WIN32
 #if defined(_MSC_VER) || (defined(__MINGW64_VERSION_MAJOR) && defined(NO_OLDNAMES)) || (defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR) && !defined(_EMULATE_GLIBC))

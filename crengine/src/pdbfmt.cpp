@@ -1,12 +1,12 @@
-#include "../include/pdbfmt.h"
+#include "pdbfmt.h"
 #include "../include/crlog.h"
-#include "../include/lvstreamfragment.h"
-#include "../include/lvcommoncontaineriteminfo.h"
+#include "lvstream/lvstreamfragment.h"
+#include "lvstream/lvcommoncontaineriteminfo.h"
 #include "../include/lvstreamutils.h"
 #include "../include/crtxtenc.h"
-#include "../include/lvxmlutils.h"
-#include "../include/lvhtmlparser.h"
-#include "../include/lvtextparser.h"
+#include "lvxml/lvxmlutils.h"
+#include "lvxml/lvhtmlparser.h"
+#include "lvxml/lvtextparser.h"
 #include <ctype.h>
 
 #include <zlib.h>

@@ -1,10 +1,10 @@
-#include "../include/epubfmt.h"
+#include "epubfmt.h"
 #include "../include/crlog.h"
-#include "../include/streamproxy.h"
+#include "streamproxy.h"
 #include "../include/lvstreamutils.h"
-#include "../include/lvxmlparser.h"
-#include "../include/lvhtmlparser.h"
-#include "../include/lvxmlutils.h"
+#include "lvxml/lvxmlparser.h"
+#include "lvxml/lvhtmlparser.h"
+#include "lvxml/lvxmlutils.h"
 
 
 class EpubItem {

@@ -1,13 +1,13 @@
 #include "../include/crsetup.h"
 //#define USE_CHM 1
 #if USE_CHM==1
-#include "../include/chmfmt.h"
-#include "../include/lvnamedstream.h"
+#include "chmfmt.h"
+#include "lvstream/lvnamedstream.h"
 #include "../include/lvstreamutils.h"
-#include "../include/lvnamedcontainer.h"
+#include "lvstream/lvnamedcontainer.h"
 #include "../include/crtxtenc.h"
-#include "../include/lvxmlutils.h"
-#include "../include/lvhtmlparser.h"
+#include "lvxml/lvxmlutils.h"
+#include "lvxml/lvhtmlparser.h"
 #include "../include/crlog.h"
 #include <chm_lib.h>
 

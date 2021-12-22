@@ -30,7 +30,7 @@
 
 #include "crlocaledata.h"
 #if USE_LOCALE_DATA==1
-#include "fc-lang-data.h"
+#include "../locale_data/fc-lang-data.h"
 #endif
 
 inline int myabs(int n) { return n < 0 ? -n : n; }

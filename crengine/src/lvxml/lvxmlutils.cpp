@@ -11,14 +11,14 @@
 
 *******************************************************/
 
-#include "../include/lvxmlutils.h"
+#include "lvxmlutils.h"
 #include "../include/crtxtenc.h"
 #include "../include/fb2def.h"
 #include "../include/lvdocview.h"
 #include "../include/lvstreamutils.h"
-#include "../include/lvtextparser.h"
-#include "../include/lvbase64stream.h"
-#include "../include/lvxmlparser.h"
+#include "lvtextparser.h"
+#include "../lvstream/lvbase64stream.h"
+#include "lvxmlparser.h"
 #include "fb2coverpageparsercallback.h"
 
 typedef struct  {
