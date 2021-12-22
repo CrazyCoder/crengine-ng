@@ -14,6 +14,7 @@
 
 #include "lvbitmapfontman.h"
 #include "lvbitmapfont.h"
+#include "lvstreamutils.h"
 
 #if (USE_BITMAP_FONTS == 1)
 

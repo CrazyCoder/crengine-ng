@@ -76,6 +76,10 @@ public:
         return 0;
     }
 
+    virtual int getLeftSideBearing( lChar32 ch, bool negative_only=false, bool italic_only=false ) { return 0; }
+
+    virtual int getRightSideBearing( lChar32 ch, bool negative_only=false, bool italic_only=false ) { return 0; }
+
     virtual int getExtraMetric(font_extra_metric_t metric, bool scaled_to_px=true) { return 0; }
 
     virtual bool hasOTMathSupport() const { return false; }

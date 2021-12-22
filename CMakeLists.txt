@@ -62,6 +62,11 @@ option(USE_FONTCONFIG "Use FontConfig to enumerate available fonts" ON)
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
 option(BUILD_LITE  "Remove most features" OFF)
 
+# check option consistency
+if (NOT WITH_FREETYPE)
+  set(WITH_HARFBUZZ OFF)
+endif()
+
 set(PUBLIC_COMPILE_DEFINITIONS)
 set(PRIVATE_COMPILE_DEFINITIONS)
 set(PRIVATE_INCLUDE_DIRECTORIES)
@@ -333,6 +338,11 @@ if (USE_FONTCONFIG)
   find_package(FontConfig ${FONTCONFIG_MIN_VERSION} REQUIRED)
   list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${FONTCONFIG_INCLUDE_DIRS})
   list(APPEND PRIVATE_LINK_LIBRARIES ${FONTCONFIG_LIBRARIES})
+endif()
+
+# check usage consistency
+if (NOT USE_FREETYPE)
+  set(USE_HARFBUZZ OFF)
 endif()
 
 include_directories(crengine/include)
