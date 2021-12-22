@@ -13,6 +13,7 @@
 *******************************************************/
 
 #include "lvfilestream.h"
+#include "lvstream_lseek.h"
 #include "crlog.h"
 
 #if (USE_ANSI_FILES==1)
@@ -163,18 +164,6 @@ extern "C" {
 #include <unistd.h>
 #include <fcntl.h>
 #endif
-
-
-// To support "large files" on 32-bit platforms
-// Since we have defined own types 'lvoffset_t', 'lvpos_t' and do not use the system type 'off_t'
-// it is logical to define our own wrapper function 'lseek'.
-static inline lvpos_t cr3_lseek(int fd, lvoffset_t offset, int whence) {
-#if LVLONG_FILE_SUPPORT == 1
-    return (lvpos_t)::lseek64(fd, (off64_t)offset, whence);
-#else
-    return (lvpos_t)::lseek(fd, (off_t)offset, whence);
-#endif
-}
 
 
 lverror_t LVFileStream::Flush(bool sync)
