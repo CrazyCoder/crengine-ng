@@ -12,7 +12,8 @@
 *******************************************************/
 
 #include "txtselector.h"
-#include "../include/crlog.h"
+
+#include <crlog.h>
 
 /// create selection tool for specified initial range (usually current page)
 ldomTextSelectionTool::ldomTextSelectionTool( ldomXRange & initialRange, ldomTextSelectionTool::interval_t initialInterval, ldomTextSelectionTool::origin_t initialOrigin )

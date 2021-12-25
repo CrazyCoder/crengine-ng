@@ -8,8 +8,10 @@
 #ifndef __WOLUTIL_H_INCLUDED__
 #define __WOLUTIL_H_INCLUDED__
 
-#include "../include/crengine.h"
-#include "lvgraydrawbuf.h"
+#include <lvstream.h>
+#include <lvarray.h>
+#include <lvgraydrawbuf.h>
+#include <lvptrvec.h>
 
 
 class WOLBase {

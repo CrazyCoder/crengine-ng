@@ -2,10 +2,11 @@
 // rules here, be sure to also bump FORMATTING_VERSION_ID in src/lvtinydom.cpp
 
 #include "textlang.h"
-#include "../include/crhyphman.h"
-#include "../include/lvtinydom.h"
-#include "../include/fb2def.h"
-#include "../include/crlog.h"
+
+#include <crhyphman.h>
+#include <lvtinydom.h>
+#include <fb2def.h>
+#include <crlog.h>
 
 #if (USE_UTF8PROC==1)
 #include <utf8proc.h>

@@ -14,14 +14,16 @@
 
 // lvfonttest.cpp
 
-#include "../include/crsetup.h"
+#include <crsetup.h>
+
 #if !defined(__SYMBIAN32__) && defined(_WIN32)
+
+#include <lvstream.h>
 
 extern "C" {
 #include <windows.h>
 }
-#include "../include/w32utils.h"
-#include "../include/lvstream.h"
+#include "w32utils.h"
 
 
 void DrawBuf2DC(HDC dc, int x, int y, LVDrawBuf * buf, COLORREF * palette, int scale )

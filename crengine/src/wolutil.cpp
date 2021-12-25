@@ -8,9 +8,12 @@
 
 *******************************************************/
 
-#include <string.h>
+#include <lvstreamutils.h>
+
 #include "wolutil.h"
 #include "private/dumpfile.h"
+
+#include <string.h>
 
 #define N 4096
 #define F 18

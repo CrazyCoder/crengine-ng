@@ -1,8 +1,8 @@
-#include "../include/crsetup.h"
-#include "../include/lvstring.h"
-#include "../include/lvstreamutils.h"
-#include "../include/lvtinydom.h"
-#include "../include/crlog.h"
+#include <crsetup.h>
+#include <lvstring.h>
+#include <lvstreamutils.h>
+#include <lvtinydom.h>
+#include <crlog.h>
 
 //#ifndef USE_ANTIWORD
 //#define USE_ANTIWORD 1

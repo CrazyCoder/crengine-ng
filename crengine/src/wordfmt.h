@@ -1,11 +1,11 @@
 #ifndef WORDFMT_H
 #define WORDFMT_H
 
-#include "crsetup.h"
+#include <crsetup.h>
 
 #if USE_ANTIWORD==1
 
-#include "lvtinydom.h"
+#include <lvtinydom.h>
 
 // MS WORD format support using AntiWord library
 bool DetectWordFormat( LVStreamRef stream );

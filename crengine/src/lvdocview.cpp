@@ -19,6 +19,7 @@
 #include <crtxtenc.h>
 #include <crtrace.h>
 #include <lvcontaineriteminfo.h>
+#include <lvstreamutils.h>
 
 #include "textlang.h"
 #include "lvdrawbuf/lvdrawstatesaver.h"
