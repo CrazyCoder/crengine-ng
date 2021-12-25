@@ -15,10 +15,11 @@
 #ifndef __LV_FONTCACHE_H_INCLUDED__
 #define __LV_FONTCACHE_H_INCLUDED__
 
-#include "crsetup.h"
-#include "lvfont.h"
-#include "lvptrvec.h"
-#include "lvstring32collection.h"
+#include <crsetup.h>
+#include <lvfont.h>
+#include <lvptrvec.h>
+#include <lvstring32collection.h>
+
 #include "lvfontdef.h"
 
 /// font cache item

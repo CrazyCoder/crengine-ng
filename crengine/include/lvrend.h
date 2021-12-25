@@ -14,7 +14,7 @@
 #ifndef __LV_REND_H_INCLUDED__
 #define __LV_REND_H_INCLUDED__
 
-#include "lvtinydom.h"
+#include <lvtinydom.h>
 
 // Current direction, from dir="ltr" or dir="rtl" element attribute
 // Should map directly to the RENDER_RECT_FLAG_DIRECTION_* below

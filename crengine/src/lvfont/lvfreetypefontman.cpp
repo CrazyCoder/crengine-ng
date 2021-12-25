@@ -18,8 +18,8 @@
 
 #include "lvfreetypeface.h"
 #include "lvfontboldtransform.h"
-#include "lvcontainer.h"
-#include "crlog.h"
+#include <lvcontainer.h>
+#include <crlog.h>
 
 #include FT_LCD_FILTER_H
 #include FT_CONFIG_OPTIONS_H
@@ -28,8 +28,8 @@
 #include <fontconfig/fontconfig.h>
 #endif
 
-#include "crlocaledata.h"
 #if USE_LOCALE_DATA==1
+#include <crlocaledata.h>
 #include "../locale_data/fc-lang-data.h"
 #endif
 

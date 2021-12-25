@@ -22,7 +22,7 @@
 #define __LVDEFSTREAMBUFFER_H_INCLUDED__
 
 #include "lvstreambuffer.h"
-#include "lvstream.h"
+#include <lvstream.h>
 
 // default implementation, with RAM buffer
 class LVDefStreamBuffer : public LVStreamBuffer

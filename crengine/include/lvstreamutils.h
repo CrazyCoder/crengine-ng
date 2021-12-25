@@ -13,9 +13,9 @@
 #ifndef __LVSTREAMUTILS_H_INCLUDED__
 #define __LVSTREAMUTILS_H_INCLUDED__
 
-#include "lvstream.h"
-#include "lvcontainer.h"
-#include "lvassetcontainerfactory.h"
+#include <lvstream.h>
+#include <lvcontainer.h>
+#include <lvassetcontainerfactory.h>
 
 /// Open file stream
 /**

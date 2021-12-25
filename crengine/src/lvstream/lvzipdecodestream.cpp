@@ -16,9 +16,12 @@
 
 #if (USE_ZLIB==1)
 
+#include <crlog.h>
+
 #include "lvstreamfragment.h"
 #include "ziphdr.h"
-#include "crlog.h"
+
+#include <string.h>
 
 //#define ARC_INBUF_SIZE  4096
 //#define ARC_OUTBUF_SIZE 16384

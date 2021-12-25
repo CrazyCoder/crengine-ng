@@ -21,8 +21,8 @@
 #ifndef __LVSTORAGEOBJECT_H_INCLUDED__
 #define __LVSTORAGEOBJECT_H_INCLUDED__
 
-#include "lvref.h"
-#include "lvstream_types.h"
+#include <lvref.h>
+#include <lvstream_types.h>
 
 class LVContainer;
 

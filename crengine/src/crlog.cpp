@@ -11,8 +11,8 @@
 
 *******************************************************/
 
-#include "../include/crlog.h"
-#include "lvtypes.h"
+#include <crlog.h>
+#include <lvtypes.h>
 
 #ifdef LINUX
 #include <sys/time.h>

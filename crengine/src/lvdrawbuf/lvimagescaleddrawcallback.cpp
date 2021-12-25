@@ -14,7 +14,10 @@
 
 #include "lvimagescaleddrawcallback.h"
 #include "lvdrawbuf_utils.h"
-#include "lvimg.h"
+
+#ifndef ANDROID
+#include <lvimg.h>  // CRe::qSmoothScaleImage()
+#endif
 
 #include <stdlib.h>
 #include <string.h>

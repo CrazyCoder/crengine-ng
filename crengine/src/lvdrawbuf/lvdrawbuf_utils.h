@@ -13,7 +13,7 @@
 #ifndef __LVDRAWBUF_UTILS_H_INCLUDED__
 #define __LVDRAWBUF_UTILS_H_INCLUDED__
 
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 #define GUARD_BYTE 0xa5
 #define CHECK_GUARD_BYTE \

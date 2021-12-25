@@ -12,10 +12,12 @@
 *******************************************************/
 
 #include "lvxmlutils.h"
-#include "../include/crtxtenc.h"
-#include "../include/fb2def.h"
-#include "../include/lvdocview.h"
-#include "../include/lvstreamutils.h"
+
+#include <crtxtenc.h>
+#include <fb2def.h>
+#include <lvdocview.h>
+#include <lvstreamutils.h>
+
 #include "lvtextparser.h"
 #include "../lvstream/lvbase64stream.h"
 #include "lvxmlparser.h"

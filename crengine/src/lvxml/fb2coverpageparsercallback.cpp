@@ -12,10 +12,12 @@
 *******************************************************/
 
 #include "fb2coverpageparsercallback.h"
+
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include "lvfileformatparser.h"
-#include "lvstreamutils.h"
 #include "../lvstream/lvbase64stream.h"
-#include "crlog.h"
 
 FB2CoverpageParserCallback::FB2CoverpageParserCallback()
  : insideFictionBook(false)

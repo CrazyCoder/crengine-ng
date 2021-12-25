@@ -15,7 +15,7 @@
 #ifndef __LVFILEFORMATPARSER_H_INCLUDED__
 #define __LVFILEFORMATPARSER_H_INCLUDED__
 
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 class LVDocViewCallback;
 

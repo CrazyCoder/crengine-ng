@@ -13,7 +13,7 @@
 #ifndef __LV_STRING32HASHEDCOLLECTION_H_INCLUDED__
 #define __LV_STRING32HASHEDCOLLECTION_H_INCLUDED__
 
-#include "lvstring32collection.h"
+#include <lvstring32collection.h>
 
 class SerialBuf;
 

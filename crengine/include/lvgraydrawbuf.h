@@ -14,7 +14,7 @@
 #ifndef __LVGRAYDRAWBUF_H_INCLUDED__
 #define __LVGRAYDRAWBUF_H_INCLUDED__
 
-#include "lvbasedrawbuf.h"
+#include <lvbasedrawbuf.h>
 
 /**
  * Gray bitmap buffer, partial support for 1-bit buffer

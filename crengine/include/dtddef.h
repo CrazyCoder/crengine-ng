@@ -27,8 +27,8 @@
 */
 
 #if !defined(__DTD_DEF_H_INCLUDED__) || defined(XS_IMPLEMENT_SCHEME)
-#include "lvtypes.h"
-#include "cssdef.h"
+#include <lvtypes.h>
+#include <cssdef.h>
 
 #if !defined(__DTD_DEF_H_INCLUDED__)
 #define __DTD_DEF_H_INCLUDED__

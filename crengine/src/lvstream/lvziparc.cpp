@@ -16,10 +16,11 @@
 
 #if (USE_ZLIB==1)
 
+#include <crtxtenc.h>
+#include <crlog.h>
+
 #include "lvzipdecodestream.h"
 #include "ziphdr.h"
-#include "crtxtenc.h"
-#include "crlog.h"
 
 LVZipArc::LVZipArc(LVStreamRef stream) : LVArcContainerBase(stream)
 {

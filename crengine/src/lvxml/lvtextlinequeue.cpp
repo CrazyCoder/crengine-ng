@@ -12,12 +12,14 @@
 *******************************************************/
 
 #include "lvtextlinequeue.h"
-#include "lvxmlparsercallback.h"
+
+#include <lvxmlparsercallback.h>
+#include <lvstreamutils.h>
+#include <lvstring32collection.h>
+#include <crlog.h>
+
 #include "lvxmlutils.h"
-#include "lvstreamutils.h"
-#include "lvstring32collection.h"
 #include "pmltextimport.h"
-#include "crlog.h"
 
 
 static const lChar32 * heading_volume[] = {

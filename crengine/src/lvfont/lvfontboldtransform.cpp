@@ -12,7 +12,8 @@
 */
 
 #include "lvfontboldtransform.h"
-#include "crlog.h"
+
+#include <crlog.h>
 
 
 int LVFontBoldTransform::getWeight() const {

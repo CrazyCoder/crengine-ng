@@ -12,9 +12,12 @@
 
 */
 
+#include <crlocks.h>
+
 #include "lvfontglyphcache_b.h"
-#include "../../include/crlocks.h"
+
 #include <stdio.h>
+#include <stdlib.h>
 
 
 inline lUInt32 getHash(GlyphCacheItemData data)

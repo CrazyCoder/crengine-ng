@@ -11,12 +11,13 @@
 
 *******************************************************/
 
+#include <lvmemman.h>
+#include <lvref.h>
+#include <lvtinydom.h>
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include <stdlib.h>
-#include "../include/lvmemman.h"
-#include "../include/lvref.h"
-#include "../include/lvtinydom.h"
-#include "../include/lvstreamutils.h"
-#include "../include/crlog.h"
 
 #ifdef _LINUX
 #ifndef _XOPEN_SOURCE

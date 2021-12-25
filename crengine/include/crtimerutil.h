@@ -10,7 +10,7 @@
 #ifndef __CR_TIMERUTIL_H_INCLUDED__
 #define __CR_TIMERUTIL_H_INCLUDED__
 
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 #ifdef _WIN32
 #include <windows.h>

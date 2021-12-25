@@ -11,7 +11,6 @@
 
 *******************************************************/
 
-
 RTF_CHR( "\n", par_n, 13 )
 RTF_CHR( "\r", par_r, 13 )
 RTF_CHR( "_", nb_hyphen, '-' )
@@ -70,4 +69,3 @@ RTF_IPR( uc, pi_uc_count, 1 )
 RTF_DST( ud, dest_ud )
 RTF_DST( upr, dest_upr )
 RTF_CHR( "~", nbsp, 160 )
-

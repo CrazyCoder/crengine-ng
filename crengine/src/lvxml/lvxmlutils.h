@@ -15,9 +15,8 @@
 #ifndef __LVXMLUTILS_H_INCLUDED__
 #define __LVXMLUTILS_H_INCLUDED__
 
-#include <time.h>
-#include "lvstring.h"
-#include "lvstream.h"
+#include <lvstring.h>
+#include <lvstream.h>
 
 
 #define XML_FLAG_NO_SPACE_TEXT 1

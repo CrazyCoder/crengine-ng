@@ -13,11 +13,13 @@
 *******************************************************/
 
 #include "lvdirectorycontainer.h"
-#include "lvstreamutils.h"
+
+#include <lvstreamutils.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <string.h>
 
 LVStreamRef LVDirectoryContainer::OpenStream(const char32_t *fname, lvopen_mode_t mode)
 {

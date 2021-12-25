@@ -16,8 +16,9 @@
 #ifndef __LVPTRVEC_H_INCLUDED__
 #define __LVPTRVEC_H_INCLUDED__
 
-#include <stdlib.h>
-#include "lvmemman.h"
+#include <lvmemman.h>
+
+#include <stdlib.h>	// qsort()
 
 /** \brief template which implements vector of pointer
 

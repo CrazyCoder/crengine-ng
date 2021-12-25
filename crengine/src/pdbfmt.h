@@ -1,8 +1,8 @@
 #ifndef PDBFMT_H
 #define PDBFMT_H
 
-#include "../include/crsetup.h"
-#include "../include/lvtinydom.h"
+#include <crsetup.h>
+#include <lvtinydom.h>
 
 // creates PDB decoder stream for stream
 //LVStreamRef LVOpenPDBStream( LVStreamRef srcstream, int &format );

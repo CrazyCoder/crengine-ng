@@ -17,8 +17,8 @@
 #ifndef __LV_FONTGLYPHCACHEB_H_INCLUDED__
 #define __LV_FONTGLYPHCACHEB_H_INCLUDED__
 
-#include "lvtypes.h"
-#include "lvhashtable.h"
+#include <lvtypes.h>
+#include <lvhashtable.h>
 
 union GlyphCacheItemData {
 	lChar32 ch;

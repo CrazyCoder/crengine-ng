@@ -12,8 +12,9 @@
 #ifndef HIST_H_INCLUDED
 #define HIST_H_INCLUDED
 
-#include "lvptrvec.h"
-#include "lvstring.h"
+#include <lvptrvec.h>
+#include <lvstring.h>
+
 #include <time.h>
 
 enum bmk_type {

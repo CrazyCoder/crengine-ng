@@ -4,7 +4,8 @@
 #ifndef MY_TEXHYPH_H
 #define MY_TEXHYPH_H
 
-#include "hyphman.h"
+#include <hyphman.h>
+
 #include "my_texpattern.h"
 
 class MyTexHyph : public HyphMethod

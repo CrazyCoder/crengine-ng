@@ -1,8 +1,9 @@
 // langstat.cpp : Defines the entry point for the console application.
 //
 
-#include <stdlib.h>
 #include <crengine.h>
+
+#include <stdlib.h>
 
 #ifdef _WIN32
 #define BASE_DIR "text\\"

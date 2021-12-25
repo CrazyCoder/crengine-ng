@@ -20,7 +20,10 @@
 *******************************************************/
 
 #include "lvmemorystream.h"
-#include "lvmemman.h"
+
+#include <lvmemman.h>
+
+#include <string.h>
 
 lverror_t LVMemoryStream::SetMode(lvopen_mode_t mode)
 {

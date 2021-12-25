@@ -1,7 +1,7 @@
 #ifndef __CRTRACE
 #define __CRTRACE 1
 
-#include "lvstring.h"
+#include <lvstring.h>
 
 struct endtrace {
     endtrace() {}

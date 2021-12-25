@@ -17,9 +17,7 @@
 #ifndef __LV_FONTGLYPHCACHEA_H_INCLUDED__
 #define __LV_FONTGLYPHCACHEA_H_INCLUDED__
 
-//#include <stdlib.h>
-//#include "crsetup.h"
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 
 struct LVFontGlyphCacheItemA;

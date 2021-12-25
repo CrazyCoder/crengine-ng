@@ -14,7 +14,8 @@
 
 #include "lvfilestream.h"
 #include "lvstream_lseek.h"
-#include "crlog.h"
+
+#include <crlog.h>
 
 #if (USE_ANSI_FILES==1)
 

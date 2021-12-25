@@ -12,7 +12,9 @@
 *******************************************************/
 
 #include "lvxmlparser.h"
-#include "lvxmlparsercallback.h"
+
+#include <lvxmlparsercallback.h>
+
 #include "lvxmlutils.h"
 
 /// states of XML parser

@@ -15,9 +15,9 @@
 #define __LVIMG_H_INCLUDED__
 
 
-#include "lvref.h"
-#include "lvstream.h"
-#include "lvimagesource.h"
+#include <lvref.h>
+#include <lvstream.h>
+#include <lvimagesource.h>
 
 class LVDrawBuf;
 class LVColorDrawBuf;

@@ -22,7 +22,7 @@
 #if !defined(__FB2_DEF_H_INCLUDED__) || defined(XS_IMPLEMENT_SCHEME)
 #define __FB2_DEF_H_INCLUDED__
 
-#include "dtddef.h"
+#include <dtddef.h>
 
 //=====================================================
 // el_ definitions

@@ -20,7 +20,7 @@
 #ifndef __LVCONTAINER_H_INCLUDED__
 #define __LVCONTAINER_H_INCLUDED__
 
-#include "lvstorageobject.h"
+#include <lvstorageobject.h>
 
 class LVStream;
 class LVContainerItemInfo;

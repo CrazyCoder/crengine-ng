@@ -11,9 +11,10 @@
 // http://tronche.lri.fr:8000/gui/x/xlib-tutorial/2nd-program-anatomy.html
 //
 
-#include "crengine.h"
+#include <crengine.h>
+#include <hyphman.h>
 
-
+#include "xutils.h"
 
 #include <X11/Xlib.h> // Every Xlib program must include this
 #include <X11/Xutil.h>
@@ -22,8 +23,6 @@
 #include <unistd.h>   // So we got the profile for 10 seconds
 #include <stdlib.h>
 #include <string.h>
-#include "xutils.h"
-#include "../../include/hyphman.h"
 
 #define NIL (0)       // A name for the void pointer
 

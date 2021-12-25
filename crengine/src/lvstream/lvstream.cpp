@@ -12,7 +12,8 @@
 
 *******************************************************/
 
-#include "lvstream.h"
+#include <lvstream.h>
+
 #include "lvdefstreambuffer.h"
 
 /// Get read buffer - default implementation, with RAM buffer

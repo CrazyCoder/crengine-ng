@@ -14,7 +14,8 @@
 #ifndef __LVDUMMYIMAGESOURCE_H_INCLUDED__
 #define __LVDUMMYIMAGESOURCE_H_INCLUDED__
 
-#include "lvimagesource.h"
+#include <lvimagesource.h>
+
 #include "lvimagedecodercallback.h"
 
 /// dummy image source to show invalid image

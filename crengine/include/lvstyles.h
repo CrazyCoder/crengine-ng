@@ -14,11 +14,11 @@
 #if !defined(__LV_STYLES_H_INCLUDED__)
 #define __LV_STYLES_H_INCLUDED__
 
-#include "cssdef.h"
-#include "lvmemman.h"
-#include "lvrefcache.h"
-#include "lvfntman.h"
-#include "lvstring8collection.h"
+#include <cssdef.h>
+#include <lvmemman.h>
+#include <lvrefcache.h>
+#include <lvfntman.h>
+#include <lvstring8collection.h>
 
 class SerialBuf;
 

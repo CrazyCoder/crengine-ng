@@ -14,8 +14,7 @@
 #ifndef __LVBMPBUF_H_INCLUDED__
 #define __LVBMPBUF_H_INCLUDED__
 
-#include "lvfnt.h"
-//#include "lvtextfm.h"
+#include <lvfnt.h>
 
 /** \brief Bitmap buffer to draw in (C API) */
 typedef struct

@@ -11,11 +11,13 @@
 */
 
 #include "fb3fmt.h"
-#include "../include/lvtinydom.h"
-#include "../include/fb2def.h"
-#include "../include/lvstreamutils.h"
+
+#include <lvtinydom.h>
+#include <fb2def.h>
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include "lvxml/lvxmlparser.h"
-#include "../include/crlog.h"
 
 static const lChar32 * const fb3_BodyContentType = U"application/fb3-body+xml";
 static const lChar32 * const fb3_DescriptionContentType = U"application/fb3-description+xml";

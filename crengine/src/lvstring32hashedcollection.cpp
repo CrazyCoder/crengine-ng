@@ -11,8 +11,8 @@
 
 *******************************************************/
 
-#include "../include/lvstring32hashedcollection.h"
-#include "../include/serialbuf.h"
+#include <lvstring32hashedcollection.h>
+#include <serialbuf.h>
 
 static const char * str_hash_magic="STRS";
 

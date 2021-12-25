@@ -14,9 +14,10 @@
 #ifndef __LV_FONTBOLDTRANSFORM_H_INCLUDED__
 #define __LV_FONTBOLDTRANSFORM_H_INCLUDED__
 
-#include "lvfont.h"
+#include <lvfont.h>
+#include <lvtextfm.h>
+
 #include "lvfontglyphcache.h"
-#include "lvtextfm.h"
 
 class LVFontBoldTransform : public LVFont {
     LVFontRef _baseFontRef;

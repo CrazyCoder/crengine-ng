@@ -15,7 +15,8 @@
 #define __LVFILEPARSERBASE_H_INCLUDED__
 
 #include "lvfileformatparser.h"
-#include "lvstream.h"
+
+#include <lvstream.h>
 
 class LVFileParserBase : public LVFileFormatParser
 {

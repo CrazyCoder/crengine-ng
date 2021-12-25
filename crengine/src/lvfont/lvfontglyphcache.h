@@ -15,13 +15,13 @@
 #ifndef __LV_FONTGLYPHCACHE_H_INCLUDED__
 #define __LV_FONTGLYPHCACHE_H_INCLUDED__
 
-#include <stdlib.h>
+#include <crsetup.h>
+#include <lvtypes.h>
+#include <lvhashtable.h>
+#include <lvdrawbuf.h>
+#include <crlocks.h>
+
 #include <stddef.h>
-#include "crsetup.h"
-#include "lvtypes.h"
-#include "lvhashtable.h"
-#include "lvdrawbuf.h"
-#include "crlocks.h"
 
 #define GLYPHCACHE_TABLE_SZ         256
 

@@ -12,10 +12,8 @@
 
 */
 
-#include "lvembeddedfont.h"
-#include "serialbuf.h"
-
-#include <stdlib.h>
+#include <lvembeddedfont.h>
+#include <serialbuf.h>
 
 static const char *EMBEDDED_FONT_LIST_MAGIC = "FNTL";
 static const char *EMBEDDED_FONT_DEF_MAGIC = "FNTD";

@@ -15,7 +15,8 @@
 #ifndef __LVTEXTLINEQUEUE_H_INCLUDED__
 #define __LVTEXTLINEQUEUE_H_INCLUDED__
 
-#include "lvptrvec.h"
+#include <lvptrvec.h>
+
 #include "lvtextfileline.h"
 
 #define MAX_HEADING_CHARS 48

@@ -1,14 +1,18 @@
 #include "pdbfmt.h"
-#include "../include/crlog.h"
+
+#include <lvstreamutils.h>
+#include <crtxtenc.h>
+#include <crlog.h>
+
 #include "lvstream/lvstreamfragment.h"
 #include "lvstream/lvcommoncontaineriteminfo.h"
-#include "../include/lvstreamutils.h"
-#include "../include/crtxtenc.h"
 #include "lvxml/lvxmlutils.h"
 #include "lvxml/lvhtmlparser.h"
 #include "lvxml/lvtextparser.h"
+
 #include <ctype.h>
 
+// TODO: Allow to compile without zlib
 #include <zlib.h>
 #define UNPACK_BUF_SIZE 0x40000
 

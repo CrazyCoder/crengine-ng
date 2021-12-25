@@ -12,9 +12,10 @@
 *******************************************************/
 
 #include "pmltextimport.h"
-#include "lvxmlparsercallback.h"
-#include "crtxtenc.h"
-#include "crlog.h"
+
+#include <lvxmlparsercallback.h>
+#include <crtxtenc.h>
+#include <crlog.h>
 
 PMLTextImport::PMLTextImport(LVXMLParserCallback* cb)
     : callback(cb), insideInvisibleText(false), align(0)

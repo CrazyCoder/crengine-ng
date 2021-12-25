@@ -13,7 +13,7 @@
 *******************************************************/
 
 #include "lvdrawbuf_utils.h"
-#include "lvdrawbuf.h"
+#include <lvdrawbuf.h>
 
 //static const short dither_2bpp_4x4[] = {
 //    5, 13,  8,  16,

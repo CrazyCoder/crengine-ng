@@ -138,13 +138,13 @@
 
 */
 
-#include "crsetup.h"
-#include "lvtypes.h"
-#include "lvstring.h"
-#include "lvdocview.h"
-#include "lvdrawbuf.h"
-#include "lvcontaineriteminfo.h"
-#include "lvstreamutils.h"
-#include "props.h"
+#include <crsetup.h>
+#include <lvtypes.h>
+#include <lvstring.h>
+#include <lvdocview.h>
+#include <lvdrawbuf.h>
+#include <lvcontaineriteminfo.h>
+#include <lvstreamutils.h>
+#include <props.h>
 
 #endif//CRENGINE_H_INCLUDED

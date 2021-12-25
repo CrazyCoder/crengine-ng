@@ -14,10 +14,11 @@
 #ifndef __LVSTRETCHIMGSOURCE_H_INCLUDED__
 #define __LVSTRETCHIMGSOURCE_H_INCLUDED__
 
-#include "lvimagesource.h"
 #include "lvimagedecodercallback.h"
-#include "lvarray.h"
-#include "lvimg.h"
+
+#include <lvimagesource.h>
+#include <lvarray.h>
+#include <lvimg.h>
 
 class LVStretchImgSource : public LVImageSource, public LVImageDecoderCallback
 {

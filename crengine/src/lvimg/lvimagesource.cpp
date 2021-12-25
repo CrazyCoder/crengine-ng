@@ -12,7 +12,8 @@
 
 *******************************************************/
 
-#include "lvimagesource.h"
+#include <lvimagesource.h>
+
 #include "crninepatchdecoder.h"
 
 static void fixNegative(int &n) {

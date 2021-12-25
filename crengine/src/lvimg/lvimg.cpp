@@ -12,7 +12,10 @@
 
 *******************************************************/
 
-#include "lvtinydom.h"
+#include <lvtinydom.h>
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include "lvxpmimagesource.h"
 #if (USE_LIBJPEG==1)
 #include "lvjpegimagesource.h"
@@ -32,8 +35,6 @@
 #include "lvalphatransformimgsource.h"
 #include "lvunpackedimgsource.h"
 #include "lvdrawbufimgsource.h"
-#include "lvstreamutils.h"
-#include "crlog.h"
 
 
 LVImageSourceRef LVCreateXPMImageSource( const char * data[] )

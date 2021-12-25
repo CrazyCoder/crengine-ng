@@ -14,8 +14,9 @@
 #ifndef FB3FMT_H
 #define FB3FMT_H
 
-#include "../include/crsetup.h"
-#include "../include/lvtinydom.h"
+#include <crsetup.h>
+#include <lvtinydom.h>
+
 #include "lvopc.h"
 
 bool DetectFb3Format( LVStreamRef stream );

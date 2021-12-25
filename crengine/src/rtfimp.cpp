@@ -11,16 +11,17 @@
 
 *******************************************************/
 #include "rtfimp.h"
-#include "../include/crtxtenc.h"
-#include "../include/lvtinydom.h"
-#include "../include/lvstreamutils.h"
+
+#include <crtxtenc.h>
+#include <lvtinydom.h>
+#include <lvstreamutils.h>
+
 #include "lvxml/lvxmlutils.h"
-#include <string.h>
 
 //==================================================
 // RTF file parser
 #ifdef LOG_RTF_PARSING
-#include "../include/crlog.h"
+#include <crlog.h>
 #endif
 
 #undef RTF_CMD

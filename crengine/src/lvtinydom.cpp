@@ -215,28 +215,31 @@ enum CacheFileBlockType {
 };
 
 
-#include <stdlib.h>
-#include <string.h>
-#include "../include/crsetup.h"
-#include "../include/lvstring.h"
-#include "../include/lvtinydom.h"
-#include "../include/fb2def.h"
+#include <lvtinydom.h>
+#include <fb2def.h>
 #if BUILD_LITE!=1
-#include "../include/lvrend.h"
-#include "chmfmt.h"
+#include <lvrend.h>
 #endif
-#include "../include/crtest.h"
-#include "../include/crlog.h"
+#include <crtest.h>
+#include <crlog.h>
+#include <lvcontaineriteminfo.h>
+#include <lvstreamutils.h>
+#include <lvtextfm.h>
+
 #include "lvstream/lvstreamfragment.h"
-#include "../include/lvcontaineriteminfo.h"
 #include "lvstream/lvstreambuffer.h"
-#include "../include/lvstreamutils.h"
 #include "lvstream/lvbase64stream.h"
 #include "lvxml/lvxmlutils.h"
 #include "lvxml/lvfileformatparser.h"
 #include "lvxml/lvxmlparser.h"
 #include "lvxml/lvhtmlparser.h"
 #include "textlang.h"
+#if BUILD_LITE!=1
+#include "chmfmt.h"
+#endif
+
+#include <stdlib.h>
+#include <string.h>
 
 #include <stddef.h>
 #include <math.h>
@@ -248,7 +251,6 @@ enum CacheFileBlockType {
 #endif
 #define XXH_INLINE_ALL
 #include "xxhash.h"
-#include <lvtextfm.h>
 
 #if (USE_ZLIB == 1)
 #define PACK_BUF_SIZE 0x10000

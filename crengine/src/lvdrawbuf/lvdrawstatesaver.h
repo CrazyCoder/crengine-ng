@@ -14,7 +14,7 @@
 #ifndef __LVDRAWSTATESAVER_H_INCLUDED__
 #define __LVDRAWSTATESAVER_H_INCLUDED__
 
-#include "lvdrawbuf.h"
+#include <lvdrawbuf.h>
 
 /// use to simplify saving draw buffer state
 class LVDrawStateSaver

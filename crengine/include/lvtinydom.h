@@ -1,4 +1,4 @@
-﻿/** \file lvtinydom.h
+/** \file lvtinydom.h
     \brief fast and compact XML DOM tree
 
     CoolReader Engine
@@ -25,28 +25,28 @@
 #ifndef __LV_TINYDOM_H_INCLUDED__
 #define __LV_TINYDOM_H_INCLUDED__
 
-#include "lvmemman.h"
-#include "lvstring.h"
-#include "lstridmap.h"
-#include "lvxmlparsercallback.h"
-#include "dtddef.h"
-#include "lvstyles.h"
-#include "lvtextfm.h"
-#include "lvdrawbuf.h"
-#include "lvembeddedfont.h"
-#include "lvstsheet.h"
-#include "lvpagesplitter.h"
-#include "lvptrvec.h"
-#include "lvhashtable.h"
-#include "lvimg.h"
-#include "props.h"
-#include "bookformats.h"
-#include "serialbuf.h"
-#include "lvstring32hashedcollection.h"
-#include "lvdocviewcallback.h"
+#include <lvmemman.h>
+#include <lvstring.h>
+#include <lstridmap.h>
+#include <lvxmlparsercallback.h>
+#include <dtddef.h>
+#include <lvstyles.h>
+#include <lvtextfm.h>
+#include <lvdrawbuf.h>
+#include <lvembeddedfont.h>
+#include <lvstsheet.h>
+#include <lvpagesplitter.h>
+#include <lvptrvec.h>
+#include <lvhashtable.h>
+#include <lvimg.h>
+#include <props.h>
+#include <bookformats.h>
+#include <serialbuf.h>
+#include <lvstring32hashedcollection.h>
+#include <lvdocviewcallback.h>
 
 #if MATHML_SUPPORT==1
-#include "mathml.h"
+#include <mathml.h>
 #endif
 
 // Allows for requesting older DOM building code (including bugs NOT fixed)

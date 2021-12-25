@@ -13,8 +13,8 @@
 #ifndef __LVIMAGESOURCE_H_INCLUDED__
 #define __LVIMAGESOURCE_H_INCLUDED__
 
-#include "lvcacheableobject.h"
-#include "lvref.h"
+#include <lvcacheableobject.h>
+#include <lvref.h>
 
 struct ldomNode;
 class LVStream;

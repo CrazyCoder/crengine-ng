@@ -13,7 +13,7 @@
 #ifndef __LVCACHEABLEOBJECT_H_INCLUDED__
 #define __LVCACHEABLEOBJECT_H_INCLUDED__
 
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 class CacheObjectListener {
 public:

@@ -13,7 +13,7 @@
 #ifndef __LV_STRING8COLLECTION_H_INCLUDED__
 #define __LV_STRING8COLLECTION_H_INCLUDED__
 
-#include "lvstring.h"
+#include <lvstring.h>
 
 /// collection of strings
 class lString8Collection

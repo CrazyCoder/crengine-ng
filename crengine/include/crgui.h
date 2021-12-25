@@ -20,17 +20,17 @@
 #ifndef CR_GUI_INCLUDED
 #define CR_GUI_INCLUDED
 
-#include "lvtypes.h"
-#include "lvstring.h"
-#include "lvptrvec.h"
-#include "lvdrawbuf.h"
-#include "lvdocview.h"
-#include "crskin.h"
+#include <lvtypes.h>
+#include <lvstring.h>
+#include <lvptrvec.h>
+#include <lvdrawbuf.h>
+#include <lvdocview.h>
+#include <crskin.h>
 
 #if (COLOR_BACKBUFFER==1)
-#include "lvcolordrawbuf.h"
+#include <lvcolordrawbuf.h>
 #else
-#include "lvgraydrawbuf.h"
+#include <lvgraydrawbuf.h>
 #endif
 
 #ifdef CR_WX_SUPPORT

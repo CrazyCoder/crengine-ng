@@ -1,5 +1,6 @@
-#include "../include/crtest.h"
-#include "../include/lvtinydom.h"
+#include <crtest.h>
+#include <lvtinydom.h>
+
 #include "chmfmt.h"
 #include "lvstream/lvnamedstream.h"
 

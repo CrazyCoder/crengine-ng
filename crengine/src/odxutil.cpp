@@ -10,8 +10,9 @@
     See LICENSE file for details.
 */
 
-#include "../include/fb2def.h"
-#include "../include/crlog.h"
+#include <fb2def.h>
+#include <crlog.h>
+
 #include "odxutil.h"
 
 ldomNode * docXMLreader::OnTagOpen( const lChar32 * nsname, const lChar32 * tagname)

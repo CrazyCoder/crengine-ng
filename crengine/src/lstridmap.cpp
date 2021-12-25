@@ -11,11 +11,10 @@
 
 *******************************************************/
 
-#include "../include/lvmemman.h"
-#include "../include/lstridmap.h"
-#include "../include/dtddef.h"
-#include "../include/lvtinydom.h"
-#include <string.h>
+#include <lstridmap.h>
+#include <lvmemman.h>
+#include <dtddef.h>
+#include <lvtinydom.h>
 
 LDOMNameIdMapItem::LDOMNameIdMapItem(lUInt16 _id, const lString32 & _value, const css_elem_def_props_t * _data)
     : id(_id), value(_value)

@@ -10,11 +10,10 @@
     See LICENSE file for details.
 */
 
-#include "../include/lvpagesplitter.h"
-#include "../include/lvtinydom.h"
-#include "../include/crlog.h"
-#include "../include/serialbuf.h"
-#include <time.h>
+#include <lvpagesplitter.h>
+#include <lvtinydom.h>
+#include <crlog.h>
+#include <serialbuf.h>
 
 // Uncomment for debugging page splitting algorithm:
 // #define DEBUG_PAGESPLIT

@@ -14,7 +14,7 @@
 #ifndef __LVJPEGIMAGESOURCE_H_INCLUDED__
 #define __LVJPEGIMAGESOURCE_H_INCLUDED__
 
-#include "crsetup.h"
+#include <crsetup.h>
 
 #if (USE_LIBJPEG==1)
 

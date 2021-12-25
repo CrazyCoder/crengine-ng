@@ -15,8 +15,9 @@
 #ifndef __LV_BITMAPFONTMAN_H_INCLUDED__
 #define __LV_BITMAPFONTMAN_H_INCLUDED__
 
-#include "crsetup.h"
-#include "lvfntman.h"
+#include <crsetup.h>
+#include <lvfntman.h>
+
 #include "lvfontcache.h"
 
 

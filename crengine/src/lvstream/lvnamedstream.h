@@ -21,7 +21,7 @@
 #ifndef __LVNAMEDSTREAM_H_INCLUDED__
 #define __LVNAMEDSTREAM_H_INCLUDED__
 
-#include "lvstream.h"
+#include <lvstream.h>
 
 class LVNamedStream : public LVStream
 {

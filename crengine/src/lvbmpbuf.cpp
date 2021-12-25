@@ -11,10 +11,7 @@
 
 *******************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "../include/lvbmpbuf.h"
+#include <lvbmpbuf.h>
 
 void lvdrawbufInit( draw_buf_t * buf, int bitsPerPixel, int width, int height, lUInt8 * data )
 {

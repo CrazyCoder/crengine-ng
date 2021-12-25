@@ -11,10 +11,11 @@
 
 *******************************************************/
 
+#include <lvfnt.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "lvfnt.h"
 
 #define MIN_FONT_SIZE 2048
 #define MAX_FONT_SIZE 0x100000

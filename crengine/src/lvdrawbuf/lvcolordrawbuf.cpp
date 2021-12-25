@@ -12,7 +12,8 @@
 
 *******************************************************/
 
-#include "lvcolordrawbuf.h"
+#include <lvcolordrawbuf.h>
+
 #include "lvimagescaleddrawcallback.h"
 #include "lvdrawbuf_utils.h"
 

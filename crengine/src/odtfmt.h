@@ -14,8 +14,8 @@
 #ifndef ODTFMT_H
 #define ODTFMT_H
 
-#include "../include/crsetup.h"
-#include "../include/lvtinydom.h"
+#include <crsetup.h>
+#include <lvtinydom.h>
 
 
 bool DetectOpenDocumentFormat( LVStreamRef stream );

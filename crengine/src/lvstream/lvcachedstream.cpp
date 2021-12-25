@@ -15,6 +15,8 @@
 #include "lvcachedstream.h"
 
 #include <stdio.h>
+#include <string.h>
+#include <assert.h>
 
 LVCachedStream::BufItem *LVCachedStream::addNewItem(int start)
 {

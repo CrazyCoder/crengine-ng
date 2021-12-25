@@ -16,8 +16,8 @@
 #define __LV_BASEFONT_H_INCLUDED__
 
 #include <stdlib.h>
-#include "crsetup.h"
-#include "lvfont.h"
+#include <crsetup.h>
+#include <lvfont.h>
 
 class LVDrawBuf;
 

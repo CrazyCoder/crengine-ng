@@ -16,8 +16,9 @@
 #define __FB2COVERPAGEPARSERCALLBACK_H_INCLUDED__
 
 #include "lvxmlparsercallback.h"
-#include "lvstring.h"
 #include "lvxmlutils.h"
+
+#include <lvstring.h>
 
 class FB2CoverpageParserCallback : public LVXMLParserCallback
 {

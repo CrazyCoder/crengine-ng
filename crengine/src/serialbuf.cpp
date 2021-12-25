@@ -11,7 +11,9 @@
 
 *******************************************************/
 
-#include "../include/serialbuf.h"
+#include <serialbuf.h>
+
+#include <string.h>
 
 /// serialization/deserialization buffer
 

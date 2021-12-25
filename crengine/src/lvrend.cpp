@@ -11,15 +11,17 @@
 
 *******************************************************/
 
+#include <lvrend.h>
+#include <lvtextfm.h>
+#include <lvtinydom.h>
+#include <fb2def.h>
+#include <crlog.h>
+
+#include "lvdrawbuf/lvinkmeasurementdrawbuf.h"
+#include "textlang.h"
+
 #include <stdlib.h>
 #include <string.h>
-#include "../include/lvtextfm.h"
-#include "../include/lvtinydom.h"
-#include "../include/fb2def.h"
-#include "../include/lvrend.h"
-#include "lvdrawbuf/lvinkmeasurementdrawbuf.h"
-#include "../include/crlog.h"
-#include "textlang.h"
 
 // Note about box model/sizing in crengine:
 // https://quirksmode.org/css/user-interface/boxsizing.html says:

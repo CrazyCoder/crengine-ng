@@ -11,25 +11,24 @@
 
  *******************************************************/
 
-#include "../include/crsetup.h"
-#include "../include/fb2def.h"
-#include "../include/lvdocview.h"
-#include "rtfimp.h"
+#include <lvdocview.h>
+#include <fb2def.h>
+#include <lvstyles.h>
+#include <lvrend.h>
+#include <lvstsheet.h>
+#include <crtxtenc.h>
+#include <crtrace.h>
+#include <lvcontaineriteminfo.h>
 
-#include "../include/lvstyles.h"
-#include "../include/lvrend.h"
-#include "../include/lvstsheet.h"
 #include "textlang.h"
 #include "lvdrawbuf/lvdrawstatesaver.h"
-#include "../include/lvcontaineriteminfo.h"
 #include "lvxml/lvxmlutils.h"
 #include "lvxml/lvhtmlparser.h"
 #include "lvxml/lvtextbookmarkparser.h"
 #include "lvxml/lvtextrobustparser.h"
 
+#include "rtfimp.h"
 #include "wolutil.h"
-#include "../include/crtxtenc.h"
-#include "../include/crtrace.h"
 #include "epubfmt.h"
 #include "chmfmt.h"
 #include "wordfmt.h"

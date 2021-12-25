@@ -20,8 +20,8 @@
 #ifndef __LVCOMMONCONTAINERITEMINFO_H_INCLUDED__
 #define __LVCOMMONCONTAINERITEMINFO_H_INCLUDED__
 
-#include "lvcontaineriteminfo.h"
-#include "lvstring.h"
+#include <lvcontaineriteminfo.h>
+#include <lvstring.h>
 
 class LVCommonContainerItemInfo : public LVContainerItemInfo
 {

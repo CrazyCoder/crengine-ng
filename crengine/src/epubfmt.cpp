@@ -1,7 +1,9 @@
 #include "epubfmt.h"
-#include "../include/crlog.h"
+
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include "streamproxy.h"
-#include "../include/lvstreamutils.h"
 #include "lvxml/lvxmlparser.h"
 #include "lvxml/lvhtmlparser.h"
 #include "lvxml/lvxmlutils.h"

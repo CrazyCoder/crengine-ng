@@ -12,9 +12,11 @@
 *******************************************************/
 
 #include "lvtextparser.h"
-#include "lvxmlparsercallback.h"
+
+#include <lvxmlparsercallback.h>
+#include <crlog.h>
+
 #include "lvtextlinequeue.h"
-#include "crlog.h"
 
 /// constructor
 LVTextParser::LVTextParser( LVStreamRef stream, LVXMLParserCallback * callback, bool isPreFormatted )

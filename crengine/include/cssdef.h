@@ -16,9 +16,9 @@
 #if !defined(__CSS_DEF_H_INCLUDED__)
 #define __CSS_DEF_H_INCLUDED__
 
-#include "lvtypes.h"
-#include "lvref.h"
-#include "lvstring.h"
+#include <lvtypes.h>
+#include <lvref.h>
+#include <lvstring.h>
 
 // The order of items in following enums should match the order in the tables in src/lvstsheet.cpp
 /// display property values

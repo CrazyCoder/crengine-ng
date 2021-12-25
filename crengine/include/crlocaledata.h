@@ -13,11 +13,11 @@
 #ifndef CRLOCALEDATA_H
 #define CRLOCALEDATA_H
 
-#include "crsetup.h"
+#include <crsetup.h>
 
 #if USE_LOCALE_DATA==1
 
-#include "lvstring.h"
+#include <lvstring.h>
 
 class CRLocaleData
 {

@@ -13,7 +13,7 @@
 #ifndef __LV_STRING32COLLECTION_H_INCLUDED__
 #define __LV_STRING32COLLECTION_H_INCLUDED__
 
-#include "lvstring.h"
+#include <lvstring.h>
 
 /// collection of wide strings
 class lString32Collection

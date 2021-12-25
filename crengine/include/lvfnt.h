@@ -39,7 +39,7 @@
 #ifndef __LVFNT_H_INCLUDED__
 #define __LVFNT_H_INCLUDED__
 
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 /// maximum font name length
 #define FONT_NAME_LENGTH       64
@@ -48,7 +48,7 @@
 
 #ifdef __cplusplus
 
-#include "hyphman.h"
+#include <hyphman.h>
 
 extern "C" {
 #endif

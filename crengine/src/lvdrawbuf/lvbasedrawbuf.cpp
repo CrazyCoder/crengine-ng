@@ -12,7 +12,7 @@
 
 *******************************************************/
 
-#include "lvbasedrawbuf.h"
+#include <lvbasedrawbuf.h>
 
 inline static lUInt32 AA(lUInt32 color) {
     return (color >> 24) & 0xFF;

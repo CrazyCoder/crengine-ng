@@ -15,12 +15,13 @@
 #ifndef __LV_FREETYPEFONTMAN_H_INCLUDED__
 #define __LV_FREETYPEFONTMAN_H_INCLUDED__
 
-#include "lvfntman.h"
-#include "lvthread.h"
+#include <lvfntman.h>
+#include <lvthread.h>
+#include <lvstring8collection.h>
+
 #include "lvfontglyphcache.h"
 #include "lvfontdef.h"
 #include "lvfontcache.h"
-#include "lvstring8collection.h"
 
 #if (DEBUG_FONT_MAN == 1)
 #include <stdio.h>

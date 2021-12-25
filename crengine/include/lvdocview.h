@@ -13,16 +13,16 @@
 #ifndef __LV_TEXT_VIEW_H_INCLUDED__
 #define __LV_TEXT_VIEW_H_INCLUDED__
 
-#include "crsetup.h"
-#include "crskin.h"
-#include "lvtinydom.h"
-#include "lvpagesplitter.h"
-#include "lvdrawbuf.h"
-#include "lvcolordrawbuf.h"
-#include "hist.h"
-#include "lvthread.h"
-#include "lvdocviewcmd.h"
-#include "lvdocviewprops.h"
+#include <crsetup.h>
+#include <crskin.h>
+#include <lvtinydom.h>
+#include <lvpagesplitter.h>
+#include <lvdrawbuf.h>
+#include <lvcolordrawbuf.h>
+#include <hist.h>
+#include <lvthread.h>
+#include <lvdocviewcmd.h>
+#include <lvdocviewprops.h>
 
 
 const lChar32 * getDocFormatName( doc_format_t fmt );

@@ -17,7 +17,8 @@
 #if (USE_LIBPNG==1)
 
 #include "lvimagedecodercallback.h"
-#include "crlog.h"
+
+#include <crlog.h>
 
 #include <png.h>
 

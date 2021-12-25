@@ -14,7 +14,7 @@
 #ifndef __LVGIFIMAGESOURCE_H_INCLUDED__
 #define __LVGIFIMAGESOURCE_H_INCLUDED__
 
-#include "crsetup.h"
+#include <crsetup.h>
 
 #if (USE_GIF==1)
 

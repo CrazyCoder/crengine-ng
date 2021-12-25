@@ -13,12 +13,8 @@
 #ifndef __LV_STRING_H_INCLUDED__
 #define __LV_STRING_H_INCLUDED__
 
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <climits>
-#include "lvtypes.h"
-#include "lvmemman.h"
+#include <lvtypes.h>
+#include <lvmemman.h>
 
 // (Note: some of these 0x have lowercase hex digit, to avoid
 // 'redefined' warnings as they are already defined in lowercase

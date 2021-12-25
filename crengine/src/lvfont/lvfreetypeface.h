@@ -16,13 +16,14 @@
 #define __LV_FREETYPEFACE_H_INCLUDED__
 
 
-#include "../../include/crsetup.h"
-#include "../../include/lvfont.h"
-#include "../../include/lvthread.h"
+#include <crsetup.h>
+#include <lvfont.h>
+#include <lvthread.h>
+#include <lvarray.h>
+
 #include "lvfontglyphcache.h"
 #include "lvfontdef.h"
 #include "lvfontcache.h"
-#include "lvarray.h"
 
 // define to filter out all fonts except .ttf
 //#define LOAD_TTF_FONTS_ONLY

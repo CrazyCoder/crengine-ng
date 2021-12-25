@@ -12,9 +12,9 @@
 #ifndef PROPS_H_INCLUDED
 #define PROPS_H_INCLUDED
 
-#include "lvstring.h"
-#include "lvptrvec.h"
-#include "lvref.h"
+#include <lvstring.h>
+#include <lvptrvec.h>
+#include <lvref.h>
 
 class CRPropAccessor;
 typedef LVFastRef<CRPropAccessor> CRPropRef;

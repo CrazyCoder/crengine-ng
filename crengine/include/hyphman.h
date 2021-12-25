@@ -15,10 +15,11 @@
 #ifndef _HYPHEN_
 #define _HYPHEN_
 
-#include "lvtypes.h"
-#include "lvstream.h"
-#include "lvhashtable.h"
-#include "lvptrvec.h"
+#include <lvtypes.h>
+#include <lvstring.h>
+#include <lvstream.h>
+#include <lvhashtable.h>
+#include <lvptrvec.h>
 
 #define WORD_LENGTH   2048
 //#define MAX_REAL_WORD 24

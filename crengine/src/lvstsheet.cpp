@@ -13,12 +13,13 @@
 
 *******************************************************/
 
-#include "../include/lvstsheet.h"
-#include "../include/lvtinydom.h"
-#include "../include/fb2def.h"
-#include "../include/lvstreamutils.h"
+#include <lvstsheet.h>
+#include <lvtinydom.h>
+#include <fb2def.h>
+#include <lvstreamutils.h>
+#include <lvrend.h>   // for -cr-only-if:
+
 #include "lvxml/lvxmlutils.h"
-#include "../include/lvrend.h"   // for -cr-only-if:
 #include "textlang.h"
 
 // define to dump all tokens

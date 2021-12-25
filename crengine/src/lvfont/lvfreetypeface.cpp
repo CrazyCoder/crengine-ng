@@ -14,25 +14,23 @@
 
 #include "lvfreetypeface.h"
 
-#include "lvfntman.h"
-#include "lvfnt.h"
-#include "lvtextfm.h"
-#include "crlog.h"
+#include <lvfntman.h>
+#include <lvfnt.h>
+#include <lvtextfm.h>
+#include <crlog.h>
+#include <lvstreamutils.h>
+#include <lvimg.h>
+
 #include "lvfontglyphcache.h"
 #include "lvfontdef.h"
 #include "lvfontcache.h"
-#include "lvstreamutils.h"
-#include "lvimg.h"
 #include "../textlang.h"
-
-
 #include "gammatbl.h"
-
 
 #if USE_LOCALE_DATA==1
 // fc-lang database
 #include "../locale_data/fc-lang-data.h"
-#include "crlocaledata.h"
+#include <crlocaledata.h>
 #endif
 
 #if COLOR_BACKBUFFER == 0

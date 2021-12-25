@@ -1,7 +1,7 @@
 #ifndef BOOKFORMATS_H
 #define BOOKFORMATS_H
 
-#include "lvstring.h"
+#include <lvstring.h>
 
 /// source document formats
 typedef enum {

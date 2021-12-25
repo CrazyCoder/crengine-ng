@@ -14,7 +14,8 @@
 #ifndef __LVUNPACKEDIMGSOURCE_H_INCLUDED__
 #define __LVUNPACKEDIMGSOURCE_H_INCLUDED__
 
-#include "lvimagesource.h"
+#include <lvimagesource.h>
+
 #include "lvimagedecodercallback.h"
 
 class LVUnpackedImgSource : public LVImageSource, public LVImageDecoderCallback

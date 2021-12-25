@@ -12,9 +12,10 @@
 
 */
 
-#include "lvfntman.h"
-#include "lvstyles.h"
-#include "crlog.h"
+#include <lvfntman.h>
+#include <lvstyles.h>
+#include <crlog.h>
+
 #include "lvfreetypefontman.h"
 #include "lvwin32fontman.h"
 #include "lvbitmapfontman.h"

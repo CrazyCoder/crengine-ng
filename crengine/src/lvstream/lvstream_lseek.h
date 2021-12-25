@@ -14,7 +14,7 @@
 #ifndef __LVSTREAM_LSEEK_H_INCLUDED__
 #define __LVSTREAM_LSEEK_H_INCLUDED__
 
-#include "lvstream_types.h"
+#include <lvstream_types.h>
 
 #if !defined(__SYMBIAN32__) && defined(_WIN32)
 #include <io.h>

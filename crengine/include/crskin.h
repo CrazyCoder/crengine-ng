@@ -20,14 +20,14 @@
 #ifndef CR_SKIN_INCLUDED
 #define CR_SKIN_INCLUDED
 
-#include "lvtypes.h"
-#include "lvptrvec.h"
-#include "lvref.h"
-#include "lvstring.h"
-#include "crlog.h"
-#include "lvfntman.h"
-#include "lvdrawbuf.h"
-#include "lvtinydom.h"
+#include <lvtypes.h>
+#include <lvptrvec.h>
+#include <lvref.h>
+#include <lvstring.h>
+#include <crlog.h>
+#include <lvfntman.h>
+#include <lvdrawbuf.h>
+#include <lvtinydom.h>
 
 
 // Vertical alignment flags

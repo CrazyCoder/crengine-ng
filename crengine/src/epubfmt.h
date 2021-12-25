@@ -1,8 +1,8 @@
 #ifndef EPUBFMT_H
 #define EPUBFMT_H
 
-#include "../include/crsetup.h"
-#include "../include/lvtinydom.h"
+#include <crsetup.h>
+#include <lvtinydom.h>
 
 // That's how many meta nodes we parse before giving up
 #define EPUB_META_MAX_ITER 50U

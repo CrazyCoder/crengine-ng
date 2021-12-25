@@ -11,12 +11,14 @@
 */
 
 #include "docxfmt.h"
-#include "../include/lvtinydom.h"
-#include "../include/fb2def.h"
+
+#include <lvtinydom.h>
+#include <fb2def.h>
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include "lvopc.h"
-#include "../include/lvstreamutils.h"
 #include "lvxml/lvhtmlparser.h"
-#include "../include/crlog.h"
 #include "odxutil.h"
 
 #define DOCX_TAG_NAME(itm) docx_el_##itm##_name

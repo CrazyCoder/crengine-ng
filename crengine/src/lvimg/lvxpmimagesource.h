@@ -14,7 +14,7 @@
 #ifndef __LVXPMIMAGESOURCE_H_INCLUDED__
 #define __LVXPMIMAGESOURCE_H_INCLUDED__
 
-#include "lvimagesource.h"
+#include <lvimagesource.h>
 
 class LVXPMImageSource : public LVImageSource
 {

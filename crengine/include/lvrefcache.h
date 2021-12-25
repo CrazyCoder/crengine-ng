@@ -15,9 +15,9 @@
 #if !defined(__LV_REF_CACHE_H_INCLUDED__)
 #define __LV_REF_CACHE_H_INCLUDED__
 
-#include "lvmemman.h"
-#include "lvref.h"
-#include "lvarray.h"
+#include <lvmemman.h>
+#include <lvref.h>
+#include <lvarray.h>
 
 /*
     Object cache

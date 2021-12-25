@@ -14,11 +14,11 @@
 #ifndef __LVGIFFRAME_H_INCLUDED__
 #define __LVGIFFRAME_H_INCLUDED__
 
-#include "crsetup.h"
+#include <crsetup.h>
 
 #if (USE_GIF==1)
 
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 class LVGifImageSource;
 class LVImageDecoderCallback;

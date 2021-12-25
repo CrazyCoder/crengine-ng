@@ -11,16 +11,11 @@
 
 *******************************************************/
 
-#include "../include/lvstring.h"
+#include <lvstring.h>
 
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <stdio.h>
-#include <stddef.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <time.h>
 
 #if !defined(__SYMBIAN32__) && defined(_WIN32)
 extern "C" {
@@ -29,7 +24,7 @@ extern "C" {
 #endif
 
 #if (USE_ZLIB==1)
-#include <zlib.h>
+#include <zlib.h>   // crc32()
 #endif
 
 #if (USE_UTF8PROC==1)

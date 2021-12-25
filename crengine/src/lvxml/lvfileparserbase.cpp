@@ -12,8 +12,9 @@
 *******************************************************/
 
 #include "lvfileparserbase.h"
-#include "lvdocviewcallback.h"
-#include "crlog.h"
+
+#include <lvdocviewcallback.h>
+#include <crlog.h>
 
 #include <time.h>
 

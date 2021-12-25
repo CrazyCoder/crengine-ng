@@ -14,7 +14,7 @@
 #ifndef CRSETUP_H_INCLUDED
 #define CRSETUP_H_INCLUDED
 
-#include "crengine-ng-config.h"
+#include <crengine-ng-config.h>
 
 //==================================================
 // Linux/Unix/MacOS/Android

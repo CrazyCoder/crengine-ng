@@ -9,12 +9,13 @@
     See LICENSE file for details
 */
 
-#include "../include/lvtinydom.h"
-#include "../include/hist.h"
-#include "../include/lvstreamutils.h"
+#include <lvtinydom.h>
+#include <hist.h>
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include "lvxml/lvxmlparser.h"
 #include "lvxml/lvxmlutils.h"
-#include "../include/crlog.h"
 
 void CRFileHist::clear()
 {

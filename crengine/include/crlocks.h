@@ -1,7 +1,7 @@
 #ifndef CRLOCKS_H
 #define CRLOCKS_H
 
-#include "lvautoptr.h"
+#include <lvautoptr.h>
 
 class CRMutex {
 public:

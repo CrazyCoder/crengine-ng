@@ -1,11 +1,9 @@
 #ifndef CRCONCURRENT_H
 #define CRCONCURRENT_H
 
-#include "crlocks.h"
-
-
-#include "lvref.h"
-#include "lvqueue.h"
+#include <crlocks.h>
+#include <lvref.h>
+#include <lvqueue.h>
 
 
 enum {

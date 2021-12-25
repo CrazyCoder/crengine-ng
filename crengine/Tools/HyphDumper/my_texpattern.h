@@ -4,8 +4,8 @@
 #ifndef MY_TEXPATTERN_H
 #define MY_TEXPATTERN_H
 
-#include "lvtypes.h"
-#include "lvstring.h"
+#include <lvtypes.h>
+#include <lvstring.h>
 
 #define MAX_PATTERN_SIZE  35
 #define PATTERN_HASH_SIZE 16384

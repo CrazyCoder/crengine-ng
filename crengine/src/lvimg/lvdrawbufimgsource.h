@@ -14,7 +14,7 @@
 #ifndef __LVDRAWBUFIMGSOURCE_H_INCLUDED__
 #define __LVDRAWBUFIMGSOURCE_H_INCLUDED__
 
-#include "lvimagesource.h"
+#include <lvimagesource.h>
 
 class LVImageDecoderCallback;
 class LVColorDrawBuf;

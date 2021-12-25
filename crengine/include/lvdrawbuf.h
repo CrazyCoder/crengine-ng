@@ -14,6 +14,9 @@
 #ifndef __LVDRAWBUF_H_INCLUDED__
 #define __LVDRAWBUF_H_INCLUDED__
 
+#include <lvcacheableobject.h>
+#include <lvimagesource.h>
+
 #if !defined(__SYMBIAN32__) && defined(_WIN32) && !defined(QT_GL)
 extern "C" {
 #include <windows.h>
@@ -23,8 +26,6 @@ extern "C" {
 #include <w32std.h>
 #endif
 
-#include "lvcacheableobject.h"
-#include "lvimagesource.h"
 
 enum cr_rotate_angle_t {
     CR_ROTATE_ANGLE_0 = 0,

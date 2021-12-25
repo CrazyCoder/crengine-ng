@@ -1,4 +1,4 @@
-﻿/*******************************************************
+/*******************************************************
 
    CoolReader Engine C-compatible API
 
@@ -11,22 +11,19 @@
 
 *******************************************************/
 
+
+#include <lvtextfm.h>
+#include <lvfnt.h>
+#include <lvdrawbuf.h>
+#include <fb2def.h>
+#include <lvtinydom.h>
+#include <lvrend.h>
+
+#include "textlang.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-
-#include "../include/crsetup.h"
-#include "../include/lvfnt.h"
-#include "../include/lvtextfm.h"
-#include "../include/lvdrawbuf.h"
-#include "../include/fb2def.h"
-
-#ifdef __cplusplus
-#include "../include/lvtinydom.h"
-#include "../include/lvrend.h"
-#include "textlang.h"
-#endif
 
 #if USE_HARFBUZZ==1
 #include <hb.h>

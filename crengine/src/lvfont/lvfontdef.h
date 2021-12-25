@@ -15,11 +15,11 @@
 #ifndef __LV_FONTDEF_H_INCLUDED__
 #define __LV_FONTDEF_H_INCLUDED__
 
-#include "crsetup.h"
-#include "lvfont.h"
-#include "lvstring.h"
-#include "cssdef.h"
-#include "lvarray.h"
+#include <crsetup.h>
+#include <lvfont.h>
+#include <lvstring.h>
+#include <cssdef.h>
+#include <lvarray.h>
 
 // LVFontDef carries a font definition, and can be used to identify:
 // - registered fonts, from available font files (size=-1 if scalable)

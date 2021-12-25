@@ -13,7 +13,8 @@
 *******************************************************/
 
 #include "lvcolortransformimgsource.h"
-#include "lvcolordrawbuf.h"
+
+#include <lvcolordrawbuf.h>
 
 static inline lUInt32 limit256(int n) {
     if (n < 0)

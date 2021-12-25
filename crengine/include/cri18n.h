@@ -17,9 +17,9 @@
 #include <libintl.h>
 #endif
 
-#include "lvstring.h"
-#include "lvptrvec.h"
-#include "lvhashtable.h"
+#include <lvstring.h>
+#include <lvptrvec.h>
+#include <lvhashtable.h>
 
 /// i18n interface
 class CRI18NTranslator

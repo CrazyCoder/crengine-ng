@@ -17,7 +17,9 @@
 #if (USE_LIBJPEG==1)
 
 #include "lvimagedecodercallback.h"
-#include "crlog.h"
+#include <crlog.h>
+
+#include <string.h>
 
 #if !defined(HAVE_WXJPEG_BOOLEAN)
 typedef boolean wxjpeg_boolean;

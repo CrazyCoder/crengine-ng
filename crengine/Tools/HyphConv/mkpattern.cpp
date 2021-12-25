@@ -1,8 +1,9 @@
 // mkpattern.cpp -- convertor of TeX hyphenation files to FBReader format
 // (c) Vadim Lopatin, 2011
 
-#include <stdlib.h>
 #include <crengine.h>
+
+#include <stdlib.h>
 
 class Convertor {
     FILE * out;

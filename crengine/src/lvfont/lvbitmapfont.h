@@ -15,11 +15,13 @@
 #ifndef __LV_BITMAPFONT_H_INCLUDED__
 #define __LV_BITMAPFONT_H_INCLUDED__
 
-#include <stdlib.h>
-#include "crsetup.h"
-#include "lvfnt.h"
+#include <crsetup.h>
+#include <lvfnt.h>
+
 #include "lvbasefont.h"
 #include "lvfontcache.h"
+
+#include <stdlib.h>
 
 #if (USE_FREETYPE != 1) && (USE_BITMAP_FONTS == 1)
 

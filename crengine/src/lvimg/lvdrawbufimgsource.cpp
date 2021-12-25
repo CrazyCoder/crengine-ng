@@ -14,7 +14,7 @@
 
 #include "lvdrawbufimgsource.h"
 #include "lvimagedecodercallback.h"
-#include "lvcolordrawbuf.h"
+#include <lvcolordrawbuf.h>
 
 // lvdrawbuff private stuff
 #include "../lvdrawbuf/lvdrawbuf_utils.h"

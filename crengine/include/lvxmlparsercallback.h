@@ -15,8 +15,8 @@
 #ifndef __LVXMLPARSERCALLBACK_H_INCLUDED__
 #define __LVXMLPARSERCALLBACK_H_INCLUDED__
 
-#include "lvtypes.h"
-#include "lvstring.h"
+#include <lvtypes.h>
+#include <lvstring.h>
 
 class LVFileFormatParser;
 struct ldomNode;

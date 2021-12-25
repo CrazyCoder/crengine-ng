@@ -9,9 +9,10 @@
     See LICENSE file for details
 */
 
-#include "../include/props.h"
-#include "../include/serialbuf.h"
-#include "../include/lvstreamutils.h"
+#include <props.h>
+#include <serialbuf.h>
+#include <lvstreamutils.h>
+
 #include <stdio.h>
 
 

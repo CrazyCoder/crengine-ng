@@ -26,12 +26,13 @@
 #ifndef __LVSTREAM_H_INCLUDED__
 #define __LVSTREAM_H_INCLUDED__
 
-#include "lvtypes.h"
-#include "lvref.h"
-#include "lvstring.h"
-#include "lvarray.h"
-#include "crtimerutil.h"
-#include "lvstorageobject.h"
+#include <lvtypes.h>
+#include <lvstream_types.h>
+#include <lvref.h>
+#include <lvstring.h>
+#include <lvarray.h>
+#include <crtimerutil.h>
+#include <lvstorageobject.h>
 
 #define LVOM_MASK 7
 #define LVOM_FLAG_SYNC 0x10

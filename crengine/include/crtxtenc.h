@@ -13,9 +13,10 @@
 #ifndef __CRTXTENC_H_INCLUDED__
 #define __CRTXTENC_H_INCLUDED__
 
-#include "lvtypes.h"
+#include <lvtypes.h>
+#include <lvstring.h>
+
 #include <stdio.h>
-#include "lvstring.h"
 
 #ifndef GBK_ENCODING_SUPPORT
 #define GBK_ENCODING_SUPPORT 1

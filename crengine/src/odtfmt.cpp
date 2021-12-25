@@ -11,13 +11,15 @@
 */
 
 #include "odtfmt.h"
-#include "../include/lvtinydom.h"
-#include "../include/fb2def.h"
+
+#include <lvtinydom.h>
+#include <fb2def.h>
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include "lvopc.h"
-#include "../include/lvstreamutils.h"
 #include "lvxml/lvxmlparser.h"
 #include "lvxml/lvxmlutils.h"
-#include "../include/crlog.h"
 #include "odxutil.h"
 
 // If you add new element - update odt_elements_mapping table below

@@ -14,7 +14,7 @@
 #ifndef __LVSVGIMAGESOURCE_H_INCLUDED__
 #define __LVSVGIMAGESOURCE_H_INCLUDED__
 
-#include "crsetup.h"
+#include <crsetup.h>
 
 #if (USE_NANOSVG==1)
 

@@ -10,7 +10,7 @@
 #ifndef LVSTREAM_TYPES_H_INCLUDED
 #define LVSTREAM_TYPES_H_INCLUDED
 
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 #if LVLONG_FILE_SUPPORT == 1
 typedef   lUInt64   lvsize_t;    ///< file size type

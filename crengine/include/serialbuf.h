@@ -13,8 +13,8 @@
 #ifndef __LV_SERIALBUF_H_INCLUDED__
 #define __LV_SERIALBUF_H_INCLUDED__
 
-#include "lvtypes.h"
-#include "lvstring.h"
+#include <lvtypes.h>
+#include <lvstring.h>
 
 /// serialization/deserialization buffer
 class SerialBuf

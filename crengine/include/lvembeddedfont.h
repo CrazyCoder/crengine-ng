@@ -15,9 +15,9 @@
 #ifndef __LV_EMBEDDEDFONT_H_INCLUDED__
 #define __LV_EMBEDDEDFONT_H_INCLUDED__
 
-#include "crsetup.h"
-#include "lvstring.h"
-#include "lvptrvec.h"
+#include <crsetup.h>
+#include <lvstring.h>
+#include <lvptrvec.h>
 
 class SerialBuf;
 

@@ -44,9 +44,9 @@
 #ifndef __LVSTSHEET_H_INCLUDED__
 #define __LVSTSHEET_H_INCLUDED__
 
-#include "cssdef.h"
-#include "lvstyles.h"
-#include "lvptrvec.h"
+#include <cssdef.h>
+#include <lvstyles.h>
+#include <lvptrvec.h>
 
 class lxmlDocBase;
 struct ldomNode;

@@ -15,11 +15,11 @@
 #ifndef __LV_FONT_H_INCLUDED__
 #define __LV_FONT_H_INCLUDED__
 
-#include "crsetup.h"
-#include "lvstring.h"
-#include "lvref.h"
-#include "lvdrawbuf.h"
-#include "cssdef.h"
+#include <crsetup.h>
+#include <lvstring.h>
+#include <lvref.h>
+#include <lvdrawbuf.h>
+#include <cssdef.h>
 
 #define MAX_LINE_CHARS 2048
 #define MAX_LINE_WIDTH 2048

@@ -20,10 +20,10 @@
 *******************************************************/
 
 #include "lvfilemappedstream.h"
-#include "lvstreamutils.h"
-#include "lvstream_lseek.h"
-#include "crlog.h"
+#include <lvstreamutils.h>
+#include <crlog.h>
 
+#include <string.h>
 #if !defined(__SYMBIAN32__) && defined(_WIN32)
 extern "C" {
 #include <windows.h>
@@ -38,6 +38,8 @@ extern "C" {
 #include <sys/mman.h>
 #include <errno.h>
 #endif
+
+#include "lvstream_lseek.h"
 
 LVStreamBufferRef LVFileMappedStream::GetReadBuffer(lvpos_t pos, lvpos_t size)
 {

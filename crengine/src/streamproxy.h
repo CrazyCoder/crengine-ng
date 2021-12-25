@@ -21,7 +21,7 @@
 #ifndef __STREAMPROXY_H_INCLUDED__
 #define __STREAMPROXY_H_INCLUDED__
 
-#include "lvstream.h"
+#include <lvstream.h>
 
 /// base proxy class for streams: redirects all calls to base stream
 class StreamProxy : public LVStream {

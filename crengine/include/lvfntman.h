@@ -15,13 +15,12 @@
 #ifndef __LV_FNT_MAN_H_INCLUDED__
 #define __LV_FNT_MAN_H_INCLUDED__
 
-#include <stdlib.h>
-#include "crsetup.h"
-#include "lvstring.h"
-#include "lvstring32collection.h"
-#include "lvfont.h"
-#include "lvarray.h"
-#include "lvcontainer.h"
+#include <crsetup.h>
+#include <lvstring.h>
+#include <lvstring32collection.h>
+#include <lvfont.h>
+#include <lvarray.h>
+#include <lvcontainer.h>
 
 /// font manager interface class
 class LVFontManager {

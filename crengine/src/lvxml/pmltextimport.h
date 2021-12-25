@@ -15,7 +15,7 @@
 #ifndef __PMLTEXTIMPORT_H_INCLUDED__
 #define __PMLTEXTIMPORT_H_INCLUDED__
 
-#include "lvstring.h"
+#include <lvstring.h>
 
 class LVXMLParserCallback;
 

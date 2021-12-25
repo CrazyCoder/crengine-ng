@@ -15,8 +15,10 @@
 #define __LV_MEM_MAN_H_INCLUDED__
 
 
-#include "crsetup.h"
-#include "lvtypes.h"
+#include <crsetup.h>
+#include <lvtypes.h>
+
+#include <stdlib.h>
 
 #define CR_FATAL_ERROR_UNKNOWN             -1
 #define CR_FATAL_ERROR_INDEX_OUT_OF_BOUND   1

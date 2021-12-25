@@ -14,7 +14,8 @@
 #ifndef __LVCOLORTRANSFORMIMGSOURCE_H_INCLUDED__
 #define __LVCOLORTRANSFORMIMGSOURCE_H_INCLUDED__
 
-#include "lvimagesource.h"
+#include <lvimagesource.h>
+
 #include "lvimagedecodercallback.h"
 
 class LVColorDrawBuf;

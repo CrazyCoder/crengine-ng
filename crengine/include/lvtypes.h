@@ -10,8 +10,9 @@
 #ifndef LVTYPES_H_INCLUDED
 #define LVTYPES_H_INCLUDED
 
-#include <stdlib.h>
-#include "crsetup.h"
+#include <crsetup.h>
+
+#include <stddef.h>
 
 #ifdef _WIN32
 typedef long lInt32;            ///< signed 32 bit int

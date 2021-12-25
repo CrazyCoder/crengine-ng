@@ -11,7 +11,7 @@
 
 *******************************************************/
 
-#include "../include/lvstring32collection.h"
+#include <lvstring32collection.h>
 
 void lString32Collection::reserve(int space)
 {

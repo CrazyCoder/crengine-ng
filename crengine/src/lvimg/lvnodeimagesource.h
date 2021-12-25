@@ -14,8 +14,8 @@
 #ifndef __LVNODEIMAGESOURCE_H_INCLUDED__
 #define __LVNODEIMAGESOURCE_H_INCLUDED__
 
-#include "lvimagesource.h"
-#include "lvstream.h"
+#include <lvimagesource.h>
+#include <lvstream.h>
 
 struct ldomNode;
 

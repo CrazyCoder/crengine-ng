@@ -15,9 +15,9 @@
 #ifndef __LVTEXTFM_H_INCLUDED__
 #define __LVTEXTFM_H_INCLUDED__
 
-#include "lvfont.h"
-#include "lvstring32collection.h"
-#include "lvbmpbuf.h"
+#include <lvfont.h>
+#include <lvstring32collection.h>
+#include <lvbmpbuf.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -16,9 +16,7 @@
 #ifndef __LVARRAY_H_INCLUDED__
 #define __LVARRAY_H_INCLUDED__
 
-#include <stdlib.h>
-#include <assert.h>
-#include "lvref.h"
+#include <lvref.h>
 
 /** \brief template which implements vector of pointer
 

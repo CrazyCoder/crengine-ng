@@ -17,7 +17,9 @@
 
 #ifdef LINUX
 
-#include "lvdrawbuf.h"
+#include <lvdrawbuf.h>
+
+#include <X11/Xlib.h>
 
 /**
     \brief RGB offscreen image for X Window System

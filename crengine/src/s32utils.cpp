@@ -14,14 +14,13 @@
 
 // lvfonttest.cpp
 
-#include "../include/crsetup.h"
+#include <crsetup.h>
+
 #ifdef __SYMBIAN32__
 
-#include <e32base.h>
-#include <w32std.h>
+#include "s32utils.h"
 
-#include "../include/s32utils.h"
-#include "../include/lvstream.h"
+#include <lvstream.h>
 
 
 void DrawBuf2DC(CWindowGc &dc, int x, int y, LVDrawBuf * buf, unsigned long * palette, int scale )
@@ -74,4 +73,4 @@ void DrawBuf2DC(CWindowGc &dc, int x, int y, LVDrawBuf * buf, unsigned long * pa
 		delete offScreenBitmap;
 }
 
-#endif
+#endif	// __SYMBIAN32__

@@ -20,7 +20,8 @@
 #ifndef __LVFILESTREAM_H_INCLUDED__
 #define __LVFILESTREAM_H_INCLUDED__
 
-#include "crsetup.h"
+#include <crsetup.h>
+
 #include "lvnamedstream.h"
 #include "lvstream_types.h"
 

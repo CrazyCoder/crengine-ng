@@ -14,7 +14,7 @@
 #ifndef __LVCOLORDRAWBUF_H_INCLUDED__
 #define __LVCOLORDRAWBUF_H_INCLUDED__
 
-#include "lvbasedrawbuf.h"
+#include <lvbasedrawbuf.h>
 
 /// 16/32-bit RGB buffer
 class LVColorDrawBuf : public LVBaseDrawBuf

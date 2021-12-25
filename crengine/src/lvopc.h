@@ -14,10 +14,10 @@
 #ifndef LVOPC_H
 #define LVOPC_H
 
-#include "lvstream.h"
-#include "lvcontainer.h"
-#include "lvhashtable.h"
-#include "props.h"
+#include <lvstream.h>
+#include <lvcontainer.h>
+#include <lvhashtable.h>
+#include <props.h>
 
 /*
  * Open Packaging Conventions (OPC)

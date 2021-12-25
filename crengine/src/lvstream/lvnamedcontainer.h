@@ -20,9 +20,10 @@
 #ifndef __LVNAMEDCONTAINER_H_INCLUDED__
 #define __LVNAMEDCONTAINER_H_INCLUDED__
 
-#include "lvcontainer.h"
+#include <lvcontainer.h>
+#include <lvptrvec.h>
+
 #include "lvcommoncontaineriteminfo.h"
-#include "lvptrvec.h"
 
 class LVNamedContainer : public LVContainer
 {

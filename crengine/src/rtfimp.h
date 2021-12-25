@@ -13,8 +13,10 @@
 #ifndef RTFIMP_H_INCLUDED
 #define RTFIMP_H_INCLUDED
 
+#include <crtxtenc.h>
+
 #include "lvxml/lvfileparserbase.h"
-#include "crtxtenc.h"
+
 #include <string.h>
 
 #define PARAM_VALUE_NONE 0x7FFFFFFF

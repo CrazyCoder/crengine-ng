@@ -15,7 +15,8 @@
 #define __CRNINEPATCHDECODER_H_INCLUDED__
 
 #include "lvimagedecodercallback.h"
-#include "lvimagesource.h"
+
+#include <lvimagesource.h>
 
 class CRNinePatchDecoder : public LVImageDecoderCallback {
     int _dx;

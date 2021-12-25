@@ -12,8 +12,10 @@
 
 *******************************************************/
 
-#include "lvstreamutils.h"
-#include "lvassetcontainerfactory.h"
+#include <lvstreamutils.h>
+#include <lvassetcontainerfactory.h>
+#include <crlog.h>
+
 #include "lvfilestream.h"
 #include "lvmemorystream.h"
 #include "lvcachedstream.h"
@@ -21,7 +23,6 @@
 #include "lvtcrstream.h"
 #include "lvfilemappedstream.h"
 #include "lvblockwritestream.h"
-#include "crlog.h"
 
 #if (USE_ZLIB==1)
 #include "lvziparc.h"

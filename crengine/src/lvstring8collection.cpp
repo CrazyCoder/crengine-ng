@@ -11,7 +11,7 @@
 
 *******************************************************/
 
-#include "../include/lvstring8collection.h"
+#include <lvstring8collection.h>
 
 void lString8Collection::split( const lString8 & str, const lString8 & delimiter )
 {

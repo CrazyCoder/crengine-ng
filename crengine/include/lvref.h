@@ -13,10 +13,10 @@
 #ifndef __LVREF_H_INCLUDED__
 #define __LVREF_H_INCLUDED__
 
-#include "lvtypes.h"
-#include "lvmemman.h"
-#include "crlocks.h"
-#include "lvautoptr.h"
+#include <lvtypes.h>
+#include <lvmemman.h>
+#include <crlocks.h>
+#include <lvautoptr.h>
 
 /// Memory manager pool for ref counting
 /**

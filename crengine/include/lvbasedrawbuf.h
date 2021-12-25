@@ -14,7 +14,7 @@
 #ifndef __LVBASEDRAWBUF_H_INCLUDED__
 #define __LVBASEDRAWBUF_H_INCLUDED__
 
-#include "lvdrawbuf.h"
+#include <lvdrawbuf.h>
 
 /// LVDrawBufferBase
 class LVBaseDrawBuf : public LVDrawBuf

@@ -11,10 +11,12 @@
 
 *******************************************************/
 
-#include "../include/crtxtenc.h"
-#include "../include/lvstring.h"
+#include <crtxtenc.h>
+#include <lvstring.h>
+#include <crlog.h>
+
 #include "cp_stats.h"
-#include "../include/crlog.h"
+
 #include <string.h>
 #include <stdio.h>
 

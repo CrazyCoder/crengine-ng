@@ -14,7 +14,8 @@
 #ifndef __LVALPHATRANSFORMIMGSOURCE_H_INCLUDED__
 #define __LVALPHATRANSFORMIMGSOURCE_H_INCLUDED__
 
-#include "lvimagesource.h"
+#include <lvimagesource.h>
+
 #include "lvimagedecodercallback.h"
 
 class LVAlphaTransformImgSource : public LVImageSource, public LVImageDecoderCallback

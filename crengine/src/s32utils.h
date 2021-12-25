@@ -17,8 +17,8 @@
 
 #ifdef __SYMBIAN32__
 
-#include "lvfnt.h"
-#include "lvdrawbuf.h"
+#include <lvfnt.h>
+#include <lvdrawbuf.h>
 
 #include <e32base.h>
 #include <w32std.h>

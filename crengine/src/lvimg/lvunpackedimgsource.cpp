@@ -13,7 +13,8 @@
 *******************************************************/
 
 #include "lvunpackedimgsource.h"
-#include "lvarray.h"
+
+#include <lvarray.h>
 
 // lvdrawbuff private stuff
 #include "../lvdrawbuf/lvdrawbuf_utils.h"

@@ -1,7 +1,7 @@
 #ifndef __LVINKMEASUREMENTDRAWBUF_H_INCLUDED__
 #define __LVINKMEASUREMENTDRAWBUF_H_INCLUDED__
 
-#include "lvbasedrawbuf.h"
+#include <lvbasedrawbuf.h>
 
 /// Ink measurement buffer
 class LVInkMeasurementDrawBuf : public LVBaseDrawBuf

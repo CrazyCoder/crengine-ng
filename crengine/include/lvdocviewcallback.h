@@ -14,8 +14,8 @@
 #ifndef __LVDOCVIEWCALLBACK_H_INCLUDED__
 #define __LVDOCVIEWCALLBACK_H_INCLUDED__
 
-#include "lvtypes.h"
-#include "bookformats.h"
+#include <lvtypes.h>
+#include <bookformats.h>
 
 struct ldomNode;
 

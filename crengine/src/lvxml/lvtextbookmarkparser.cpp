@@ -12,7 +12,8 @@
 *******************************************************/
 
 #include "lvtextbookmarkparser.h"
-#include "lvxmlparsercallback.h"
+
+#include <lvxmlparsercallback.h>
 
 static bool extractItem( lString32 & dst, const lString32 & src, const char * prefix )
 {

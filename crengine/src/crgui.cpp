@@ -10,12 +10,14 @@
 
 *******************************************************/
 
+#include <crgui.h>
+#include <crtrace.h>
+#include <lvstreamutils.h>
+
+#include "lvdrawbuf/lvdrawstatesaver.h"
+
 #include <stdlib.h>
 //include <unistd.h>      /* pause() */
-#include "../include/crgui.h"
-#include "../include/crtrace.h"
-#include "lvdrawbuf/lvdrawstatesaver.h"
-#include "../include/lvstreamutils.h"
 
 //TODO: place to skin file
 #define ITEM_MARGIN 8

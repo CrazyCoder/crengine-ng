@@ -4,15 +4,16 @@
 #include "my_texhyph.h"
 #include "my_hyphpatternreader.h"
 
+#include <lvfnt.h>
+#include <lvstring.h>
+#include <lvstring32collection.h>
+#include <lvstreamutils.h>
+#include <crlog.h>
+
+#include "../../src/lvxml/lvxmlparser.h"
+
 #include <string.h>
 #include <stdlib.h>
-
-#include "lvfnt.h"
-#include "lvstring.h"
-#include "lvstring32collection.h"
-#include "lvstreamutils.h"
-#include "../../src/lvxml/lvxmlparser.h"
-#include "crlog.h"
 
 //#define DUMP_PATTERNS 1
 

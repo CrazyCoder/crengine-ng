@@ -15,7 +15,8 @@
 #define __LVTEXTFILEBASE_H_INCLUDED__
 
 #include "lvfileparserbase.h"
-#include "crtxtenc.h"
+
+#include <crtxtenc.h>
 
 #define XML_CHAR_BUFFER_SIZE 4096
 #define LINE_HAS_EOLN 1

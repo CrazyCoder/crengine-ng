@@ -12,7 +12,7 @@
 
 */
 
-#include "lvfont.h"
+#include <lvfont.h>
 
 /**
  * Max width of -/./,/!/? to use for visial alignment by width

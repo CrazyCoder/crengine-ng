@@ -13,6 +13,12 @@
 
 #include "lvtextfilebase.h"
 
+#include <crlog.h>
+#include <string.h>
+
+#include "lvxmlutils.h"
+
+
 typedef struct {
    unsigned short indx; /* index into big table */
    unsigned short used; /* bitmask of used entries */
@@ -35,9 +41,6 @@ typedef unsigned int ucs4_t;
 #if EUC_KR_ENCODING_SUPPORT == 1
 #include "../encodings/ksc5601.h"
 #endif
-
-#include "lvxmlutils.h"
-#include "crlog.h"
 
 #define MIN_BUF_DATA_SIZE 4096
 #define CP_AUTODETECT_BUF_SIZE 0x20000

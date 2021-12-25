@@ -21,8 +21,8 @@
 #ifndef __LVASSETCONTAINERFACTORY_H_INCLUDED__
 #define __LVASSETCONTAINERFACTORY_H_INCLUDED__
 
-#include "lvstream.h"
-#include "lvcontainer.h"
+#include <lvstream.h>
+#include <lvcontainer.h>
 
 /// factory to handle filesystem access for paths started with ASSET_PATH_PREFIX (@ sign)
 class LVAssetContainerFactory {

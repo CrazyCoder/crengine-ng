@@ -13,7 +13,7 @@
 #ifndef __LVZIPARC_H_INCLUDED__
 #define __LVZIPARC_H_INCLUDED__
 
-#include "crsetup.h"
+#include <crsetup.h>
 
 #if (USE_ZLIB==1)
 

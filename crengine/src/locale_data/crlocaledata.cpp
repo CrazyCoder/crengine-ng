@@ -10,11 +10,11 @@
 
  ***************************************************************************/
 
-#include "crlocaledata.h"
+#include <crlocaledata.h>
 
 #if USE_LOCALE_DATA==1
 
-#include "lvstring8collection.h"
+#include <lvstring8collection.h>
 
 #include "iso-639-2_data.c"
 #include "iso-639-3_data.c"

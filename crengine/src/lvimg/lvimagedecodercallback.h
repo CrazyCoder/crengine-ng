@@ -13,7 +13,7 @@
 #ifndef __LVIMAGEDECODERCALLBACK_H_INCLUDED__
 #define __LVIMAGEDECODERCALLBACK_H_INCLUDED__
 
-#include "lvtypes.h"
+#include <lvtypes.h>
 
 class LVImageSource;
 

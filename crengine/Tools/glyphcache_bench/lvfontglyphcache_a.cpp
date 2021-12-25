@@ -14,9 +14,11 @@
 
 // This file contains copy of class LVFontLocalGlyphCacheA from cr3.2.31
 
-#include "lvfontglyphcache_a.h"
-#include "../../include/crlocks.h"
+#include <crlocks.h>
 
+#include "lvfontglyphcache_a.h"
+
+#include <stdlib.h>
 
 void LVFontLocalGlyphCacheA::clear() {
     FONT_LOCAL_GLYPH_CACHE_GUARD

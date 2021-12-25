@@ -1,8 +1,9 @@
 // langstat.cpp : Defines the entry point for the console application.
 //
 
-#include <stdlib.h>
 #include <crengine.h>
+
+#include <stdlib.h>
 
 #define DEST_FILE "cp_stats.cpp"
 
