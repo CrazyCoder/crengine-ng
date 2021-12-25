@@ -12,7 +12,7 @@
 //
 
 #include <crengine.h>
-#include <hyphman.h>
+#include <crhyphman.h>
 
 #include "xutils.h"
 

@@ -17,7 +17,7 @@
 #include <lvstream.h>
 #include <lvcontainer.h>
 #include <lvhashtable.h>
-#include <props.h>
+#include <crprops.h>
 
 /*
  * Open Packaging Conventions (OPC)

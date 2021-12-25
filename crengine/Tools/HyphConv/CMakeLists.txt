@@ -22,7 +22,7 @@ set(crengine_part_SRC_LIST
     ../../src/lvstream/lvblockwritestream.cpp
     ../../src/lvstream/lvstreamutils.cpp
     ../../src/crlog.cpp
-    ../../src/serialbuf.cpp
+    ../../src/lvserialbuf.cpp
 )
 
 if(UNIX)

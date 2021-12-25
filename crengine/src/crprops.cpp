@@ -1,4 +1,4 @@
-/** \file props.cpp
+/** \file crprops.cpp
     \brief properties container
 
     CoolReader Engine
@@ -9,8 +9,8 @@
     See LICENSE file for details
 */
 
-#include <props.h>
-#include <serialbuf.h>
+#include <crprops.h>
+#include <lvserialbuf.h>
 #include <lvstreamutils.h>
 
 #include <stdio.h>

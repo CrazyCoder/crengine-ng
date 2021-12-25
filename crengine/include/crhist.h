@@ -1,4 +1,4 @@
-/** \file hist.h
+/** \file crhist.h
     \brief file history and bookmarks container
 
     CoolReader Engine
@@ -9,8 +9,8 @@
     See LICENSE file for details
 */
 
-#ifndef HIST_H_INCLUDED
-#define HIST_H_INCLUDED
+#ifndef CRHIST_H_INCLUDED
+#define CRHIST_H_INCLUDED
 
 #include <lvptrvec.h>
 #include <lvstring.h>
@@ -246,4 +246,4 @@ public:
     void clear();
 };
 
-#endif //HIST_H_INCLUDED
+#endif //CRHIST_H_INCLUDED

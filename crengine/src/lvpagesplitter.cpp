@@ -13,7 +13,7 @@
 #include <lvpagesplitter.h>
 #include <lvtinydom.h>
 #include <crlog.h>
-#include <serialbuf.h>
+#include <lvserialbuf.h>
 
 // Uncomment for debugging page splitting algorithm:
 // #define DEBUG_PAGESPLIT

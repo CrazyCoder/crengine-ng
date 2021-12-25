@@ -1,4 +1,4 @@
-/** \file serialbuf.h
+/** \file lvserialbuf.h
     \brief serialization buffer interface
 
     CoolReader Engine

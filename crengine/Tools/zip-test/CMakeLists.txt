@@ -23,7 +23,7 @@ set(crengine_part_SRC_LIST
     ../../src/lvstring.cpp
     ../../src/lvstring32collection.cpp
     ../../src/crlog.cpp
-    ../../src/serialbuf.cpp
+    ../../src/lvserialbuf.cpp
 )
 
 #add_definitions(-DBUILD_LITE=1)

@@ -1,5 +1,5 @@
 
-#include <bookformats.h>
+#include <crbookformats.h>
 
 lString32 LVDocFormatName(int fmt) {
     switch (fmt) {

@@ -1,4 +1,4 @@
-/** \file hist.cpp
+/** \file crhist.cpp
     \brief file history and bookmarks container
 
     CoolReader Engine
@@ -10,7 +10,7 @@
 */
 
 #include <lvtinydom.h>
-#include <hist.h>
+#include <crhist.h>
 #include <lvstreamutils.h>
 #include <crlog.h>
 

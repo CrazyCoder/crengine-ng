@@ -19,7 +19,7 @@
 #include <lvpagesplitter.h>
 #include <lvdrawbuf.h>
 #include <lvcolordrawbuf.h>
-#include <hist.h>
+#include <crhist.h>
 #include <lvthread.h>
 #include <lvdocviewcmd.h>
 #include <lvdocviewprops.h>

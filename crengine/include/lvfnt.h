@@ -48,7 +48,7 @@
 
 #ifdef __cplusplus
 
-#include <hyphman.h>
+#include <crhyphman.h>
 
 extern "C" {
 #endif

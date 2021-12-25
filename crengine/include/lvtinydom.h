@@ -39,14 +39,14 @@
 #include <lvptrvec.h>
 #include <lvhashtable.h>
 #include <lvimg.h>
-#include <props.h>
-#include <bookformats.h>
-#include <serialbuf.h>
+#include <crprops.h>
+#include <crbookformats.h>
+#include <lvserialbuf.h>
 #include <lvstring32hashedcollection.h>
 #include <lvdocviewcallback.h>
 
 #if MATHML_SUPPORT==1
-#include <mathml.h>
+#include <crmathml.h>
 #endif
 
 // Allows for requesting older DOM building code (including bugs NOT fixed)

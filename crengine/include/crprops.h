@@ -1,4 +1,4 @@
-/** \file props.h
+/** \file crprops.h
     \brief properties container
 
     CoolReader Engine
@@ -9,8 +9,8 @@
     See LICENSE file for details
 */
 
-#ifndef PROPS_H_INCLUDED
-#define PROPS_H_INCLUDED
+#ifndef CRPROPS_H_INCLUDED
+#define CRPROPS_H_INCLUDED
 
 #include <lvstring.h>
 #include <lvptrvec.h>
@@ -168,4 +168,4 @@ inline CRPropRef LVClonePropsContainer( CRPropRef props )
 }
 
 
-#endif //PROPS_H_INCLUDED
+#endif //CRPROPS_H_INCLUDED

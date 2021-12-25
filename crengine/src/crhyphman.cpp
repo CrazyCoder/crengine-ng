@@ -1,4 +1,4 @@
-/** \file hyphman.cpp
+/** \file crhyphman.cpp
     \brief AlReader hyphenation manager
 
     (c) Alan, adapted TeX hyphenation dictionaries code: http://alreader.kms.ru/
@@ -22,7 +22,7 @@
 #define DUMP_PATTERNS 0
 #endif
 
-#include <hyphman.h>
+#include <crhyphman.h>
 #include <lvxmlparsercallback.h>
 #include <lvstreamutils.h>
 #include <lvcontaineriteminfo.h>

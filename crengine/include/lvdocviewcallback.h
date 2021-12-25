@@ -15,7 +15,7 @@
 #define __LVDOCVIEWCALLBACK_H_INCLUDED__
 
 #include <lvtypes.h>
-#include <bookformats.h>
+#include <crbookformats.h>
 
 struct ldomNode;
 

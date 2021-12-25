@@ -12,7 +12,7 @@
 *******************************************************/
 
 #include <lvstring32hashedcollection.h>
-#include <serialbuf.h>
+#include <lvserialbuf.h>
 
 static const char * str_hash_magic="STRS";
 

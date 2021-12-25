@@ -119,7 +119,7 @@ Current limitations:
 #include <lvrend.h>
 #include <lvstsheet.h>
 #include <fb2def.h>
-#include <mathml.h>
+#include <crmathml.h>
 
 // ====================================================================
 // Known Open Type Math fonts

@@ -5,9 +5,9 @@ set(CRENGINE_NG_SOURCES
     src/lvstring8collection.cpp
     src/lvstring32collection.cpp
     src/lvstring32hashedcollection.cpp
-    src/serialbuf.cpp
+    src/lvserialbuf.cpp
     src/crlog.cpp
-    src/props.cpp
+    src/crprops.cpp
     src/lstridmap.cpp
     src/rtfimp.cpp
     src/cri18n.cpp
@@ -45,7 +45,7 @@ set(CRENGINE_NG_SOURCES
     src/lvxml/fb2coverpageparsercallback.cpp
     src/lvxml/lvxmlutils.cpp
     src/lvbmpbuf.cpp
-    src/hyphman.cpp
+    src/crhyphman.cpp
     src/crgui.cpp
     src/crskin.cpp
     src/lvdocview.cpp
@@ -53,7 +53,7 @@ set(CRENGINE_NG_SOURCES
     src/lvtextfm.cpp
     src/lvrend.cpp
     src/wolutil.cpp
-    src/hist.cpp
+    src/crhist.cpp
     src/chmfmt.cpp
     src/epubfmt.cpp
     src/pdbfmt.cpp
@@ -64,7 +64,7 @@ set(CRENGINE_NG_SOURCES
     src/odtfmt.cpp
     src/odxutil.cpp
     src/crconcurrent.cpp
-    src/mathml.cpp
+    src/crmathml.cpp
     src/lvimg/lvcacheableobject.cpp
     src/lvimg/lvimagesource.cpp
     src/lvimg/crninepatchdecoder.cpp

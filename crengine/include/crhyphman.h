@@ -1,4 +1,4 @@
-/** \file hyphman.h
+/** \file crhyphman.h
     \brief AlReader hyphenation manager
 
     (c) Alan, http://alreader.kms.ru/
@@ -12,8 +12,8 @@
 
 */
 
-#ifndef _HYPHEN_
-#define _HYPHEN_
+#ifndef _CRHYPHEN_
+#define _CRHYPHEN_
 
 #include <lvtypes.h>
 #include <lvstring.h>
@@ -171,4 +171,4 @@ public:
     */
 };
 
-#endif
+#endif	// _CRHYPHEN_

@@ -2,7 +2,7 @@
 
    CoolReader Engine
 
-   serialbuf.cpp:  serialization buffer class implementation
+   lvserialbuf.cpp:  serialization buffer class implementation
 
    (c) Vadim Lopatin, 2000-2006
    This source code is distributed under the terms of
@@ -11,7 +11,7 @@
 
 *******************************************************/
 
-#include <serialbuf.h>
+#include <lvserialbuf.h>
 
 #include <string.h>
 

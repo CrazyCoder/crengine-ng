@@ -1,5 +1,5 @@
-#ifndef BOOKFORMATS_H
-#define BOOKFORMATS_H
+#ifndef CRBOOKFORMATS_H
+#define CRBOOKFORMATS_H
 
 #include <lvstring.h>
 
@@ -28,4 +28,4 @@ int LVDocFormatFromExtension(lString32 &pathName);
 lString8 LVDocFormatCssFileName(int fmt);
 
 
-#endif // BOOKFORMATS_H
+#endif // CRBOOKFORMATS_H

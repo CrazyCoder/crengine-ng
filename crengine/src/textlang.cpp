@@ -2,7 +2,7 @@
 // rules here, be sure to also bump FORMATTING_VERSION_ID in src/lvtinydom.cpp
 
 #include "textlang.h"
-#include "../include/hyphman.h"
+#include "../include/crhyphman.h"
 #include "../include/lvtinydom.h"
 #include "../include/fb2def.h"
 #include "../include/crlog.h"

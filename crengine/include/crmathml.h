@@ -1,5 +1,5 @@
-#ifndef __MATHML_H_INCLUDED__
-#define __MATHML_H_INCLUDED__
+#ifndef __CRMATHML_H_INCLUDED__
+#define __CRMATHML_H_INCLUDED__
 
 class ldomDocumentWriter;
 

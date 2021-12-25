@@ -12,7 +12,7 @@
 *******************************************************/
 
 #include <lvstyles.h>
-#include <serialbuf.h>
+#include <lvserialbuf.h>
 
 // #include <stdio.h>
 
