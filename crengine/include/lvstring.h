@@ -177,90 +177,51 @@ bool lStr_isWordSeparator( lChar32 ch );
 #define CONST_STRING_BUFFER_MASK (CONST_STRING_BUFFER_SIZE - 1)
 #define CONST_STRING_BUFFER_HASH_MULT 31
 
-
-struct lstring8_chunk_t {
-    friend class lString8;
-    friend class lString32;
-    friend struct lstring_chunk_slice_t;
-public:
-    lstring8_chunk_t(lChar8 * _buf8) : buf8(_buf8), size(1), len(0)
-    {
-        refCount = 1;
-    }
-    const lChar8 * data8() const { return buf8; }
-private:
-    lChar8  * buf8; // z-string
-    lInt32 size;   // 0 for free chunk
-    lInt32 len;    // count of chars in string
-#ifdef USE_ATOMIC_REFCOUNT
-    std::atomic_int refCount; // atomic reference counter
-#else
-    int refCount;      // reference counter
-#endif
-
-    lstring8_chunk_t() {}
-
-    // chunk allocation functions
-    static lstring8_chunk_t * alloc();
-    static void free( lstring8_chunk_t * pChunk );
-
-};
-
-struct lstring32_chunk_t {
-    friend class lString8;
-    friend class lString32;
-    friend class lString32Collection;
-    friend struct lstring_chunk_slice_t;
-public:
-    lstring32_chunk_t(lChar32 * _buf32) : buf32(_buf32), size(1), len(0)
-    {
-        refCount = 1;
-    }
-    const lChar32 * data32() const { return buf32; }
-private:
-    lChar32 * buf32; // z-string
-    lInt32 size;   // 0 for free chunk
-    lInt32 len;    // count of chars in string
-#ifdef USE_ATOMIC_REFCOUNT
-    std::atomic_int refCount; // atomic reference counter
-#else
-    int refCount;      // reference counter
-#endif
-
-    lstring32_chunk_t() {}
-
-    // chunk allocation functions
-    static lstring32_chunk_t * alloc();
-    static void free( lstring32_chunk_t * pChunk );
-};
-
-struct lstring16_chunk_t {
+struct lstring_chunk_t {
     friend class lString8;
     friend class lString16;
+    friend class lString32;
     friend struct lstring_chunk_slice_t;
 public:
-    lstring16_chunk_t(lChar16 * _buf16) : buf16(_buf16), size(1), len(0)
+    lstring_chunk_t(lChar8 * buf8) : size(1), len(0)
     {
+        buf._8 = buf8;
         refCount = 1;
     }
-    const lChar16 * data16() const { return buf16; }
+    lstring_chunk_t(lChar16 * buf16) : size(1), len(0)
+    {
+        buf._16 = buf16;
+        refCount = 1;
+    }
+    lstring_chunk_t(lChar32 * buf32) : size(1), len(0)
+    {
+        buf._32 = buf32;
+        refCount = 1;
+    }
+    const lChar8 * data8() const { return buf._8; }
+    const lChar16 * data16() const { return buf._16; }
+    const lChar32 * data32() const { return buf._32; }
 private:
-    lChar16 * buf16;  // z-string
-    lInt32 size;      // 0 for free chunk
-    lInt32 len;       // count of chars in string
+    union buf_chunk_t
+    {
+        lChar8  * _8; // z-string
+        lChar16 * _16;
+        lChar32 * _32;
+    } buf;
+    lInt32 size;   // 0 for free chunk
+    lInt32 len;    // count of chars in string
 #ifdef USE_ATOMIC_REFCOUNT
     std::atomic_int refCount; // atomic reference counter
 #else
     int refCount;      // reference counter
 #endif
 
-    lstring16_chunk_t() {}
+    lstring_chunk_t() {}
 
     // chunk allocation functions
-    static lstring16_chunk_t * alloc();
-    static void free( lstring16_chunk_t * pChunk );
+    static lstring_chunk_t * alloc();
+    static void free( lstring_chunk_t * pChunk );
 };
-
 
 namespace fmt {
     class decimal {
@@ -299,8 +260,6 @@ public:
     typedef value_type &        reference;       ///< reference to char type
     typedef const value_type *  const_pointer;   ///< pointer to const char type
     typedef const value_type &  const_reference; ///< reference to const char type
-
-    typedef lstring8_chunk_t    lstring_chunk_t; ///< data container
 
     class decimal {
         lInt64 value;
@@ -422,13 +381,13 @@ public:
     /// make string lowercase
     lString8 & lowercase();
     /// compare with another string
-    int compare(const lString8& str) const { return lStr_cmp(pchunk->buf8, str.pchunk->buf8); }
+    int compare(const lString8& str) const { return lStr_cmp(pchunk->buf._8, str.pchunk->buf._8); }
     /// compare part of string with another string
     int compare(size_type p0, size_type n0, const lString8& str) const;
     /// compare part of string with fragment of another string
     int compare(size_type p0, size_type n0, const lString8& str, size_type pos, size_type n) const;
     /// compare with C-string
-    int compare(const value_type *s) const  { return lStr_cmp(pchunk->buf8, s); }
+    int compare(const value_type *s) const  { return lStr_cmp(pchunk->buf._8, s); }
     /// compare part of string with C-string
     int compare(size_type p0, size_type n0, const value_type *s) const;
     /// compare part of string with C-string fragment
@@ -484,14 +443,14 @@ public:
     	return modify()[pos];
     }
     /// get character at specified position without range check
-    value_type operator [] ( size_type pos ) const { return pchunk->buf8[pos]; }
+    value_type operator [] ( size_type pos ) const { return pchunk->buf._8[pos]; }
     /// get reference to character at specified position
     value_type & operator [] ( size_type pos ) { return modify()[pos]; }
 
     /// ensures that reference count is 1
     void  lock( size_type newsize );
     /// returns pointer to modifable string buffer
-    value_type * modify() { if (refCount()>1) lock(pchunk->len); return pchunk->buf8; }
+    value_type * modify() { if (refCount()>1) lock(pchunk->len); return pchunk->buf._8; }
     /// clear string
     void  clear() { release(); pchunk = EMPTY_STR_8; addref(); }
     /// clear string, set buffer size
@@ -524,9 +483,9 @@ public:
     lInt64 atoi64() const;
 
     /// returns C-string
-    const value_type * c_str() const { return pchunk->buf8; }
+    const value_type * c_str() const { return pchunk->buf._8; }
     /// returns C-string
-    const value_type * data() const { return pchunk->buf8; }
+    const value_type * data() const { return pchunk->buf._8; }
 
     /// append string
     lString8 & operator += ( lString8 s ) { return append(s); }
@@ -573,9 +532,6 @@ public:
     typedef value_type &        reference;
     typedef const value_type *  const_pointer;
     typedef const value_type &  const_reference;
-
-    typedef lstring16_chunk_t   lstring_chunk_t; ///< data container
-
 private:
     lstring_chunk_t * pchunk;
     static lstring_chunk_t * EMPTY_STR_16;
@@ -663,9 +619,9 @@ public:
     lString16 & insert(size_type p0, const lString16 & str);
     lString16 & insert(size_type p0, size_type count, value_type ch);
     /// compare with another string
-    int compare(const lString16& str) const { return lStr_cmp(pchunk->buf16, str.pchunk->buf16); }
-    int compare(const value_type *s) const  { return lStr_cmp(pchunk->buf16, s); }
-    int compare(const lChar8 *s) const  { return lStr_cmp(pchunk->buf16, s); }
+    int compare(const lString16& str) const { return lStr_cmp(pchunk->buf._16, str.pchunk->buf._16); }
+    int compare(const value_type *s) const  { return lStr_cmp(pchunk->buf._16, s); }
+    int compare(const lChar8 *s) const  { return lStr_cmp(pchunk->buf._16, s); }
 
     /// returns n characters beginning with pos
     lString16 substr(size_type pos, size_type n) const;
@@ -716,13 +672,13 @@ public:
     /// returns character at specified position, with index bounds checking, fatal error if fails
     value_type & at( size_type pos ) { if ((unsigned)pos > (unsigned)pchunk->len) crFatalError(); return modify()[pos]; }
     /// returns character at specified position, without index bounds checking
-    value_type operator [] ( size_type pos ) const { return pchunk->buf16[pos]; }
+    value_type operator [] ( size_type pos ) const { return pchunk->buf._16[pos]; }
     /// returns reference to specified character position (lvalue)
     value_type & operator [] ( size_type pos ) { return modify()[pos]; }
     /// resizes string, copies if several references exist
     void  lock( size_type newsize );
     /// returns writable pointer to string buffer
-    value_type * modify() { if (refCount()>1) lock(pchunk->len); return pchunk->buf16; }
+    value_type * modify() { if (refCount()>1) lock(pchunk->len); return pchunk->buf._16; }
     /// clears string contents
     void  clear() { release(); pchunk = EMPTY_STR_16; addref(); }
     /// resets string, allocates space for specified amount of characters
@@ -758,9 +714,9 @@ public:
     /// converts to 64 bit integer, returns true if success
     bool atoi( lInt64 &n ) const;
     /// returns constant c-string pointer
-    const value_type * c_str() const { return pchunk->buf16; }
+    const value_type * c_str() const { return pchunk->buf._16; }
     /// returns constant c-string pointer, same as c_str()
-    const value_type * data() const { return pchunk->buf16; }
+    const value_type * data() const { return pchunk->buf._16; }
     /// appends string
     lString16 & operator += ( lString16 s ) { return append(s); }
     /// appends c-string
@@ -808,9 +764,6 @@ public:
     typedef value_type &        reference;
     typedef const value_type *  const_pointer;
     typedef const value_type &  const_reference;
-
-    typedef lstring32_chunk_t    lstring_chunk_t; ///< data container
-
 private:
     lstring_chunk_t * pchunk;
     static lstring_chunk_t * EMPTY_STR_32;
@@ -913,13 +866,13 @@ public:
     /// make string use full width chars
     lString32 & fullWidthChars();
     /// compare with another string
-    int compare(const lString32& str) const { return lStr_cmp(pchunk->buf32, str.pchunk->buf32); }
+    int compare(const lString32& str) const { return lStr_cmp(pchunk->buf._32, str.pchunk->buf._32); }
     /// compare subrange with another string
     int compare(size_type p0, size_type n0, const lString32& str) const;
     /// compare subrange with substring of another string
     int compare(size_type p0, size_type n0, const lString32& str, size_type pos, size_type n) const;
-    int compare(const value_type *s) const  { return lStr_cmp(pchunk->buf32, s); }
-    int compare(const lChar8 *s) const  { return lStr_cmp(pchunk->buf32, s); }
+    int compare(const value_type *s) const  { return lStr_cmp(pchunk->buf._32, s); }
+    int compare(const lChar8 *s) const  { return lStr_cmp(pchunk->buf._32, s); }
     int compare(size_type p0, size_type n0, const value_type *s) const;
     int compare(size_type p0, size_type n0, const value_type *s, size_type pos) const;
 
@@ -999,13 +952,13 @@ public:
     /// returns character at specified position, with index bounds checking, fatal error if fails
     value_type & at( size_type pos ) { if ((unsigned)pos > (unsigned)pchunk->len) crFatalError(); return modify()[pos]; }
     /// returns character at specified position, without index bounds checking
-    value_type operator [] ( size_type pos ) const { return pchunk->buf32[pos]; }
+    value_type operator [] ( size_type pos ) const { return pchunk->buf._32[pos]; }
     /// returns reference to specified character position (lvalue)
     value_type & operator [] ( size_type pos ) { return modify()[pos]; }
     /// resizes string, copies if several references exist
     void  lock( size_type newsize );
     /// returns writable pointer to string buffer
-    value_type * modify() { if (refCount()>1) lock(pchunk->len); return pchunk->buf32; }
+    value_type * modify() { if (refCount()>1) lock(pchunk->len); return pchunk->buf._32; }
     /// clears string contents
     void  clear() { release(); pchunk = EMPTY_STR_32; addref(); }
     /// resets string, allocates space for specified amount of characters
@@ -1047,9 +1000,9 @@ public:
     /// convert to double, returns true if success
     bool atod( double &d, char dp = '.' ) const;
     /// returns constant c-string pointer
-    const value_type * c_str() const { return pchunk->buf32; }
+    const value_type * c_str() const { return pchunk->buf._32; }
     /// returns constant c-string pointer, same as c_str()
-    const value_type * data() const { return pchunk->buf32; }
+    const value_type * data() const { return pchunk->buf._32; }
     /// appends string
     lString32 & operator += ( lString32 s ) { return append(s); }
     /// appends c-string

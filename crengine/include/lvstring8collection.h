@@ -19,7 +19,7 @@
 class lString8Collection
 {
 private:
-    lstring8_chunk_t * * chunks;
+    lstring_chunk_t * * chunks;
     int count;
     int size;
 public:

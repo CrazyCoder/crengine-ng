@@ -18,10 +18,10 @@ void lString32Collection::reserve(int space)
     if ( count + space > size )
     {
         int tmpSize = count + space + 64;
-        void* tmp = realloc( chunks, sizeof(lstring32_chunk_t *) * tmpSize );
+        void* tmp = realloc( chunks, sizeof(lstring_chunk_t *) * tmpSize );
         if (tmp) {
             size = tmpSize;
-            chunks = (lstring32_chunk_t * *)tmp;
+            chunks = (lstring_chunk_t * *)tmp;
         }
         else {
             // TODO: throw exception or change function prototype & return code
@@ -31,28 +31,28 @@ void lString32Collection::reserve(int space)
 
 static int (str32_comparator)(const void * n1, const void * n2)
 {
-    lstring32_chunk_t ** s1 = (lstring32_chunk_t **)n1;
-    lstring32_chunk_t ** s2 = (lstring32_chunk_t **)n2;
+    lstring_chunk_t ** s1 = (lstring_chunk_t **)n1;
+    lstring_chunk_t ** s2 = (lstring_chunk_t **)n2;
     return lStr_cmp( (*s1)->data32(), (*s2)->data32() );
 }
 
 static int(*custom_lstr32_comparator_ptr)(lString32 & s1, lString32 & s2);
 static int (str32_custom_comparator)(const void * n1, const void * n2)
 {
-    lString32 s1(*((lstring32_chunk_t **)n1));
-    lString32 s2(*((lstring32_chunk_t **)n2));
+    lString32 s1(*((lstring_chunk_t **)n1));
+    lString32 s2(*((lstring_chunk_t **)n2));
     return custom_lstr32_comparator_ptr(s1, s2);
 }
 
 void lString32Collection::sort(int(comparator)(lString32 & s1, lString32 & s2))
 {
     custom_lstr32_comparator_ptr = comparator;
-    qsort(chunks,count,sizeof(lstring32_chunk_t*), str32_custom_comparator);
+    qsort(chunks,count,sizeof(lstring_chunk_t*), str32_custom_comparator);
 }
 
 void lString32Collection::sort()
 {
-    qsort(chunks,count,sizeof(lstring32_chunk_t*), str32_comparator);
+    qsort(chunks,count,sizeof(lstring_chunk_t*), str32_comparator);
 }
 
 int lString32Collection::add( const lString32 & str )

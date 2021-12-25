@@ -19,7 +19,7 @@
 class lString32Collection
 {
 private:
-    lstring32_chunk_t * * chunks;
+    lstring_chunk_t * * chunks;
     int count;
     int size;
 public:

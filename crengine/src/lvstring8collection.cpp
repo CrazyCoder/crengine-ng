@@ -72,10 +72,10 @@ void lString8Collection::reserve(int space)
     if ( count + space > size )
     {
         int tmpSize = count + space + 64;
-        void* tmp = realloc( chunks, sizeof(lstring8_chunk_t *) * tmpSize );
+        void* tmp = realloc( chunks, sizeof(lstring_chunk_t *) * tmpSize );
         if (tmp) {
             size = tmpSize;
-            chunks = (lstring8_chunk_t * *)tmp;
+            chunks = (lstring_chunk_t * *)tmp;
         }
         else {
             // TODO: throw exception or change function prototype & return code

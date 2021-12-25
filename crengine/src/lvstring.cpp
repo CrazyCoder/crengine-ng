@@ -49,16 +49,16 @@ extern "C" {
 
 
 static lChar8 empty_str_8[] = {0};
-static lstring8_chunk_t empty_chunk_8(empty_str_8);
-lstring8_chunk_t * lString8::EMPTY_STR_8 = &empty_chunk_8;
+static lstring_chunk_t empty_chunk_8(empty_str_8);
+lstring_chunk_t * lString8::EMPTY_STR_8 = &empty_chunk_8;
 
 static lChar16 empty_str_16[] = {0};
-static lstring16_chunk_t empty_chunk_16(empty_str_16);
-lstring16_chunk_t * lString16::EMPTY_STR_16 = &empty_chunk_16;
+static lstring_chunk_t empty_chunk_16(empty_str_16);
+lstring_chunk_t * lString16::EMPTY_STR_16 = &empty_chunk_16;
 
 static lChar32 empty_str_32[] = {0};
-static lstring32_chunk_t empty_chunk_32(empty_str_32);
-lstring32_chunk_t * lString32::EMPTY_STR_32 = &empty_chunk_32;
+static lstring_chunk_t empty_chunk_32(empty_str_32);
+lstring_chunk_t * lString32::EMPTY_STR_32 = &empty_chunk_32;
 
 //================================================================================
 // atomic string storages for string literals
@@ -153,45 +153,33 @@ const lString32 & cs32(const lChar32 * str) {
 // memory allocation slice
 //================================================================================
 struct lstring_chunk_slice_t {
-    lstring8_chunk_t * pChunks; // first chunk
-    lstring8_chunk_t * pEnd;    // first free byte after last chunk
-    lstring8_chunk_t * pFree;   // first free chunk
+    lstring_chunk_t * pChunks; // first chunk
+    lstring_chunk_t * pEnd;    // first free byte after last chunk
+    lstring_chunk_t * pFree;   // first free chunk
     int used;
     lstring_chunk_slice_t( int size )
     {
-        pChunks = (lstring8_chunk_t *) malloc(sizeof(lstring8_chunk_t) * size);
+        pChunks = (lstring_chunk_t *) malloc(sizeof(lstring_chunk_t) * size);
         pEnd = pChunks + size;
         pFree = pChunks;
-        for (lstring8_chunk_t * p = pChunks; p<pEnd; ++p)
+        for (lstring_chunk_t * p = pChunks; p<pEnd; ++p)
         {
-            p->buf8 = (char*)(p+1);
+            p->buf._8 = (char*)(p+1);
             p->size = 0;
         }
-        (pEnd-1)->buf8 = NULL;
+        (pEnd-1)->buf._8 = NULL;
     }
     ~lstring_chunk_slice_t()
     {
         free( pChunks );
     }
-    inline lstring8_chunk_t * alloc_chunk()
+    inline lstring_chunk_t * alloc_chunk()
     {
-        lstring8_chunk_t * res = pFree;
-        pFree = (lstring8_chunk_t *)res->buf8;
+        lstring_chunk_t * res = pFree;
+        pFree = (lstring_chunk_t *)res->buf._8;
         return res;
     }
-    inline lstring16_chunk_t * alloc_chunk16()
-    {
-        lstring16_chunk_t * res = (lstring16_chunk_t *)pFree;
-        pFree = (lstring8_chunk_t *)res->buf16;
-        return res;
-    }
-    inline lstring32_chunk_t * alloc_chunk32()
-    {
-        lstring32_chunk_t * res = (lstring32_chunk_t *)pFree;
-        pFree = (lstring8_chunk_t *)res->buf32;
-        return res;
-    }
-    inline bool free_chunk( lstring8_chunk_t * pChunk )
+    inline bool free_chunk( lstring_chunk_t * pChunk )
     {
         if (pChunk < pChunks || pChunk >= pEnd)
             return false; // chunk does not belong to this slice
@@ -204,42 +192,8 @@ struct lstring_chunk_slice_t {
         pChunk->size = 0;
 #endif
 */
-        pChunk->buf8 = (char *)pFree;
+        pChunk->buf._8 = (char *)pFree;
         pFree = pChunk;
-        return true;
-    }
-    inline bool free_chunk16(lstring16_chunk_t * pChunk)
-    {
-        if ((lstring8_chunk_t *)pChunk < pChunks || (lstring8_chunk_t *)pChunk >= pEnd)
-            return false; // chunk does not belong to this slice
-/*
-#ifdef LS_DEBUG_CHECK
-        if (!pChunk->size)
-        {
-            crFatalError(); // already freed!!!
-        }
-        pChunk->size = 0;
-#endif
-*/
-        pChunk->buf16 = (lChar16 *)pFree;
-        pFree = (lstring8_chunk_t *)pChunk;
-        return true;
-    }
-    inline bool free_chunk32(lstring32_chunk_t * pChunk)
-    {
-        if ((lstring8_chunk_t *)pChunk < pChunks || (lstring8_chunk_t *)pChunk >= pEnd)
-            return false; // chunk does not belong to this slice
-/*
-#ifdef LS_DEBUG_CHECK
-        if (!pChunk->size)
-        {
-            crFatalError(); // already freed!!!
-        }
-        pChunk->size = 0;
-#endif
-*/
-        pChunk->buf32 = (lChar32 *)pFree;
-        pFree = (lstring8_chunk_t *)pChunk;
         return true;
     }
 };
@@ -272,7 +226,7 @@ void free_ls_storage()
     slices_initialized = false;
 }
 
-lstring8_chunk_t * lstring8_chunk_t::alloc()
+lstring_chunk_t * lstring_chunk_t::alloc()
 {
     if (!slices_initialized)
         init_ls_storage();
@@ -290,7 +244,7 @@ lstring8_chunk_t * lstring8_chunk_t::alloc()
     return slices[slices_count-1]->alloc_chunk();
 }
 
-void lstring8_chunk_t::free( lstring8_chunk_t * pChunk )
+void lstring_chunk_t::free( lstring_chunk_t * pChunk )
 {
     for (int i=slices_count-1; i>=0; --i)
     {
@@ -300,61 +254,6 @@ void lstring8_chunk_t::free( lstring8_chunk_t * pChunk )
     crFatalError(); // wrong pointer!!!
 }
 
-lstring16_chunk_t * lstring16_chunk_t::alloc()
-{
-    if (!slices_initialized)
-        init_ls_storage();
-    // search for existing slice
-    for (int i=slices_count-1; i>=0; --i)
-    {
-        if (slices[i]->pFree != NULL)
-            return slices[i]->alloc_chunk16();
-    }
-    // alloc new slice
-    if (slices_count >= MAX_SLICE_COUNT)
-        crFatalError();
-    lstring_chunk_slice_t * new_slice = new lstring_chunk_slice_t( FIRST_SLICE_SIZE << (slices_count+1) );
-    slices[slices_count++] = new_slice;
-    return slices[slices_count-1]->alloc_chunk16();
-}
-
-void lstring16_chunk_t::free( lstring16_chunk_t * pChunk )
-{
-    for (int i=slices_count-1; i>=0; --i)
-    {
-        if (slices[i]->free_chunk16(pChunk))
-            return;
-    }
-    crFatalError(); // wrong pointer!!!
-}
-
-lstring32_chunk_t * lstring32_chunk_t::alloc()
-{
-    if (!slices_initialized)
-        init_ls_storage();
-    // search for existing slice
-    for (int i=slices_count-1; i>=0; --i)
-    {
-        if (slices[i]->pFree != NULL)
-            return slices[i]->alloc_chunk32();
-    }
-    // alloc new slice
-    if (slices_count >= MAX_SLICE_COUNT)
-        crFatalError();
-    lstring_chunk_slice_t * new_slice = new lstring_chunk_slice_t( FIRST_SLICE_SIZE << (slices_count+1) );
-    slices[slices_count++] = new_slice;
-    return slices[slices_count-1]->alloc_chunk32();
-}
-
-void lstring32_chunk_t::free( lstring32_chunk_t * pChunk )
-{
-    for (int i=slices_count-1; i>=0; --i)
-    {
-        if (slices[i]->free_chunk32(pChunk))
-            return;
-    }
-    crFatalError(); // wrong pointer!!!
-}
 #endif  // (LDOM_USE_OWN_MEM_MAN == 1)
 
 ////////////////////////////////////////////////////////////////////////////
@@ -865,12 +764,12 @@ void lString32::free()
 {
     if ( pchunk==EMPTY_STR_32 )
         return;
-    //assert(pchunk->buf32[pchunk->len]==0);
-    ::free(pchunk->buf32);
+    //assert(pchunk->buf._32[pchunk->len]==0);
+    ::free(pchunk->buf._32);
 #if (LDOM_USE_OWN_MEM_MAN == 1)
     for (int i=slices_count-1; i>=0; --i)
     {
-        if (slices[i]->free_chunk32(pchunk))
+        if (slices[i]->free_chunk(pchunk))
             return;
     }
     crFatalError(); // wrong pointer!!!
@@ -886,8 +785,8 @@ void lString32::alloc(int sz)
 #else
     pchunk = (lstring_chunk_t*)::malloc(sizeof(lstring_chunk_t));
 #endif
-    pchunk->buf32 = (lChar32*) ::malloc( sizeof(lChar32) * (sz+1) );
-    assert( pchunk->buf32!=NULL );
+    pchunk->buf._32 = (lChar32*) ::malloc( sizeof(lChar32) * (sz+1) );
+    assert( pchunk->buf._32!=NULL );
     pchunk->size = sz;
     pchunk->refCount = 1;
 }
@@ -903,7 +802,7 @@ lString32::lString32(const lChar32 * str)
     size_type len = _lStr_len(str);
     alloc( len );
     pchunk->len = len;
-    _lStr_cpy( pchunk->buf32, str );
+    _lStr_cpy( pchunk->buf._32, str );
 }
 
 lString32::lString32(const lChar8 * str)
@@ -944,7 +843,7 @@ lString32::lString32(const value_type * str, size_type count)
     {
         size_type len = _lStr_nlen(str, count);
         alloc(len);
-        _lStr_ncpy( pchunk->buf32, str, len );
+        _lStr_ncpy( pchunk->buf._32, str, len );
         pchunk->len = len;
     }
 }
@@ -960,8 +859,8 @@ lString32::lString32(const lString32 & str, size_type offset, size_type count)
     else
     {
         alloc(count);
-        _lStr_memcpy( pchunk->buf32, str.pchunk->buf32+offset, count );
-        pchunk->buf32[count]=0;
+        _lStr_memcpy( pchunk->buf._32, str.pchunk->buf._32+offset, count );
+        pchunk->buf._32[count]=0;
         pchunk->len = count;
     }
 }
@@ -980,7 +879,7 @@ lString32 & lString32::assign(const lChar32 * str)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf32 = (lChar32*) ::realloc( pchunk->buf32, sizeof(lChar32)*(len+1) );
+                pchunk->buf._32 = (lChar32*) ::realloc( pchunk->buf._32, sizeof(lChar32)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -989,7 +888,7 @@ lString32 & lString32::assign(const lChar32 * str)
             release();
             alloc(len);
         }
-        _lStr_cpy( pchunk->buf32, str );
+        _lStr_cpy( pchunk->buf._32, str );
         pchunk->len = len;
     }
     return *this;
@@ -1009,7 +908,7 @@ lString32 & lString32::assign(const lChar8 * str)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf32 = (lChar32*) ::realloc( pchunk->buf32, sizeof(lChar32)*(len+1) );
+                pchunk->buf._32 = (lChar32*) ::realloc( pchunk->buf._32, sizeof(lChar32)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -1018,7 +917,7 @@ lString32 & lString32::assign(const lChar8 * str)
             release();
             alloc(len);
         }
-        _lStr_cpy( pchunk->buf32, str );
+        _lStr_cpy( pchunk->buf._32, str );
         pchunk->len = len;
     }
     return *this;
@@ -1038,7 +937,7 @@ lString32 & lString32::assign(const lChar32 * str, size_type count)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf32 = (lChar32*) ::realloc( pchunk->buf32, sizeof(lChar32)*(len+1) );
+                pchunk->buf._32 = (lChar32*) ::realloc( pchunk->buf._32, sizeof(lChar32)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -1047,7 +946,7 @@ lString32 & lString32::assign(const lChar32 * str, size_type count)
             release();
             alloc(len);
         }
-        _lStr_ncpy( pchunk->buf32, str, count );
+        _lStr_ncpy( pchunk->buf._32, str, count );
         pchunk->len = len;
     }
     return *this;
@@ -1067,7 +966,7 @@ lString32 & lString32::assign(const lChar8 * str, size_type count)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf32 = (lChar32*) ::realloc( pchunk->buf32, sizeof(lChar32)*(len+1) );
+                pchunk->buf._32 = (lChar32*) ::realloc( pchunk->buf._32, sizeof(lChar32)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -1076,7 +975,7 @@ lString32 & lString32::assign(const lChar8 * str, size_type count)
             release();
             alloc(len);
         }
-        _lStr_ncpy( pchunk->buf32, str, count );
+        _lStr_ncpy( pchunk->buf._32, str, count );
         pchunk->len = len;
     }
     return *this;
@@ -1101,9 +1000,9 @@ lString32 & lString32::assign(const lString32 & str, size_type offset, size_type
             }
             if (offset>0)
             {
-                _lStr_memcpy( pchunk->buf32, str.pchunk->buf32+offset, count );
+                _lStr_memcpy( pchunk->buf._32, str.pchunk->buf._32+offset, count );
             }
-            pchunk->buf32[count]=0;
+            pchunk->buf._32[count]=0;
         }
         else
         {
@@ -1112,7 +1011,7 @@ lString32 & lString32::assign(const lString32 & str, size_type offset, size_type
                 if (pchunk->size<=count)
                 {
                     // resize is necessary
-                    pchunk->buf32 = (lChar32*) ::realloc( pchunk->buf32, sizeof(lChar32)*(count+1) );
+                    pchunk->buf._32 = (lChar32*) ::realloc( pchunk->buf._32, sizeof(lChar32)*(count+1) );
                     pchunk->size = count+1;
                 }
             }
@@ -1121,8 +1020,8 @@ lString32 & lString32::assign(const lString32 & str, size_type offset, size_type
                 release();
                 alloc(count);
             }
-            _lStr_memcpy( pchunk->buf32, str.pchunk->buf32+offset, count );
-            pchunk->buf32[count]=0;
+            _lStr_memcpy( pchunk->buf._32, str.pchunk->buf._32+offset, count );
+            pchunk->buf._32[count]=0;
         }
         pchunk->len = count;
     }
@@ -1142,18 +1041,18 @@ lString32 & lString32::erase(size_type offset, size_type count)
         size_type newlen = length()-count;
         if (refCount()==1)
         {
-            _lStr_memcpy( pchunk->buf32+offset, pchunk->buf32+offset+count, newlen-offset+1 );
+            _lStr_memcpy( pchunk->buf._32+offset, pchunk->buf._32+offset+count, newlen-offset+1 );
         }
         else
         {
             lstring_chunk_t * poldchunk = pchunk;
             release();
             alloc( newlen );
-            _lStr_memcpy( pchunk->buf32, poldchunk->buf32, offset );
-            _lStr_memcpy( pchunk->buf32+offset, poldchunk->buf32+offset+count, newlen-offset+1 );
+            _lStr_memcpy( pchunk->buf._32, poldchunk->buf._32, offset );
+            _lStr_memcpy( pchunk->buf._32+offset, poldchunk->buf._32+offset+count, newlen-offset+1 );
         }
         pchunk->len = newlen;
-        pchunk->buf32[newlen]=0;
+        pchunk->buf._32[newlen]=0;
     }
     return *this;
 }
@@ -1164,7 +1063,7 @@ void lString32::reserve(size_type n)
     {
         if (pchunk->size < n)
         {
-            pchunk->buf32 = (lChar32*) ::realloc( pchunk->buf32, sizeof(lChar32)*(n+1) );
+            pchunk->buf._32 = (lChar32*) ::realloc( pchunk->buf._32, sizeof(lChar32)*(n+1) );
             pchunk->size = n;
         }
     }
@@ -1173,7 +1072,7 @@ void lString32::reserve(size_type n)
         lstring_chunk_t * poldchunk = pchunk;
         release();
         alloc( n );
-        _lStr_memcpy( pchunk->buf32, poldchunk->buf32, poldchunk->len+1 );
+        _lStr_memcpy( pchunk->buf._32, poldchunk->buf._32, poldchunk->len+1 );
         pchunk->len = poldchunk->len;
     }
 }
@@ -1188,8 +1087,8 @@ void lString32::lock( size_type newsize )
         size_type len = newsize;
         if (len>poldchunk->len)
             len = poldchunk->len;
-        _lStr_memcpy( pchunk->buf32, poldchunk->buf32, len );
-        pchunk->buf32[len]=0;
+        _lStr_memcpy( pchunk->buf._32, poldchunk->buf._32, len );
+        pchunk->buf._32[len]=0;
         pchunk->len = len;
     }
 }
@@ -1202,7 +1101,7 @@ void lString32::reset( size_type size )
         release();
         alloc( size );
     }
-    pchunk->buf32[0] = 0;
+    pchunk->buf._32[0] = 0;
     pchunk->len = 0;
 }
 
@@ -1211,20 +1110,20 @@ void lString32::resize(size_type n, lChar32 e)
     lock( n );
     if (n>=pchunk->size)
     {
-        pchunk->buf32 = (lChar32*) ::realloc( pchunk->buf32, sizeof(lChar32)*(n+1) );
+        pchunk->buf._32 = (lChar32*) ::realloc( pchunk->buf._32, sizeof(lChar32)*(n+1) );
         pchunk->size = n;
     }
     // fill with data if expanded
     for (size_type i=pchunk->len; i<n; i++)
-        pchunk->buf32[i] = e;
-    pchunk->buf32[pchunk->len] = 0;
+        pchunk->buf._32[i] = e;
+    pchunk->buf._32[pchunk->len] = 0;
 }
 
 lString32 & lString32::append(const lChar32 * str)
 {
     size_type len = _lStr_len(str);
     reserve( pchunk->len+len );
-    _lStr_memcpy(pchunk->buf32+pchunk->len, str, len+1);
+    _lStr_memcpy(pchunk->buf._32+pchunk->len, str, len+1);
     pchunk->len += len;
     return *this;
 }
@@ -1232,7 +1131,7 @@ lString32 & lString32::append(const lChar32 * str)
 lString32 & lString32::append(const lChar32 * str, size_type count)
 {
     reserve(pchunk->len + count);
-    _lStr_ncpy(pchunk->buf32 + pchunk->len, str, count);
+    _lStr_ncpy(pchunk->buf._32 + pchunk->len, str, count);
     pchunk->len += count;
     return *this;
 }
@@ -1241,7 +1140,7 @@ lString32 & lString32::append(const lChar8 * str)
 {
     size_type len = _lStr_len(str);
     reserve( pchunk->len+len );
-    _lStr_ncpy(pchunk->buf32+pchunk->len, str, len+1);
+    _lStr_ncpy(pchunk->buf._32+pchunk->len, str, len+1);
     pchunk->len += len;
     return *this;
 }
@@ -1249,7 +1148,7 @@ lString32 & lString32::append(const lChar8 * str)
 lString32 & lString32::append(const lChar8 * str, size_type count)
 {
     reserve(pchunk->len + count);
-    _lStr_ncpy(pchunk->buf32+pchunk->len, str, count);
+    _lStr_ncpy(pchunk->buf._32+pchunk->len, str, count);
     pchunk->len += count;
     return *this;
 }
@@ -1258,7 +1157,7 @@ lString32 & lString32::append(const lString32 & str)
 {
     size_type len2 = pchunk->len + str.pchunk->len;
     reserve( len2 );
-    _lStr_memcpy( pchunk->buf32+pchunk->len, str.pchunk->buf32, str.pchunk->len+1 );
+    _lStr_memcpy( pchunk->buf._32+pchunk->len, str.pchunk->buf._32, str.pchunk->len+1 );
     pchunk->len = len2;
     return *this;
 }
@@ -1270,9 +1169,9 @@ lString32 & lString32::append(const lString32 & str, size_type offset, size_type
         if ( offset + count > str.pchunk->len )
             count = str.pchunk->len - offset;
         reserve( pchunk->len+count );
-        _lStr_ncpy(pchunk->buf32 + pchunk->len, str.pchunk->buf32 + offset, count);
+        _lStr_ncpy(pchunk->buf._32 + pchunk->len, str.pchunk->buf._32 + offset, count);
         pchunk->len += count;
-        pchunk->buf32[pchunk->len] = 0;
+        pchunk->buf._32[pchunk->len] = 0;
     }
     return *this;
 }
@@ -1280,9 +1179,9 @@ lString32 & lString32::append(const lString32 & str, size_type offset, size_type
 lString32 & lString32::append(size_type count, lChar32 ch)
 {
     reserve( pchunk->len+count );
-    _lStr_memset(pchunk->buf32+pchunk->len, ch, count);
+    _lStr_memset(pchunk->buf._32+pchunk->len, ch, count);
     pchunk->len += count;
-    pchunk->buf32[pchunk->len] = 0;
+    pchunk->buf._32[pchunk->len] = 0;
     return *this;
 }
 
@@ -1292,10 +1191,10 @@ lString32 & lString32::insert(size_type p0, size_type count, lChar32 ch)
         p0 = pchunk->len;
     reserve( pchunk->len+count );
     for (size_type i=pchunk->len-1; i>=p0; i--)
-        pchunk->buf32[i+count] = pchunk->buf32[i];
-    _lStr_memset(pchunk->buf32+p0, ch, count);
+        pchunk->buf._32[i+count] = pchunk->buf._32[i];
+    _lStr_memset(pchunk->buf._32+p0, ch, count);
     pchunk->len += count;
-    pchunk->buf32[pchunk->len] = 0;
+    pchunk->buf._32[pchunk->len] = 0;
     return *this;
 }
 
@@ -1306,10 +1205,10 @@ lString32 & lString32::insert(size_type p0, const lString32 & str)
     int count = str.length();
     reserve( pchunk->len+count );
     for (size_type i=pchunk->len-1; i>=p0; i--)
-        pchunk->buf32[i+count] = pchunk->buf32[i];
-    _lStr_memcpy(pchunk->buf32 + p0, str.c_str(), count);
+        pchunk->buf._32[i+count] = pchunk->buf._32[i];
+    _lStr_memcpy(pchunk->buf._32 + p0, str.c_str(), count);
     pchunk->len += count;
-    pchunk->buf32[pchunk->len] = 0;
+    pchunk->buf._32[pchunk->len] = 0;
     return *this;
 }
 
@@ -1319,7 +1218,7 @@ lString32 lString32::substr(size_type pos, size_type n) const
         return lString32::empty_str;
     if (pos+n>length())
         n = length() - pos;
-    return lString32( pchunk->buf32+pos, n );
+    return lString32( pchunk->buf._32+pos, n );
 }
 
 lString32 & lString32::pack()
@@ -1332,7 +1231,7 @@ lString32 & lString32::pack()
         }
         else
         {
-            pchunk->buf32 = cr_realloc( pchunk->buf32, pchunk->len+1 );
+            pchunk->buf._32 = cr_realloc( pchunk->buf._32, pchunk->len+1 );
             pchunk->size = pchunk->len;
         }
     }
@@ -1349,7 +1248,7 @@ lString32 & lString32::trimNonAlpha()
 {
     int firstns;
     for (firstns = 0; firstns<pchunk->len &&
-        !isAlNum(pchunk->buf32[firstns]); ++firstns)
+        !isAlNum(pchunk->buf._32[firstns]); ++firstns)
         ;
     if (firstns >= pchunk->len)
     {
@@ -1358,7 +1257,7 @@ lString32 & lString32::trimNonAlpha()
     }
     int lastns;
     for (lastns = pchunk->len-1; lastns>0 &&
-        !isAlNum(pchunk->buf32[lastns]); --lastns)
+        !isAlNum(pchunk->buf._32[lastns]); --lastns)
         ;
     int newlen = lastns-firstns+1;
     if (newlen == pchunk->len)
@@ -1366,8 +1265,8 @@ lString32 & lString32::trimNonAlpha()
     if (refCount()==1)
     {
         if (firstns>0)
-            lStr_memcpy( pchunk->buf32, pchunk->buf32+firstns, newlen );
-        pchunk->buf32[newlen] = 0;
+            lStr_memcpy( pchunk->buf._32, pchunk->buf._32+firstns, newlen );
+        pchunk->buf._32[newlen] = 0;
         pchunk->len = newlen;
     }
     else
@@ -1375,8 +1274,8 @@ lString32 & lString32::trimNonAlpha()
         lstring_chunk_t * poldchunk = pchunk;
         release();
         alloc( newlen );
-        _lStr_memcpy( pchunk->buf32, poldchunk->buf32+firstns, newlen );
-        pchunk->buf32[newlen] = 0;
+        _lStr_memcpy( pchunk->buf._32, poldchunk->buf._32+firstns, newlen );
+        pchunk->buf._32[newlen] = 0;
         pchunk->len = newlen;
     }
     return *this;
@@ -1387,7 +1286,7 @@ lString32 & lString32::trim()
     //
     int firstns;
     for (firstns = 0; firstns<pchunk->len &&
-        (pchunk->buf32[firstns]==' ' || pchunk->buf32[firstns]=='\t'); ++firstns)
+        (pchunk->buf._32[firstns]==' ' || pchunk->buf._32[firstns]=='\t'); ++firstns)
         ;
     if (firstns >= pchunk->len)
     {
@@ -1396,7 +1295,7 @@ lString32 & lString32::trim()
     }
     int lastns;
     for (lastns = pchunk->len-1; lastns>0 &&
-        (pchunk->buf32[lastns]==' ' || pchunk->buf32[lastns]=='\t'); --lastns)
+        (pchunk->buf._32[lastns]==' ' || pchunk->buf._32[lastns]=='\t'); --lastns)
         ;
     int newlen = lastns-firstns+1;
     if (newlen == pchunk->len)
@@ -1404,8 +1303,8 @@ lString32 & lString32::trim()
     if (refCount()==1)
     {
         if (firstns>0)
-            lStr_memcpy( pchunk->buf32, pchunk->buf32+firstns, newlen );
-        pchunk->buf32[newlen] = 0;
+            lStr_memcpy( pchunk->buf._32, pchunk->buf._32+firstns, newlen );
+        pchunk->buf._32[newlen] = 0;
         pchunk->len = newlen;
     }
     else
@@ -1413,8 +1312,8 @@ lString32 & lString32::trim()
         lstring_chunk_t * poldchunk = pchunk;
         release();
         alloc( newlen );
-        _lStr_memcpy( pchunk->buf32, poldchunk->buf32+firstns, newlen );
-        pchunk->buf32[newlen] = 0;
+        _lStr_memcpy( pchunk->buf._32, poldchunk->buf._32+firstns, newlen );
+        pchunk->buf._32[newlen] = 0;
         pchunk->len = newlen;
     }
     return *this;
@@ -1629,7 +1528,7 @@ lUInt32 lString32::getHash() const
 {
     lUInt32 res = 0;
     for (lInt32 i=0; i<pchunk->len; i++)
-        res = res * STRING_HASH_MULT + pchunk->buf32[i];
+        res = res * STRING_HASH_MULT + pchunk->buf._32[i];
     return res;
 }
 
@@ -1666,12 +1565,12 @@ void lString16::free()
 {
     if ( pchunk==EMPTY_STR_16 )
         return;
-    //assert(pchunk->buf16[pchunk->len]==0);
-    ::free(pchunk->buf16);
+    //assert(pchunk->buf._16[pchunk->len]==0);
+    ::free(pchunk->buf._16);
 #if (LDOM_USE_OWN_MEM_MAN == 1)
     for (int i=slices_count-1; i>=0; --i)
     {
-        if (slices[i]->free_chunk16(pchunk))
+        if (slices[i]->free_chunk(pchunk))
             return;
     }
     crFatalError(); // wrong pointer!!!
@@ -1687,8 +1586,8 @@ void lString16::alloc(int sz)
 #else
     pchunk = (lstring_chunk_t*)::malloc(sizeof(lstring_chunk_t));
 #endif
-    pchunk->buf16 = (lChar16*) ::malloc( sizeof(lChar16) * (sz+1) );
-    assert( pchunk->buf16!=NULL );
+    pchunk->buf._16 = (lChar16*) ::malloc( sizeof(lChar16) * (sz+1) );
+    assert( pchunk->buf._16!=NULL );
     pchunk->size = sz;
     pchunk->refCount = 1;
 }
@@ -1704,7 +1603,7 @@ lString16::lString16(const value_type * str)
     size_type len = _lStr_len(str);
     alloc( len );
     pchunk->len = len;
-    _lStr_cpy( pchunk->buf16, str );
+    _lStr_cpy( pchunk->buf._16, str );
 }
 
 lString16::lString16(const lChar8 * str)
@@ -1746,7 +1645,7 @@ lString16::lString16(const value_type * str, size_type count)
     {
         size_type len = _lStr_nlen(str, count);
         alloc(len);
-        _lStr_ncpy( pchunk->buf16, str, len );
+        _lStr_ncpy( pchunk->buf._16, str, len );
         pchunk->len = len;
     }
 }
@@ -1763,8 +1662,8 @@ lString16::lString16(const lString16 & str, size_type offset, size_type count)
     else
     {
         alloc(count);
-        _lStr_memcpy( pchunk->buf16, str.pchunk->buf16+offset, count );
-        pchunk->buf16[count]=0;
+        _lStr_memcpy( pchunk->buf._16, str.pchunk->buf._16+offset, count );
+        pchunk->buf._16[count]=0;
         pchunk->len = count;
     }
 }
@@ -1783,7 +1682,7 @@ lString16 & lString16::assign(const value_type * str)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf16 = (lChar16*) ::realloc( pchunk->buf16, sizeof(lChar16)*(len+1) );
+                pchunk->buf._16 = (lChar16*) ::realloc( pchunk->buf._16, sizeof(lChar16)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -1792,7 +1691,7 @@ lString16 & lString16::assign(const value_type * str)
             release();
             alloc(len);
         }
-        _lStr_cpy( pchunk->buf16, str );
+        _lStr_cpy( pchunk->buf._16, str );
         pchunk->len = len;
     }
     return *this;
@@ -1812,7 +1711,7 @@ lString16 & lString16::assign(const lChar8 * str)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf16 = (lChar16*) ::realloc( pchunk->buf16, sizeof(lChar16)*(len+1) );
+                pchunk->buf._16 = (lChar16*) ::realloc( pchunk->buf._16, sizeof(lChar16)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -1821,7 +1720,7 @@ lString16 & lString16::assign(const lChar8 * str)
             release();
             alloc(len);
         }
-        _lStr_cpy( pchunk->buf16, str );
+        _lStr_cpy( pchunk->buf._16, str );
         pchunk->len = len;
     }
     return *this;
@@ -1841,7 +1740,7 @@ lString16 & lString16::assign(const value_type * str, size_type count)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf16 = (lChar16*) ::realloc( pchunk->buf16, sizeof(lChar16)*(len+1) );
+                pchunk->buf._16 = (lChar16*) ::realloc( pchunk->buf._16, sizeof(lChar16)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -1850,7 +1749,7 @@ lString16 & lString16::assign(const value_type * str, size_type count)
             release();
             alloc(len);
         }
-        _lStr_ncpy( pchunk->buf16, str, count );
+        _lStr_ncpy( pchunk->buf._16, str, count );
         pchunk->len = len;
     }
     return *this;
@@ -1870,7 +1769,7 @@ lString16 & lString16::assign(const lChar8 * str, size_type count)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf16 = (lChar16*) ::realloc( pchunk->buf16, sizeof(lChar16)*(len+1) );
+                pchunk->buf._16 = (lChar16*) ::realloc( pchunk->buf._16, sizeof(lChar16)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -1879,7 +1778,7 @@ lString16 & lString16::assign(const lChar8 * str, size_type count)
             release();
             alloc(len);
         }
-        _lStr_ncpy( pchunk->buf16, str, count );
+        _lStr_ncpy( pchunk->buf._16, str, count );
         pchunk->len = len;
     }
     return *this;
@@ -1904,9 +1803,9 @@ lString16 & lString16::assign(const lString16 & str, size_type offset, size_type
             }
             if (offset>0)
             {
-                _lStr_memcpy( pchunk->buf16, str.pchunk->buf16+offset, count );
+                _lStr_memcpy( pchunk->buf._16, str.pchunk->buf._16+offset, count );
             }
-            pchunk->buf16[count]=0;
+            pchunk->buf._16[count]=0;
         }
         else
         {
@@ -1915,7 +1814,7 @@ lString16 & lString16::assign(const lString16 & str, size_type offset, size_type
                 if (pchunk->size<=count)
                 {
                     // resize is necessary
-                    pchunk->buf16 = (lChar16*) ::realloc( pchunk->buf16, sizeof(lChar16)*(count+1) );
+                    pchunk->buf._16 = (lChar16*) ::realloc( pchunk->buf._16, sizeof(lChar16)*(count+1) );
                     pchunk->size = count+1;
                 }
             }
@@ -1924,8 +1823,8 @@ lString16 & lString16::assign(const lString16 & str, size_type offset, size_type
                 release();
                 alloc(count);
             }
-            _lStr_memcpy( pchunk->buf16, str.pchunk->buf16+offset, count );
-            pchunk->buf16[count]=0;
+            _lStr_memcpy( pchunk->buf._16, str.pchunk->buf._16+offset, count );
+            pchunk->buf._16[count]=0;
         }
         pchunk->len = count;
     }
@@ -1945,18 +1844,18 @@ lString16 & lString16::erase(size_type offset, size_type count)
         size_type newlen = length()-count;
         if (refCount()==1)
         {
-            _lStr_memcpy( pchunk->buf16+offset, pchunk->buf16+offset+count, newlen-offset+1 );
+            _lStr_memcpy( pchunk->buf._16+offset, pchunk->buf._16+offset+count, newlen-offset+1 );
         }
         else
         {
             lstring_chunk_t * poldchunk = pchunk;
             release();
             alloc( newlen );
-            _lStr_memcpy( pchunk->buf16, poldchunk->buf16, offset );
-            _lStr_memcpy( pchunk->buf16+offset, poldchunk->buf16+offset+count, newlen-offset+1 );
+            _lStr_memcpy( pchunk->buf._16, poldchunk->buf._16, offset );
+            _lStr_memcpy( pchunk->buf._16+offset, poldchunk->buf._16+offset+count, newlen-offset+1 );
         }
         pchunk->len = newlen;
-        pchunk->buf16[newlen]=0;
+        pchunk->buf._16[newlen]=0;
     }
     return *this;
 }
@@ -1967,7 +1866,7 @@ void lString16::reserve(size_type n)
     {
         if (pchunk->size < n)
         {
-            pchunk->buf16 = (lChar16*) ::realloc( pchunk->buf16, sizeof(lChar16)*(n+1) );
+            pchunk->buf._16 = (lChar16*) ::realloc( pchunk->buf._16, sizeof(lChar16)*(n+1) );
             pchunk->size = n;
         }
     }
@@ -1976,7 +1875,7 @@ void lString16::reserve(size_type n)
         lstring_chunk_t * poldchunk = pchunk;
         release();
         alloc( n );
-        _lStr_memcpy( pchunk->buf16, poldchunk->buf16, poldchunk->len+1 );
+        _lStr_memcpy( pchunk->buf._16, poldchunk->buf._16, poldchunk->len+1 );
         pchunk->len = poldchunk->len;
     }
 }
@@ -1991,8 +1890,8 @@ void lString16::lock( size_type newsize )
         size_type len = newsize;
         if (len>poldchunk->len)
             len = poldchunk->len;
-        _lStr_memcpy( pchunk->buf16, poldchunk->buf16, len );
-        pchunk->buf16[len]=0;
+        _lStr_memcpy( pchunk->buf._16, poldchunk->buf._16, len );
+        pchunk->buf._16[len]=0;
         pchunk->len = len;
     }
 }
@@ -2005,7 +1904,7 @@ void lString16::reset( size_type size )
         release();
         alloc( size );
     }
-    pchunk->buf16[0] = 0;
+    pchunk->buf._16[0] = 0;
     pchunk->len = 0;
 }
 
@@ -2014,20 +1913,20 @@ void lString16::resize(size_type n, value_type e)
     lock( n );
     if (n>=pchunk->size)
     {
-        pchunk->buf16 = (lChar16*) ::realloc( pchunk->buf16, sizeof(lChar16)*(n+1) );
+        pchunk->buf._16 = (lChar16*) ::realloc( pchunk->buf._16, sizeof(lChar16)*(n+1) );
         pchunk->size = n;
     }
     // fill with data if expanded
     for (size_type i=pchunk->len; i<n; i++)
-        pchunk->buf16[i] = e;
-    pchunk->buf16[pchunk->len] = 0;
+        pchunk->buf._16[i] = e;
+    pchunk->buf._16[pchunk->len] = 0;
 }
 
 lString16 & lString16::append(const value_type * str)
 {
     size_type len = _lStr_len(str);
     reserve( pchunk->len+len );
-    _lStr_memcpy(pchunk->buf16 + pchunk->len, str, len+1);
+    _lStr_memcpy(pchunk->buf._16 + pchunk->len, str, len+1);
     pchunk->len += len;
     return *this;
 }
@@ -2035,7 +1934,7 @@ lString16 & lString16::append(const value_type * str)
 lString16 & lString16::append(const value_type * str, size_type count)
 {
     reserve(pchunk->len + count);
-    _lStr_ncpy(pchunk->buf16 + pchunk->len, str, count);
+    _lStr_ncpy(pchunk->buf._16 + pchunk->len, str, count);
     pchunk->len += count;
     return *this;
 }
@@ -2044,7 +1943,7 @@ lString16 & lString16::append(const lChar8 * str)
 {
     size_type len = _lStr_len(str);
     reserve( pchunk->len+len );
-    _lStr_ncpy(pchunk->buf16 + pchunk->len, str, len + 1);
+    _lStr_ncpy(pchunk->buf._16 + pchunk->len, str, len + 1);
     pchunk->len += len;
     return *this;
 }
@@ -2052,7 +1951,7 @@ lString16 & lString16::append(const lChar8 * str)
 lString16 & lString16::append(const lChar8 * str, size_type count)
 {
     reserve(pchunk->len + count);
-    _lStr_ncpy(pchunk->buf16 + pchunk->len, str, count);
+    _lStr_ncpy(pchunk->buf._16 + pchunk->len, str, count);
     pchunk->len += count;
     return *this;
 }
@@ -2061,7 +1960,7 @@ lString16 & lString16::append(const lString16 & str)
 {
     size_type len2 = pchunk->len + str.pchunk->len;
     reserve( len2 );
-    _lStr_memcpy( pchunk->buf16+pchunk->len, str.pchunk->buf16, str.pchunk->len+1 );
+    _lStr_memcpy( pchunk->buf._16+pchunk->len, str.pchunk->buf._16, str.pchunk->len+1 );
     pchunk->len = len2;
     return *this;
 }
@@ -2073,9 +1972,9 @@ lString16 & lString16::append(const lString16 & str, size_type offset, size_type
         if ( offset + count > str.pchunk->len )
             count = str.pchunk->len - offset;
         reserve( pchunk->len+count );
-        _lStr_ncpy(pchunk->buf16 + pchunk->len, str.pchunk->buf16 + offset, count);
+        _lStr_ncpy(pchunk->buf._16 + pchunk->len, str.pchunk->buf._16 + offset, count);
         pchunk->len += count;
-        pchunk->buf16[pchunk->len] = 0;
+        pchunk->buf._16[pchunk->len] = 0;
     }
     return *this;
 }
@@ -2083,9 +1982,9 @@ lString16 & lString16::append(const lString16 & str, size_type offset, size_type
 lString16 & lString16::append(size_type count, value_type ch)
 {
     reserve( pchunk->len+count );
-    _lStr_memset(pchunk->buf16+pchunk->len, ch, count);
+    _lStr_memset(pchunk->buf._16+pchunk->len, ch, count);
     pchunk->len += count;
-    pchunk->buf16[pchunk->len] = 0;
+    pchunk->buf._16[pchunk->len] = 0;
     return *this;
 }
 
@@ -2096,10 +1995,10 @@ lString16 & lString16::insert(size_type p0, const value_type * str)
     int count = lStr_len(str);
     reserve( pchunk->len+count );
     for (size_type i=pchunk->len+count; i>p0; i--)
-        pchunk->buf16[i] = pchunk->buf16[i-1];
-    _lStr_memcpy(pchunk->buf16 + p0, str, count);
+        pchunk->buf._16[i] = pchunk->buf._16[i-1];
+    _lStr_memcpy(pchunk->buf._16 + p0, str, count);
     pchunk->len += count;
-    pchunk->buf16[pchunk->len] = 0;
+    pchunk->buf._16[pchunk->len] = 0;
     return *this;
 }
 
@@ -2109,10 +2008,10 @@ lString16 & lString16::insert(size_type p0, const value_type * str, size_type co
         p0 = pchunk->len;
     reserve( pchunk->len+count );
     for (size_type i=pchunk->len+count; i>p0; i--)
-        pchunk->buf16[i] = pchunk->buf16[i-1];
-    _lStr_memcpy(pchunk->buf16 + p0, str, count);
+        pchunk->buf._16[i] = pchunk->buf._16[i-1];
+    _lStr_memcpy(pchunk->buf._16 + p0, str, count);
     pchunk->len += count;
-    pchunk->buf16[pchunk->len] = 0;
+    pchunk->buf._16[pchunk->len] = 0;
     return *this;
 }
 
@@ -2122,10 +2021,10 @@ lString16 & lString16::insert(size_type p0, size_type count, value_type ch)
         p0 = pchunk->len;
     reserve( pchunk->len+count );
     for (size_type i=pchunk->len+count; i>p0; i--)
-        pchunk->buf16[i] = pchunk->buf16[i-1];
-    _lStr_memset(pchunk->buf16+p0, ch, count);
+        pchunk->buf._16[i] = pchunk->buf._16[i-1];
+    _lStr_memset(pchunk->buf._16+p0, ch, count);
     pchunk->len += count;
-    pchunk->buf16[pchunk->len] = 0;
+    pchunk->buf._16[pchunk->len] = 0;
     return *this;
 }
 
@@ -2136,10 +2035,10 @@ lString16 & lString16::insert(size_type p0, const lString16 & str)
     int count = str.length();
     reserve( pchunk->len+count );
     for (size_type i=pchunk->len+count; i>p0; i--)
-        pchunk->buf16[i] = pchunk->buf16[i-1];
-    _lStr_memcpy(pchunk->buf16 + p0, str.c_str(), count);
+        pchunk->buf._16[i] = pchunk->buf._16[i-1];
+    _lStr_memcpy(pchunk->buf._16 + p0, str.c_str(), count);
     pchunk->len += count;
-    pchunk->buf16[pchunk->len] = 0;
+    pchunk->buf._16[pchunk->len] = 0;
     return *this;
 }
 
@@ -2149,7 +2048,7 @@ lString16 lString16::substr(size_type pos, size_type n) const
         return lString16::empty_str;
     if (pos+n>length())
         n = length() - pos;
-    return lString16( pchunk->buf16 + pos, n );
+    return lString16( pchunk->buf._16 + pos, n );
 }
 
 lString16 & lString16::pack()
@@ -2162,7 +2061,7 @@ lString16 & lString16::pack()
         }
         else
         {
-            pchunk->buf16 = cr_realloc( pchunk->buf16, pchunk->len + 1 );
+            pchunk->buf._16 = cr_realloc( pchunk->buf._16, pchunk->len + 1 );
             pchunk->size = pchunk->len;
         }
     }
@@ -2174,7 +2073,7 @@ lString16 & lString16::trimNonAlpha()
 {
     int firstns;
     for (firstns = 0; firstns<pchunk->len &&
-        !isAlNum(pchunk->buf16[firstns]); ++firstns)
+        !isAlNum(pchunk->buf._16[firstns]); ++firstns)
         ;
     if (firstns >= pchunk->len)
     {
@@ -2183,7 +2082,7 @@ lString16 & lString16::trimNonAlpha()
     }
     int lastns;
     for (lastns = pchunk->len-1; lastns>0 &&
-        !isAlNum(pchunk->buf16[lastns]); --lastns)
+        !isAlNum(pchunk->buf._16[lastns]); --lastns)
         ;
     int newlen = lastns-firstns+1;
     if (newlen == pchunk->len)
@@ -2191,8 +2090,8 @@ lString16 & lString16::trimNonAlpha()
     if (refCount()==1)
     {
         if (firstns>0)
-            lStr_memcpy( pchunk->buf16, pchunk->buf16 + firstns, newlen );
-        pchunk->buf16[newlen] = 0;
+            lStr_memcpy( pchunk->buf._16, pchunk->buf._16 + firstns, newlen );
+        pchunk->buf._16[newlen] = 0;
         pchunk->len = newlen;
     }
     else
@@ -2200,8 +2099,8 @@ lString16 & lString16::trimNonAlpha()
         lstring_chunk_t * poldchunk = pchunk;
         release();
         alloc( newlen );
-        _lStr_memcpy( pchunk->buf16, poldchunk->buf16+firstns, newlen );
-        pchunk->buf16[newlen] = 0;
+        _lStr_memcpy( pchunk->buf._16, poldchunk->buf._16+firstns, newlen );
+        pchunk->buf._16[newlen] = 0;
         pchunk->len = newlen;
     }
     return *this;
@@ -2212,7 +2111,7 @@ lString16 & lString16::trim()
     //
     int firstns;
     for (firstns = 0; firstns<pchunk->len &&
-        (pchunk->buf16[firstns]==' ' || pchunk->buf16[firstns]=='\t'); ++firstns)
+        (pchunk->buf._16[firstns]==' ' || pchunk->buf._16[firstns]=='\t'); ++firstns)
         ;
     if (firstns >= pchunk->len)
     {
@@ -2221,7 +2120,7 @@ lString16 & lString16::trim()
     }
     int lastns;
     for (lastns = pchunk->len-1; lastns>0 &&
-        (pchunk->buf16[lastns]==' ' || pchunk->buf16[lastns]=='\t'); --lastns)
+        (pchunk->buf._16[lastns]==' ' || pchunk->buf._16[lastns]=='\t'); --lastns)
         ;
     int newlen = lastns-firstns+1;
     if (newlen == pchunk->len)
@@ -2229,8 +2128,8 @@ lString16 & lString16::trim()
     if (refCount()==1)
     {
         if (firstns>0)
-            lStr_memcpy( pchunk->buf16, pchunk->buf16+firstns, newlen );
-        pchunk->buf16[newlen] = 0;
+            lStr_memcpy( pchunk->buf._16, pchunk->buf._16+firstns, newlen );
+        pchunk->buf._16[newlen] = 0;
         pchunk->len = newlen;
     }
     else
@@ -2238,8 +2137,8 @@ lString16 & lString16::trim()
         lstring_chunk_t * poldchunk = pchunk;
         release();
         alloc( newlen );
-        _lStr_memcpy( pchunk->buf16, poldchunk->buf16+firstns, newlen );
-        pchunk->buf16[newlen] = 0;
+        _lStr_memcpy( pchunk->buf._16, poldchunk->buf._16+firstns, newlen );
+        pchunk->buf._16[newlen] = 0;
         pchunk->len = newlen;
     }
     return *this;
@@ -2318,7 +2217,7 @@ lUInt32 lString16::getHash() const
 {
     lUInt32 res = 0;
     for (lInt32 i=0; i<pchunk->len; i++)
-        res = res * STRING_HASH_MULT + pchunk->buf16[i];
+        res = res * STRING_HASH_MULT + pchunk->buf._16[i];
     return res;
 }
 
@@ -2344,7 +2243,7 @@ void lString8::free()
 {
     if ( pchunk==EMPTY_STR_8 )
         return;
-    ::free(pchunk->buf8);
+    ::free(pchunk->buf._8);
 #if (LDOM_USE_OWN_MEM_MAN == 1)
     for (int i=slices_count-1; i>=0; --i)
     {
@@ -2364,8 +2263,8 @@ void lString8::alloc(int sz)
 #else
     pchunk = (lstring_chunk_t*)::malloc(sizeof(lstring_chunk_t));
 #endif
-    pchunk->buf8 = (lChar8*) ::malloc( sizeof(lChar8) * (sz+1) );
-    assert( pchunk->buf8!=NULL );
+    pchunk->buf._8 = (lChar8*) ::malloc( sizeof(lChar8) * (sz+1) );
+    assert( pchunk->buf._8!=NULL );
     pchunk->size = sz;
     pchunk->refCount = 1;
 }
@@ -2381,7 +2280,7 @@ lString8::lString8(const lChar8 * str)
     size_type len = _lStr_len(str);
     alloc( len );
     pchunk->len = len;
-    _lStr_cpy( pchunk->buf8, str );
+    _lStr_cpy( pchunk->buf._8, str );
 }
 
 lString8::lString8(const lChar32 * str)
@@ -2395,7 +2294,7 @@ lString8::lString8(const lChar32 * str)
     size_type len = _lStr_len(str);
     alloc( len );
     pchunk->len = len;
-    _lStr_cpy( pchunk->buf8, str );
+    _lStr_cpy( pchunk->buf._8, str );
 }
 
 lString8::lString8(const value_type * str, size_type count)
@@ -2408,7 +2307,7 @@ lString8::lString8(const value_type * str, size_type count)
     {
         size_type len = _lStr_nlen(str, count);
         alloc(len);
-        _lStr_ncpy( pchunk->buf8, str, len );
+        _lStr_ncpy( pchunk->buf._8, str, len );
         pchunk->len = len;
     }
 }
@@ -2424,8 +2323,8 @@ lString8::lString8(const lString8 & str, size_type offset, size_type count)
     else
     {
         alloc(count);
-        _lStr_memcpy( pchunk->buf8, str.pchunk->buf8+offset, count );
-        pchunk->buf8[count]=0;
+        _lStr_memcpy( pchunk->buf._8, str.pchunk->buf._8+offset, count );
+        pchunk->buf._8[count]=0;
         pchunk->len = count;
     }
 }
@@ -2444,7 +2343,7 @@ lString8 & lString8::assign(const lChar8 * str)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf8 = (lChar8*) ::realloc( pchunk->buf8, sizeof(lChar8)*(len+1) );
+                pchunk->buf._8 = (lChar8*) ::realloc( pchunk->buf._8, sizeof(lChar8)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -2453,7 +2352,7 @@ lString8 & lString8::assign(const lChar8 * str)
             release();
             alloc(len);
         }
-        _lStr_cpy( pchunk->buf8, str );
+        _lStr_cpy( pchunk->buf._8, str );
         pchunk->len = len;
     }
     return *this;
@@ -2473,7 +2372,7 @@ lString8 & lString8::assign(const lChar8 * str, size_type count)
             if (pchunk->size<=len)
             {
                 // resize is necessary
-                pchunk->buf8 = (lChar8*) ::realloc( pchunk->buf8, sizeof(lChar8)*(len+1) );
+                pchunk->buf._8 = (lChar8*) ::realloc( pchunk->buf._8, sizeof(lChar8)*(len+1) );
                 pchunk->size = len+1;
             }
         }
@@ -2482,7 +2381,7 @@ lString8 & lString8::assign(const lChar8 * str, size_type count)
             release();
             alloc(len);
         }
-        _lStr_ncpy( pchunk->buf8, str, count );
+        _lStr_ncpy( pchunk->buf._8, str, count );
         pchunk->len = len;
     }
     return *this;
@@ -2507,9 +2406,9 @@ lString8 & lString8::assign(const lString8 & str, size_type offset, size_type co
             }
             if (offset>0)
             {
-                _lStr_memcpy( pchunk->buf8, str.pchunk->buf8+offset, count );
+                _lStr_memcpy( pchunk->buf._8, str.pchunk->buf._8+offset, count );
             }
-            pchunk->buf8[count]=0;
+            pchunk->buf._8[count]=0;
         }
         else
         {
@@ -2518,7 +2417,7 @@ lString8 & lString8::assign(const lString8 & str, size_type offset, size_type co
                 if (pchunk->size<=count)
                 {
                     // resize is necessary
-                    pchunk->buf8 = (lChar8*) ::realloc( pchunk->buf8, sizeof(lChar8)*(count+1) );
+                    pchunk->buf._8 = (lChar8*) ::realloc( pchunk->buf._8, sizeof(lChar8)*(count+1) );
                     pchunk->size = count+1;
                 }
             }
@@ -2527,8 +2426,8 @@ lString8 & lString8::assign(const lString8 & str, size_type offset, size_type co
                 release();
                 alloc(count);
             }
-            _lStr_memcpy( pchunk->buf8, str.pchunk->buf8+offset, count );
-            pchunk->buf8[count]=0;
+            _lStr_memcpy( pchunk->buf._8, str.pchunk->buf._8+offset, count );
+            pchunk->buf._8[count]=0;
         }
         pchunk->len = count;
     }
@@ -2548,18 +2447,18 @@ lString8 & lString8::erase(size_type offset, size_type count)
         size_type newlen = length()-count;
         if (refCount()==1)
         {
-            _lStr_memcpy( pchunk->buf8+offset, pchunk->buf8+offset+count, newlen-offset+1 );
+            _lStr_memcpy( pchunk->buf._8+offset, pchunk->buf._8+offset+count, newlen-offset+1 );
         }
         else
         {
             lstring_chunk_t * poldchunk = pchunk;
             release();
             alloc( newlen );
-            _lStr_memcpy( pchunk->buf8, poldchunk->buf8, offset );
-            _lStr_memcpy( pchunk->buf8+offset, poldchunk->buf8+offset+count, newlen-offset+1 );
+            _lStr_memcpy( pchunk->buf._8, poldchunk->buf._8, offset );
+            _lStr_memcpy( pchunk->buf._8+offset, poldchunk->buf._8+offset+count, newlen-offset+1 );
         }
         pchunk->len = newlen;
-        pchunk->buf8[newlen]=0;
+        pchunk->buf._8[newlen]=0;
     }
     return *this;
 }
@@ -2570,7 +2469,7 @@ void lString8::reserve(size_type n)
     {
         if (pchunk->size < n)
         {
-            pchunk->buf8 = (lChar8*) ::realloc( pchunk->buf8, sizeof(lChar8)*(n+1) );
+            pchunk->buf._8 = (lChar8*) ::realloc( pchunk->buf._8, sizeof(lChar8)*(n+1) );
             pchunk->size = n;
         }
     }
@@ -2579,7 +2478,7 @@ void lString8::reserve(size_type n)
         lstring_chunk_t * poldchunk = pchunk;
         release();
         alloc( n );
-        _lStr_memcpy( pchunk->buf8, poldchunk->buf8, poldchunk->len+1 );
+        _lStr_memcpy( pchunk->buf._8, poldchunk->buf._8, poldchunk->len+1 );
         pchunk->len = poldchunk->len;
     }
 }
@@ -2594,8 +2493,8 @@ void lString8::lock( size_type newsize )
         size_type len = newsize;
         if (len>poldchunk->len)
             len = poldchunk->len;
-        _lStr_memcpy( pchunk->buf8, poldchunk->buf8, len );
-        pchunk->buf8[len]=0;
+        _lStr_memcpy( pchunk->buf._8, poldchunk->buf._8, len );
+        pchunk->buf._8[len]=0;
         pchunk->len = len;
     }
 }
@@ -2608,7 +2507,7 @@ void lString8::reset( size_type size )
         release();
         alloc( size );
     }
-    pchunk->buf8[0] = 0;
+    pchunk->buf._8[0] = 0;
     pchunk->len = 0;
 }
 
@@ -2617,20 +2516,20 @@ void lString8::resize(size_type n, lChar8 e)
     lock( n );
     if (n>=pchunk->size)
     {
-        pchunk->buf8 = (lChar8*) ::realloc( pchunk->buf8, sizeof(lChar8)*(n+1) );
+        pchunk->buf._8 = (lChar8*) ::realloc( pchunk->buf._8, sizeof(lChar8)*(n+1) );
         pchunk->size = n;
     }
     // fill with data if expanded
     for (size_type i=pchunk->len; i<n; i++)
-        pchunk->buf8[i] = e;
-    pchunk->buf8[pchunk->len] = 0;
+        pchunk->buf._8[i] = e;
+    pchunk->buf._8[pchunk->len] = 0;
 }
 
 lString8 & lString8::append(const lChar8 * str)
 {
     size_type len = _lStr_len(str);
     reserve( pchunk->len+len );
-    _lStr_memcpy(pchunk->buf8+pchunk->len, str, len+1);
+    _lStr_memcpy(pchunk->buf._8+pchunk->len, str, len+1);
     pchunk->len += len;
     return *this;
 }
@@ -2762,7 +2661,7 @@ lString8 & lString8::append(const lChar8 * str, size_type count)
 {
     size_type len = _lStr_nlen(str, count);
     reserve( pchunk->len+len );
-    _lStr_ncpy(pchunk->buf8+pchunk->len, str, len);
+    _lStr_ncpy(pchunk->buf._8+pchunk->len, str, len);
     pchunk->len += len;
     return *this;
 }
@@ -2771,7 +2670,7 @@ lString8 & lString8::append(const lString8 & str)
 {
     size_type len2 = pchunk->len + str.pchunk->len;
     reserve( len2 );
-    _lStr_memcpy( pchunk->buf8+pchunk->len, str.pchunk->buf8, str.pchunk->len+1 );
+    _lStr_memcpy( pchunk->buf._8+pchunk->len, str.pchunk->buf._8, str.pchunk->len+1 );
     pchunk->len = len2;
     return *this;
 }
@@ -2783,9 +2682,9 @@ lString8 & lString8::append(const lString8 & str, size_type offset, size_type co
         if ( offset + count > str.pchunk->len )
             count = str.pchunk->len - offset;
         reserve( pchunk->len+count );
-        _lStr_ncpy(pchunk->buf8 + pchunk->len, str.pchunk->buf8 + offset, count);
+        _lStr_ncpy(pchunk->buf._8 + pchunk->len, str.pchunk->buf._8 + offset, count);
         pchunk->len += count;
-        pchunk->buf8[pchunk->len] = 0;
+        pchunk->buf._8[pchunk->len] = 0;
     }
     return *this;
 }
@@ -2793,10 +2692,10 @@ lString8 & lString8::append(const lString8 & str, size_type offset, size_type co
 lString8 & lString8::append(size_type count, lChar8 ch)
 {
     reserve( pchunk->len+count );
-    memset( pchunk->buf8+pchunk->len, ch, count );
-    //_lStr_memset(pchunk->buf8+pchunk->len, ch, count);
+    memset( pchunk->buf._8+pchunk->len, ch, count );
+    //_lStr_memset(pchunk->buf._8+pchunk->len, ch, count);
     pchunk->len += count;
-    pchunk->buf8[pchunk->len] = 0;
+    pchunk->buf._8[pchunk->len] = 0;
     return *this;
 }
 
@@ -2806,11 +2705,11 @@ lString8 & lString8::insert(size_type p0, size_type count, lChar8 ch)
         p0 = pchunk->len;
     reserve( pchunk->len+count );
     for (size_type i=pchunk->len-1; i>=p0; i--)
-        pchunk->buf8[i+count] = pchunk->buf8[i];
-    //_lStr_memset(pchunk->buf8+p0, ch, count);
-    memset(pchunk->buf8+p0, ch, count);
+        pchunk->buf._8[i+count] = pchunk->buf._8[i];
+    //_lStr_memset(pchunk->buf._8+p0, ch, count);
+    memset(pchunk->buf._8+p0, ch, count);
     pchunk->len += count;
-    pchunk->buf8[pchunk->len] = 0;
+    pchunk->buf._8[pchunk->len] = 0;
     return *this;
 }
 
@@ -2820,14 +2719,14 @@ lString8 lString8::substr(size_type pos, size_type n) const
         return lString8::empty_str;
     if (pos+n>length())
         n = length() - pos;
-    return lString8( pchunk->buf8+pos, n );
+    return lString8( pchunk->buf._8+pos, n );
 }
 
 int lString8::pos(lChar8 ch) const
 {
     for (int i = 0; i < length(); i++)
     {
-        if (pchunk->buf8[i] == ch)
+        if (pchunk->buf._8[i] == ch)
         {
             return i;
         }
@@ -2841,7 +2740,7 @@ int lString8::pos(lChar8 ch, int start) const
         return -1;
     for (int i = start; i < length(); i++)
     {
-        if (pchunk->buf8[i] == ch)
+        if (pchunk->buf._8[i] == ch)
         {
             return i;
         }
@@ -2859,7 +2758,7 @@ int lString8::pos(const lString8 & subStr) const
     {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf8[i+j]!=subStr.pchunk->buf8[j])
+            if (pchunk->buf._8[i+j]!=subStr.pchunk->buf._8[j])
             {
                 flg = 0;
                 break;
@@ -2883,7 +2782,7 @@ int lString8::rpos(const char * subStr) const
     {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf8[i+j] != subStr[j])
+            if (pchunk->buf._8[i+j] != subStr[j])
             {
                 flg = 0;
                 break;
@@ -2907,7 +2806,7 @@ int lString8::pos(const char * subStr) const
     {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf8[i+j] != subStr[j])
+            if (pchunk->buf._8[i+j] != subStr[j])
             {
                 flg = 0;
                 break;
@@ -2927,7 +2826,7 @@ int lString8::pos(const lString8 & subStr, int startPos) const
     for (int i = startPos; i <= dl; i++) {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf8[i+j]!=subStr.pchunk->buf8[j])
+            if (pchunk->buf._8[i+j]!=subStr.pchunk->buf._8[j])
             {
                 flg = 0;
                 break;
@@ -2941,7 +2840,7 @@ int lString8::pos(const lString8 & subStr, int startPos) const
 int lString32::pos(lChar32 ch) const {
     for (int i = 0; i < length(); i++)
     {
-        if (pchunk->buf32[i] == ch)
+        if (pchunk->buf._32[i] == ch)
         {
             return i;
         }
@@ -2955,7 +2854,7 @@ int lString32::pos(lChar32 ch, int start) const
         return -1;
     for (int i = start; i < length(); i++)
     {
-        if (pchunk->buf32[i] == ch)
+        if (pchunk->buf._32[i] == ch)
         {
             return i;
         }
@@ -2972,7 +2871,7 @@ int lString32::pos(const lString32 & subStr, int startPos) const
     for (int i = startPos; i <= dl; i++) {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf32[i+j]!=subStr.pchunk->buf32[j])
+            if (pchunk->buf._32[i+j]!=subStr.pchunk->buf._32[j])
             {
                 flg = 0;
                 break;
@@ -2995,7 +2894,7 @@ int lString8::pos(const char * subStr, int startPos) const
     for (int i = startPos; i <= dl; i++) {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf8[i+j] != subStr[j])
+            if (pchunk->buf._8[i+j] != subStr[j])
             {
                 flg = 0;
                 break;
@@ -3018,7 +2917,7 @@ int lString32::pos(const lChar32 * subStr, int startPos) const
     for (int i = startPos; i <= dl; i++) {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf32[i+j] != subStr[j])
+            if (pchunk->buf._32[i+j] != subStr[j])
             {
                 flg = 0;
                 break;
@@ -3040,7 +2939,7 @@ int lString32::rpos(lString32 subStr) const
     {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf32[i+j]!=subStr.pchunk->buf32[j])
+            if (pchunk->buf._32[i+j]!=subStr.pchunk->buf._32[j])
             {
                 flg = 0;
                 break;
@@ -3064,7 +2963,7 @@ int lString32::pos(const lChar32 * subStr) const
     {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf32[i+j] != subStr[j])
+            if (pchunk->buf._32[i+j] != subStr[j])
             {
                 flg = 0;
                 break;
@@ -3088,7 +2987,7 @@ int lString32::pos(const lChar8 * subStr) const
     {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf32[i+j] != subStr[j])
+            if (pchunk->buf._32[i+j] != subStr[j])
             {
                 flg = 0;
                 break;
@@ -3112,7 +3011,7 @@ int lString32::pos(const lChar8 * subStr, int start) const
     {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf32[i+j] != subStr[j])
+            if (pchunk->buf._32[i+j] != subStr[j])
             {
                 flg = 0;
                 break;
@@ -3133,7 +3032,7 @@ int lString32::pos(lString32 subStr) const
     {
         int flg = 1;
         for (int j=0; j<l; j++)
-            if (pchunk->buf32[i+j]!=subStr.pchunk->buf32[j])
+            if (pchunk->buf._32[i+j]!=subStr.pchunk->buf._32[j])
             {
                 flg = 0;
                 break;
@@ -3154,7 +3053,7 @@ lString8 & lString8::pack()
         }
         else
         {
-            pchunk->buf8 = cr_realloc( pchunk->buf8, pchunk->len+1 );
+            pchunk->buf._8 = cr_realloc( pchunk->buf._8, pchunk->len+1 );
             pchunk->size = pchunk->len;
         }
     }
@@ -3167,8 +3066,8 @@ lString8 & lString8::trim()
     int firstns;
     for (firstns = 0;
             firstns < pchunk->len &&
-            (pchunk->buf8[firstns] == ' ' ||
-            pchunk->buf8[firstns] == '\t');
+            (pchunk->buf._8[firstns] == ' ' ||
+            pchunk->buf._8[firstns] == '\t');
             ++firstns)
         ;
     if (firstns >= pchunk->len)
@@ -3179,7 +3078,7 @@ lString8 & lString8::trim()
     size_t lastns;
     for (lastns = pchunk->len-1;
             lastns>0 &&
-            (pchunk->buf8[lastns]==' ' || pchunk->buf8[lastns]=='\t');
+            (pchunk->buf._8[lastns]==' ' || pchunk->buf._8[lastns]=='\t');
             --lastns)
         ;
     int newlen = (int)(lastns - firstns + 1);
@@ -3188,8 +3087,8 @@ lString8 & lString8::trim()
     if (refCount()==1)
     {
         if (firstns>0)
-            lStr_memcpy( pchunk->buf8, pchunk->buf8+firstns, newlen );
-        pchunk->buf8[newlen] = 0;
+            lStr_memcpy( pchunk->buf._8, pchunk->buf._8+firstns, newlen );
+        pchunk->buf._8[newlen] = 0;
         pchunk->len = newlen;
     }
     else
@@ -3197,8 +3096,8 @@ lString8 & lString8::trim()
         lstring_chunk_t * poldchunk = pchunk;
         release();
         alloc( newlen );
-        _lStr_memcpy( pchunk->buf8, poldchunk->buf8+firstns, newlen );
-        pchunk->buf8[newlen] = 0;
+        _lStr_memcpy( pchunk->buf._8, poldchunk->buf._8+firstns, newlen );
+        pchunk->buf._8[newlen] = 0;
         pchunk->len = newlen;
     }
     return *this;
@@ -3661,7 +3560,7 @@ lUInt32 lString8::getHash() const
 {
     lUInt32 res = 0;
     for (int i=0; i < pchunk->len; i++)
-        res = res * STRING_HASH_MULT + pchunk->buf8[i];
+        res = res * STRING_HASH_MULT + pchunk->buf._8[i];
     return res;
 }
 
@@ -5709,7 +5608,7 @@ void  lString16::limit( size_type sz )
     if ( length() > sz ) {
         modify();
         pchunk->len = sz;
-        pchunk->buf16[sz] = 0;
+        pchunk->buf._16[sz] = 0;
     }
 }
 
@@ -5718,7 +5617,7 @@ void  lString32::limit( size_type sz )
     if ( length() > sz ) {
         modify();
         pchunk->len = sz;
-        pchunk->buf32[sz] = 0;
+        pchunk->buf._32[sz] = 0;
     }
 }
 
