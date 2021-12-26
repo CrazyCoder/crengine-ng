@@ -26,7 +26,7 @@
 
 class LVContainer;
 
-class LVStorageObject : public LVRefCounter
+class LVStorageObject: public LVRefCounter
 {
 public:
     // construction/destruction
@@ -34,34 +34,29 @@ public:
     virtual ~LVStorageObject() { }
     // storage object methods
     /// returns true for container (directory), false for stream (file)
-    virtual bool IsContainer()
-    {
+    virtual bool IsContainer() {
         return false;
     }
     /// returns stream/container name, may be NULL if unknown
-    virtual const lChar32 * GetName()
-    {
+    virtual const lChar32* GetName() {
         return NULL;
     }
     /// sets stream/container name, may be not implemented for some objects
-    virtual void SetName(const lChar32 * name)
-    {
+    virtual void SetName(const lChar32* name) {
     }
     /// returns parent container, if opened from container
-    virtual LVContainer * GetParentContainer()
-    {
+    virtual LVContainer* GetParentContainer() {
         return NULL;
     }
     /// returns object size (file size or directory entry count)
-    virtual lverror_t GetSize( lvsize_t * pSize ) = 0;
+    virtual lverror_t GetSize(lvsize_t* pSize) = 0;
     /// returns object size (file size or directory entry count)
-    virtual lvsize_t GetSize( )
-    {
+    virtual lvsize_t GetSize() {
         lvsize_t sz;
-        if ( GetSize( &sz )!=LVERR_OK )
+        if (GetSize(&sz) != LVERR_OK)
             return LV_INVALID_SIZE;
         return sz;
     }
 };
 
-#endif  // __LVSTORAGEOBJECT_H_INCLUDED__
+#endif // __LVSTORAGEOBJECT_H_INCLUDED__

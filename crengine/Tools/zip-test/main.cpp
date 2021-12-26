@@ -7,14 +7,13 @@
 
 #include <stdio.h>
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     const char* fname;
     const char* inner_fname = 0;
     if (argc > 1) {
         fname = argv[1];
-    if (argc > 2)
-        inner_fname = argv[2];
+        if (argc > 2)
+            inner_fname = argv[2];
     } else {
         printf("You must specify path to archive!\n");
         return 1;
@@ -24,18 +23,18 @@ int main(int argc, char* argv[])
     CRLog::setLogLevel(CRLog::LL_TRACE);
 
     lString32Collection list;
-    LVStreamRef stream = LVOpenFileStream( fname, LVOM_READ );
+    LVStreamRef stream = LVOpenFileStream(fname, LVOM_READ);
     LVContainerRef arc;
-    if ( !stream.isNull() ) {
+    if (!stream.isNull()) {
         arc = LVOpenArchieve(stream);
-        if ( !arc.isNull() ) {
+        if (!arc.isNull()) {
             // convert
-            for ( int i=0; i<arc->GetObjectCount(); i++ ) {
-                const LVContainerItemInfo * item = arc->GetObjectInfo(i);
-                if ( item->IsContainer())
+            for (int i = 0; i < arc->GetObjectCount(); i++) {
+                const LVContainerItemInfo* item = arc->GetObjectInfo(i);
+                if (item->IsContainer())
                     continue;
-                list.add( item->GetName() );
-                list.add( lString32::itoa((lUInt64)item->GetSize()) );
+                list.add(item->GetName());
+                list.add(lString32::itoa((lUInt64)item->GetSize()));
             }
         } else {
             printf("Failed to open archive!\n");
@@ -87,10 +86,10 @@ int main(int argc, char* argv[])
 
 #if 1
     printf("Archive contents:\n");
-    for (int i = 0; i < list.length()/2; i++) {
-        lString32 name = list[i*2];
+    for (int i = 0; i < list.length() / 2; i++) {
+        lString32 name = list[i * 2];
         lInt64 size;
-        if (!list[i*2+1].atoi(size))
+        if (!list[i * 2 + 1].atoi(size))
             size = 0;
         printf("  %s: %lld\n", LCSTR(name), size);
     }

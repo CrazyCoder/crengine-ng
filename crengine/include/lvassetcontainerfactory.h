@@ -25,12 +25,13 @@
 #include <lvcontainer.h>
 
 /// factory to handle filesystem access for paths started with ASSET_PATH_PREFIX (@ sign)
-class LVAssetContainerFactory {
+class LVAssetContainerFactory
+{
 public:
     virtual LVContainerRef openAssetContainer(lString32 path) = 0;
     virtual LVStreamRef openAssetStream(lString32 path) = 0;
-    LVAssetContainerFactory() {}
-    virtual ~LVAssetContainerFactory() {}
+    LVAssetContainerFactory() { }
+    virtual ~LVAssetContainerFactory() { }
 };
 
-#endif  // __LVASSETCONTAINERFACTORY_H_INCLUDED__
+#endif // __LVASSETCONTAINERFACTORY_H_INCLUDED__

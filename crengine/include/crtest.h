@@ -6,14 +6,13 @@
 #include <lvstream.h>
 #include <crlog.h>
 
-#define MYASSERT(x,t) \
-    if (!(x)) { \
-            CRLog::error("Assertion failed at %s #%d : %s", __FILE__, __LINE__, t); \
-            crFatalError(1111, "Exiting: UnitTest assertion failed"); \
+#define MYASSERT(x, t)                                                          \
+    if (!(x)) {                                                                 \
+        CRLog::error("Assertion failed at %s #%d : %s", __FILE__, __LINE__, t); \
+        crFatalError(1111, "Exiting: UnitTest assertion failed");               \
     }
 
-
-LVStreamRef LVCreateCompareTestStream( LVStreamRef stream1, LVStreamRef stream2 );
+LVStreamRef LVCreateCompareTestStream(LVStreamRef stream1, LVStreamRef stream2);
 
 void runCRUnitTests();
 

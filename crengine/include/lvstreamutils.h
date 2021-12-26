@@ -23,7 +23,7 @@
     \param mode is mode file should be opened in
     \return reference to opened stream if success, NULL if error
 */
-LVStreamRef LVOpenFileStream( const lChar32 * pathname, int mode );
+LVStreamRef LVOpenFileStream(const lChar32* pathname, int mode);
 
 /// Open file stream
 /**
@@ -31,32 +31,32 @@ LVStreamRef LVOpenFileStream( const lChar32 * pathname, int mode );
     \param mode is mode file should be opened in
     \return reference to opened stream if success, NULL if error
 */
-LVStreamRef LVOpenFileStream( const lChar8 * pathname, int mode );
+LVStreamRef LVOpenFileStream(const lChar8* pathname, int mode);
 
 /// Open memory mapped file
 /**
     \param pathname is file name to open (unicode)
     \param mode is mode file should be opened in (LVOM_READ or LVOM_APPEND only)
-	\param minSize is minimum file size for R/W mode
+    \param minSize is minimum file size for R/W mode
     \return reference to opened stream if success, NULL if error
 */
-LVStreamRef LVMapFileStream( const lChar32 * pathname, lvopen_mode_t mode, lvsize_t minSize );
+LVStreamRef LVMapFileStream(const lChar32* pathname, lvopen_mode_t mode, lvsize_t minSize);
 
 /// Open memory mapped file
 /**
     \param pathname is file name to open (unicode)
     \param mode is mode file should be opened in (LVOM_READ or LVOM_APPEND only)
-	\param minSize is minimum file size for R/W mode
+    \param minSize is minimum file size for R/W mode
     \return reference to opened stream if success, NULL if error
 */
-LVStreamRef LVMapFileStream( const lChar8 * pathname, lvopen_mode_t mode, lvsize_t minSize );
+LVStreamRef LVMapFileStream(const lChar8* pathname, lvopen_mode_t mode, lvsize_t minSize);
 
 /// Open archieve from stream
 /**
     \param stream is archieve file stream
     \return reference to opened archieve if success, NULL reference if error
 */
-LVContainerRef LVOpenArchieve( LVStreamRef stream );
+LVContainerRef LVOpenArchieve(LVStreamRef stream);
 
 /// Creates memory stream
 /**
@@ -66,111 +66,110 @@ LVContainerRef LVOpenArchieve( LVStreamRef stream );
     \param mode is open mode
     \return reference to opened stream if success, NULL reference if error
 */
-LVStreamRef LVCreateMemoryStream( void * buf = NULL, int bufSize = 0, bool createCopy = false, lvopen_mode_t mode = LVOM_READ );
+LVStreamRef LVCreateMemoryStream(void* buf = NULL, int bufSize = 0, bool createCopy = false, lvopen_mode_t mode = LVOM_READ);
 /// Creates memory stream as copy of another stream.
-LVStreamRef LVCreateMemoryStream( LVStreamRef srcStream );
+LVStreamRef LVCreateMemoryStream(LVStreamRef srcStream);
 /// Creates memory stream as copy of file contents.
-LVStreamRef LVCreateMemoryStream( lString32 filename );
+LVStreamRef LVCreateMemoryStream(lString32 filename);
 /// Creates memory stream as copy of string contents
-LVStreamRef LVCreateStringStream( lString8 data );
+LVStreamRef LVCreateStringStream(lString8 data);
 /// Creates memory stream as copy of string contents
-LVStreamRef LVCreateStringStream( lString32 data );
+LVStreamRef LVCreateStringStream(lString32 data);
 
 /// creates cache buffers for stream, to write data by big blocks to optimize Flash drives writing performance
-LVStreamRef LVCreateBlockWriteStream( LVStreamRef baseStream, int blockSize, int blockCount );
+LVStreamRef LVCreateBlockWriteStream(LVStreamRef baseStream, int blockSize, int blockCount);
 
-LVContainerRef LVOpenDirectory( const lChar32 * path, const char32_t * mask = U"*.*" );
-LVContainerRef LVOpenDirectory(const lString32& path, const char32_t * mask = U"*.*" );
-LVContainerRef LVOpenDirectory(const lString8& path, const char32_t * mask = U"*.*" );
+LVContainerRef LVOpenDirectory(const lChar32* path, const char32_t* mask = U"*.*");
+LVContainerRef LVOpenDirectory(const lString32& path, const char32_t* mask = U"*.*");
+LVContainerRef LVOpenDirectory(const lString8& path, const char32_t* mask = U"*.*");
 
 bool LVDirectoryIsEmpty(const lString8& path);
 bool LVDirectoryIsEmpty(const lString32& path);
 
 /// Create directory if not exist
-bool LVCreateDirectory( lString32 path );
+bool LVCreateDirectory(lString32 path);
 /// delete file, return true if file found and successfully deleted
-bool LVDeleteFile( lString32 filename );
+bool LVDeleteFile(lString32 filename);
 /// delete file, return true if file found and successfully deleted
-bool LVDeleteFile( lString8 filename );
+bool LVDeleteFile(lString8 filename);
 /// delete directory, return true if directory is found and successfully deleted
-bool LVDeleteDirectory( lString32 filename );
+bool LVDeleteDirectory(lString32 filename);
 /// delete directory, return true if directory is found and successfully deleted
-bool LVDeleteDirectory( lString8 filename );
+bool LVDeleteDirectory(lString8 filename);
 /// rename file
 bool LVRenameFile(lString32 oldname, lString32 newname);
 /// rename file
 bool LVRenameFile(lString8 oldname, lString8 newname);
 
 /// copies content of in stream to out stream
-lvsize_t LVPumpStream( LVStreamRef out, LVStreamRef in );
+lvsize_t LVPumpStream(LVStreamRef out, LVStreamRef in);
 /// copies content of in stream to out stream
-lvsize_t LVPumpStream( LVStream * out, LVStream * in );
+lvsize_t LVPumpStream(LVStream* out, LVStream* in);
 
 /// creates buffered stream object for stream
-LVStreamRef LVCreateBufferedStream( LVStreamRef stream, int bufSize );
+LVStreamRef LVCreateBufferedStream(LVStreamRef stream, int bufSize);
 /// creates TCR decoder stream for stream
-LVStreamRef LVCreateTCRDecoderStream( LVStreamRef stream );
+LVStreamRef LVCreateTCRDecoderStream(LVStreamRef stream);
 
 /// returns path part of pathname (appended with / or \ delimiter)
-lString32 LVExtractPath( lString32 pathName, bool appendEmptyPath=true );
+lString32 LVExtractPath(lString32 pathName, bool appendEmptyPath = true);
 /// returns path part of pathname (appended with / or \ delimiter)
-lString8 LVExtractPath( lString8 pathName, bool appendEmptyPath=true );
+lString8 LVExtractPath(lString8 pathName, bool appendEmptyPath = true);
 /// removes first path part from pathname and returns it
-lString32 LVExtractFirstPathElement( lString32 & pathName );
+lString32 LVExtractFirstPathElement(lString32& pathName);
 /// removes last path part from pathname and returns it
-lString32 LVExtractLastPathElement( lString32 & pathName );
+lString32 LVExtractLastPathElement(lString32& pathName);
 /// returns filename part of pathname
-lString32 LVExtractFilename( lString32 pathName );
+lString32 LVExtractFilename(lString32 pathName);
 /// returns filename part of pathname
-lString8 LVExtractFilename( lString8 pathName );
+lString8 LVExtractFilename(lString8 pathName);
 /// returns filename part of pathname without extension
-lString32 LVExtractFilenameWithoutExtension( lString32 pathName );
+lString32 LVExtractFilenameWithoutExtension(lString32 pathName);
 /// appends path delimiter character to end of path, if absent
-void LVAppendPathDelimiter( lString32 & pathName );
+void LVAppendPathDelimiter(lString32& pathName);
 /// appends path delimiter character to end of path, if absent
-void LVAppendPathDelimiter( lString8 & pathName );
+void LVAppendPathDelimiter(lString8& pathName);
 /// removes path delimiter from end of path, if present
-void LVRemoveLastPathDelimiter( lString8 & pathName );
+void LVRemoveLastPathDelimiter(lString8& pathName);
 /// removes path delimiter from end of path, if present
-void LVRemoveLastPathDelimiter( lString32 & pathName );
+void LVRemoveLastPathDelimiter(lString32& pathName);
 /// replaces any found / or \\ separator with specified one
-void LVReplacePathSeparator( lString32 & pathName, lChar32 separator );
+void LVReplacePathSeparator(lString32& pathName, lChar32 separator);
 /// removes path delimiter character from end of path, if exists
-void LVRemovePathDelimiter( lString32 & pathName );
+void LVRemovePathDelimiter(lString32& pathName);
 /// removes path delimiter character from end of path, if exists
-void LVRemovePathDelimiter( lString8 & pathName );
+void LVRemovePathDelimiter(lString8& pathName);
 /// returns path delimiter character
-lChar32 LVDetectPathDelimiter( lString32 pathName );
+lChar32 LVDetectPathDelimiter(lString32 pathName);
 /// returns path delimiter character
-char LVDetectPathDelimiter( lString8 pathName );
+char LVDetectPathDelimiter(lString8 pathName);
 /// returns true if absolute path is specified
-bool LVIsAbsolutePath( lString32 pathName );
+bool LVIsAbsolutePath(lString32 pathName);
 /// returns full path to file identified by pathName, with base directory == basePath
-lString32 LVMakeRelativeFilename( lString32 basePath, lString32 pathName );
+lString32 LVMakeRelativeFilename(lString32 basePath, lString32 pathName);
 // resolve relative links
-lString32 LVCombinePaths( lString32 basePath, lString32 newPath );
+lString32 LVCombinePaths(lString32 basePath, lString32 newPath);
 
 /// tries to split full path name into archive name and file name inside archive using separator "@/" or "@\"
-bool LVSplitArcName(lString32 fullPathName, lString32 & arcPathName, lString32 & arcItemPathName);
+bool LVSplitArcName(lString32 fullPathName, lString32& arcPathName, lString32& arcItemPathName);
 /// tries to split full path name into archive name and file name inside archive using separator "@/" or "@\"
-bool LVSplitArcName(lString8 fullPathName, lString8 & arcPathName, lString8 & arcItemPathName);
+bool LVSplitArcName(lString8 fullPathName, lString8& arcPathName, lString8& arcItemPathName);
 
 /// returns true if specified file exists
-bool LVFileExists( const lString32 & pathName );
+bool LVFileExists(const lString32& pathName);
 /// returns true if specified file exists
-bool LVFileExists( const lString8 & pathName );
+bool LVFileExists(const lString8& pathName);
 /// returns true if specified directory exists
-bool LVDirectoryExists( const lString32 & pathName );
+bool LVDirectoryExists(const lString32& pathName);
 /// returns true if specified directory exists
-bool LVDirectoryExists( const lString8 & pathName );
+bool LVDirectoryExists(const lString8& pathName);
 /// returns true if directory exists and your app can write to directory
-bool LVDirectoryIsWritable(const lString32 & pathName);
-
+bool LVDirectoryIsWritable(const lString32& pathName);
 
 #define ASSET_PATH_PREFIX_S "@"
-#define ASSET_PATH_PREFIX '@'
+#define ASSET_PATH_PREFIX   '@'
 
 /// set container to handle filesystem access for paths started with ASSET_PATH_PREFIX (@ sign)
-void LVSetAssetContainerFactory(LVAssetContainerFactory * asset);
+void LVSetAssetContainerFactory(LVAssetContainerFactory* asset);
 
-#endif  // __LVSTREAMUTILS_H_INCLUDED__
+#endif // __LVSTREAMUTILS_H_INCLUDED__

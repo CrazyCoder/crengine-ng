@@ -17,7 +17,7 @@
 #include <crsetup.h>
 #include <lvtinydom.h>
 
-bool DetectDocXFormat( LVStreamRef stream );
-bool ImportDocXDocument( LVStreamRef stream, ldomDocument * doc, LVDocViewCallback * progressCallback, CacheLoadingCallback * formatCallback );
+bool DetectDocXFormat(LVStreamRef stream);
+bool ImportDocXDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback);
 
 #endif // DOCXFMT_H

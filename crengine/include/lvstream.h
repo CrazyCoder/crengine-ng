@@ -34,7 +34,7 @@
 #include <crtimerutil.h>
 #include <lvstorageobject.h>
 
-#define LVOM_MASK 7
+#define LVOM_MASK      7
 #define LVOM_FLAG_SYNC 0x10
 
 class LVStreamBuffer;
@@ -42,7 +42,8 @@ class LVStreamBuffer;
 typedef LVFastRef<LVStreamBuffer> LVStreamBufferRef;
 
 /// Stream base class
-class LVStream : public LVStorageObject {
+class LVStream: public LVStorageObject
+{
 public:
     /// Get read buffer (optimal for mmap)
     virtual LVStreamBufferRef GetReadBuffer(lvpos_t pos, lvpos_t size);
@@ -52,16 +53,24 @@ public:
 
     /// Get stream open mode
     /** \return lvopen_mode_t open mode */
-    virtual lvopen_mode_t GetMode() { return LVOM_READ; }
+    virtual lvopen_mode_t GetMode() {
+        return LVOM_READ;
+    }
 
     /// Set stream mode, supported not by all streams
     /** \return LVERR_OK if change is ok */
-    virtual lverror_t SetMode(lvopen_mode_t) { return LVERR_NOTIMPL; }
+    virtual lverror_t SetMode(lvopen_mode_t) {
+        return LVERR_NOTIMPL;
+    }
 
     /// flushes unsaved data from buffers to file, with optional flush of OS buffers
-    virtual lverror_t Flush(bool /*sync*/) { return LVERR_OK; }
+    virtual lverror_t Flush(bool /*sync*/) {
+        return LVERR_OK;
+    }
 
-    virtual lverror_t Flush(bool sync, CRTimerUtil & /*timeout*/ ) { return Flush(sync); }
+    virtual lverror_t Flush(bool sync, CRTimerUtil& /*timeout*/) {
+        return Flush(sync);
+    }
 
     /// Seek (change file pos)
     /**
@@ -70,14 +79,16 @@ public:
         \param pNewPos points to place to store new file position
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t *pNewPos) = 0;
+    virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t* pNewPos) = 0;
 
     /// Tell current file position
     /**
         \param pNewPos points to place to store file position
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Tell(lvpos_t *pPos) { return Seek(0, LVSEEK_CUR, pPos); }
+    virtual lverror_t Tell(lvpos_t* pPos) {
+        return Seek(0, LVSEEK_CUR, pPos);
+    }
 
     /// Set file position
     /**
@@ -87,7 +98,7 @@ public:
     //virtual lverror_t SetPos(lvpos_t p) { return Seek(p, LVSEEK_SET, NULL); }
     virtual lvpos_t SetPos(lvpos_t p) {
         lvpos_t pos;
-        return (Seek(p, LVSEEK_SET, &pos) == LVERR_OK) ? pos : (lvpos_t) (~0);
+        return (Seek(p, LVSEEK_SET, &pos) == LVERR_OK) ? pos : (lvpos_t)(~0);
     }
 
     /// Get file position
@@ -99,7 +110,7 @@ public:
         if (Seek(0, LVSEEK_CUR, &pos) == LVERR_OK)
             return pos;
         else
-            return (lvpos_t) (~0);
+            return (lvpos_t)(~0);
     }
 
     /// Get file size
@@ -114,7 +125,7 @@ public:
         return sz;
     }
 
-    virtual lverror_t GetSize(lvsize_t *pSize) {
+    virtual lverror_t GetSize(lvsize_t* pSize) {
         *pSize = GetSize();
         return LVERR_OK;
     }
@@ -133,23 +144,23 @@ public:
         \param nBytesRead is place to store real number of bytes read from stream
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Read(void *buf, lvsize_t count, lvsize_t *nBytesRead) = 0;
+    virtual lverror_t Read(void* buf, lvsize_t count, lvsize_t* nBytesRead) = 0;
 
-    virtual bool Read(lUInt8 *buf) {
+    virtual bool Read(lUInt8* buf) {
         lvsize_t nBytesRead;
         if (Read(buf, sizeof(lUInt8), &nBytesRead) == LVERR_OK && nBytesRead == sizeof(lUInt8))
             return true;
         return false;
     }
 
-    virtual bool Read(lUInt16 *buf) {
+    virtual bool Read(lUInt16* buf) {
         lvsize_t nBytesRead;
         if (Read(buf, sizeof(lUInt16), &nBytesRead) == LVERR_OK && nBytesRead == sizeof(lUInt16))
             return true;
         return false;
     }
 
-    virtual bool Read(lUInt32 *buf) {
+    virtual bool Read(lUInt32* buf) {
         lvsize_t nBytesRead;
         if (Read(buf, sizeof(lUInt32), &nBytesRead) == LVERR_OK && nBytesRead == sizeof(lUInt32))
             return true;
@@ -171,7 +182,7 @@ public:
         \param nBytesWritten is place to store real number of bytes written to stream
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Write(const void *buf, lvsize_t count, lvsize_t *nBytesWritten) = 0;
+    virtual lverror_t Write(const void* buf, lvsize_t count, lvsize_t* nBytesWritten) = 0;
 
     /// Check whether end of file is reached
     /**
@@ -180,10 +191,10 @@ public:
     virtual bool Eof() = 0;
 
     /// writes array
-    lverror_t Write(LVArray<lUInt32> &array);
+    lverror_t Write(LVArray<lUInt32>& array);
 
     /// calculate crc32 code for stream, if possible
-    virtual lverror_t getcrc32(lUInt32 &dst);
+    virtual lverror_t getcrc32(lUInt32& dst);
 
     /// calculate crc32 code for stream, returns 0 for error or empty stream
     inline lUInt32 getcrc32() {
@@ -193,67 +204,67 @@ public:
     }
 
     /// set write bytes limit to call flush(true) automatically after writing of each sz bytes
-    virtual void setAutoSyncSize(lvsize_t /*sz*/) {}
+    virtual void setAutoSyncSize(lvsize_t /*sz*/) { }
 
     /// Constructor
-    LVStream() {}
+    LVStream() { }
 
     /// Destructor
-    virtual ~LVStream() {}
+    virtual ~LVStream() { }
 };
 
 /// Stream reference
 typedef LVFastRef<LVStream> LVStreamRef;
 
 /// Writes lString32 string to stream
-inline LVStream &operator<<(LVStream &stream, const lString32 &str) {
+inline LVStream& operator<<(LVStream& stream, const lString32& str) {
     if (!str.empty())
         stream.Write(str.c_str(), sizeof(lChar32) * str.length(), NULL);
     return stream;
 }
 
 /// Writes lString8 string to stream
-inline LVStream &operator<<(LVStream &stream, const lString8 &str) {
+inline LVStream& operator<<(LVStream& stream, const lString8& str) {
     if (!str.empty())
         stream.Write(str.c_str(), sizeof(lChar8) * str.length(), NULL);
     return stream;
 }
 
 /// Writes lChar32 string to stream
-inline LVStream &operator<<(LVStream &stream, const lChar32 *str) {
+inline LVStream& operator<<(LVStream& stream, const lChar32* str) {
     if (str)
         stream.Write(str, sizeof(lChar32) * lStr_len(str), NULL);
     return stream;
 }
 
 /// Writes lChar8 string to stream
-inline LVStream &operator<<(LVStream &stream, const lChar8 *str) {
+inline LVStream& operator<<(LVStream& stream, const lChar8* str) {
     if (str)
         stream.Write(str, sizeof(lChar8) * lStr_len(str), NULL);
     return stream;
 }
 
 /// Writes lUInt32 to stream
-inline LVStream &operator<<(LVStream &stream, lUInt32 d) {
+inline LVStream& operator<<(LVStream& stream, lUInt32 d) {
     stream.Write(&d, sizeof(d), NULL);
     return stream;
 }
 
 /// Writes lUInt16 to stream
-inline LVStream &operator<<(LVStream &stream, lUInt16 d) {
+inline LVStream& operator<<(LVStream& stream, lUInt16 d) {
     stream.Write(&d, sizeof(d), NULL);
     return stream;
 }
 
 /// Writes lUInt8 to stream
-inline LVStream &operator<<(LVStream &stream, lUInt8 d) {
+inline LVStream& operator<<(LVStream& stream, lUInt8 d) {
     stream.Write(&d, sizeof(d), NULL);
     return stream;
 }
 
 /// Writes value array to stream
-template<typename T>
-inline LVStream &operator<<(LVStream &stream, LVArray<T> &array) {
+template <typename T>
+inline LVStream& operator<<(LVStream& stream, LVArray<T>& array) {
     stream.Write(array.ptr(), sizeof(T) * array.length(), NULL);
     return stream;
 }

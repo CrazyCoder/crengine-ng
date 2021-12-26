@@ -16,7 +16,7 @@
 
 #include <crsetup.h>
 
-#if (USE_LIBJPEG==1)
+#if (USE_LIBJPEG == 1)
 
 #include "lvnodeimagesource.h"
 
@@ -30,25 +30,26 @@ extern "C" {
 }
 #include <jerror.h>
 
-struct my_error_mgr {
-    struct jpeg_error_mgr pub;      /* "public" fields */
-    jmp_buf setjmp_buffer;          /* for return to caller */
+struct my_error_mgr
+{
+    struct jpeg_error_mgr pub; /* "public" fields */
+    jmp_buf setjmp_buffer;     /* for return to caller */
 };
 
-typedef struct my_error_mgr * my_error_ptr;
+typedef struct my_error_mgr* my_error_ptr;
 
-class LVJpegImageSource : public LVNodeImageSource
+class LVJpegImageSource: public LVNodeImageSource
 {
     my_error_mgr jerr;
     jpeg_decompress_struct cinfo;
 public:
-    LVJpegImageSource( ldomNode * node, LVStreamRef stream );
-    virtual ~LVJpegImageSource() {}
-    virtual void   Compact() { }
-    virtual bool   Decode( LVImageDecoderCallback * callback );
-    static bool CheckPattern( const lUInt8 * buf, int );
+    LVJpegImageSource(ldomNode* node, LVStreamRef stream);
+    virtual ~LVJpegImageSource() { }
+    virtual void Compact() { }
+    virtual bool Decode(LVImageDecoderCallback* callback);
+    static bool CheckPattern(const lUInt8* buf, int);
 };
 
-#endif  // (USE_LIBJPEG==1)
+#endif // (USE_LIBJPEG==1)
 
-#endif  // __LVJPEGIMAGESOURCE_H_INCLUDED__
+#endif // __LVJPEGIMAGESOURCE_H_INCLUDED__

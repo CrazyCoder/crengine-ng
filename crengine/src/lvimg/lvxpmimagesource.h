@@ -16,25 +16,33 @@
 
 #include <lvimagesource.h>
 
-class LVXPMImageSource : public LVImageSource
+class LVXPMImageSource: public LVImageSource
 {
 protected:
-    char ** _rows;
-    lUInt32 * _palette;
+    char** _rows;
+    lUInt32* _palette;
     lUInt8 _pchars[128];
     int _width;
     int _height;
     int _ncolors;
 public:
-    LVXPMImageSource( const char ** data );
+    LVXPMImageSource(const char** data);
     virtual ~LVXPMImageSource();
 
-    ldomNode * GetSourceNode() { return NULL; }
-    virtual LVStream * GetSourceStream() { return NULL; }
-    virtual void   Compact() { }
-    virtual int    GetWidth() const { return _width; }
-    virtual int    GetHeight() const { return _height; }
-    virtual bool   Decode( LVImageDecoderCallback * callback );
+    ldomNode* GetSourceNode() {
+        return NULL;
+    }
+    virtual LVStream* GetSourceStream() {
+        return NULL;
+    }
+    virtual void Compact() { }
+    virtual int GetWidth() const {
+        return _width;
+    }
+    virtual int GetHeight() const {
+        return _height;
+    }
+    virtual bool Decode(LVImageDecoderCallback* callback);
 };
 
-#endif  // __LVXPMIMAGESOURCE_H_INCLUDED__
+#endif // __LVXPMIMAGESOURCE_H_INCLUDED__

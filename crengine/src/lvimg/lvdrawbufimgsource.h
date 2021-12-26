@@ -19,22 +19,30 @@
 class LVImageDecoderCallback;
 class LVColorDrawBuf;
 
-class LVDrawBufImgSource : public LVImageSource
+class LVDrawBufImgSource: public LVImageSource
 {
 protected:
-    LVColorDrawBuf * _buf;
+    LVColorDrawBuf* _buf;
     bool _own;
     int _dx;
     int _dy;
 public:
-    LVDrawBufImgSource( LVColorDrawBuf * buf, bool own );
+    LVDrawBufImgSource(LVColorDrawBuf* buf, bool own);
     virtual ~LVDrawBufImgSource();
-    virtual ldomNode * GetSourceNode() { return NULL; }
-    virtual LVStream * GetSourceStream() { return NULL; }
-    virtual void   Compact() { }
-    virtual int    GetWidth() const { return _dx; }
-    virtual int    GetHeight() const { return _dy; }
-    virtual bool   Decode( LVImageDecoderCallback * callback );
+    virtual ldomNode* GetSourceNode() {
+        return NULL;
+    }
+    virtual LVStream* GetSourceStream() {
+        return NULL;
+    }
+    virtual void Compact() { }
+    virtual int GetWidth() const {
+        return _dx;
+    }
+    virtual int GetHeight() const {
+        return _dy;
+    }
+    virtual bool Decode(LVImageDecoderCallback* callback);
 };
 
-#endif  // __LVDRAWBUFIMGSOURCE_H_INCLUDED__
+#endif // __LVDRAWBUFIMGSOURCE_H_INCLUDED__

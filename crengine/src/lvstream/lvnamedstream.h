@@ -23,7 +23,7 @@
 
 #include <lvstream.h>
 
-class LVNamedStream : public LVStream
+class LVNamedStream: public LVStream
 {
 protected:
     lString32 m_fname;
@@ -36,28 +36,34 @@ protected:
     lvsize_t _bytesWritten;
     virtual void handleAutoSync(lvsize_t bytesWritten) {
         _bytesWritten += bytesWritten;
-        if (_autosyncLimit==0)
+        if (_autosyncLimit == 0)
             return;
-        if (_bytesWritten>_autosyncLimit) {
+        if (_bytesWritten > _autosyncLimit) {
             Flush(true);
             _bytesWritten = 0;
         }
     }
 public:
-    LVNamedStream() : m_mode(LVOM_ERROR), _crc(0), _crcFailed(false), _autosyncLimit(0), _bytesWritten(0) { }
+    LVNamedStream()
+            : m_mode(LVOM_ERROR)
+            , _crc(0)
+            , _crcFailed(false)
+            , _autosyncLimit(0)
+            , _bytesWritten(0) { }
     /// set write bytes limit to call flush(true) automatically after writing of each sz bytes
-    virtual void setAutoSyncSize(lvsize_t sz) { _autosyncLimit = sz; }
+    virtual void setAutoSyncSize(lvsize_t sz) {
+        _autosyncLimit = sz;
+    }
     /// returns stream/container name, may be NULL if unknown
-    virtual const lChar32 * GetName();
+    virtual const lChar32* GetName();
     /// sets stream/container name, may be not implemented for some objects
-    virtual void SetName(const lChar32 * name);
+    virtual void SetName(const lChar32* name);
     /// returns open mode
-    virtual lvopen_mode_t GetMode()
-    {
+    virtual lvopen_mode_t GetMode() {
         return (lvopen_mode_t)(m_mode & LVOM_MASK);
     }
     /// calculate crc32 code for stream, if possible
-    virtual lverror_t getcrc32( lUInt32 & dst );
+    virtual lverror_t getcrc32(lUInt32& dst);
 };
 
-#endif  // __LVNAMEDSTREAM_H_INCLUDED__
+#endif // __LVNAMEDSTREAM_H_INCLUDED__

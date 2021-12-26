@@ -19,9 +19,9 @@
 // Current direction, from dir="ltr" or dir="rtl" element attribute
 // Should map directly to the RENDER_RECT_FLAG_DIRECTION_* below
 // (bit 0: 0=unset 1=set - bit 1: 0=normal 1=inverted - bit 2: 0=horizontal 1=vertical)
-#define REND_DIRECTION_UNSET  0X00
-#define REND_DIRECTION_LTR    0X01 // 0b001
-#define REND_DIRECTION_RTL    0X03 // 0b011
+#define REND_DIRECTION_UNSET 0X00
+#define REND_DIRECTION_LTR   0X01 // 0b001
+#define REND_DIRECTION_RTL   0X03 // 0b011
 // Not supported:
 // #define REND_DIRECTION_TTB 0X05 // 0b101
 // #define REND_DIRECTION_BTT 0X07 // 0b111
@@ -41,24 +41,24 @@
 #define RENDER_RECT_FLAG_DO_MATH_TRANSFORM                  0x0800 // do math glyph stretching
 #define RENDER_RECT_FLAG_TEMP_USED_AS_CSS_CHECK_CACHE       0x8000 // has been cleared and is used as a CSS checks cache
 
-#define RENDER_RECT_SET_FLAG(r, f)     ( r.setFlags( r.getFlags() | RENDER_RECT_FLAG_##f ) )
-#define RENDER_RECT_UNSET_FLAG(r, f)   ( r.setFlags( r.getFlags() & ~RENDER_RECT_FLAG_##f ) )
-#define RENDER_RECT_HAS_FLAG(r, f)     ( (bool)(r.getFlags() & RENDER_RECT_FLAG_##f) )
-#define RENDER_RECT_PTR_HAS_FLAG(r, f) ( (bool)(r->getFlags() & RENDER_RECT_FLAG_##f) )
+#define RENDER_RECT_SET_FLAG(r, f)     (r.setFlags(r.getFlags() | RENDER_RECT_FLAG_##f))
+#define RENDER_RECT_UNSET_FLAG(r, f)   (r.setFlags(r.getFlags() & ~RENDER_RECT_FLAG_##f))
+#define RENDER_RECT_HAS_FLAG(r, f)     ((bool)(r.getFlags() & RENDER_RECT_FLAG_##f))
+#define RENDER_RECT_PTR_HAS_FLAG(r, f) ((bool)(r->getFlags() & RENDER_RECT_FLAG_##f))
 
-#define RENDER_RECT_FLAG_DIRECTION_MASK                     0x0007
-#define RENDER_RECT_SET_DIRECTION(r, d)   ( r.setFlags( r.getFlags() | d ) )
-#define RENDER_RECT_GET_DIRECTION(r)      ( r.getFlags() & RENDER_RECT_FLAG_DIRECTION_MASK )
-#define RENDER_RECT_PTR_GET_DIRECTION(r)  ( r->getFlags() & RENDER_RECT_FLAG_DIRECTION_MASK )
-#define RENDER_RECT_HAS_DIRECTION(r)      ( (bool)(r.getFlags() & RENDER_RECT_FLAG_DIRECTION_SET) )
-#define RENDER_RECT_HAS_DIRECTION_RTL(r)  ( (bool)(r.getFlags() & RENDER_RECT_FLAG_DIRECTION_MASK == REND_DIRECTION_RTL) )
-#define RENDER_RECT_PTR_HAS_DIRECTION_RTL(r)  ( (bool)(r->getFlags() & RENDER_RECT_FLAG_DIRECTION_MASK == REND_DIRECTION_RTL) )
+#define RENDER_RECT_FLAG_DIRECTION_MASK      0x0007
+#define RENDER_RECT_SET_DIRECTION(r, d)      (r.setFlags(r.getFlags() | d))
+#define RENDER_RECT_GET_DIRECTION(r)         (r.getFlags() & RENDER_RECT_FLAG_DIRECTION_MASK)
+#define RENDER_RECT_PTR_GET_DIRECTION(r)     (r->getFlags() & RENDER_RECT_FLAG_DIRECTION_MASK)
+#define RENDER_RECT_HAS_DIRECTION(r)         ((bool)(r.getFlags() & RENDER_RECT_FLAG_DIRECTION_SET))
+#define RENDER_RECT_HAS_DIRECTION_RTL(r)     ((bool)(r.getFlags() & RENDER_RECT_FLAG_DIRECTION_MASK == REND_DIRECTION_RTL))
+#define RENDER_RECT_PTR_HAS_DIRECTION_RTL(r) ((bool)(r->getFlags() & RENDER_RECT_FLAG_DIRECTION_MASK == REND_DIRECTION_RTL))
 
 // To be provided via the initial value to renderBlockElement(... int *baseline ...) to
 // have FlowState compute baseline (different rules whether inline-block or inline-table).
 #define REQ_BASELINE_NOT_NEEDED       0
-#define REQ_BASELINE_FOR_INLINE_BLOCK 1    // use last baseline fed
-#define REQ_BASELINE_FOR_TABLE        2    // keep first baseline fed
+#define REQ_BASELINE_FOR_INLINE_BLOCK 1 // use last baseline fed
+#define REQ_BASELINE_FOR_TABLE        2 // keep first baseline fed
 
 class FlowState;
 class TextLangCfg;
@@ -68,9 +68,10 @@ class TextLangCfg;
 // Also allows LFormattedText to pass back information about
 // its own embedded floats if they overflow the final block
 // own height.
-class BlockFloatFootprint {
+class BlockFloatFootprint
+{
 private:
-    FlowState * flow;
+    FlowState* flow;
     int d_left;
     int d_top;
     int used_min_y;
@@ -97,67 +98,81 @@ public:
     int floats_cnt;
     int floats[5][6]; // max 5 floats, with (x,y,w,h,is_right,inward_margin) each
 
-    int getFinalMinY() { return used_min_y; };
-    int getFinalMaxY() { return used_max_y; };
-    void store( ldomNode * node );
-    void restore( ldomNode * node, int final_width );
-    void generateEmbeddedFloatsFromFootprints( int final_width );
-    void generateEmbeddedFloatsFromFloatIds( ldomNode * node, int final_width );
-    void forwardOverflowingFloat( int x, int y, int w, int h, bool r, ldomNode * node );
-    int getTopShiftX(int final_width, bool get_right_shift=false);
+    int getFinalMinY() {
+        return used_min_y;
+    };
+    int getFinalMaxY() {
+        return used_max_y;
+    };
+    void store(ldomNode* node);
+    void restore(ldomNode* node, int final_width);
+    void generateEmbeddedFloatsFromFootprints(int final_width);
+    void generateEmbeddedFloatsFromFloatIds(ldomNode* node, int final_width);
+    void forwardOverflowingFloat(int x, int y, int w, int h, bool r, ldomNode* node);
+    int getTopShiftX(int final_width, bool get_right_shift = false);
 
-    BlockFloatFootprint( FlowState * fl=NULL, int dleft=0, int dtop=0, bool noclearownfloats=false ) :
-        flow(fl), d_left(dleft), d_top(dtop), no_clear_own_floats(noclearownfloats),
-        used_min_y(0), used_max_y(0),
-        left_w(0), left_h(0), right_w(0), right_h(0), left_min_y(0), right_min_y(0),
-        use_floatIds(false), nb_floatIds(0), floats_cnt(0)
-        { }
+    BlockFloatFootprint(FlowState* fl = NULL, int dleft = 0, int dtop = 0, bool noclearownfloats = false)
+            : flow(fl)
+            , d_left(dleft)
+            , d_top(dtop)
+            , no_clear_own_floats(noclearownfloats)
+            , used_min_y(0)
+            , used_max_y(0)
+            , left_w(0)
+            , left_h(0)
+            , right_w(0)
+            , right_h(0)
+            , left_min_y(0)
+            , right_min_y(0)
+            , use_floatIds(false)
+            , nb_floatIds(0)
+            , floats_cnt(0) { }
 };
 
 /// returns true if styles are identical
-bool isSameFontStyle( css_style_rec_t * style1, css_style_rec_t * style2 );
+bool isSameFontStyle(css_style_rec_t* style1, css_style_rec_t* style2);
 /// removes format data from node
-void freeFormatData( ldomNode * node );
+void freeFormatData(ldomNode* node);
 /// returns best suitable font for style
-LVFontRef getFont(ldomNode * node, css_style_rec_t * style, int documentId);
+LVFontRef getFont(ldomNode* node, css_style_rec_t* style, int documentId);
 /// initializes format data for node
-void initFormatData( ldomNode * node );
+void initFormatData(ldomNode* node);
 /// initializes rendering method for node
-int initRendMethod( ldomNode * node, bool recurseChildren, bool allowAutoboxing );
+int initRendMethod(ldomNode* node, bool recurseChildren, bool allowAutoboxing);
 /// converts style to text formatting API flags
-lUInt32 styleToTextFmtFlags( bool is_block, const css_style_ref_t & style, lUInt32 oldflags, int direction=REND_DIRECTION_UNSET );
+lUInt32 styleToTextFmtFlags(bool is_block, const css_style_ref_t& style, lUInt32 oldflags, int direction = REND_DIRECTION_UNSET);
 /// renders block as single text formatter object
-void renderFinalBlock( ldomNode * node, LFormattedText * txform, RenderRectAccessor * fmt, lUInt32 & flags,
-                       int indent, int line_h, TextLangCfg * lang_cfg=NULL, int valign_dy=0, bool * is_link_start=NULL );
+void renderFinalBlock(ldomNode* node, LFormattedText* txform, RenderRectAccessor* fmt, lUInt32& flags,
+                      int indent, int line_h, TextLangCfg* lang_cfg = NULL, int valign_dy = 0, bool* is_link_start = NULL);
 /// renders block which contains subblocks (with enode document's rendering flags)
-int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, int y, int width,
-        int usable_left_overflow=0, int usable_right_overflow=0, int direction=REND_DIRECTION_UNSET, int * baseline=NULL );
+int renderBlockElement(LVRendPageContext& context, ldomNode* enode, int x, int y, int width,
+                       int usable_left_overflow = 0, int usable_right_overflow = 0, int direction = REND_DIRECTION_UNSET, int* baseline = NULL);
 /// renders block which contains subblocks
-int renderBlockElement( LVRendPageContext & context, ldomNode * enode, int x, int y, int width,
-        int usable_left_overflow, int usable_right_overflow, int direction, int * baseline, lUInt32 rend_flags );
+int renderBlockElement(LVRendPageContext& context, ldomNode* enode, int x, int y, int width,
+                       int usable_left_overflow, int usable_right_overflow, int direction, int* baseline, lUInt32 rend_flags);
 /// renders table element
-int renderTable( LVRendPageContext & context, ldomNode * element, int x, int y, int width,
-                 bool shrink_to_fit, int min_width, int & fitted_width, int direction=REND_DIRECTION_UNSET,
-                 bool pb_inside_avoid=false, bool enhanced_rendering=false, bool is_ruby_table=false );
+int renderTable(LVRendPageContext& context, ldomNode* element, int x, int y, int width,
+                bool shrink_to_fit, int min_width, int& fitted_width, int direction = REND_DIRECTION_UNSET,
+                bool pb_inside_avoid = false, bool enhanced_rendering = false, bool is_ruby_table = false);
 /// sets node style
-void setNodeStyle( ldomNode * node, css_style_ref_t parent_style, LVFontRef parent_font );
+void setNodeStyle(ldomNode* node, css_style_ref_t parent_style, LVFontRef parent_font);
 /// copy style
-void copystyle( css_style_ref_t sourcestyle, css_style_ref_t deststyle );
+void copystyle(css_style_ref_t sourcestyle, css_style_ref_t deststyle);
 
 /// draws formatted document to drawing buffer
-void DrawDocument( LVDrawBuf & drawbuf, ldomNode * node, int x0, int y0, int dx, int dy, int doc_x, int doc_y,
-                   int page_height, ldomMarkedRangeList * marks, ldomMarkedRangeList * bookmarks = NULL,
-                   bool draw_content=true, bool draw_background=true, bool skip_initial_borders=false );
+void DrawDocument(LVDrawBuf& drawbuf, ldomNode* node, int x0, int y0, int dx, int dy, int doc_x, int doc_y,
+                  int page_height, ldomMarkedRangeList* marks, ldomMarkedRangeList* bookmarks = NULL,
+                  bool draw_content = true, bool draw_background = true, bool skip_initial_borders = false);
 
 // Estimate width of node when rendered:
 //   maxWidth: width if it would be rendered on an infinite width area
 //   minWidth: width with a wrap on all spaces (no hyphenation), so width taken by the longest word
 // full function for recursive use:
-void getRenderedWidths(ldomNode * node, int &maxWidth, int &minWidth, int direction, bool ignorePadding, int rendFlags,
-            int &curMaxWidth, int &curWordWidth, bool &collapseNextSpace, int &lastSpaceWidth,
-            int indent, bool nowrap, TextLangCfg * lang_cfg, bool processNodeAsText=false, bool isStartNode=false);
+void getRenderedWidths(ldomNode* node, int& maxWidth, int& minWidth, int direction, bool ignorePadding, int rendFlags,
+                       int& curMaxWidth, int& curWordWidth, bool& collapseNextSpace, int& lastSpaceWidth,
+                       int indent, bool nowrap, TextLangCfg* lang_cfg, bool processNodeAsText = false, bool isStartNode = false);
 // simpler function for first call:
-void getRenderedWidths(ldomNode * node, int &maxWidth, int &minWidth, int direction=REND_DIRECTION_UNSET, bool ignorePadding=false, int rendFlags=0);
+void getRenderedWidths(ldomNode* node, int& maxWidth, int& minWidth, int direction = REND_DIRECTION_UNSET, bool ignorePadding = false, int rendFlags = 0);
 
 /**
  * @brief Set global document base font weight.
@@ -170,92 +185,92 @@ void LVRendSetBaseFontWeight(int weight);
  */
 int LVRendGetBaseFontWeight();
 
-int measureBorder(ldomNode *enode,int border);
-int lengthToPx( ldomNode *node, css_length_t val, int base_px, int base_em = -1, bool unspecified_as_em=false );
-int scaleForRenderDPI( int value );
-bool getStyledImageSize( ldomNode * enode, int & img_width, int & img_height, int container_width=-1, int container_height=-1 );
+int measureBorder(ldomNode* enode, int border);
+int lengthToPx(ldomNode* node, css_length_t val, int base_px, int base_em = -1, bool unspecified_as_em = false);
+int scaleForRenderDPI(int value);
+bool getStyledImageSize(ldomNode* enode, int& img_width, int& img_height, int container_width = -1, int container_height = -1);
 
 // Returns ink offsets from the node's RenderRectAccessor (its border box), positive when inward
-bool getInkOffsets( ldomNode * node, lvRect &inkOffsets, bool measure_hidden_content=false,
-                    bool ignore_decorations=false, bool skip_initial_borders=false, lvRect * borderBox=NULL );
+bool getInkOffsets(ldomNode* node, lvRect& inkOffsets, bool measure_hidden_content = false,
+                   bool ignore_decorations = false, bool skip_initial_borders = false, lvRect* borderBox = NULL);
 
-#define BASE_CSS_DPI 96 // at 96 dpi, 1 css px = 1 screen px
-#define DEF_RENDER_DPI 96
+#define BASE_CSS_DPI                   96 // at 96 dpi, 1 css px = 1 screen px
+#define DEF_RENDER_DPI                 96
 #define DEF_RENDER_SCALE_FONT_WITH_DPI 0
 extern int gRenderDPI;
 extern bool gRenderScaleFontWithDPI;
 extern int gRootFontSize;
 
 #define INTERLINE_SCALE_FACTOR_NO_SCALE 1024
-#define INTERLINE_SCALE_FACTOR_SHIFT 10
+#define INTERLINE_SCALE_FACTOR_SHIFT    10
 
 // Enhanced rendering flags
-#define BLOCK_RENDERING_ENHANCED                           0x00000001
-#define BLOCK_RENDERING_ALLOW_PAGE_BREAK_WHEN_NO_CONTENT   0x00000002 // Allow consecutive page breaks when only separated
-                                                                      // by margin/padding/border.
+#define BLOCK_RENDERING_ENHANCED                         0x00000001
+#define BLOCK_RENDERING_ALLOW_PAGE_BREAK_WHEN_NO_CONTENT 0x00000002 // Allow consecutive page breaks when only separated \
+                                                                    // by margin/padding/border.
 // Vertical margins
-#define BLOCK_RENDERING_COLLAPSE_VERTICAL_MARGINS          0x00000010 // Collapse vertical margins
-#define BLOCK_RENDERING_ALLOW_VERTICAL_NEGATIVE_MARGINS    0x00000020 // Allow individual negative margins in the calculation, the
-                                                                      // final collapsed margin is ensure to be zero or positive.
-#define BLOCK_RENDERING_ALLOW_NEGATIVE_COLLAPSED_MARGINS   0x00000040 // Allow the final vertical collapsed margin to be negative
-                                                                      // (may mess with page splitting and text selection).
+#define BLOCK_RENDERING_COLLAPSE_VERTICAL_MARGINS        0x00000010 // Collapse vertical margins
+#define BLOCK_RENDERING_ALLOW_VERTICAL_NEGATIVE_MARGINS  0x00000020 // Allow individual negative margins in the calculation, the \
+                                                                    // final collapsed margin is ensure to be zero or positive.
+#define BLOCK_RENDERING_ALLOW_NEGATIVE_COLLAPSED_MARGINS 0x00000040 // Allow the final vertical collapsed margin to be negative \
+                                                                    // (may mess with page splitting and text selection).
 // Horizontal margins
-#define BLOCK_RENDERING_ENSURE_MARGIN_AUTO_ALIGNMENT       0x00000100 // Ensure CSS "margin: auto", for aligning blocks.
-#define BLOCK_RENDERING_ALLOW_HORIZONTAL_NEGATIVE_MARGINS  0x00000200 // Allow negative margins (otherwise, they are set to 0)
-#define BLOCK_RENDERING_ALLOW_HORIZONTAL_BLOCK_OVERFLOW    0x00000400 // Allow block content to overflow its block container.
-#define BLOCK_RENDERING_ALLOW_HORIZONTAL_PAGE_OVERFLOW     0x00000800 // Allow block content to overflow the page rect, showing
-                                                                      // in the margin, and possibly clipped out.
+#define BLOCK_RENDERING_ENSURE_MARGIN_AUTO_ALIGNMENT      0x00000100 // Ensure CSS "margin: auto", for aligning blocks.
+#define BLOCK_RENDERING_ALLOW_HORIZONTAL_NEGATIVE_MARGINS 0x00000200 // Allow negative margins (otherwise, they are set to 0)
+#define BLOCK_RENDERING_ALLOW_HORIZONTAL_BLOCK_OVERFLOW   0x00000400 // Allow block content to overflow its block container.
+#define BLOCK_RENDERING_ALLOW_HORIZONTAL_PAGE_OVERFLOW    0x00000800 // Allow block content to overflow the page rect, showing \
+                                                                     // in the margin, and possibly clipped out.
 // Widths and heights
-#define BLOCK_RENDERING_USE_W3C_BOX_MODEL                  0x00001000 // Use W3C box model (CSS width and height do not include
-                                                                      // paddings and borders)
-#define BLOCK_RENDERING_ALLOW_STYLE_W_H_ABSOLUTE_UNITS     0x00002000 // Allow widths and heights in absolute units (when ensured)
-#define BLOCK_RENDERING_ENSURE_STYLE_WIDTH                 0x00004000 // Ensure CSS widths and heights on all elements (otherwise
-#define BLOCK_RENDERING_ENSURE_STYLE_HEIGHT                0x00008000 // only on <HR> and images, and when sizing floats).
+#define BLOCK_RENDERING_USE_W3C_BOX_MODEL              0x00001000 // Use W3C box model (CSS width and height do not include \
+                                                                  // paddings and borders)
+#define BLOCK_RENDERING_ALLOW_STYLE_W_H_ABSOLUTE_UNITS 0x00002000 // Allow widths and heights in absolute units (when ensured)
+#define BLOCK_RENDERING_ENSURE_STYLE_WIDTH             0x00004000 // Ensure CSS widths and heights on all elements (otherwise
+#define BLOCK_RENDERING_ENSURE_STYLE_HEIGHT            0x00008000 // only on <HR> and images, and when sizing floats).
 // Floats
-#define BLOCK_RENDERING_WRAP_FLOATS                        0x00010000 // Wrap floats in an internal floatBox element.
-#define BLOCK_RENDERING_PREPARE_FLOATBOXES                 0x00020000 // Avoid style hash mismatch when toggling FLOAT_FLOATBOXES,
-                                                                      // but make embedded floats inline when no more floating.
-#define BLOCK_RENDERING_FLOAT_FLOATBOXES                   0x00040000 // Actually render floatBoxes floating.
+#define BLOCK_RENDERING_WRAP_FLOATS        0x00010000 // Wrap floats in an internal floatBox element.
+#define BLOCK_RENDERING_PREPARE_FLOATBOXES 0x00020000 // Avoid style hash mismatch when toggling FLOAT_FLOATBOXES, \
+                                                      // but make embedded floats inline when no more floating.
+#define BLOCK_RENDERING_FLOAT_FLOATBOXES   0x00040000 // Actually render floatBoxes floating.
 // These 2, although allowing a more correct rendering of floats, can impact drawing performances and text/links selection:
-#define BLOCK_RENDERING_DO_NOT_CLEAR_OWN_FLOATS            0x00100000 // Prevent blocks from clearing their own floats.
-#define BLOCK_RENDERING_ALLOW_EXACT_FLOATS_FOOTPRINTS      0x00200000 // When 5 or less outer floats have impact on a final
-                                                                      // block, store their ids instead of the 2 top left/right
-                                                                      // rectangle, allowing text layout staircase-like.
+#define BLOCK_RENDERING_DO_NOT_CLEAR_OWN_FLOATS       0x00100000 // Prevent blocks from clearing their own floats.
+#define BLOCK_RENDERING_ALLOW_EXACT_FLOATS_FOOTPRINTS 0x00200000 // When 5 or less outer floats have impact on a final     \
+                                                                 // block, store their ids instead of the 2 top left/right \
+                                                                 // rectangle, allowing text layout staircase-like.
 // Inline block/table
-#define BLOCK_RENDERING_BOX_INLINE_BLOCKS                  0x01000000 // Wrap inline-block in an internal inlineBox element.
-#define BLOCK_RENDERING_COMPLETE_INCOMPLETE_TABLES         0x02000000 // Add anonymous missing elements to a table without proper
-                                                                      // children and table-cells without proper parents
+#define BLOCK_RENDERING_BOX_INLINE_BLOCKS          0x01000000 // Wrap inline-block in an internal inlineBox element.
+#define BLOCK_RENDERING_COMPLETE_INCOMPLETE_TABLES 0x02000000 // Add anonymous missing elements to a table without proper \
+                                                              // children and table-cells without proper parents
 
 // Enable everything
-#define BLOCK_RENDERING_FULL_FEATURED                      0x7FFFFFFF
+#define BLOCK_RENDERING_FULL_FEATURED 0x7FFFFFFF
 
 // Some macros (for shorter lines of code)
-#define BLOCK_RENDERING(v, f) ((bool)( v & BLOCK_RENDERING_##f ))
-#define BLOCK_RENDERING_D(d, f) ((bool)( d->getRenderBlockRenderingFlags() & BLOCK_RENDERING_##f ))
-#define BLOCK_RENDERING_N(n, f) ((bool)( n->getDocument()->getRenderBlockRenderingFlags() & BLOCK_RENDERING_##f ))
+#define BLOCK_RENDERING(v, f)   ((bool)(v & BLOCK_RENDERING_##f))
+#define BLOCK_RENDERING_D(d, f) ((bool)(d->getRenderBlockRenderingFlags() & BLOCK_RENDERING_##f))
+#define BLOCK_RENDERING_N(n, f) ((bool)(n->getDocument()->getRenderBlockRenderingFlags() & BLOCK_RENDERING_##f))
 
 // rendering flags presets
-#define BLOCK_RENDERING_FLAGS_LEGACY     0
-#define BLOCK_RENDERING_FLAGS_FLAT       ( BLOCK_RENDERING_ENHANCED | \
-                                           BLOCK_RENDERING_COLLAPSE_VERTICAL_MARGINS | \
-                                           BLOCK_RENDERING_ALLOW_VERTICAL_NEGATIVE_MARGINS | \
-                                           BLOCK_RENDERING_USE_W3C_BOX_MODEL | \
-                                           BLOCK_RENDERING_WRAP_FLOATS | \
-                                           BLOCK_RENDERING_PREPARE_FLOATBOXES | \
-                                           BLOCK_RENDERING_BOX_INLINE_BLOCKS )
-#define BLOCK_RENDERING_FLAGS_BOOK       ( BLOCK_RENDERING_ENHANCED | \
-                                           BLOCK_RENDERING_COLLAPSE_VERTICAL_MARGINS | \
-                                           BLOCK_RENDERING_ALLOW_VERTICAL_NEGATIVE_MARGINS | \
-                                           BLOCK_RENDERING_ENSURE_MARGIN_AUTO_ALIGNMENT | \
-                                           BLOCK_RENDERING_USE_W3C_BOX_MODEL | \
-                                           BLOCK_RENDERING_ENSURE_STYLE_WIDTH | \
-                                           BLOCK_RENDERING_WRAP_FLOATS | \
-                                           BLOCK_RENDERING_PREPARE_FLOATBOXES | \
-                                           BLOCK_RENDERING_FLOAT_FLOATBOXES | \
-                                           BLOCK_RENDERING_DO_NOT_CLEAR_OWN_FLOATS | \
-                                           BLOCK_RENDERING_ALLOW_EXACT_FLOATS_FOOTPRINTS | \
-                                           BLOCK_RENDERING_BOX_INLINE_BLOCKS )
-#define BLOCK_RENDERING_FLAGS_WEB        BLOCK_RENDERING_FULL_FEATURED
-#define BLOCK_RENDERING_FLAGS_DEFAULT    BLOCK_RENDERING_FLAGS_WEB
+#define BLOCK_RENDERING_FLAGS_LEGACY 0
+#define BLOCK_RENDERING_FLAGS_FLAT   (BLOCK_RENDERING_ENHANCED |                      \
+                                    BLOCK_RENDERING_COLLAPSE_VERTICAL_MARGINS |       \
+                                    BLOCK_RENDERING_ALLOW_VERTICAL_NEGATIVE_MARGINS | \
+                                    BLOCK_RENDERING_USE_W3C_BOX_MODEL |               \
+                                    BLOCK_RENDERING_WRAP_FLOATS |                     \
+                                    BLOCK_RENDERING_PREPARE_FLOATBOXES |              \
+                                    BLOCK_RENDERING_BOX_INLINE_BLOCKS)
+#define BLOCK_RENDERING_FLAGS_BOOK (BLOCK_RENDERING_ENHANCED |                        \
+                                    BLOCK_RENDERING_COLLAPSE_VERTICAL_MARGINS |       \
+                                    BLOCK_RENDERING_ALLOW_VERTICAL_NEGATIVE_MARGINS | \
+                                    BLOCK_RENDERING_ENSURE_MARGIN_AUTO_ALIGNMENT |    \
+                                    BLOCK_RENDERING_USE_W3C_BOX_MODEL |               \
+                                    BLOCK_RENDERING_ENSURE_STYLE_WIDTH |              \
+                                    BLOCK_RENDERING_WRAP_FLOATS |                     \
+                                    BLOCK_RENDERING_PREPARE_FLOATBOXES |              \
+                                    BLOCK_RENDERING_FLOAT_FLOATBOXES |                \
+                                    BLOCK_RENDERING_DO_NOT_CLEAR_OWN_FLOATS |         \
+                                    BLOCK_RENDERING_ALLOW_EXACT_FLOATS_FOOTPRINTS |   \
+                                    BLOCK_RENDERING_BOX_INLINE_BLOCKS)
+#define BLOCK_RENDERING_FLAGS_WEB     BLOCK_RENDERING_FULL_FEATURED
+#define BLOCK_RENDERING_FLAGS_DEFAULT BLOCK_RENDERING_FLAGS_WEB
 
 #endif

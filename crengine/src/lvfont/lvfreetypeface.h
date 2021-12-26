@@ -15,7 +15,6 @@
 #ifndef __LV_FREETYPEFACE_H_INCLUDED__
 #define __LV_FREETYPEFACE_H_INCLUDED__
 
-
 #include <crsetup.h>
 #include <lvfont.h>
 #include <lvthread.h>
@@ -29,7 +28,7 @@
 //#define LOAD_TTF_FONTS_ONLY
 // DEBUG ONLY
 #if 0
-#define USE_FREETYPE 1
+#define USE_FREETYPE   1
 #define USE_FONTCONFIG 1
 //#define DEBUG_FONT_SYNTHESIS 1
 //#define DEBUG_FONT_MAN 1
@@ -54,68 +53,64 @@ class LVFontGlyphUnsignedMetricCache
 {
 private:
     static const int COUNT = 360;
-    lUInt16 * ptrs[COUNT]; //support up to 0X2CFFF=360*512-1
+    lUInt16* ptrs[COUNT]; //support up to 0X2CFFF=360*512-1
 public:
-    lUInt16 get( lChar32 ch )
-    {
+    lUInt16 get(lChar32 ch) {
         FONT_GLYPH_CACHE_GUARD
-        int inx = (ch>>9) & 0x1ff;
-        if (inx >= COUNT) return CACHED_UNSIGNED_METRIC_NOT_SET;
-        lUInt16 * ptr = ptrs[inx];
-        if ( !ptr )
+        int inx = (ch >> 9) & 0x1ff;
+        if (inx >= COUNT)
             return CACHED_UNSIGNED_METRIC_NOT_SET;
-        return ptr[ch & 0x1FF ];
+        lUInt16* ptr = ptrs[inx];
+        if (!ptr)
+            return CACHED_UNSIGNED_METRIC_NOT_SET;
+        return ptr[ch & 0x1FF];
     }
-    void put( lChar32 ch, lUInt16 m )
-    {
+    void put(lChar32 ch, lUInt16 m) {
         FONT_GLYPH_CACHE_GUARD
-        int inx = (ch>>9) & 0x1ff;
-        if (inx >= COUNT) return;
-        lUInt16 * ptr = ptrs[inx];
-        if ( !ptr ) {
+        int inx = (ch >> 9) & 0x1ff;
+        if (inx >= COUNT)
+            return;
+        lUInt16* ptr = ptrs[inx];
+        if (!ptr) {
             ptr = new lUInt16[512];
             ptrs[inx] = ptr;
-            memset( ptr, CACHED_UNSIGNED_METRIC_NOT_SET, sizeof(lUInt16) * 512 );
+            memset(ptr, CACHED_UNSIGNED_METRIC_NOT_SET, sizeof(lUInt16) * 512);
         }
-        ptr[ ch & 0x1FF ] = m;
+        ptr[ch & 0x1FF] = m;
     }
-    void clear()
-    {
+    void clear() {
         FONT_GLYPH_CACHE_GUARD
-        for ( int i=0; i<360; i++ ) {
-            if ( ptrs[i] )
-                delete [] ptrs[i];
+        for (int i = 0; i < 360; i++) {
+            if (ptrs[i])
+                delete[] ptrs[i];
             ptrs[i] = NULL;
         }
     }
-    LVFontGlyphUnsignedMetricCache()
-    {
-        memset( ptrs, 0, 360*sizeof(lUInt16*) );
+    LVFontGlyphUnsignedMetricCache() {
+        memset(ptrs, 0, 360 * sizeof(lUInt16*));
     }
-    ~LVFontGlyphUnsignedMetricCache()
-    {
+    ~LVFontGlyphUnsignedMetricCache() {
         clear();
     }
 };
 
 #define CACHED_SIGNED_METRIC_NOT_SET 0x7FFF
-#define CACHED_SIGNED_METRIC_SHIFT 0x8000
-class LVFontGlyphSignedMetricCache : public LVFontGlyphUnsignedMetricCache
+#define CACHED_SIGNED_METRIC_SHIFT   0x8000
+class LVFontGlyphSignedMetricCache: public LVFontGlyphUnsignedMetricCache
 {
 public:
-    lInt16 get( lChar32 ch )
-    {
-        return (lInt16) ( LVFontGlyphUnsignedMetricCache::get(ch) - CACHED_SIGNED_METRIC_SHIFT );
+    lInt16 get(lChar32 ch) {
+        return (lInt16)(LVFontGlyphUnsignedMetricCache::get(ch) - CACHED_SIGNED_METRIC_SHIFT);
     }
-    void put( lChar32 ch, lInt16 m )
-    {
-        LVFontGlyphUnsignedMetricCache::put(ch, (lUInt16)( m + CACHED_SIGNED_METRIC_SHIFT) );
+    void put(lChar32 ch, lInt16 m) {
+        LVFontGlyphUnsignedMetricCache::put(ch, (lUInt16)(m + CACHED_SIGNED_METRIC_SHIFT));
     }
 };
 
-class LVFreeTypeFace : public LVFont {
+class LVFreeTypeFace: public LVFont
+{
 protected:
-    LVMutex &_mutex;
+    LVMutex& _mutex;
     lString8 _fileName;
     lString8 _faceName;
     css_font_family_t _fontFamily;
@@ -123,8 +118,8 @@ protected:
     FT_Face _face;
     FT_GlyphSlot _slot;
     FT_Matrix _matrix; // helper matrix for fake italic metrics
-    int _size; // caracter height in pixels
-    int _height; // full line height in pixels
+    int _size;         // caracter height in pixels
+    int _height;       // full line height in pixels
     int _hyphen_width;
     int _baseline;
     int _weight; // original font weight 400: normal, 700: bold, 100..900 thin..black
@@ -146,16 +141,16 @@ protected:
      * <any> - A mask with only one bit set, the number of which corresponds to the number in the fallback font chain.
      */
     lUInt32 _fallback_mask;
-    int            _synth_weight; // fake/synthesized weight
-    bool           _allowKerning;
-    FT_Pos         _synth_weight_strength;   // for emboldening with FT_Outline_Embolden()
-    FT_Pos         _synth_weight_half_strength;
-    FT_Pos         _scale_mul;                  // only for fixed-size color fonts
-    FT_Pos         _scale_div;                  // only for fixed-size color fonts
-    int _features; // requested OpenType features bitmap
+    int _synth_weight; // fake/synthesized weight
+    bool _allowKerning;
+    FT_Pos _synth_weight_strength; // for emboldening with FT_Outline_Embolden()
+    FT_Pos _synth_weight_half_strength;
+    FT_Pos _scale_mul; // only for fixed-size color fonts
+    FT_Pos _scale_div; // only for fixed-size color fonts
+    int _features;     // requested OpenType features bitmap
 #if USE_HARFBUZZ == 1
-    hb_font_t *_hb_font;
-    hb_buffer_t *_hb_buffer;
+    hb_font_t* _hb_font;
+    hb_buffer_t* _hb_buffer;
     LVArray<hb_feature_t> _hb_features;
     // For use with SHAPING_MODE_HARFBUZZ:
     LVFontLocalGlyphCache _glyph_cache2;
@@ -163,9 +158,8 @@ protected:
     LVHashTable<struct LVCharTriplet, struct LVCharPosInfo> _width_cache2;
 #endif
 public:
-
     // fallback font support
-    
+
     virtual lUInt32 getFallbackMask() const {
         return _fallback_mask;
     }
@@ -178,22 +172,32 @@ public:
     virtual void setFallbackFont(LVFontRef font);
 
     /// get fallback font for this font
-    virtual LVFont *getFallbackFont(lUInt32 fallbackPassMask);
+    virtual LVFont* getFallbackFont(lUInt32 fallbackPassMask);
 
     /// returns font weight
-    virtual int getWeight() const { return _synth_weight > 0 ? _synth_weight : _weight; }
+    virtual int getWeight() const {
+        return _synth_weight > 0 ? _synth_weight : _weight;
+    }
 
     /// returns italic flag
-    virtual int getItalic() const { return _italic; }
+    virtual int getItalic() const {
+        return _italic;
+    }
 
     /// sets face name
-    virtual void setFaceName(lString8 face) { _faceName = face; }
+    virtual void setFaceName(lString8 face) {
+        _faceName = face;
+    }
 
-    LVMutex &getMutex() { return _mutex; }
+    LVMutex& getMutex() {
+        return _mutex;
+    }
 
-    FT_Library getLibrary() { return _library; }
+    FT_Library getLibrary() {
+        return _library;
+    }
 
-    LVFreeTypeFace(LVMutex &mutex, FT_Library library, LVFontGlobalGlyphCache *globalCache);
+    LVFreeTypeFace(LVMutex& mutex, FT_Library library, LVFontGlobalGlyphCache* globalCache);
 
     virtual ~LVFreeTypeFace();
 
@@ -202,7 +206,9 @@ public:
     virtual int getHyphenWidth();
 
     /// get kerning mode: true==ON, false=OFF
-    virtual bool getKerning() const { return _allowKerning; }
+    virtual bool getKerning() const {
+        return _allowKerning;
+    }
 
     /// set kerning mode: true==ON, false=OFF
     virtual void setKerning(bool kerningEnabled);
@@ -211,46 +217,56 @@ public:
     virtual void setHintingMode(hinting_mode_t mode);
 
     /// returns current hinting mode
-    virtual hinting_mode_t getHintingMode() const { return _hintingMode; }
+    virtual hinting_mode_t getHintingMode() const {
+        return _hintingMode;
+    }
 
     /// sets current shaping mode
-    virtual void setShapingMode( shaping_mode_t shapingMode );
+    virtual void setShapingMode(shaping_mode_t shapingMode);
 
     /// returns current kerning mode
-    virtual shaping_mode_t getShapingMode() const { return _shapingMode; }
+    virtual shaping_mode_t getShapingMode() const {
+        return _shapingMode;
+    }
 
     /// get bitmap mode (true=bitmap, false=antialiased)
-    virtual bool getBitmapMode() { return _drawMonochrome; }
+    virtual bool getBitmapMode() {
+        return _drawMonochrome;
+    }
 
     /// set bitmap mode (true=bitmap, false=antialiased)
     virtual void setBitmapMode(bool drawBitmap);
 
     /// get antialiasing mode
-    virtual font_antialiasing_t GetAntialiasMode() { return _aa_mode; }
+    virtual font_antialiasing_t GetAntialiasMode() {
+        return _aa_mode;
+    }
 
     /// set antialiasing mode
     virtual void SetAntialiasMode(font_antialiasing_t mode);
-    
+
     /// get OpenType features (bitmap)
-    virtual int getFeatures() const { return _features; }
+    virtual int getFeatures() const {
+        return _features;
+    }
 
     /// set OpenType features (bitmap)
-    virtual void setFeatures( int features );
+    virtual void setFeatures(int features);
 
     void setSynthWeight(int synth_weight);
 
     bool loadFromBuffer(LVByteArrayRef buf, int index, int size, css_font_family_t fontFamily,
                         bool monochrome, bool italicize, int weight = -1);
 
-    bool loadFromFile(const char *fname, int index, int size, css_font_family_t fontFamily,
+    bool loadFromFile(const char* fname, int index, int size, css_font_family_t fontFamily,
                       bool monochrome, bool italicize, int weight = -1);
 
     /** \brief get glyph info
         \param glyph is pointer to glyph_info_t struct to place retrieved info
         \return true if glyh was found
     */
-    virtual bool getGlyphInfo(lUInt32 code, glyph_info_t *glyph, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
-/*
+    virtual bool getGlyphInfo(lUInt32 code, glyph_info_t* glyph, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
+    /*
   // USE GET_CHAR_FLAGS instead
     inline int calcCharFlags( lChar32 ch )
     {
@@ -272,7 +288,7 @@ public:
 
     /** \brief get extra glyph metric
     */
-    virtual bool getGlyphExtraMetric( glyph_extra_metric_t metric, lUInt32 code, int & value, bool scaled_to_px=true, lChar32 def_char=0, lUInt32 fallbackPassMask = 0 );
+    virtual bool getGlyphExtraMetric(glyph_extra_metric_t metric, lUInt32 code, int& value, bool scaled_to_px = true, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
 
     /** \brief measure text
         \param text is text string pointer
@@ -280,17 +296,16 @@ public:
         \return number of characters before max_width reached
     */
     virtual lUInt16 measureText(
-            const lChar32 *text, int len,
-            lUInt16 *widths,
-            lUInt8 *flags,
+            const lChar32* text, int len,
+            lUInt16* widths,
+            lUInt8* flags,
             int max_width,
             lChar32 def_char,
-            TextLangCfg * lang_cfg = NULL,
+            TextLangCfg* lang_cfg = NULL,
             int letter_spacing = 0,
             bool allow_hyphenation = true,
             lUInt32 hints = 0,
-            lUInt32 fallbackPassMask = 0
-    );
+            lUInt32 fallbackPassMask = 0);
 
     /** \brief measure text
         \param text is text string pointer
@@ -298,27 +313,26 @@ public:
         \return width of specified string
     */
     virtual lUInt32 getTextWidth(
-            const lChar32 *text, int len, TextLangCfg * lang_cfg = NULL
-    );
+            const lChar32* text, int len, TextLangCfg* lang_cfg = NULL);
 
     /** \brief get glyph item
         \param code is unicode character
         \return glyph pointer if glyph was found, NULL otherwise
     */
-    virtual LVFontGlyphCacheItem *getGlyph(lUInt32 ch, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
+    virtual LVFontGlyphCacheItem* getGlyph(lUInt32 ch, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
 
-//    /** \brief get glyph image in 1 byte per pixel format
-//        \param code is unicode character
-//        \param buf is buffer [width*height] to place glyph data
-//        \return true if glyph was found
-//    */
-//    virtual bool getGlyphImage(lUInt16 ch, lUInt8 * bmp, lChar32 def_char=0)
-//    {
-//        LVFontGlyphCacheItem * item = getGlyph(ch);
-//        if ( item )
-//            memcpy( bmp, item->bmp, item->bmp_width * item->bmp_height );
-//        return item;
-//    }
+    //    /** \brief get glyph image in 1 byte per pixel format
+    //        \param code is unicode character
+    //        \param buf is buffer [width*height] to place glyph data
+    //        \return true if glyph was found
+    //    */
+    //    virtual bool getGlyphImage(lUInt16 ch, lUInt8 * bmp, lChar32 def_char=0)
+    //    {
+    //        LVFontGlyphCacheItem * item = getGlyph(ch);
+    //        if ( item )
+    //            memcpy( bmp, item->bmp, item->bmp_width * item->bmp_height );
+    //        return item;
+    //    }
 
     /// returns font baseline offset
     virtual int getBaseline() {
@@ -339,19 +353,19 @@ public:
     virtual int getCharWidth(lChar32 ch, lChar32 def_char = '?');
 
     /// returns char glyph left side bearing
-    int getLeftSideBearing( lChar32 ch, bool negative_only=false, bool italic_only=false );
+    int getLeftSideBearing(lChar32 ch, bool negative_only = false, bool italic_only = false);
 
     /// returns char glyph right side bearing
-    virtual int getRightSideBearing( lChar32 ch, bool negative_only=false, bool italic_only=false );
+    virtual int getRightSideBearing(lChar32 ch, bool negative_only = false, bool italic_only = false);
 
     /// returns extra metric
-    virtual int getExtraMetric(font_extra_metric_t metric, bool scaled_to_px=true);
+    virtual int getExtraMetric(font_extra_metric_t metric, bool scaled_to_px = true);
 
     /// returns if font has OpenType Math tables
     virtual bool hasOTMathSupport() const;
 
     /// retrieves font handle
-    virtual void *GetHandle() {
+    virtual void* GetHandle() {
         return (void*)_face;
     }
 
@@ -366,25 +380,25 @@ public:
     }
 
     virtual bool kerningEnabled() {
-#if (ALLOW_KERNING==1)
-    #if USE_HARFBUZZ==1
+#if (ALLOW_KERNING == 1)
+#if USE_HARFBUZZ == 1
         return _allowKerning;
 #else
-        return _allowKerning && FT_HAS_KERNING( _face );
-    #endif
+        return _allowKerning && FT_HAS_KERNING(_face);
+#endif
 #else
         return false;
 #endif
     }
 
     /// draws text string
-    virtual int DrawTextString(LVDrawBuf *buf, int x, int y,
-                               const lChar32 *text, int len,
-                               lChar32 def_char, lUInt32 *palette = NULL,
-                               bool addHyphen = false, TextLangCfg * lang_cfg = NULL,
-                               lUInt32 flags = 0, int letter_spacing = 0, int width=-1,
+    virtual int DrawTextString(LVDrawBuf* buf, int x, int y,
+                               const lChar32* text, int len,
+                               lChar32 def_char, lUInt32* palette = NULL,
+                               bool addHyphen = false, TextLangCfg* lang_cfg = NULL,
+                               lUInt32 flags = 0, int letter_spacing = 0, int width = -1,
                                int text_decoration_back_gap = 0,
-                               int target_w=-1, int target_h=-1,
+                               int target_w = -1, int target_h = -1,
                                lUInt32 fallbackPassMask = 0);
 
     /// returns true if font is empty
@@ -400,20 +414,20 @@ public:
 protected:
     void updateTransform();
     FT_UInt getCharIndex(lUInt32 code, lChar32 def_char);
-    bool getGlyphIndexInfo(lUInt32 glyph_index, glyph_info_t *glyph);
-    void DrawStretchedGlyph(LVDrawBuf * buf, int glyph_index, int x, int y, int w, int h, lUInt32 * palette=NULL);
-#if USE_HARFBUZZ==1
-    LVFontGlyphCacheItem *getGlyphByIndex(lUInt32 index);
-    lChar32 filterChar(lChar32 code, lChar32 def_char=0);
-    bool hbCalcCharWidth(struct LVCharPosInfo *posInfo, const struct LVCharTriplet &triplet,
+    bool getGlyphIndexInfo(lUInt32 glyph_index, glyph_info_t* glyph);
+    void DrawStretchedGlyph(LVDrawBuf* buf, int glyph_index, int x, int y, int w, int h, lUInt32* palette = NULL);
+#if USE_HARFBUZZ == 1
+    LVFontGlyphCacheItem* getGlyphByIndex(lUInt32 index);
+    lChar32 filterChar(lChar32 code, lChar32 def_char = 0);
+    bool hbCalcCharWidth(struct LVCharPosInfo* posInfo, const struct LVCharTriplet& triplet,
                          lChar32 def_char, lUInt32 fallbackPassMask);
-    bool setHBFeatureValue(const char * tag, uint32_t value);
-    bool addHBFeature(const char * tag);
-    bool delHBFeature(const char * tag);
+    bool setHBFeatureValue(const char* tag, uint32_t value);
+    bool addHBFeature(const char* tag);
+    bool delHBFeature(const char* tag);
     void setupHBFeatures();
 #endif
 };
 
-#endif  // (USE_FREETYPE==1)
+#endif // (USE_FREETYPE==1)
 
-#endif  // __LV_FREETYPEFACE_H_INCLUDED__
+#endif // __LV_FREETYPEFACE_H_INCLUDED__

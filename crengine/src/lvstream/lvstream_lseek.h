@@ -33,4 +33,4 @@ static inline lvpos_t cr3_lseek(int fd, lvoffset_t offset, int whence) {
 #endif
 }
 
-#endif	// __LVSTREAM_LSEEK_H_INCLUDED__
+#endif // __LVSTREAM_LSEEK_H_INCLUDED__

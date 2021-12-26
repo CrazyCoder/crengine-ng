@@ -43,7 +43,7 @@ lString8 LVBitmapFontManager::makeFontFileName(lString8 name) {
 
 LVFontRef LVBitmapFontManager::GetFont(int size, int weight, bool italic, css_font_family_t family, lString8 typeface,
                                        int features, int documentId, bool useBias) {
-    LVFontDef *def = new LVFontDef(
+    LVFontDef* def = new LVFontDef(
             lString8::empty_str,
             size,
             weight,
@@ -51,20 +51,19 @@ LVFontRef LVBitmapFontManager::GetFont(int size, int weight, bool italic, css_fo
             0,
             family,
             typeface,
-            documentId
-    );
+            documentId);
     //fprintf( _log, "GetFont: %s %d %s %s\n",
     //    typeface.c_str(),
     //    size,
     //    weight>400?"bold":"",
     //    italic?"italic":"" );
-    LVFontCacheItem *item = _cache.find(def);
+    LVFontCacheItem* item = _cache.find(def);
     delete def;
     if (!item->getFont().isNull()) {
         //fprintf(_log, "    : fount existing\n");
         return item->getFont();
     }
-    LBitmapFont *font = new LBitmapFont;
+    LBitmapFont* font = new LBitmapFont;
     lString8 fname = makeFontFileName(item->getDef()->getName());
     //printf("going to load font file %s\n", fname.c_str());
     if (font->LoadFromFile(fname.c_str())) {
@@ -98,9 +97,8 @@ bool LVBitmapFontManager::RegisterFont(lString8 name) {
                 hdr.flgBold ? 700 : 400,
                 hdr.flgItalic ? true : false,
                 -1,
-                (css_font_family_t) hdr.fontFamily,
-                lString8(hdr.fontName)
-        );
+                (css_font_family_t)hdr.fontFamily,
+                lString8(hdr.fontName));
         //fprintf( _log, "Register: %s %s %d %s %s\n",
         //    name.c_str(), hdr.fontName,
         //    hdr.fontHeight,
@@ -112,7 +110,7 @@ bool LVBitmapFontManager::RegisterFont(lString8 name) {
     return res;
 }
 
-void LVBitmapFontManager::getFontFileNameList(lString32Collection &list) {
+void LVBitmapFontManager::getFontFileNameList(lString32Collection& list) {
     FONT_MAN_GUARD
     _cache.getFontFileNameList(list);
 }
@@ -122,4 +120,4 @@ bool LVBitmapFontManager::Init(lString8 path) {
     return true;
 }
 
-#endif  // (USE_BITMAP_FONTS==1)
+#endif // (USE_BITMAP_FONTS==1)

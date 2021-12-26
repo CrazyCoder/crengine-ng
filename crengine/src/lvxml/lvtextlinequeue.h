@@ -19,17 +19,17 @@
 
 #include "lvtextfileline.h"
 
-#define MAX_HEADING_CHARS 48
-#define MAX_PARA_LINES 30
-#define MAX_BUF_LINES  200
+#define MAX_HEADING_CHARS        48
+#define MAX_PARA_LINES           30
+#define MAX_BUF_LINES            200
 #define MIN_MULTILINE_PARA_WIDTH 45
 
 class LVXMLParserCallback;
 
-class LVTextLineQueue : public LVPtrVector<LVTextFileLine>
+class LVTextLineQueue: public LVPtrVector<LVTextFileLine>
 {
 private:
-    LVTextFileBase * file;
+    LVTextFileBase* file;
     int first_line_index;
     int maxLineSize;
     lString32 bookTitle;
@@ -50,9 +50,10 @@ private:
     int max_left_second_stats_pos;
     int max_right_stats_pos;
 
-    enum {
+    enum
+    {
         tftParaPerLine = 1,
-        tftParaIdents  = 2,
+        tftParaIdents = 2,
         tftEmptyLineDelimPara = 4,
         tftCenteredHeaders = 8,
         tftEmptyLineDelimHeaders = 16,
@@ -63,24 +64,26 @@ private:
         tftPML = 512 // Palm Markup Language
     } formatFlags_t;
 public:
-    LVTextLineQueue( LVTextFileBase * f, int maxLineLen );
+    LVTextLineQueue(LVTextFileBase* f, int maxLineLen);
     // get index of first line of queue
-    int  GetFirstLineIndex() { return first_line_index; }
+    int GetFirstLineIndex() {
+        return first_line_index;
+    }
     // get line count read from file. Use length() instead to get count of lines queued.
-    int  GetLineCount() { return first_line_index + length(); }
+    int GetLineCount() {
+        return first_line_index + length();
+    }
     // get line by line file index
-    LVTextFileLine * GetLine( int index )
-    {
+    LVTextFileLine* GetLine(int index) {
         return get(index - first_line_index);
     }
     // remove lines from head of queue
     void RemoveLines(int lineCount);
     // read lines and place to tail of queue
-    bool ReadLines( int lineCount );
-    inline static int absCompare( int v1, int v2 );
-    lineAlign_t getFormat( LVTextFileLine * line );
-    static bool isCentered( LVTextFileLine * line )
-    {
+    bool ReadLines(int lineCount);
+    inline static int absCompare(int v1, int v2);
+    lineAlign_t getFormat(LVTextFileLine* line);
+    static bool isCentered(LVTextFileLine* line) {
         return line->align == la_centered;
     }
     /// checks text format options
@@ -92,26 +95,26 @@ public:
     bool testAuthorDotTitleFormat();
 
     /// check beginning of file for book title, author and series
-    bool DetectBookDescription(LVXMLParserCallback * callback);
+    bool DetectBookDescription(LVXMLParserCallback* callback);
     /// add one paragraph
-    void AddEmptyLine( LVXMLParserCallback * callback );
+    void AddEmptyLine(LVXMLParserCallback* callback);
     /// add one paragraph
-    void AddPara( int startline, int endline, LVXMLParserCallback * callback );
+    void AddPara(int startline, int endline, LVXMLParserCallback* callback);
 
     /// one line per paragraph
-    bool DoPMLImport(LVXMLParserCallback * callback);
+    bool DoPMLImport(LVXMLParserCallback* callback);
 
     /// one line per paragraph
-    bool DoParaPerLineImport(LVXMLParserCallback * callback);
+    bool DoParaPerLineImport(LVXMLParserCallback* callback);
 
     /// delimited by first line ident
-    bool DoIdentParaImport(LVXMLParserCallback * callback);
+    bool DoIdentParaImport(LVXMLParserCallback* callback);
     /// delimited by empty lines
-    bool DoEmptyLineParaImport(LVXMLParserCallback * callback);
+    bool DoEmptyLineParaImport(LVXMLParserCallback* callback);
     /// delimited by empty lines
-    bool DoPreFormattedImport(LVXMLParserCallback * callback);
+    bool DoPreFormattedImport(LVXMLParserCallback* callback);
     /// import document body
-    bool DoTextImport(LVXMLParserCallback * callback);
+    bool DoTextImport(LVXMLParserCallback* callback);
 };
 
-#endif  // __LVTEXTLINEQUEUE_H_INCLUDED__
+#endif // __LVTEXTLINEQUEUE_H_INCLUDED__

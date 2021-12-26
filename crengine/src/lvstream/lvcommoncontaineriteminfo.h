@@ -23,50 +23,64 @@
 #include <lvcontaineriteminfo.h>
 #include <lvstring.h>
 
-class LVCommonContainerItemInfo : public LVContainerItemInfo
+class LVCommonContainerItemInfo: public LVContainerItemInfo
 {
     friend class LVDirectoryContainer;
     friend class LVArcContainer;
 protected:
-    lvsize_t     m_size;
-    lString32    m_name;
-    lUInt32      m_flags;
-    bool         m_is_container;
-    lvpos_t      m_srcpos;
-    lvsize_t     m_srcsize;
-    lUInt32      m_srcflags;
+    lvsize_t m_size;
+    lString32 m_name;
+    lUInt32 m_flags;
+    bool m_is_container;
+    lvpos_t m_srcpos;
+    lvsize_t m_srcsize;
+    lUInt32 m_srcflags;
 public:
-    virtual lvsize_t        GetSize() const { return m_size; }
-    virtual const lChar32 * GetName() const { return m_name.empty()?NULL:m_name.c_str(); }
-    virtual lUInt32         GetFlags() const  { return m_flags; }
-    virtual bool            IsContainer() const  { return m_is_container; }
-    lvpos_t GetSrcPos() { return m_srcpos; }
-    lvsize_t GetSrcSize() { return m_srcsize; }
-    lUInt32 GetSrcFlags() { return m_srcflags; }
-    void SetSrc( lvpos_t pos, lvsize_t size, lUInt32 flags )
-    {
+    virtual lvsize_t GetSize() const {
+        return m_size;
+    }
+    virtual const lChar32* GetName() const {
+        return m_name.empty() ? NULL : m_name.c_str();
+    }
+    virtual lUInt32 GetFlags() const {
+        return m_flags;
+    }
+    virtual bool IsContainer() const {
+        return m_is_container;
+    }
+    lvpos_t GetSrcPos() {
+        return m_srcpos;
+    }
+    lvsize_t GetSrcSize() {
+        return m_srcsize;
+    }
+    lUInt32 GetSrcFlags() {
+        return m_srcflags;
+    }
+    void SetSrc(lvpos_t pos, lvsize_t size, lUInt32 flags) {
         m_srcpos = pos;
         m_srcsize = size;
         m_srcflags = flags;
     }
-    void SetName( const lChar32 * name )
-    {
+    void SetName(const lChar32* name) {
         m_name = name;
     }
-    void SetItemInfo( lString32 fname, lvsize_t size, lUInt32 flags, bool isContainer = false )
-    {
+    void SetItemInfo(lString32 fname, lvsize_t size, lUInt32 flags, bool isContainer = false) {
         m_name = fname;
         m_size = size;
         m_flags = flags;
         m_is_container = isContainer;
     }
-    LVCommonContainerItemInfo() : m_size(0), m_flags(0), m_is_container(false),
-        m_srcpos(0), m_srcsize(0), m_srcflags(0)
-    {
+    LVCommonContainerItemInfo()
+            : m_size(0)
+            , m_flags(0)
+            , m_is_container(false)
+            , m_srcpos(0)
+            , m_srcsize(0)
+            , m_srcflags(0) {
     }
-    virtual ~LVCommonContainerItemInfo ()
-    {
+    virtual ~LVCommonContainerItemInfo() {
     }
 };
 
-#endif  // __LVCOMMONCONTAINERITEMINFO_H_INCLUDED__
+#endif // __LVCOMMONCONTAINERITEMINFO_H_INCLUDED__

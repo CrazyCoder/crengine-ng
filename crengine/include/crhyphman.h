@@ -21,7 +21,7 @@
 #include <lvhashtable.h>
 #include <lvptrvec.h>
 
-#define WORD_LENGTH   2048
+#define WORD_LENGTH 2048
 //#define MAX_REAL_WORD 24
 
 // min value supported by algorithms is 1 (max is arbitrary 10)
@@ -45,65 +45,94 @@ protected:
     int _left_hyphen_min;
     int _right_hyphen_min;
 public:
-    HyphMethod(lString32 id, int leftHyphenMin=HYPHMETHOD_DEFAULT_HYPHEN_MIN, int rightHyphenMin=HYPHMETHOD_DEFAULT_HYPHEN_MIN)
-        : _id(id)
-        , _left_hyphen_min(leftHyphenMin)
-        , _right_hyphen_min(rightHyphenMin)
-        { }
-    lString32 getId() { return _id; }
-    virtual bool hyphenate( const lChar32 * str, int len, lUInt16 * widths, lUInt8 * flags, lUInt16 hyphCharWidth, lUInt16 maxWidth, size_t flagSize=1 ) = 0;
+    HyphMethod(lString32 id, int leftHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN, int rightHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN)
+            : _id(id)
+            , _left_hyphen_min(leftHyphenMin)
+            , _right_hyphen_min(rightHyphenMin) { }
+    lString32 getId() {
+        return _id;
+    }
+    virtual bool hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* flags, lUInt16 hyphCharWidth, lUInt16 maxWidth, size_t flagSize = 1) = 0;
     virtual ~HyphMethod() { }
-    virtual lUInt32 getCount() { return 0; }
-    virtual lUInt32 getSize() { return 0; }
-    virtual int getLeftHyphenMin() { return _left_hyphen_min; }
-    virtual int getRightHyphenMin() { return _right_hyphen_min; }
+    virtual lUInt32 getCount() {
+        return 0;
+    }
+    virtual lUInt32 getSize() {
+        return 0;
+    }
+    virtual int getLeftHyphenMin() {
+        return _left_hyphen_min;
+    }
+    virtual int getRightHyphenMin() {
+        return _right_hyphen_min;
+    }
 };
-
 
 enum HyphDictType
 {
-	HDT_NONE,      // disable hyphenation
-	HDT_ALGORITHM, // universal
-	HDT_SOFTHYPHENS, // from soft hyphens in text
-	HDT_DICT_ALAN, // tex/alreader
-    HDT_DICT_TEX   // tex/fbreader
+    HDT_NONE,        // disable hyphenation
+    HDT_ALGORITHM,   // universal
+    HDT_SOFTHYPHENS, // from soft hyphens in text
+    HDT_DICT_ALAN,   // tex/alreader
+    HDT_DICT_TEX     // tex/fbreader
 };
 
 class HyphDictionary
 {
-	HyphDictType _type;
-	lString32 _title;
-	lString32 _id;
-	lString32 _filename;
+    HyphDictType _type;
+    lString32 _title;
+    lString32 _id;
+    lString32 _filename;
 public:
-	HyphDictionary( HyphDictType type, lString32 title, lString32 id, lString32 filename )
-		: _type(type), _title(title), _id( id ), _filename( filename ) { }
-	HyphDictType getType() const { return _type; }
-	lString32 getTitle() const { return _title; }
-	lString32 getId() const { return _id; }
-	lString32 getFilename() const { return _filename; }
-	bool activate();
-	virtual lUInt32 getHash() const { return getTitle().getHash(); }
+    HyphDictionary(HyphDictType type, lString32 title, lString32 id, lString32 filename)
+            : _type(type)
+            , _title(title)
+            , _id(id)
+            , _filename(filename) { }
+    HyphDictType getType() const {
+        return _type;
+    }
+    lString32 getTitle() const {
+        return _title;
+    }
+    lString32 getId() const {
+        return _id;
+    }
+    lString32 getFilename() const {
+        return _filename;
+    }
+    bool activate();
+    virtual lUInt32 getHash() const {
+        return getTitle().getHash();
+    }
     virtual ~HyphDictionary() { }
 };
 
-#define HYPH_DICT_ID_NONE U"@none"
-#define HYPH_DICT_ID_ALGORITHM U"@algorithm"
+#define HYPH_DICT_ID_NONE        U"@none"
+#define HYPH_DICT_ID_ALGORITHM   U"@algorithm"
 #define HYPH_DICT_ID_SOFTHYPHENS U"@softhyphens"
-#define HYPH_DICT_ID_DICTIONARY U"@dictionary"
+#define HYPH_DICT_ID_DICTIONARY  U"@dictionary"
 
 class HyphDictionaryList
 {
-	LVPtrVector<HyphDictionary> _list;
-	void addDefault();
+    LVPtrVector<HyphDictionary> _list;
+    void addDefault();
 public:
-    void add(HyphDictionary * dict) { _list.add(dict); }
-	int length() { return _list.length(); }
-	HyphDictionary * get( int index ) { return (index>=0 && index<+_list.length()) ? _list[index] : NULL; }
-	HyphDictionaryList() { addDefault(); }
+    void add(HyphDictionary* dict) {
+        _list.add(dict);
+    }
+    int length() {
+        return _list.length();
+    }
+    HyphDictionary* get(int index) {
+        return (index >= 0 && index < +_list.length()) ? _list[index] : NULL;
+    }
+    HyphDictionaryList() {
+        addDefault();
+    }
     bool open(lString32 hyphDirectory, bool clear = true);
-	HyphDictionary * find( const lString32& id );
-	bool activate( lString32 id );
+    HyphDictionary* find(const lString32& id);
+    bool activate(lString32 id);
 };
 
 #define DEF_HYPHENATION_DICT "English_US.pattern"
@@ -120,9 +149,9 @@ class SoftHyphensHyph;
 class HyphDataLoader
 {
 public:
-    HyphDataLoader() {}
-    virtual ~HyphDataLoader() {}
-	virtual LVStreamRef loadData(lString32 id) = 0;
+    HyphDataLoader() { }
+    virtual ~HyphDataLoader() { }
+    virtual LVStreamRef loadData(lString32 id) = 0;
 };
 
 /// hyphenation manager
@@ -135,7 +164,7 @@ class HyphMan
     // Obsolete: now fetched from TextLangMan main lang TextLangCfg
     // static HyphMethod * _method;
     // static HyphDictionary * _selectedDictionary;
-    static HyphDictionaryList * _dictList; // available hyph dict files (+ none/algo/softhyphens)
+    static HyphDictionaryList* _dictList;                            // available hyph dict files (+ none/algo/softhyphens)
     static LVHashTable<lString32, HyphMethod*> _loaded_hyph_methods; // methods with loaded dictionaries
     static HyphDataLoader* _dataLoader;
     static int _LeftHyphenMin;
@@ -144,25 +173,35 @@ class HyphMan
 public:
     static void uninit();
     static bool initDictionaries(lString32 dir, bool clear = true);
-    static HyphDictionaryList * getDictList() { return _dictList; }
+    static HyphDictionaryList* getDictList() {
+        return _dictList;
+    }
     static bool addDictionaryItem(HyphDictionary* dict);
     static void setDataLoader(HyphDataLoader* loader);
-    static bool activateDictionary( lString32 id ) { return _dictList->activate(id); }
-    static HyphDictionary * getSelectedDictionary(); // was: { return _selectedDictionary; }
-    static int getLeftHyphenMin() { return _LeftHyphenMin; }
-    static int getRightHyphenMin() { return _RightHyphenMin; }
-    static bool setLeftHyphenMin( int left_hyphen_min );
-    static bool setRightHyphenMin( int right_hyphen_min );
-    static int getTrustSoftHyphens() { return _TrustSoftHyphens; }
-    static bool setTrustSoftHyphens( int trust_soft_hyphen );
+    static bool activateDictionary(lString32 id) {
+        return _dictList->activate(id);
+    }
+    static HyphDictionary* getSelectedDictionary(); // was: { return _selectedDictionary; }
+    static int getLeftHyphenMin() {
+        return _LeftHyphenMin;
+    }
+    static int getRightHyphenMin() {
+        return _RightHyphenMin;
+    }
+    static bool setLeftHyphenMin(int left_hyphen_min);
+    static bool setRightHyphenMin(int right_hyphen_min);
+    static int getTrustSoftHyphens() {
+        return _TrustSoftHyphens;
+    }
+    static bool setTrustSoftHyphens(int trust_soft_hyphen);
     static bool isEnabled();
-    static HyphMethod * getHyphMethodForDictionary( lString32 id, int leftHyphenMin=HYPHMETHOD_DEFAULT_HYPHEN_MIN,
-                                                        int rightHyphenMin=HYPHMETHOD_DEFAULT_HYPHEN_MIN );
+    static HyphMethod* getHyphMethodForDictionary(lString32 id, int leftHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN,
+                                                  int rightHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN);
 
     HyphMan();
     ~HyphMan();
 
-    static bool hyphenate( const lChar32 * str, int len, lUInt16 * widths, lUInt8 * flags, lUInt16 hyphCharWidth, lUInt16 maxWidth, size_t flagSize=1 );
+    static bool hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* flags, lUInt16 hyphCharWidth, lUInt16 maxWidth, size_t flagSize = 1);
     /* Obsolete:
     inline static bool hyphenate( const lChar32 * str, int len, lUInt16 * widths, lUInt8 * flags, lUInt16 hyphCharWidth, lUInt16 maxWidth, size_t flagSize=1 )
     {
@@ -171,4 +210,4 @@ public:
     */
 };
 
-#endif	// _CRHYPHEN_
+#endif // _CRHYPHEN_

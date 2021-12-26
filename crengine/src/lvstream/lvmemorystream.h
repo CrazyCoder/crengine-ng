@@ -22,11 +22,12 @@
 
 #include "lvnamedstream.h"
 
-class LVMemoryStream : public LVNamedStream {
+class LVMemoryStream: public LVNamedStream
+{
 protected:
-    lUInt8 *m_pBuffer;
+    lUInt8* m_pBuffer;
     bool m_own_buffer;
-    LVContainer *m_parent;
+    LVContainer* m_parent;
     lvsize_t m_size;
     lvsize_t m_bufsize;
     lvpos_t m_pos;
@@ -47,24 +48,24 @@ public:
     /** \return LVERR_OK if change is ok */
     virtual lverror_t SetMode(lvopen_mode_t mode);
 
-    virtual LVContainer *GetParentContainer() {
-        return (LVContainer *) m_parent;
+    virtual LVContainer* GetParentContainer() {
+        return (LVContainer*)m_parent;
     }
 
-    virtual lverror_t Read(void *buf, lvsize_t count, lvsize_t *nBytesRead);
+    virtual lverror_t Read(void* buf, lvsize_t count, lvsize_t* nBytesRead);
 
     virtual lvsize_t GetSize();
 
-    virtual lverror_t GetSize(lvsize_t *pSize);
+    virtual lverror_t GetSize(lvsize_t* pSize);
 
     // ensure that buffer is at least new_size long
     lverror_t SetBufSize(lvsize_t new_size);
 
     virtual lverror_t SetSize(lvsize_t size);
 
-    virtual lverror_t Write(const void *buf, lvsize_t count, lvsize_t *nBytesWritten);
+    virtual lverror_t Write(const void* buf, lvsize_t count, lvsize_t* nBytesWritten);
 
-    virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t *pNewPos);
+    virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t* pNewPos);
 
     lverror_t Close();
 
@@ -73,13 +74,13 @@ public:
     /// Creates memory stream as copy of another stream.
     lverror_t CreateCopy(LVStreamRef srcStream, lvopen_mode_t mode);
 
-    lverror_t CreateCopy(const lUInt8 *pBuf, lvsize_t size, lvopen_mode_t mode);
+    lverror_t CreateCopy(const lUInt8* pBuf, lvsize_t size, lvopen_mode_t mode);
 
-    lverror_t Open(lUInt8 *pBuf, lvsize_t size);
+    lverror_t Open(lUInt8* pBuf, lvsize_t size);
 
     LVMemoryStream();
 
     virtual ~LVMemoryStream();
 };
 
-#endif  // __LVMEMORYSTREAM_H_INCLUDED__
+#endif // __LVMEMORYSTREAM_H_INCLUDED__

@@ -15,17 +15,18 @@
 
 #include "lvnamedstream.h"
 
-class LVTCRStream : public LVNamedStream
+class LVTCRStream: public LVNamedStream
 {
-    class TCRCode {
+    class TCRCode
+    {
     public:
         int len;
-        char * str;
+        char* str;
         TCRCode()
-            : len(0), str(NULL)
-        {
+                : len(0)
+                , str(NULL) {
         }
-        void set( const char * s, int sz );
+        void set(const char* s, int sz);
         ~TCRCode();
     };
     LVStreamRef _stream;
@@ -33,33 +34,38 @@ class LVTCRStream : public LVNamedStream
     lvpos_t _packedStart;
     lvsize_t _packedSize;
     lvsize_t _unpSize;
-    lUInt32 * _index;
-    lUInt8 * _decoded;
+    lUInt32* _index;
+    lUInt8* _decoded;
     int _decodedSize;
     int _decodedLen;
     unsigned _partIndex;
     lvpos_t _decodedStart;
     int _indexSize;
     lvpos_t _pos;
-    //int _indexPos;
-    #define TCR_READ_BUF_SIZE 4096
+//int _indexPos;
+#define TCR_READ_BUF_SIZE 4096
     lUInt8 _readbuf[TCR_READ_BUF_SIZE];
-    LVTCRStream( LVStreamRef stream )
-    : _stream(stream), _index(NULL), _decoded(NULL),
-      _decodedSize(0), _decodedLen(0), _partIndex((unsigned)-1), _decodedStart(0), _indexSize(0), _pos(0)
-    {
+    LVTCRStream(LVStreamRef stream)
+            : _stream(stream)
+            , _index(NULL)
+            , _decoded(NULL)
+            , _decodedSize(0)
+            , _decodedLen(0)
+            , _partIndex((unsigned)-1)
+            , _decodedStart(0)
+            , _indexSize(0)
+            , _pos(0) {
     }
 
-    bool decodePart( unsigned index );
+    bool decodePart(unsigned index);
 public:
     ~LVTCRStream();
     bool init();
-    static LVStreamRef create( LVStreamRef stream, int mode );
+    static LVStreamRef create(LVStreamRef stream, int mode);
 
     /// Get stream open mode
     /** \return lvopen_mode_t open mode */
-    virtual lvopen_mode_t GetMode()
-    {
+    virtual lvopen_mode_t GetMode() {
         return LVOM_READ;
     }
 
@@ -70,14 +76,13 @@ public:
         \param pNewPos points to place to store new file position
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Seek( lvoffset_t offset, lvseek_origin_t origin, lvpos_t * pNewPos );
+    virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t* pNewPos);
 
     /// Get file position
     /**
         \return lvpos_t file position
     */
-    virtual lvpos_t   GetPos()
-    {
+    virtual lvpos_t GetPos() {
         return _pos;
     }
 
@@ -85,13 +90,11 @@ public:
     /**
         \return lvsize_t file size
     */
-    virtual lvsize_t  GetSize()
-    {
+    virtual lvsize_t GetSize() {
         return _unpSize;
     }
 
-    virtual lverror_t GetSize( lvsize_t * pSize )
-    {
+    virtual lverror_t GetSize(lvsize_t* pSize) {
         *pSize = _unpSize;
         return LVERR_OK;
     }
@@ -101,8 +104,7 @@ public:
         \param size is new file size
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t SetSize( lvsize_t )
-    {
+    virtual lverror_t SetSize(lvsize_t) {
         return LVERR_FAIL;
     }
 
@@ -113,7 +115,7 @@ public:
         \param nBytesRead is place to store real number of bytes read from stream
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Read( void * buf, lvsize_t count, lvsize_t * nBytesRead );
+    virtual lverror_t Read(void* buf, lvsize_t count, lvsize_t* nBytesRead);
 
     /// Write
     /**
@@ -122,8 +124,7 @@ public:
         \param nBytesWritten is place to store real number of bytes written to stream
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Write( const void *, lvsize_t, lvsize_t *)
-    {
+    virtual lverror_t Write(const void*, lvsize_t, lvsize_t*) {
         return LVERR_FAIL;
     }
 
@@ -131,11 +132,10 @@ public:
     /**
         \return true if end of file reached
     */
-    virtual bool Eof()
-    {
+    virtual bool Eof() {
         //TODO
         return false;
     }
 };
 
-#endif  // __LVTCRSTREAM_H_INCLUDED__
+#endif // __LVTCRSTREAM_H_INCLUDED__

@@ -33,145 +33,159 @@
 #if !defined(__DTD_DEF_H_INCLUDED__)
 #define __DTD_DEF_H_INCLUDED__
 
-
 /// default element type definition struct
-struct css_elem_def_props_t {
-    bool                 allow_text;   ///< is true if element allows text nodes as children
-    bool                 is_object;    ///< is true if element is object (i.e. image)
-    css_display_t        display;      ///< default display property value
-    css_white_space_t    white_space;  ///< default white-space property value
+struct css_elem_def_props_t
+{
+    bool allow_text;               ///< is true if element allows text nodes as children
+    bool is_object;                ///< is true if element is object (i.e. image)
+    css_display_t display;         ///< default display property value
+    css_white_space_t white_space; ///< default white-space property value
 };
 
 /// known element names and styles table entry
-struct elem_def_t {
-    lUInt16      id;
-    const char * name;
+struct elem_def_t
+{
+    lUInt16 id;
+    const char* name;
     css_elem_def_props_t props;
 };
 
 /// known attribute names table entry
-struct attr_def_t {
-    lUInt16      id;
-    const char * name;
+struct attr_def_t
+{
+    lUInt16 id;
+    const char* name;
 };
 
 /// known namespace names table entry
-struct ns_def_t {
-    lUInt16      id;
-    const char * name;
+struct ns_def_t
+{
+    lUInt16 id;
+    const char* name;
 };
 #endif
 
 #ifndef XS_IMPLEMENT_SCHEME
 #define XS_BEGIN_TAGS \
-        enum { \
+    enum              \
+    {                 \
         el_NULL = 0,
 #define XS_TAG1(itm) \
-        el_ ## itm,
+    el_##itm,
 #define XS_TAG2(itm, name) \
-        el_ ## itm,
+    el_##itm,
 #define XS_TAG1T(itm) \
-        el_ ## itm,
+    el_##itm,
 #define XS_TAG1OBJ(itm) \
-        el_ ## itm,
+    el_##itm,
 #define XS_TAG2T(itm, name) \
-        el_ ## itm,
+    el_##itm,
 #define XS_TAG1I(itm) \
-        el_ ## itm,
+    el_##itm,
 #define XS_TAG2I(itm, name) \
-        el_ ## itm,
+    el_##itm,
 #define XS_TAG1D(itm, txt, disp, ws) \
-        el_ ## itm,
+    el_##itm,
 #define XS_TAG2D(itm, name, txt, disp, ws) \
-        el_ ## itm,
+    el_##itm,
 #define XS_END_TAGS \
-        el_MAX_ID \
-        };
+    el_MAX_ID       \
+    }               \
+    ;
 
 #define XS_BEGIN_ATTRS \
-        enum { \
+    enum               \
+    {                  \
         attr_NULL = 0,
 #define XS_ATTR(itm) \
-        attr_ ## itm,
+    attr_##itm,
 #define XS_ATTR2(itm, name) \
-        attr_ ## itm,
+    attr_##itm,
 #define XS_END_ATTRS \
-        attr_MAX_ID \
-        };
+    attr_MAX_ID      \
+    }                \
+    ;
 
 #define XS_BEGIN_NS \
-        enum { \
+    enum            \
+    {               \
         ns_NULL = 0,
 #define XS_NS(itm) \
-        ns_ ## itm,
+    ns_##itm,
 #define XS_END_NS \
-        ns_MAX_ID \
-        };
+    ns_MAX_ID     \
+    }             \
+    ;
 
 #else
 
-
-#undef  XS_BEGIN_TAGS
-#undef  XS_TAG1
-#undef  XS_TAG2
-#undef  XS_TAG1T
-#undef  XS_TAG1OBJ
-#undef  XS_TAG2T
-#undef  XS_TAG1I
-#undef  XS_TAG2I
-#undef  XS_TAG1D
-#undef  XS_TAG2D
-#undef  XS_END_TAGS
+#undef XS_BEGIN_TAGS
+#undef XS_TAG1
+#undef XS_TAG2
+#undef XS_TAG1T
+#undef XS_TAG1OBJ
+#undef XS_TAG2T
+#undef XS_TAG1I
+#undef XS_TAG2I
+#undef XS_TAG1D
+#undef XS_TAG2D
+#undef XS_END_TAGS
 #define XS_BEGIN_TAGS \
-        static elem_def_t fb2_elem_table [] =  {
+    static elem_def_t fb2_elem_table[] = {
 #define XS_TAG1(itm) \
-        { el_ ## itm, #itm, {false, false, css_d_block, css_ws_inherit} },
+    { el_##itm, #itm, { false, false, css_d_block, css_ws_inherit } },
 #define XS_TAG2(itm, name) \
-        { el_ ## itm, name, {false, false, css_d_block, css_ws_inherit} },
+    { el_##itm, name, { false, false, css_d_block, css_ws_inherit } },
 #define XS_TAG1T(itm) \
-        { el_ ## itm, #itm, {true, false, css_d_block, css_ws_inherit} },
+    { el_##itm, #itm, { true, false, css_d_block, css_ws_inherit } },
 #define XS_TAG1OBJ(itm) \
-        { el_ ## itm, #itm, {false, true, css_d_inline, css_ws_inherit} },
+    { el_##itm, #itm, { false, true, css_d_inline, css_ws_inherit } },
 #define XS_TAG2T(itm, name) \
-        { el_ ## itm, name, {true, false, css_d_block, css_ws_inherit} },
+    { el_##itm, name, { true, false, css_d_block, css_ws_inherit } },
 #define XS_TAG1I(itm) \
-        { el_ ## itm, #itm, {true, false, css_d_inline, css_ws_inherit} },
+    { el_##itm, #itm, { true, false, css_d_inline, css_ws_inherit } },
 #define XS_TAG2I(itm, name) \
-        { el_ ## itm, name, {true, false, css_d_inline, css_ws_inherit} },
+    { el_##itm, name, { true, false, css_d_inline, css_ws_inherit } },
 #define XS_TAG1D(itm, txt, disp, ws) \
-        { el_ ## itm, #itm, {txt, false, disp, ws} },
+    { el_##itm, #itm, { txt, false, disp, ws } },
 #define XS_TAG2D(itm, name, txt, false, disp, ws) \
-        { el_ ## itm, name, {txt, false, disp, ws} },
-#define XS_END_TAGS \
-        { 0, NULL, {false, false, css_d_block, css_ws_inherit} } \
-        };
+    { el_##itm, name, { txt, false, disp, ws } },
+#define XS_END_TAGS                                   \
+    {                                                 \
+        0, NULL, {                                    \
+            false, false, css_d_block, css_ws_inherit \
+        }                                             \
+    }                                                 \
+    }                                                 \
+    ;
 
-#undef  XS_BEGIN_ATTRS
-#undef  XS_ATTR
-#undef  XS_ATTR2
-#undef  XS_END_ATTRS
+#undef XS_BEGIN_ATTRS
+#undef XS_ATTR
+#undef XS_ATTR2
+#undef XS_END_ATTRS
 #define XS_BEGIN_ATTRS \
-        static attr_def_t fb2_attr_table [] = {
+    static attr_def_t fb2_attr_table[] = {
 #define XS_ATTR(itm) \
-        { attr_ ## itm, #itm },
+    { attr_##itm, #itm },
 #define XS_ATTR2(itm, name) \
-        { attr_ ## itm, name },
+    { attr_##itm, name },
 #define XS_END_ATTRS \
-        { 0, NULL } \
-        };
+    { 0, NULL }      \
+    }                \
+    ;
 
-#undef  XS_BEGIN_NS
-#undef  XS_NS
-#undef  XS_END_NS
+#undef XS_BEGIN_NS
+#undef XS_NS
+#undef XS_END_NS
 #define XS_BEGIN_NS \
-        static ns_def_t fb2_ns_table [] = {
+    static ns_def_t fb2_ns_table[] = {
 #define XS_NS(itm) \
-        { ns_ ## itm, #itm },
+    { ns_##itm, #itm },
 #define XS_END_NS \
-        { 0, NULL } \
-        };
+    { 0, NULL }   \
+    }             \
+    ;
 
 #endif
-
 
 #endif // __DTD_DEF_H_INCLUDED__

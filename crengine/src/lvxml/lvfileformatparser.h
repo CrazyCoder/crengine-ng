@@ -24,9 +24,11 @@ class LVFileFormatParser
 {
 public:
     /// returns pointer to loading progress callback object
-    virtual LVDocViewCallback * getProgressCallback() { return NULL; }
+    virtual LVDocViewCallback* getProgressCallback() {
+        return NULL;
+    }
     /// sets pointer to loading progress callback object
-    virtual void setProgressCallback( LVDocViewCallback * /*callback*/ ) { }
+    virtual void setProgressCallback(LVDocViewCallback* /*callback*/) { }
     /// returns true if format is recognized by parser
     virtual bool CheckFormat() = 0;
     /// parses input stream
@@ -36,17 +38,19 @@ public:
     /// stops parsing in the middle of file, to read header only
     virtual void Stop() = 0;
     /// sets charset by name
-    virtual void SetCharset( const lChar32 * name ) = 0;
+    virtual void SetCharset(const lChar32* name) = 0;
     /// sets 8-bit charset conversion table (128 items, for codes 128..255)
-    virtual void SetCharsetTable( const lChar32 * table ) = 0;
+    virtual void SetCharsetTable(const lChar32* table) = 0;
     /// returns 8-bit charset conversion table (128 items, for codes 128..255)
-    virtual lChar32 * GetCharsetTable( ) = 0;
+    virtual lChar32* GetCharsetTable() = 0;
     /// changes space mode
-    virtual void SetSpaceMode( bool ) { }
+    virtual void SetSpaceMode(bool) { }
     /// returns space mode
-    virtual bool GetSpaceMode() { return false; }
+    virtual bool GetSpaceMode() {
+        return false;
+    }
     /// virtual destructor
-    virtual ~LVFileFormatParser() {}
+    virtual ~LVFileFormatParser() { }
 };
 
-#endif  // __LVFILEFORMATPARSER_H_INCLUDED__
+#endif // __LVFILEFORMATPARSER_H_INCLUDED__

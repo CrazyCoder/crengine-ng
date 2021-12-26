@@ -19,25 +19,35 @@
 
 struct ldomNode;
 
-class LVNodeImageSource : public LVImageSource
+class LVNodeImageSource: public LVImageSource
 {
 protected:
-    ldomNode *  _node;
+    ldomNode* _node;
     LVStreamRef _stream;
     int _width;
     int _height;
 public:
-    LVNodeImageSource( ldomNode * node, LVStreamRef stream )
-        : _node(node), _stream(stream), _width(0), _height(0)
-    {
+    LVNodeImageSource(ldomNode* node, LVStreamRef stream)
+            : _node(node)
+            , _stream(stream)
+            , _width(0)
+            , _height(0) {
     }
-    ldomNode * GetSourceNode() { return _node; }
-    virtual LVStream * GetSourceStream() { return _stream.get(); }
-    virtual void   Compact() { }
-    virtual int    GetWidth() const { return _width; }
-    virtual int    GetHeight() const { return _height; }
-    virtual bool   Decode( LVImageDecoderCallback * callback ) = 0;
-    virtual ~LVNodeImageSource() {}
+    ldomNode* GetSourceNode() {
+        return _node;
+    }
+    virtual LVStream* GetSourceStream() {
+        return _stream.get();
+    }
+    virtual void Compact() { }
+    virtual int GetWidth() const {
+        return _width;
+    }
+    virtual int GetHeight() const {
+        return _height;
+    }
+    virtual bool Decode(LVImageDecoderCallback* callback) = 0;
+    virtual ~LVNodeImageSource() { }
 };
 
-#endif  // __LVNODEIMAGESOURCE_H_INCLUDED__
+#endif // __LVNODEIMAGESOURCE_H_INCLUDED__

@@ -20,7 +20,7 @@
 #include <lvarray.h>
 #include <lvimg.h>
 
-class LVStretchImgSource : public LVImageSource, public LVImageDecoderCallback
+class LVStretchImgSource: public LVImageSource, public LVImageDecoderCallback
 {
 protected:
     LVImageSourceRef _src;
@@ -33,19 +33,27 @@ protected:
     int _split_x;
     int _split_y;
     LVArray<lUInt32> _line;
-    LVImageDecoderCallback * _callback;
+    LVImageDecoderCallback* _callback;
 public:
-    LVStretchImgSource( LVImageSourceRef src, int newWidth, int newHeight, ImageTransform hTransform, ImageTransform vTransform, int splitX, int splitY );
+    LVStretchImgSource(LVImageSourceRef src, int newWidth, int newHeight, ImageTransform hTransform, ImageTransform vTransform, int splitX, int splitY);
     virtual ~LVStretchImgSource();
-    virtual void OnStartDecode( LVImageSource * );
-    virtual bool OnLineDecoded( LVImageSource * obj, int y, lUInt32 * data );
-    virtual void OnEndDecode( LVImageSource *, bool res);
-    virtual ldomNode * GetSourceNode() { return NULL; }
-    virtual LVStream * GetSourceStream() { return NULL; }
-    virtual void   Compact() { }
-    virtual int    GetWidth() const { return _dst_dx; }
-    virtual int    GetHeight() const { return _dst_dy; }
-    virtual bool   Decode( LVImageDecoderCallback * callback );
+    virtual void OnStartDecode(LVImageSource*);
+    virtual bool OnLineDecoded(LVImageSource* obj, int y, lUInt32* data);
+    virtual void OnEndDecode(LVImageSource*, bool res);
+    virtual ldomNode* GetSourceNode() {
+        return NULL;
+    }
+    virtual LVStream* GetSourceStream() {
+        return NULL;
+    }
+    virtual void Compact() { }
+    virtual int GetWidth() const {
+        return _dst_dx;
+    }
+    virtual int GetHeight() const {
+        return _dst_dy;
+    }
+    virtual bool Decode(LVImageDecoderCallback* callback);
 };
 
-#endif  // __LVSTRETCHIMGSOURCE_H_INCLUDED__
+#endif // __LVSTRETCHIMGSOURCE_H_INCLUDED__

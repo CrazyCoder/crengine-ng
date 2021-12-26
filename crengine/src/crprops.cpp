@@ -15,7 +15,6 @@
 
 #include <stdio.h>
 
-
 //============================================================================
 // CRPropContainer declarations
 //============================================================================
@@ -26,53 +25,55 @@ private:
     lString8 _name;
     lString32 _value;
 public:
-    CRPropItem( const char * name, const lString32 value )
-    : _name(name), _value(value)
-    { }
-    CRPropItem( const CRPropItem& v )
-    : _name( v._name )
-    , _value( v._value )
-    { }
-    CRPropItem & operator = ( const CRPropItem& v )
-    {
-      _name = v._name;
-      _value = v._value;
-      return *this;
+    CRPropItem(const char* name, const lString32 value)
+            : _name(name)
+            , _value(value) { }
+    CRPropItem(const CRPropItem& v)
+            : _name(v._name)
+            , _value(v._value) { }
+    CRPropItem& operator=(const CRPropItem& v) {
+        _name = v._name;
+        _value = v._value;
+        return *this;
     }
-    const char * getName() const { return _name.c_str(); }
-    const lString32 & getValue() const { return _value; }
-    void setValue(const lString32 &v) { _value = v; }
+    const char* getName() const {
+        return _name.c_str();
+    }
+    const lString32& getValue() const {
+        return _value;
+    }
+    void setValue(const lString32& v) {
+        _value = v;
+    }
 };
 
 /// set contents from specified properties
-void CRPropAccessor::set( const CRPropRef & v )
-{
+void CRPropAccessor::set(const CRPropRef& v) {
     clear();
     int sz = v->getCount();
-    for ( int i=0; i<sz; i++ )
-        setString( v->getName(i), v->getValue(i) );
+    for (int i = 0; i < sz; i++)
+        setString(v->getName(i), v->getValue(i));
 }
 
 /// calc props1 - props2
-CRPropRef operator - ( CRPropRef props1, CRPropRef props2 )
-{
+CRPropRef operator-(CRPropRef props1, CRPropRef props2) {
     CRPropRef v = LVCreatePropsContainer();
     int cnt1 = props1->getCount();
     int cnt2 = props2->getCount();
     int p1 = 0;
     int p2 = 0;
-    while ( (p1<=cnt1 && p2<=cnt2) && (p1<cnt1 || p2<cnt2) ) {
-        if ( p1==cnt1 ) {
+    while ((p1 <= cnt1 && p2 <= cnt2) && (p1 < cnt1 || p2 < cnt2)) {
+        if (p1 == cnt1) {
             break;
-        } else if ( p2==cnt2 ) {
-            v->setString( props1->getName( p1 ), props1->getValue( p1 ) );
+        } else if (p2 == cnt2) {
+            v->setString(props1->getName(p1), props1->getValue(p1));
             p1++;
         } else {
-            int res = lStr_cmp( props1->getName( p1 ), props2->getName( p2 ) );
-            if ( res<0 ) {
-                v->setString( props1->getName( p1 ), props1->getValue( p1 ) );
+            int res = lStr_cmp(props1->getName(p1), props2->getName(p2));
+            if (res < 0) {
+                v->setString(props1->getName(p1), props1->getValue(p1));
                 p1++;
-            } else if ( res==0 ) {
+            } else if (res == 0) {
                 p1++;
                 p2++;
             } else { // ( res>0 )
@@ -83,31 +84,30 @@ CRPropRef operator - ( CRPropRef props1, CRPropRef props2 )
     return v;
 }
 /// calc props1 | props2
-CRPropRef operator | ( CRPropRef props1, CRPropRef props2 )
-{
+CRPropRef operator|(CRPropRef props1, CRPropRef props2) {
     CRPropRef v = LVCreatePropsContainer();
     int cnt1 = props1->getCount();
     int cnt2 = props2->getCount();
     int p1 = 0;
     int p2 = 0;
-    while ( (p1<=cnt1 && p2<=cnt2) && (p1<cnt1 || p2<cnt2) ) {
-        if ( p1==cnt1 ) {
-            v->setString( props2->getName( p2 ), props2->getValue( p2 ) );
+    while ((p1 <= cnt1 && p2 <= cnt2) && (p1 < cnt1 || p2 < cnt2)) {
+        if (p1 == cnt1) {
+            v->setString(props2->getName(p2), props2->getValue(p2));
             p2++;
-        } else if ( p2==cnt2 ) {
-            v->setString( props1->getName( p1 ), props1->getValue( p1 ) );
+        } else if (p2 == cnt2) {
+            v->setString(props1->getName(p1), props1->getValue(p1));
             p1++;
         } else {
-            int res = lStr_cmp( props1->getName( p1 ), props2->getName( p2 ) );
-            if ( res<0 ) {
-                v->setString( props1->getName( p1 ), props1->getValue( p1 ) );
+            int res = lStr_cmp(props1->getName(p1), props2->getName(p2));
+            if (res < 0) {
+                v->setString(props1->getName(p1), props1->getValue(p1));
                 p1++;
-            } else if ( res==0 ) {
-                v->setString( props1->getName( p1 ), props1->getValue( p1 ) );
+            } else if (res == 0) {
+                v->setString(props1->getName(p1), props1->getValue(p1));
                 p1++;
                 p2++;
             } else { // ( res>0 )
-                v->setString( props2->getName( p2 ), props2->getValue( p2 ) );
+                v->setString(props2->getName(p2), props2->getValue(p2));
                 p2++;
             }
         }
@@ -115,24 +115,23 @@ CRPropRef operator | ( CRPropRef props1, CRPropRef props2 )
     return v;
 }
 /// calc props1 & props2
-CRPropRef operator & ( CRPropRef props1, CRPropRef props2 )
-{
+CRPropRef operator&(CRPropRef props1, CRPropRef props2) {
     CRPropRef v = LVCreatePropsContainer();
     int cnt1 = props1->getCount();
     int cnt2 = props2->getCount();
     int p1 = 0;
     int p2 = 0;
-    while ( (p1<=cnt1 && p2<=cnt2) && (p1<cnt1 || p2<cnt2) ) {
-        if ( p1==cnt1 ) {
+    while ((p1 <= cnt1 && p2 <= cnt2) && (p1 < cnt1 || p2 < cnt2)) {
+        if (p1 == cnt1) {
             break;
-        } else if ( p2==cnt2 ) {
+        } else if (p2 == cnt2) {
             break;
         } else {
-            int res = lStr_cmp( props1->getName( p1 ), props2->getName( p2 ) );
-            if ( res<0 ) {
+            int res = lStr_cmp(props1->getName(p1), props2->getName(p2));
+            if (res < 0) {
                 p1++;
-            } else if ( res==0 ) {
-                v->setString( props1->getName( p1 ), props1->getValue( p1 ) );
+            } else if (res == 0) {
+                v->setString(props1->getName(p1), props1->getValue(p1));
                 p1++;
                 p2++;
             } else { // ( res>0 )
@@ -144,32 +143,31 @@ CRPropRef operator & ( CRPropRef props1, CRPropRef props2 )
 }
 
 /// returns added or changed items of props2 compared to props1
-CRPropRef operator ^ ( CRPropRef props1, CRPropRef props2 )
-{
+CRPropRef operator^(CRPropRef props1, CRPropRef props2) {
     CRPropRef v = LVCreatePropsContainer();
     int cnt1 = props1->getCount();
     int cnt2 = props2->getCount();
     int p1 = 0;
     int p2 = 0;
-    while ( (p1<=cnt1 && p2<=cnt2) && (p1<cnt1 || p2<cnt2) ) {
-        if ( p1==cnt1 ) {
-            v->setString( props2->getName( p2 ), props2->getValue( p2 ) );
+    while ((p1 <= cnt1 && p2 <= cnt2) && (p1 < cnt1 || p2 < cnt2)) {
+        if (p1 == cnt1) {
+            v->setString(props2->getName(p2), props2->getValue(p2));
             p2++;
-        } else if ( p2==cnt2 ) {
+        } else if (p2 == cnt2) {
             break;
         } else {
-            int res = lStr_cmp( props1->getName( p1 ), props2->getName( p2 ) );
-            if ( res<0 ) {
+            int res = lStr_cmp(props1->getName(p1), props2->getName(p2));
+            if (res < 0) {
                 p1++;
-            } else if ( res==0 ) {
-                lString32 v1 = props1->getValue( p1 );
-                lString32 v2 = props2->getValue( p2 );
-                if ( v1!=v2 )
-                    v->setString( props2->getName( p2 ), v2 );
+            } else if (res == 0) {
+                lString32 v1 = props1->getValue(p1);
+                lString32 v2 = props2->getValue(p2);
+                if (v1 != v2)
+                    v->setString(props2->getName(p2), v2);
                 p1++;
                 p2++;
             } else { // ( res>0 )
-                v->setString( props2->getName( p2 ), props2->getValue( p2 ) );
+                v->setString(props2->getName(p2), props2->getValue(p2));
                 p2++;
             }
         }
@@ -177,50 +175,47 @@ CRPropRef operator ^ ( CRPropRef props1, CRPropRef props2 )
     return v;
 }
 
-class CRPropContainer : public CRPropAccessor
+class CRPropContainer: public CRPropAccessor
 {
     friend class CRPropSubContainer;
 private:
     LVPtrVector<CRPropItem> _list;
 protected:
     lInt64 _revision;
-    bool findItem( const char * name, int nameoffset, int start, int end, int & pos ) const;
-    bool findItem( const char * name, int & pos ) const;
-    void clear( int start, int end );
-    CRPropContainer( const CRPropContainer & v )
-    : _list( v._list )
-    {
+    bool findItem(const char* name, int nameoffset, int start, int end, int& pos) const;
+    bool findItem(const char* name, int& pos) const;
+    void clear(int start, int end);
+    CRPropContainer(const CRPropContainer& v)
+            : _list(v._list) {
     }
 public:
     /// get copy of property list
-    virtual CRPropRef clone() const
-    {
-        return CRPropRef( new CRPropContainer(*this) );
+    virtual CRPropRef clone() const {
+        return CRPropRef(new CRPropContainer(*this));
     }
     /// returns true if specified property exists
-    virtual bool hasProperty( const char * propName ) const
-    {
+    virtual bool hasProperty(const char* propName) const {
         int pos;
-        return findItem( propName, pos );
+        return findItem(propName, pos);
     }
     /// clear all items
     virtual void clear();
     /// returns property path in root container
-    virtual const lString8 & getPath() const;
+    virtual const lString8& getPath() const;
     /// returns property item count in container
     virtual int getCount() const;
     /// returns property name by index
-    virtual const char * getName( int index ) const;
+    virtual const char* getName(int index) const;
     /// returns property value by index
-    virtual const lString32 & getValue( int index ) const;
+    virtual const lString32& getValue(int index) const;
     /// sets property value by index
-    virtual void setValue( int index, const lString32 &value );
+    virtual void setValue(int index, const lString32& value);
     /// get string property by name, returns false if not found
-    virtual bool getString( const char * propName, lString32 &result ) const;
+    virtual bool getString(const char* propName, lString32& result) const;
     /// set string property by name
-    virtual void setString( const char * propName, const lString32 &value );
+    virtual void setString(const char* propName, const lString32& value);
     /// get subpath container
-    virtual CRPropRef getSubProps( const char * path );
+    virtual CRPropRef getSubProps(const char* path);
     /// constructor
     CRPropContainer();
     /// virtual destructor
@@ -228,121 +223,111 @@ public:
 };
 
 /// set string property by name, if it's not set already
-void CRPropAccessor::setStringDef( const char * propName, const char * defValue )
-{
-    if ( !hasProperty( propName ) )
-        setString( propName, Utf8ToUnicode( lString8( defValue ) ) );
+void CRPropAccessor::setStringDef(const char* propName, const char* defValue) {
+    if (!hasProperty(propName))
+        setString(propName, Utf8ToUnicode(lString8(defValue)));
 }
 
 /// set int property by name, if it's not set already
-void CRPropAccessor::setIntDef( const char * propName, int value )
-{
-    if ( !hasProperty( propName ) )
-        setInt( propName, value );
+void CRPropAccessor::setIntDef(const char* propName, int value) {
+    if (!hasProperty(propName))
+        setInt(propName, value);
 }
 
-void CRPropAccessor::limitValueList( const char * propName, const char * values[] )
-{
-    lString32 defValue = Utf8ToUnicode( lString8( values[0] ) );
+void CRPropAccessor::limitValueList(const char* propName, const char* values[]) {
+    lString32 defValue = Utf8ToUnicode(lString8(values[0]));
     lString32 value;
-    if ( getString( propName, value ) ) {
-        for ( int i=0; values[i]; i++ ) {
-            lString32 v = Utf8ToUnicode( lString8( values[i] ) );
-            if ( v==value )
+    if (getString(propName, value)) {
+        for (int i = 0; values[i]; i++) {
+            lString32 v = Utf8ToUnicode(lString8(values[i]));
+            if (v == value)
                 return;
         }
     }
-    setString( propName, defValue );
+    setString(propName, defValue);
 }
 
-void CRPropAccessor::limitValueList(const char * propName, int values[], int valuesCount, int defValueIndex )
-{
+void CRPropAccessor::limitValueList(const char* propName, int values[], int valuesCount, int defValueIndex) {
     lString32 value;
-    if ( getString( propName, value ) ) {
-        for ( int i=0; i < valuesCount; i++ ) {
-            lString32 v = lString32::itoa( values[i] );
-            if ( v==value )
+    if (getString(propName, value)) {
+        for (int i = 0; i < valuesCount; i++) {
+            lString32 v = lString32::itoa(values[i]);
+            if (v == value)
                 return;
         }
     }
-    if ( defValueIndex < 0 )
+    if (defValueIndex < 0)
         defValueIndex = 0;
-    else if ( defValueIndex >= valuesCount )
+    else if (defValueIndex >= valuesCount)
         defValueIndex = valuesCount - 1;
-    setInt( propName, values[defValueIndex] );
+    setInt(propName, values[defValueIndex]);
 }
 
-void CRPropAccessor::limitValueMinMax( const char * propName, int minValue, int maxValue, int defValue )
-{
+void CRPropAccessor::limitValueMinMax(const char* propName, int minValue, int maxValue, int defValue) {
     lString32 value;
-    if ( getString( propName, value ) ) {
+    if (getString(propName, value)) {
         int intValue;
-        if ( value.atoi(intValue) ) {
+        if (value.atoi(intValue)) {
             if (intValue < minValue)
-                setInt( propName, minValue );
+                setInt(propName, minValue);
             else if (intValue >= maxValue)
-                setInt( propName, maxValue );
+                setInt(propName, maxValue);
             return;
         }
     }
-    setInt( propName, defValue );
+    setInt(propName, defValue);
 }
 
 //============================================================================
 // CRPropAccessor methods
 //============================================================================
 
-lString32 CRPropAccessor::getStringDef( const char * propName, const char * defValue ) const
-{
+lString32 CRPropAccessor::getStringDef(const char* propName, const char* defValue) const {
     lString32 value;
-    if ( !getString( propName, value ) )
-        return lString32( defValue );
+    if (!getString(propName, value))
+        return lString32(defValue);
     else
         return value;
 }
 
-bool CRPropAccessor::getInt( const char * propName, int &result ) const
-{
+bool CRPropAccessor::getInt(const char* propName, int& result) const {
     lString32 value;
-    if ( !getString( propName, value ) )
+    if (!getString(propName, value))
         return false;
     return value.atoi(result);
 }
 
-int CRPropAccessor::getIntDef( const char * propName, int defValue ) const
-{
+int CRPropAccessor::getIntDef(const char* propName, int defValue) const {
     int v = 0;
-    if ( !getInt( propName, v ) )
+    if (!getInt(propName, v))
         return defValue;
     else
         return v;
 }
 
 /// set int property as hex
-void CRPropAccessor::setHex( const char * propName, lUInt32 value )
-{
+void CRPropAccessor::setHex(const char* propName, lUInt32 value) {
     char s[16];
     sprintf(s, "0x%08X", value);
-    setString( propName, Utf8ToUnicode(lString8(s)) );
+    setString(propName, Utf8ToUnicode(lString8(s)));
 }
 
-void CRPropAccessor::setInt( const char * propName, int value )
-{
-    setString( propName, lString32::itoa( value ) );
+void CRPropAccessor::setInt(const char* propName, int value) {
+    setString(propName, lString32::itoa(value));
 }
 
-bool CRPropAccessor::parseColor(lString32 value, lUInt32 & result) {
+bool CRPropAccessor::parseColor(lString32 value, lUInt32& result) {
     int n = 0;
-    if ( value.empty() || (value[0]!='#' && (value[0]!='0' || value[1]!='x')) ) {
+    if (value.empty() || (value[0] != '#' && (value[0] != '0' || value[1] != 'x'))) {
         return false;
     }
-    for ( int i=value[0]=='#' ? 1 : 2; i<value.length(); i++ ) {
+    for (int i = value[0] == '#' ? 1 : 2; i < value.length(); i++) {
         lChar32 ch = value[i];
-        if ( ch>='0' && ch<='9' )
+        if (ch >= '0' && ch <= '9')
             n = (n << 4) | (ch - '0');
-        else if ( ch>='a' && ch<='f' )
+        else if (ch >= 'a' && ch <= 'f')
             n = (n << 4) | (ch - 'a' + 10);
-        else if ( ch>='A' && ch<='F' )
+        else if (ch >= 'A' && ch <= 'F')
             n = (n << 4) | (ch - 'A' + 10);
         else
             return false;
@@ -352,53 +337,48 @@ bool CRPropAccessor::parseColor(lString32 value, lUInt32 & result) {
 }
 
 /// get color (#xxxxxx) property by name, returns false if not found
-bool CRPropAccessor::getColor( const char * propName, lUInt32 &result ) const
-{
+bool CRPropAccessor::getColor(const char* propName, lUInt32& result) const {
     //int n = 0;
     lString32 value;
-    if ( !getString( propName, value ) ) {
+    if (!getString(propName, value)) {
         //CRLog::debug("%s is not found", propName);
         return false;
     }
     return parseColor(value, result);
 }
 
-
 /// get color (#xxxxxx) property by name, returns default value if not found
-lUInt32 CRPropAccessor::getColorDef( const char * propName, lUInt32 defValue ) const
-{
+lUInt32 CRPropAccessor::getColorDef(const char* propName, lUInt32 defValue) const {
     lUInt32 v = 0;
-//    CRLog::debug("getColorDef(%s), 0x%06x", propName, defValue);
-    if ( !getColor( propName, v ) )
+    //    CRLog::debug("getColorDef(%s), 0x%06x", propName, defValue);
+    if (!getColor(propName, v))
         return defValue;
     else
         return v;
 }
 
 /// set color (#xxxxxx) property by name
-void CRPropAccessor::setColor( const char * propName, lUInt32 value )
-{
+void CRPropAccessor::setColor(const char* propName, lUInt32 value) {
     char s[12];
-    sprintf( s, "#%06x", (int)value );
-    setString( propName, lString32( s ) );
+    sprintf(s, "#%06x", (int)value);
+    setString(propName, lString32(s));
 }
 
 /// set argb color (#xxxxxx) property by name, if not set
-void CRPropAccessor::setColorDef( const char * propName, lUInt32 defValue ) {
+void CRPropAccessor::setColorDef(const char* propName, lUInt32 defValue) {
     lUInt32 v = 0;
     if (!getColor(propName, v))
         setColor(propName, defValue);
 }
 
 /// get rect property by name, returns false if not found
-bool CRPropAccessor::getRect( const char * propName, lvRect &result ) const
-{
+bool CRPropAccessor::getRect(const char* propName, lvRect& result) const {
     lString32 value;
-    if ( !getString( propName, value ) )
+    if (!getString(propName, value))
         return false;
-    lString8 s8 = UnicodeToUtf8( value );
+    lString8 s8 = UnicodeToUtf8(value);
     int n[4];
-    if ( sscanf( s8.c_str(), "{%d,%d,%d,%d}", n, n+1, n+2, n+3 )!=4 )
+    if (sscanf(s8.c_str(), "{%d,%d,%d,%d}", n, n + 1, n + 2, n + 3) != 4)
         return false;
     result.left = n[0];
     result.top = n[1];
@@ -408,32 +388,29 @@ bool CRPropAccessor::getRect( const char * propName, lvRect &result ) const
 }
 
 /// get rect property by name, returns default value if not found
-lvRect CRPropAccessor::getRectDef( const char * propName, const lvRect & defValue ) const
-{
+lvRect CRPropAccessor::getRectDef(const char* propName, const lvRect& defValue) const {
     lvRect v;
-    if ( !getRect( propName, v ) )
+    if (!getRect(propName, v))
         return defValue;
     else
         return v;
 }
 
 /// set rect property by name
-void CRPropAccessor::setRect( const char * propName, const lvRect & value )
-{
+void CRPropAccessor::setRect(const char* propName, const lvRect& value) {
     char s[64];
-    sprintf( s, "{%d,%d,%d,%d}", value.left, value.top, value.right, value.bottom );
-    setString( propName, lString32( s ) );
+    sprintf(s, "{%d,%d,%d,%d}", value.left, value.top, value.right, value.bottom);
+    setString(propName, lString32(s));
 }
 
 /// get point property by name, returns false if not found
-bool CRPropAccessor::getPoint( const char * propName, lvPoint &result ) const
-{
+bool CRPropAccessor::getPoint(const char* propName, lvPoint& result) const {
     lString32 value;
-    if ( !getString( propName, value ) )
+    if (!getString(propName, value))
         return false;
-    lString8 s8 = UnicodeToUtf8( value );
+    lString8 s8 = UnicodeToUtf8(value);
     int n[2];
-    if ( sscanf( s8.c_str(), "{%d,%d}", n, n+1)!=2 )
+    if (sscanf(s8.c_str(), "{%d,%d}", n, n + 1) != 2)
         return false;
     result.x = n[0];
     result.y = n[1];
@@ -441,25 +418,22 @@ bool CRPropAccessor::getPoint( const char * propName, lvPoint &result ) const
 }
 
 /// get point property by name, returns default value if not found
-lvPoint CRPropAccessor::getPointDef( const char * propName, const lvPoint & defValue ) const
-{
+lvPoint CRPropAccessor::getPointDef(const char* propName, const lvPoint& defValue) const {
     lvPoint v;
-    if ( !getPoint( propName, v ) )
+    if (!getPoint(propName, v))
         return defValue;
     else
         return v;
 }
 
 /// set point property by name
-void CRPropAccessor::setPoint( const char * propName, const lvPoint & value )
-{
+void CRPropAccessor::setPoint(const char* propName, const lvPoint& value) {
     char s[64];
-    sprintf( s, "{%d,%d}", value.x, value.y );
-    setString( propName, lString32( s ) );
+    sprintf(s, "{%d,%d}", value.x, value.y);
+    setString(propName, lString32(s));
 }
 
-bool CRPropAccessor::getBool( const char * propName, bool &result ) const
-{
+bool CRPropAccessor::getBool(const char* propName, bool& result) const {
     lString32 value;
     if (!getString(propName, value))
         return false;
@@ -474,121 +448,112 @@ bool CRPropAccessor::getBool( const char * propName, bool &result ) const
     return false;
 }
 
-bool CRPropAccessor::getBoolDef( const char * propName, bool defValue ) const
-{
+bool CRPropAccessor::getBoolDef(const char* propName, bool defValue) const {
     bool v = 0;
-    if ( !getBool( propName, v ) )
+    if (!getBool(propName, v))
         return defValue;
     else
         return v;
 }
 
-void CRPropAccessor::setBool( const char * propName, bool value )
-{
-    setString( propName, lString32( value ? "1" : "0" ) );
+void CRPropAccessor::setBool(const char* propName, bool value) {
+    setString(propName, lString32(value ? "1" : "0"));
 }
 
-void CRPropAccessor::setBoolDef( const char * propName, bool defValue )
-{
+void CRPropAccessor::setBoolDef(const char* propName, bool defValue) {
     bool boolVal;
-    if ( !getBool( propName, boolVal ) )
-        setBool( propName, defValue );
+    if (!getBool(propName, boolVal))
+        setBool(propName, defValue);
 }
 
-bool CRPropAccessor::getInt64( const char * propName, lInt64 &result ) const
-{
+bool CRPropAccessor::getInt64(const char* propName, lInt64& result) const {
     lString32 value;
-    if ( !getString( propName, value ) )
+    if (!getString(propName, value))
         return false;
     return value.atoi(result);
 }
 
-lInt64 CRPropAccessor::getInt64Def( const char * propName, lInt64 defValue ) const
-{
+lInt64 CRPropAccessor::getInt64Def(const char* propName, lInt64 defValue) const {
     lInt64 v = 0;
-    if ( !getInt64( propName, v ) )
+    if (!getInt64(propName, v))
         return defValue;
     else
         return v;
 }
 
-void CRPropAccessor::setInt64( const char * propName, lInt64 value )
-{
-    setString( propName, lString32::itoa( value ) );
+void CRPropAccessor::setInt64(const char* propName, lInt64 value) {
+    setString(propName, lString32::itoa(value));
 }
 
-CRPropAccessor::~CRPropAccessor()
-{
+CRPropAccessor::~CRPropAccessor() {
 }
 
-static lString8 addBackslashChars( lString8 str )
-{
+static lString8 addBackslashChars(lString8 str) {
     int i;
     bool found = false;
-    for ( i=0; i<str.length(); i++ ) {
+    for (i = 0; i < str.length(); i++) {
         char ch = str[i];
-        if ( ch =='\\' || ch=='\r' || ch=='\n' || ch=='\0' ) {
+        if (ch == '\\' || ch == '\r' || ch == '\n' || ch == '\0') {
             found = true;
             break;
         }
     }
-    if ( !found )
+    if (!found)
         return str;
     lString8 out;
-    out.reserve( str.length() + 1 );
-    for ( i=0; i<str.length(); i++ ) {
+    out.reserve(str.length() + 1);
+    for (i = 0; i < str.length(); i++) {
         char ch = str[i];
-        switch ( ch ) {
-        case '\\':
-            out << "\\\\";
-            break;
-        case '\r':
-            out << "\\r";
-            break;
-        case '\n':
-            out << "\\n";
-            break;
-        case '\0':
-            out << "\\0";
-            break;
-        default:
-            out << ch;
+        switch (ch) {
+            case '\\':
+                out << "\\\\";
+                break;
+            case '\r':
+                out << "\\r";
+                break;
+            case '\n':
+                out << "\\n";
+                break;
+            case '\0':
+                out << "\\0";
+                break;
+            default:
+                out << ch;
         }
     }
     return out;
 }
 
-static lString8 removeBackslashChars( lString8 str )
-{
+static lString8 removeBackslashChars(lString8 str) {
     int i;
     bool found = false;
-    for ( i=0; i<str.length(); i++ ) {
+    for (i = 0; i < str.length(); i++) {
         char ch = str[i];
-        if ( ch =='\\' ) {
+        if (ch == '\\') {
             found = true;
             break;
         }
     }
-    if ( !found )
+    if (!found)
         return str;
     lString8 out;
-    out.reserve( str.length() + 1 );
-    for ( i=0; i<str.length(); i++ ) {
+    out.reserve(str.length() + 1);
+    for (i = 0; i < str.length(); i++) {
         char ch = str[i];
-        if ( ch=='\\' ) {
+        if (ch == '\\') {
             ch = str[++i];
-            switch ( ch ) {
-            case 'r':
-                out << '\r';
-                break;
-            case 'n':
-                out << '\n';
-                break;
-            case '0':
-                out << '\0';
-                break;
-            default:
-                out << ch;
+            switch (ch) {
+                case 'r':
+                    out << '\r';
+                    break;
+                case 'n':
+                    out << '\n';
+                    break;
+                case '0':
+                    out << '\0';
+                    break;
+                default:
+                    out << ch;
             }
         } else {
             out << ch;
@@ -598,42 +563,41 @@ static lString8 removeBackslashChars( lString8 str )
 }
 
 /// read from stream
-bool CRPropAccessor::loadFromStream( LVStream * stream )
-{
-    if ( !stream || stream->GetMode()!=LVOM_READ )
+bool CRPropAccessor::loadFromStream(LVStream* stream) {
+    if (!stream || stream->GetMode() != LVOM_READ)
         return false;
     lvsize_t sz = stream->GetSize() - stream->GetPos();
-    if ( sz<=0 )
+    if (sz <= 0)
         return false;
-    char * buf = new char[sz + 3];
+    char* buf = new char[sz + 3];
     lvsize_t bytesRead = 0;
-    if ( stream->Read( buf, sz, &bytesRead )!=LVERR_OK ) {
+    if (stream->Read(buf, sz, &bytesRead) != LVERR_OK) {
         delete[] buf;
         return false;
     }
     buf[sz] = 0;
-    char * p = buf;
-    if( (unsigned char)buf[0] == 0xEF && (unsigned char)buf[1]==0xBB && (unsigned char)buf[2]==0xBF )
+    char* p = buf;
+    if ((unsigned char)buf[0] == 0xEF && (unsigned char)buf[1] == 0xBB && (unsigned char)buf[2] == 0xBF)
         p += 3;
     // read lines from buffer
     while (*p) {
-        char * elp = p;
-        char * eqpos = NULL;
-        while ( *elp && !(elp[0]=='\r' && elp[1]=='\n')  && !(elp[0]=='\n') ) {
-            if ( *elp == '=' && eqpos==NULL )
+        char* elp = p;
+        char* eqpos = NULL;
+        while (*elp && !(elp[0] == '\r' && elp[1] == '\n') && !(elp[0] == '\n')) {
+            if (*elp == '=' && eqpos == NULL)
                 eqpos = elp;
             elp++;
         }
-        if ( eqpos!=NULL && eqpos>p && *elp!='#' ) {
-            lString8 name( p, (int)(eqpos - p) );
-            lString8 value( eqpos+1, (int)(elp - eqpos - 1));
-            setString( name.c_str(), Utf8ToUnicode(removeBackslashChars(value)) );
+        if (eqpos != NULL && eqpos > p && *elp != '#') {
+            lString8 name(p, (int)(eqpos - p));
+            lString8 value(eqpos + 1, (int)(elp - eqpos - 1));
+            setString(name.c_str(), Utf8ToUnicode(removeBackslashChars(value)));
         }
-        for ( ; *elp && *elp!='\r' && *elp!='\n'; elp++)
+        for (; *elp && *elp != '\r' && *elp != '\n'; elp++)
             ;
         p = elp;
-		while ( *p=='\r' || *p=='\n' )
-			p++;
+        while (*p == '\r' || *p == '\n')
+            p++;
     }
     // cleanup
     delete[] buf;
@@ -641,18 +605,17 @@ bool CRPropAccessor::loadFromStream( LVStream * stream )
 }
 
 /// save to stream
-bool CRPropAccessor::saveToStream( LVStream * targetStream )
-{
-    if ( !targetStream || targetStream->GetMode()!=LVOM_WRITE )
+bool CRPropAccessor::saveToStream(LVStream* targetStream) {
+    if (!targetStream || targetStream->GetMode() != LVOM_WRITE)
         return false;
     LVStreamRef streamref = LVCreateMemoryStream(NULL, 0, false, LVOM_WRITE);
-    LVStream * stream = streamref.get();
+    LVStream* stream = streamref.get();
 
     *stream << "\xEF\xBB\xBF";
-    for ( int i=0; i<getCount(); i++ ) {
+    for (int i = 0; i < getCount(); i++) {
         *stream << getPath() << getName(i) << "=" << addBackslashChars(UnicodeToUtf8(getValue(i))) << "\r\n";
     }
-    LVPumpStream( targetStream, stream );
+    LVPumpStream(targetStream, stream);
     return true;
 }
 
@@ -661,52 +624,45 @@ bool CRPropAccessor::saveToStream( LVStream * targetStream )
 //============================================================================
 
 CRPropContainer::CRPropContainer()
-: _revision(0)
-{
+        : _revision(0) {
 }
 
 /// returns property path in root container
-const lString8 & CRPropContainer::getPath() const
-{
+const lString8& CRPropContainer::getPath() const {
     return lString8::empty_str;
 }
 
 /// returns property item count in container
-int CRPropContainer::getCount() const
-{
+int CRPropContainer::getCount() const {
     return _list.length();
 }
 
 /// returns property name by index
-const char * CRPropContainer::getName( int index ) const
-{
+const char* CRPropContainer::getName(int index) const {
     return _list[index]->getName();
 }
 
 /// returns property value by index
-const lString32 & CRPropContainer::getValue( int index ) const
-{
+const lString32& CRPropContainer::getValue(int index) const {
     return _list[index]->getValue();
 }
 
 /// sets property value by index
-void CRPropContainer::setValue( int index, const lString32 &value )
-{
-    _list[index]->setValue( value );
+void CRPropContainer::setValue(int index, const lString32& value) {
+    _list[index]->setValue(value);
 }
 
 /// binary search
-bool CRPropContainer::findItem( const char * name, int nameoffset, int start, int end, int & pos ) const
-{
+bool CRPropContainer::findItem(const char* name, int nameoffset, int start, int end, int& pos) const {
     int a = start;
     int b = end;
-    while ( a < b ) {
+    while (a < b) {
         int c = (a + b) / 2;
-        int res = lStr_cmp( name, _list[c]->getName() + nameoffset );
-        if ( res == 0 ) {
+        int res = lStr_cmp(name, _list[c]->getName() + nameoffset);
+        if (res == 0) {
             pos = c;
             return true;
-        } else if ( res<0 ) {
+        } else if (res < 0) {
             b = c;
         } else {
             a = c + 1;
@@ -717,48 +673,42 @@ bool CRPropContainer::findItem( const char * name, int nameoffset, int start, in
 }
 
 /// binary search
-bool CRPropContainer::findItem( const char * name, int & pos ) const
-{
-    return findItem( name, 0, 0, _list.length(), pos );
+bool CRPropContainer::findItem(const char* name, int& pos) const {
+    return findItem(name, 0, 0, _list.length(), pos);
 }
 
 /// get string property by name, returns false if not found
-bool CRPropContainer::getString( const char * propName, lString32 &result ) const
-{
+bool CRPropContainer::getString(const char* propName, lString32& result) const {
     int pos = 0;
-    if ( !findItem( propName, pos ) )
+    if (!findItem(propName, pos))
         return false;
     result = _list[pos]->getValue();
     return true;
 }
 
 /// clear all items
-void CRPropContainer::clear()
-{
+void CRPropContainer::clear() {
     _list.clear();
     _revision++;
 }
 
 /// set string property by name
-void CRPropContainer::setString( const char * propName, const lString32 &value )
-{
+void CRPropContainer::setString(const char* propName, const lString32& value) {
     int pos = 0;
-    if ( _list.empty() || !findItem( propName, pos ) ) {
-        _list.insert( pos, new CRPropItem( propName, value ) );
+    if (_list.empty() || !findItem(propName, pos)) {
+        _list.insert(pos, new CRPropItem(propName, value));
         _revision++;
     } else {
-        _list[pos]->setValue( value );
+        _list[pos]->setValue(value);
     }
 }
 
 /// virtual destructor
-CRPropContainer::~CRPropContainer()
-{
+CRPropContainer::~CRPropContainer() {
 }
 
-void CRPropContainer::clear( int start, int end )
-{
-    _list.erase( start, end-start );
+void CRPropContainer::clear(int start, int end) {
+    _list.erase(start, end - start);
     _revision++;
 }
 
@@ -766,173 +716,158 @@ void CRPropContainer::clear( int start, int end )
 // CRPropSubContainer methods
 //============================================================================
 
-class CRPropSubContainer : public CRPropAccessor
+class CRPropSubContainer: public CRPropAccessor
 {
 private:
-    CRPropContainer * _root;
+    CRPropContainer* _root;
     lString8 _path;
     int _start;
     int _end;
     lInt64 _revision;
 protected:
-    void sync() const
-    {
-        CRPropSubContainer * ptr = (CRPropSubContainer*) this;
-        if ( ptr->_revision != ptr->_root->_revision ) {
-            ptr->_root->findItem( ptr->_path.c_str(), ptr->_start );
-            ptr->_root->findItem( (ptr->_path + "\x7F").c_str(), ptr->_end );
+    void sync() const {
+        CRPropSubContainer* ptr = (CRPropSubContainer*)this;
+        if (ptr->_revision != ptr->_root->_revision) {
+            ptr->_root->findItem(ptr->_path.c_str(), ptr->_start);
+            ptr->_root->findItem((ptr->_path + "\x7F").c_str(), ptr->_end);
             ptr->_revision = ptr->_root->_revision;
         }
     }
 public:
     /// get copy of property list
-    virtual CRPropRef clone() const
-    {
-        CRPropContainer * v = new CRPropContainer();
+    virtual CRPropRef clone() const {
+        CRPropContainer* v = new CRPropContainer();
         int cnt = getCount();
         v->_list.reserve(cnt);
-        for ( int i=0; i<cnt; i++ ) {
-            v->_list.add( new CRPropItem( getName(i), getValue(i) ) );
+        for (int i = 0; i < cnt; i++) {
+            v->_list.add(new CRPropItem(getName(i), getValue(i)));
         }
-        return CRPropRef( v );
+        return CRPropRef(v);
     }
     /// returns true if specified property exists
-    virtual bool hasProperty( const char * propName ) const
-    {
+    virtual bool hasProperty(const char* propName) const {
         lString32 str;
-        return getString( propName, str );
+        return getString(propName, str);
     }
-    CRPropSubContainer(CRPropContainer * root, lString8 path)
-    : _root(root), _path(path), _start(0), _end(0), _revision(0)
-    {
+    CRPropSubContainer(CRPropContainer* root, lString8 path)
+            : _root(root)
+            , _path(path)
+            , _start(0)
+            , _end(0)
+            , _revision(0) {
         sync();
     }
     /// clear all items
-    virtual void clear()
-    {
+    virtual void clear() {
         sync();
-        _root->clear( _start, _end );
+        _root->clear(_start, _end);
     }
     /// returns property path in root container
-    virtual const lString8 & getPath() const
-    {
+    virtual const lString8& getPath() const {
         return _path;
     }
     /// returns property item count in container
-    virtual int getCount() const
-    {
+    virtual int getCount() const {
         sync();
         return _end - _start;
     }
     /// returns property name by index
-    virtual const char * getName( int index ) const
-    {
+    virtual const char* getName(int index) const {
         sync();
-        return _root->getName( index + _start ) + _path.length();
+        return _root->getName(index + _start) + _path.length();
     }
     /// returns property value by index
-    virtual const lString32 & getValue( int index ) const
-    {
+    virtual const lString32& getValue(int index) const {
         sync();
-        return _root->getValue( index + _start );
+        return _root->getValue(index + _start);
     }
     /// sets property value by index
-    virtual void setValue( int index, const lString32 &value )
-    {
+    virtual void setValue(int index, const lString32& value) {
         sync();
-        _root->setValue( index + _start, value );
+        _root->setValue(index + _start, value);
     }
     /// get string property by name, returns false if not found
-    virtual bool getString( const char * propName, lString32 &result ) const
-    {
+    virtual bool getString(const char* propName, lString32& result) const {
         sync();
         int pos = 0;
-        if ( !_root->findItem( propName, _path.length(), _start, _end, pos ) )
+        if (!_root->findItem(propName, _path.length(), _start, _end, pos))
             return false;
-        result = _root->getValue( pos );
+        result = _root->getValue(pos);
         return true;
     }
     /// set string property by name
-    virtual void setString( const char * propName, const lString32 &value )
-    {
+    virtual void setString(const char* propName, const lString32& value) {
         sync();
         int pos = 0;
-        if ( !_root->findItem( propName, _path.length(), _start, _end, pos ) ) {
-            _root->_list.insert( pos, new CRPropItem( (_path + propName).c_str(), value ) );
+        if (!_root->findItem(propName, _path.length(), _start, _end, pos)) {
+            _root->_list.insert(pos, new CRPropItem((_path + propName).c_str(), value));
             _root->_revision++;
             sync();
         } else {
-            _root->_list[pos]->setValue( value );
+            _root->_list[pos]->setValue(value);
         }
     }
     /// get subpath container
-    virtual CRPropRef getSubProps( const char * path )
-    {
-        return _root->getSubProps( (_path + path).c_str() );
+    virtual CRPropRef getSubProps(const char* path) {
+        return _root->getSubProps((_path + path).c_str());
     }
     /// virtual destructor
-    virtual ~CRPropSubContainer()
-    {
+    virtual ~CRPropSubContainer() {
     }
 };
 
 /// get subpath container
-CRPropRef CRPropContainer::getSubProps( const char * path )
-{
+CRPropRef CRPropContainer::getSubProps(const char* path) {
     return CRPropRef(new CRPropSubContainer(this, lString8(path)));
 }
 
 /// factory function
-CRPropRef LVCreatePropsContainer()
-{
+CRPropRef LVCreatePropsContainer() {
     return CRPropRef(new CRPropContainer());
 }
 
-const char * props_magic = "PRPS";
-const char * props_name_magic = "n=";
-const char * props_value_magic = "v=";
+const char* props_magic = "PRPS";
+const char* props_name_magic = "n=";
+const char* props_value_magic = "v=";
 /// serialize to byte buffer
-void CRPropAccessor::serialize( SerialBuf & buf )
-{
-    if ( buf.error() )
+void CRPropAccessor::serialize(SerialBuf& buf) {
+    if (buf.error())
         return;
     int pos = buf.pos();
-    buf.putMagic( props_magic );
+    buf.putMagic(props_magic);
     lInt32 sz = getCount();
     buf << sz;
-    for ( int i=0; i<sz; i++ ) {
-        buf.putMagic( props_name_magic );
+    for (int i = 0; i < sz; i++) {
+        buf.putMagic(props_name_magic);
         buf << lString8(getName(i));
-        buf.putMagic( props_value_magic );
+        buf.putMagic(props_value_magic);
         buf << getValue(i);
     }
-    buf.putCRC( buf.pos() - pos );
+    buf.putCRC(buf.pos() - pos);
 }
 
 /// deserialize from byte buffer
-bool CRPropAccessor::deserialize( SerialBuf & buf )
-{
+bool CRPropAccessor::deserialize(SerialBuf& buf) {
     clear();
-    if ( buf.error() )
+    if (buf.error())
         return false;
     int pos = buf.pos();
-    if ( !buf.checkMagic( props_magic ) )
+    if (!buf.checkMagic(props_magic))
         return false;
     lInt32 sz;
     buf >> sz;
-    for ( int i=0; i<sz; i++ ) {
+    for (int i = 0; i < sz; i++) {
         lString8 nm;
         lString32 val;
-        if ( !buf.checkMagic( props_name_magic ) )
+        if (!buf.checkMagic(props_name_magic))
             return false;
         buf >> nm;
-        if ( !buf.checkMagic( props_value_magic ) )
+        if (!buf.checkMagic(props_value_magic))
             return false;
         buf >> val;
-        setString( nm.c_str(), val );
+        setString(nm.c_str(), val);
         // CRLog::debug("  deserialized prop %s: %s", nm.c_str(), UnicodeToLocal(val).c_str());
     }
-    buf.checkCRC( buf.pos() - pos );
+    buf.checkCRC(buf.pos() - pos);
     return !buf.error();
 }
-

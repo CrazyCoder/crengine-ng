@@ -1,6 +1,6 @@
 
 if(UNIX)
-	add_subdirectory(Fb2Linux)
+    add_subdirectory(Fb2Linux)
 endif(UNIX)
 
 add_subdirectory(GammaGen)

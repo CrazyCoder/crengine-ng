@@ -1,14 +1,14 @@
 /** @file lvfont_glyphcache.h
-	@brief font glyph cache interface
+    @brief font glyph cache interface
 
-	CoolReader Engine
+    CoolReader Engine
 
-	(c) Vadim Lopatin, 2000-2006
+    (c) Vadim Lopatin, 2000-2006
 
-	This source code is distributed under the terms of
-	GNU General Public License.
+    This source code is distributed under the terms of
+    GNU General Public License.
 
-	See LICENSE file for details.
+    See LICENSE file for details.
 
 */
 
@@ -20,96 +20,104 @@
 #include <lvtypes.h>
 #include <lvhashtable.h>
 
-union GlyphCacheItemData {
-	lChar32 ch;
-#if USE_HARFBUZZ==1
-	lUInt32 gindex;
+union GlyphCacheItemData
+{
+    lChar32 ch;
+#if USE_HARFBUZZ == 1
+    lUInt32 gindex;
 #endif
 };
 
 struct LVFontGlyphCacheItemB;
 
-class LVFontGlobalGlyphCacheB {
+class LVFontGlobalGlyphCacheB
+{
 private:
-	LVFontGlyphCacheItemB *head;
-	LVFontGlyphCacheItemB *tail;
-	int size;
-	int max_size;
+    LVFontGlyphCacheItemB* head;
+    LVFontGlyphCacheItemB* tail;
+    int size;
+    int max_size;
 
-	void removeNoLock(LVFontGlyphCacheItemB *item);
+    void removeNoLock(LVFontGlyphCacheItemB* item);
 
-	void putNoLock(LVFontGlyphCacheItemB *item);
-
+    void putNoLock(LVFontGlyphCacheItemB* item);
 public:
-	LVFontGlobalGlyphCacheB(int maxSize)
-			: head(NULL), tail(NULL), size(0), max_size(maxSize) {
-	}
+    LVFontGlobalGlyphCacheB(int maxSize)
+            : head(NULL)
+            , tail(NULL)
+            , size(0)
+            , max_size(maxSize) {
+    }
 
-	~LVFontGlobalGlyphCacheB() {
-		clear();
-	}
+    ~LVFontGlobalGlyphCacheB() {
+        clear();
+    }
 
-	void put(LVFontGlyphCacheItemB *item);
+    void put(LVFontGlyphCacheItemB* item);
 
-	void remove(LVFontGlyphCacheItemB *item);
+    void remove(LVFontGlyphCacheItemB* item);
 
-	void refresh(LVFontGlyphCacheItemB *item);
+    void refresh(LVFontGlyphCacheItemB* item);
 
-	void clear();
+    void clear();
 
-	int getSize() { return size; }
+    int getSize() {
+        return size;
+    }
 };
 
-class LVFontLocalGlyphCacheB {
+class LVFontLocalGlyphCacheB
+{
 private:
-	LVFontGlobalGlyphCacheB *global_cache;
-	LVHashTable<GlyphCacheItemData, struct LVFontGlyphCacheItemB*> hashTable;
+    LVFontGlobalGlyphCacheB* global_cache;
+    LVHashTable<GlyphCacheItemData, struct LVFontGlyphCacheItemB*> hashTable;
 public:
-	LVFontLocalGlyphCacheB(LVFontGlobalGlyphCacheB *globalCache, int hashTableSize)
-			: global_cache(globalCache), hashTable(hashTableSize) {}
+    LVFontLocalGlyphCacheB(LVFontGlobalGlyphCacheB* globalCache, int hashTableSize)
+            : global_cache(globalCache)
+            , hashTable(hashTableSize) { }
 
-	~LVFontLocalGlyphCacheB() {
-		clear();
-	}
+    ~LVFontLocalGlyphCacheB() {
+        clear();
+    }
 
-	void clear();
+    void clear();
 
-	LVFontGlyphCacheItemB *getByChar(lChar32 ch);
-#if USE_HARFBUZZ==1
-	LVFontGlyphCacheItemB *getByIndex(lUInt32 index);
+    LVFontGlyphCacheItemB* getByChar(lChar32 ch);
+#if USE_HARFBUZZ == 1
+    LVFontGlyphCacheItemB* getByIndex(lUInt32 index);
 #endif
 
-	void put(LVFontGlyphCacheItemB *item);
+    void put(LVFontGlyphCacheItemB* item);
 
-	void remove(LVFontGlyphCacheItemB *item);
+    void remove(LVFontGlyphCacheItemB* item);
 };
 
-struct LVFontGlyphCacheItemB {
-	LVFontGlyphCacheItemB *prev_global;
-	LVFontGlyphCacheItemB *next_global;
-	LVFontGlyphCacheItemB *prev_local;
-	LVFontGlyphCacheItemB *next_local;
-	LVFontLocalGlyphCacheB *local_cache;
-	GlyphCacheItemData data;
-	lUInt16 bmp_width;
-	lUInt16 bmp_height;
-	lInt16 origin_x;
-	lInt16 origin_y;
-	lUInt16 advance;
-	lUInt8 bmp[1];
+struct LVFontGlyphCacheItemB
+{
+    LVFontGlyphCacheItemB* prev_global;
+    LVFontGlyphCacheItemB* next_global;
+    LVFontGlyphCacheItemB* prev_local;
+    LVFontGlyphCacheItemB* next_local;
+    LVFontLocalGlyphCacheB* local_cache;
+    GlyphCacheItemData data;
+    lUInt16 bmp_width;
+    lUInt16 bmp_height;
+    lInt16 origin_x;
+    lInt16 origin_y;
+    lUInt16 advance;
+    lUInt8 bmp[1];
 
-	//=======================================================================
-	int getSize() {
-		return sizeof(LVFontGlyphCacheItemB)
-			   + (bmp_width * bmp_height - 1) * sizeof(lUInt8);
-	}
+    //=======================================================================
+    int getSize() {
+        return sizeof(LVFontGlyphCacheItemB) + (bmp_width * bmp_height - 1) * sizeof(lUInt8);
+    }
 
-	static LVFontGlyphCacheItemB *newItem(LVFontLocalGlyphCacheB *local_cache, lChar32 data, int w, int h);
-#if USE_HARFBUZZ==1
-	static LVFontGlyphCacheItemB *newItem(LVFontLocalGlyphCacheB *local_cache, lUInt32 glyph_index, int w, int h);
+    static LVFontGlyphCacheItemB* newItem(LVFontLocalGlyphCacheB* local_cache, lChar32 data, int w, int h);
+#if USE_HARFBUZZ == 1
+    static LVFontGlyphCacheItemB* newItem(LVFontLocalGlyphCacheB* local_cache, lUInt32 glyph_index, int w, int h);
 #endif
 
-	static void freeItem(LVFontGlyphCacheItemB *item);
+    static void freeItem(LVFontGlyphCacheItemB* item);
 };
 
 #endif //__LV_FONTGLYPHCACHEB_H_INCLUDED__

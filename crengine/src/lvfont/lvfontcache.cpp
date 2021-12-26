@@ -17,8 +17,7 @@
 #include <lvstyles.h>
 #include <crlog.h>
 
-
-LVFontCacheItem *LVFontCache::findDuplicate(const LVFontDef *def) {
+LVFontCacheItem* LVFontCache::findDuplicate(const LVFontDef* def) {
     for (int i = 0; i < _registered_list.length(); i++) {
         if (_registered_list[i]->_def.CalcDuplicateMatch(*def))
             return _registered_list[i];
@@ -26,7 +25,7 @@ LVFontCacheItem *LVFontCache::findDuplicate(const LVFontDef *def) {
     return NULL;
 }
 
-LVFontCacheItem *LVFontCache::findDocumentFontDuplicate(int documentId, lString8 name) {
+LVFontCacheItem* LVFontCache::findDocumentFontDuplicate(int documentId, lString8 name) {
     for (int i = 0; i < _registered_list.length(); i++) {
         if (_registered_list[i]->_def.getDocumentId() == documentId &&
             _registered_list[i]->_def.getName() == name)
@@ -35,7 +34,7 @@ LVFontCacheItem *LVFontCache::findDocumentFontDuplicate(int documentId, lString8
     return NULL;
 }
 
-LVFontCacheItem *LVFontCache::findFallback(lString8 face, int size) {
+LVFontCacheItem* LVFontCache::findFallback(lString8 face, int size) {
     int best_index = -1;
     int best_match = -1;
     int best_instance_index = -1;
@@ -62,7 +61,7 @@ LVFontCacheItem *LVFontCache::findFallback(lString8 face, int size) {
     return _registered_list[best_index];
 }
 
-LVFontCacheItem *LVFontCache::find(const LVFontDef *fntdef, bool useBias) {
+LVFontCacheItem* LVFontCache::find(const LVFontDef* fntdef, bool useBias) {
     int best_index = -1;
     int best_match = -1;
     int best_instance_index = -1;
@@ -72,12 +71,12 @@ LVFontCacheItem *LVFontCache::find(const LVFontDef *fntdef, bool useBias) {
     lString8Collection list;
     splitPropertyValueList(fntdef->getTypeFace().c_str(), list);
     int nlen = list.length();
-    for (int nindex=0; nindex==0 || nindex<nlen; nindex++) {
+    for (int nindex = 0; nindex == 0 || nindex < nlen; nindex++) {
         // Give more weight to first fonts, so we don't risk (with the test at end)
         // picking an already instantiated second font over a not yet instantiated
         // first font with the same match.
         int ordering_weight = nlen - nindex;
-        if ( nindex < nlen )
+        if (nindex < nlen)
             def.setTypeFace(list[nindex]);
         else
             def.setTypeFace(lString8::empty_str);
@@ -105,36 +104,34 @@ LVFontCacheItem *LVFontCache::find(const LVFontDef *fntdef, bool useBias) {
     return _registered_list[best_index];
 }
 
-bool LVFontCache::setAsPreferredFontWithBias( lString8 face, int bias, bool clearOthersBias )
-{
+bool LVFontCache::setAsPreferredFontWithBias(lString8 face, int bias, bool clearOthersBias) {
     bool found = false;
     int i;
-    for (i=0; i<_instance_list.length(); i++) {
-        if (_instance_list[i]->_def.setBiasIfNameMatch( face, bias, clearOthersBias ))
+    for (i = 0; i < _instance_list.length(); i++) {
+        if (_instance_list[i]->_def.setBiasIfNameMatch(face, bias, clearOthersBias))
             found = true;
     }
-    for (i=0; i<_registered_list.length(); i++) {
-        if (_registered_list[i]->_def.setBiasIfNameMatch( face, bias, clearOthersBias ))
+    for (i = 0; i < _registered_list.length(); i++) {
+        if (_registered_list[i]->_def.setBiasIfNameMatch(face, bias, clearOthersBias))
             found = true;
     }
     return found;
 }
 
-void LVFontCache::addInstance(const LVFontDef *def, LVFontRef ref) {
+void LVFontCache::addInstance(const LVFontDef* def, LVFontRef ref) {
     if (ref.isNull())
         CRLog::error("Adding null font instance!");
-    LVFontCacheItem *item = new LVFontCacheItem(*def);
+    LVFontCacheItem* item = new LVFontCacheItem(*def);
     item->_fnt = ref;
     _instance_list.add(item);
 }
 
-void LVFontCache::removefont(const LVFontDef *def) {
+void LVFontCache::removefont(const LVFontDef* def) {
     int i;
     for (i = 0; i < _instance_list.length(); i++) {
         if (_instance_list[i]->_def.getTypeFace() == def->getTypeFace()) {
             _instance_list.remove(i);
         }
-
     }
     for (i = 0; i < _registered_list.length(); i++) {
         if (_registered_list[i]->_def.getTypeFace() == def->getTypeFace()) {
@@ -143,7 +140,7 @@ void LVFontCache::removefont(const LVFontDef *def) {
     }
 }
 
-void LVFontCache::update(const LVFontDef *def, LVFontRef ref) {
+void LVFontCache::update(const LVFontDef* def, LVFontRef ref) {
     int i;
     if (!ref.isNull()) {
         for (i = 0; i < _instance_list.length(); i++) {
@@ -167,7 +164,7 @@ void LVFontCache::update(const LVFontDef *def, LVFontRef ref) {
             }
         }
         // add new
-        LVFontCacheItem *item;
+        LVFontCacheItem* item;
         item = new LVFontCacheItem(*def);
         _registered_list.add(item);
     }
@@ -187,8 +184,7 @@ void LVFontCache::removeDocumentFonts(int documentId) {
     }
 }
 
-static int s_int_comparator(const void * n1, const void * n2)
-{
+static int s_int_comparator(const void* n1, const void* n2) {
     int* i1 = (int*)n1;
     int* i2 = (int*)n2;
     return *i1 == *i2 ? 0 : (*i1 < *i2 ? -1 : 1);
@@ -199,7 +195,7 @@ void LVFontCache::getAvailableFontWeights(LVArray<int>& weights, lString8 faceNa
     for (int i = 0; i < _registered_list.length(); i++) {
         const LVFontCacheItem* item = _registered_list[i];
         if (item->_def.getTypeFace() == faceName) {
-            if (item->_def.isRealWeight()) {       // ignore fonts with fake weight
+            if (item->_def.isRealWeight()) { // ignore fonts with fake weight
                 int weight = item->_def.getWeight();
                 if (weights.indexOf(weight) < 0) {
                     weights.add(weight);

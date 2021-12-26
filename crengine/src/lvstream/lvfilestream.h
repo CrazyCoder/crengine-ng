@@ -25,29 +25,29 @@
 #include "lvnamedstream.h"
 #include "lvstream_types.h"
 
-#if (USE_ANSI_FILES==1)
+#if (USE_ANSI_FILES == 1)
 
 #include <stdio.h>
 
-class LVFileStream : public LVNamedStream
+class LVFileStream: public LVNamedStream
 {
 private:
-    FILE * m_file;
+    FILE* m_file;
 public:
-    virtual lverror_t Seek( lvoffset_t offset, lvseek_origin_t origin, lvpos_t * pNewPos );
-    virtual lverror_t SetSize( lvsize_t );
-    virtual lverror_t Read( void * buf, lvsize_t count, lvsize_t * nBytesRead );
-    virtual lverror_t Write( const void * buf, lvsize_t count, lvsize_t * nBytesWritten );
+    virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t* pNewPos);
+    virtual lverror_t SetSize(lvsize_t);
+    virtual lverror_t Read(void* buf, lvsize_t count, lvsize_t* nBytesRead);
+    virtual lverror_t Write(const void* buf, lvsize_t count, lvsize_t* nBytesWritten);
     /// flushes unsaved data from buffers to file, with optional flush of OS buffers
-    virtual lverror_t Flush( bool sync );
+    virtual lverror_t Flush(bool sync);
     virtual bool Eof();
-    static LVFileStream * CreateFileStream( lString32 fname, lvopen_mode_t mode );
-    lverror_t OpenFile( lString32 fname, lvopen_mode_t mode );
+    static LVFileStream* CreateFileStream(lString32 fname, lvopen_mode_t mode);
+    lverror_t OpenFile(lString32 fname, lvopen_mode_t mode);
     LVFileStream();
     virtual ~LVFileStream();
 };
 
-#else   // (USE_ANSI_FILES==1)
+#else // (USE_ANSI_FILES==1)
 
 #if !defined(__SYMBIAN32__) && defined(_WIN32)
 extern "C" {
@@ -55,7 +55,7 @@ extern "C" {
 }
 #endif
 
-class LVFileStream : public LVNamedStream
+class LVFileStream: public LVNamedStream
 {
     friend class LVDirectoryContainer;
 protected:
@@ -65,28 +65,28 @@ protected:
     int m_fd;
 #endif
     //LVDirectoryContainer * m_parent;
-    lvsize_t               m_size;
-    lvpos_t                m_pos;
+    lvsize_t m_size;
+    lvpos_t m_pos;
 public:
     /// flushes unsaved data from buffers to file, with optional flush of OS buffers
-    virtual lverror_t Flush( bool sync );
+    virtual lverror_t Flush(bool sync);
     virtual bool Eof();
-//    virtual LVContainer * GetParentContainer()
-//    {
-//        return (LVContainer*)m_parent;
-//    }
-    virtual lverror_t Read( void * buf, lvsize_t count, lvsize_t * nBytesRead );
-    virtual lverror_t GetSize( lvsize_t * pSize );
+    //    virtual LVContainer * GetParentContainer()
+    //    {
+    //        return (LVContainer*)m_parent;
+    //    }
+    virtual lverror_t Read(void* buf, lvsize_t count, lvsize_t* nBytesRead);
+    virtual lverror_t GetSize(lvsize_t* pSize);
     virtual lvsize_t GetSize();
-    virtual lverror_t SetSize( lvsize_t size );
-    virtual lverror_t Write( const void * buf, lvsize_t count, lvsize_t * nBytesWritten );
-    virtual lverror_t Seek( lvoffset_t offset, lvseek_origin_t origin, lvpos_t * pNewPos );
+    virtual lverror_t SetSize(lvsize_t size);
+    virtual lverror_t Write(const void* buf, lvsize_t count, lvsize_t* nBytesWritten);
+    virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t* pNewPos);
     lverror_t Close();
-    static LVFileStream * CreateFileStream( lString32 fname, lvopen_mode_t mode );
-    lverror_t OpenFile( lString32 fname, int mode );
+    static LVFileStream* CreateFileStream(lString32 fname, lvopen_mode_t mode);
+    lverror_t OpenFile(lString32 fname, int mode);
     LVFileStream();
     virtual ~LVFileStream();
 };
-#endif  // (USE_ANSI_FILES==1)
+#endif // (USE_ANSI_FILES==1)
 
-#endif  // __LVFILESTREAM_H_INCLUDED__
+#endif // __LVFILESTREAM_H_INCLUDED__

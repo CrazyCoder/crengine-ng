@@ -18,31 +18,34 @@
 class SerialBuf;
 
 /// hashed wide string collection
-class lString32HashedCollection : public lString32Collection
+class lString32HashedCollection: public lString32Collection
 {
 private:
     int hashSize;
-    struct HashPair {
+    struct HashPair
+    {
         int index;
-        HashPair * next;
-        void clear() { index=-1; next=NULL; }
+        HashPair* next;
+        void clear() {
+            index = -1;
+            next = NULL;
+        }
     };
-    HashPair * hash;
-    void addHashItem( int hashIndex, int storageIndex );
+    HashPair* hash;
+    void addHashItem(int hashIndex, int storageIndex);
     void clearHash();
-    void reHash( int newSize );
+    void reHash(int newSize);
 public:
-
     /// serialize to byte array (pointer will be incremented by number of bytes written)
-    void serialize( SerialBuf & buf );
+    void serialize(SerialBuf& buf);
     /// deserialize from byte array (pointer will be incremented by number of bytes read)
-    bool deserialize( SerialBuf & buf );
+    bool deserialize(SerialBuf& buf);
 
-    lString32HashedCollection( lString32HashedCollection & v );
-    lString32HashedCollection( lUInt32 hashSize );
+    lString32HashedCollection(lString32HashedCollection& v);
+    lString32HashedCollection(lUInt32 hashSize);
     ~lString32HashedCollection();
-    int add( const lChar32 * s );
-    int find( const lChar32 * s );
+    int add(const lChar32* s);
+    int find(const lChar32* s);
 };
 
-#endif  // __LV_STRING32HASHEDCOLLECTION_H_INCLUDED__
+#endif // __LV_STRING32HASHEDCOLLECTION_H_INCLUDED__

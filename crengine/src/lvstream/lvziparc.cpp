@@ -14,7 +14,7 @@
 
 #include "lvziparc.h"
 
-#if (USE_ZLIB==1)
+#if (USE_ZLIB == 1)
 
 #include <crtxtenc.h>
 #include <crlog.h>
@@ -22,23 +22,21 @@
 #include "lvzipdecodestream.h"
 #include "ziphdr.h"
 
-LVZipArc::LVZipArc(LVStreamRef stream) : LVArcContainerBase(stream)
-{
+LVZipArc::LVZipArc(LVStreamRef stream)
+        : LVArcContainerBase(stream) {
     SetName(stream->GetName());
 }
 
-LVZipArc::~LVZipArc()
-{
+LVZipArc::~LVZipArc() {
 }
 
-LVStreamRef LVZipArc::OpenStream(const char32_t *fname, lvopen_mode_t)
-{
-    if ( fname[0]=='/' )
+LVStreamRef LVZipArc::OpenStream(const char32_t* fname, lvopen_mode_t) {
+    if (fname[0] == '/')
         fname++;
     int found_index = -1;
-    for (int i=0; i<m_list.length(); i++) {
-        if ( m_list[i]->GetName() != NULL && !lStr_cmp( fname, m_list[i]->GetName() ) ) {
-            if ( m_list[i]->IsContainer() ) {
+    for (int i = 0; i < m_list.length(); i++) {
+        if (m_list[i]->GetName() != NULL && !lStr_cmp(fname, m_list[i]->GetName())) {
+            if (m_list[i]->IsContainer()) {
                 // found directory with same name!!!
                 return LVStreamRef();
             }
@@ -46,19 +44,18 @@ LVStreamRef LVZipArc::OpenStream(const char32_t *fname, lvopen_mode_t)
             break;
         }
     }
-    if (found_index<0)
+    if (found_index < 0)
         return LVStreamRef(); // not found
     // make filename
     lString32 fn = fname;
     LVStreamRef strm = m_stream; // fix strange arm-linux-g++ bug
     LVStreamRef stream(
-                LVZipDecodeStream::Create(
+            LVZipDecodeStream::Create(
                     strm,
                     m_list[found_index]->GetSrcPos(),
                     fn,
                     m_list[found_index]->GetSrcSize(),
-                    m_list[found_index]->GetSize() )
-                );
+                    m_list[found_index]->GetSize()));
     if (!stream.isNull()) {
         stream->SetName(m_list[found_index]->GetName());
         // Use buffering?
@@ -167,7 +164,7 @@ int LVZipArc::ReadContents() {
     // local zip headers met along while scanning the zip.
     if (m_alt_reading_method)
         truncated = true; // do as if truncated
-    else if (truncated) // archive detected as truncated
+    else if (truncated)   // archive detected as truncated
         // flag that, so there's no need to try that alt method,
         // as it was used on first scan
         m_alt_reading_method = true;
@@ -182,7 +179,7 @@ int LVZipArc::ReadContents() {
     ZipLocalFileHdr ZipHd1;
     ZipHd2 ZipHeader = { 0 };
     unsigned ZipHeader_size = 0x2E; //sizeof(ZipHd2); //0x34; //
-    unsigned ZipHd1_size = 0x1E; //sizeof(ZipHd1); //sizeof(ZipHd1)
+    unsigned ZipHd1_size = 0x1E;    //sizeof(ZipHd1); //sizeof(ZipHd1)
 
     for (;;) {
         if (m_stream->Seek(NextOffset, LVSEEK_SET, NULL) != LVERR_OK)
@@ -237,7 +234,7 @@ int LVZipArc::ReadContents() {
         int extraPosPackSize = -1;
         int extraPosOffset = -1;
         int extraLastPos = 0;
-        Zip64ExtInfo *zip64ExtInfo = NULL;
+        Zip64ExtInfo* zip64ExtInfo = NULL;
         if (0xFFFFFFFF == ZipHeader.UnpSize) {
             extraPosUnpSize = extraLastPos;
             extraLastPos += 8;
@@ -292,10 +289,10 @@ int LVZipArc::ReadContents() {
 #if LVLONG_FILE_SUPPORT == 1
         // Find Zip64 extension if required
         lvsize_t offs = 0;
-        Zip64ExtInfo *ext;
+        Zip64ExtInfo* ext;
         if (zip64) {
             while (offs + 4 < extraSizeToRead) {
-                ext = (Zip64ExtInfo *)&extra[offs];
+                ext = (Zip64ExtInfo*)&extra[offs];
                 ext->byteOrderConv();
                 if (0x0001 == ext->Tag) {
                     zip64ExtInfo = ext;
@@ -325,7 +322,7 @@ int LVZipArc::ReadContents() {
             //CRLog::trace("ZIP 6.3: Language encoding flag (EFS) enabled, using UTF-8 encoding.");
             fName = Utf8ToUnicode(fnbuf);
         } else {
-            if (isValidUtf8Data((const unsigned char *)fnbuf, fnameSizeToRead)) {
+            if (isValidUtf8Data((const unsigned char*)fnbuf, fnameSizeToRead)) {
                 //CRLog::trace("autodetected UTF-8 encoding.");
                 fName = Utf8ToUnicode(fnbuf);
             } else {
@@ -334,14 +331,14 @@ int LVZipArc::ReadContents() {
                 //  "Win32","SMS/QDOS","Acorn RISC OS","Win32 VFAT","MVS",
                 //  "BeOS","Tandem"};
                 // TODO: try to detect proper charset using 0x0008 Extra Field (InfoZip APPNOTE-6.3.5, Appendix D.4).
-                const lChar32 *enc_name = (ZipHeader.PackOS == 0) ? U"cp866" : U"cp1251";
+                const lChar32* enc_name = (ZipHeader.PackOS == 0) ? U"cp866" : U"cp1251";
                 //CRLog::trace("detected encoding %s", LCSTR(enc_name));
-                const lChar32 *table = GetCharsetByte2UnicodeTable(enc_name);
+                const lChar32* table = GetCharsetByte2UnicodeTable(enc_name);
                 fName = ByteToUnicode(lString8(fnbuf), table);
             }
         }
 
-        LVCommonContainerItemInfo *item = new LVCommonContainerItemInfo();
+        LVCommonContainerItemInfo* item = new LVCommonContainerItemInfo();
 #if LVLONG_FILE_SUPPORT == 1
         lvsize_t fileUnpSize = (lvsize_t)ZipHeader.UnpSize;
         lvsize_t filePackSize = (lvsize_t)ZipHeader.PackSize;
@@ -371,7 +368,7 @@ int LVZipArc::ReadContents() {
 #endif
         //, addL=%d, commL=%d, dn=%d
         //, (int)ZipHeader.AddLen, (int)ZipHeader.CommLen, (int)ZipHeader.DiskNum
-#define EXTRA_DEC_MAX   (1536+1)
+#define EXTRA_DEC_MAX (1536 + 1)
         if (extraSizeToRead > 0) {
             char extra_buff[EXTRA_DEC_MAX];
             memset(extra_buff, 0, EXTRA_DEC_MAX);
@@ -388,31 +385,28 @@ int LVZipArc::ReadContents() {
     return m_list.length();
 }
 
-LVArcContainerBase *LVZipArc::OpenArchieve(LVStreamRef stream)
-{
+LVArcContainerBase* LVZipArc::OpenArchieve(LVStreamRef stream) {
     // read beginning of file
     const lvsize_t hdrSize = 4;
     char hdr[hdrSize];
     stream->SetPos(0);
     lvsize_t bytesRead = 0;
-    if (stream->Read(hdr, hdrSize, &bytesRead)!=LVERR_OK || bytesRead!=hdrSize)
+    if (stream->Read(hdr, hdrSize, &bytesRead) != LVERR_OK || bytesRead != hdrSize)
         return NULL;
     stream->SetPos(0);
     // detect arc type
-    if (hdr[0]!='P' || hdr[1]!='K' || hdr[2]!=3 || hdr[3]!=4)
+    if (hdr[0] != 'P' || hdr[1] != 'K' || hdr[2] != 3 || hdr[3] != 4)
         return NULL;
-    LVZipArc * arc = new LVZipArc( stream );
+    LVZipArc* arc = new LVZipArc(stream);
     int itemCount = arc->ReadContents();
-    if ( itemCount > 0 && arc->isAltReadingMethod() ) {
+    if (itemCount > 0 && arc->isAltReadingMethod()) {
         CRLog::warn("Zip file truncated: going on with possibly partial content.");
-    }
-    else if ( itemCount == 0 && !arc->isAltReadingMethod() ) {
+    } else if (itemCount == 0 && !arc->isAltReadingMethod()) {
         CRLog::warn("Zip file corrupted or invalid: trying alternative processing...");
         arc->setAltReadingMethod();
         itemCount = arc->ReadContents();
     }
-    if ( itemCount <= 0 )
-    {
+    if (itemCount <= 0) {
         CRLog::error("Zip file corrupted or invalid: processing failure.");
         delete arc;
         return NULL;
@@ -420,4 +414,4 @@ LVArcContainerBase *LVZipArc::OpenArchieve(LVStreamRef stream)
     return arc;
 }
 
-#endif  // (USE_ZLIB==1)
+#endif // (USE_ZLIB==1)

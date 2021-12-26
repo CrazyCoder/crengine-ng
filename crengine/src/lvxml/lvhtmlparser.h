@@ -18,7 +18,7 @@
 #include "lvxmlparser.h"
 
 /// HTML parser
-class LVHTMLParser : public LVXMLParser
+class LVHTMLParser: public LVXMLParser
 {
 private:
 public:
@@ -27,9 +27,9 @@ public:
     /// parses input stream
     virtual bool Parse();
     /// constructor
-    LVHTMLParser( LVStreamRef stream, LVXMLParserCallback * callback );
+    LVHTMLParser(LVStreamRef stream, LVXMLParserCallback* callback);
     /// destructor
     virtual ~LVHTMLParser();
 };
 
-#endif  // __LVHTMLPARSER_H_INCLUDED__
+#endif // __LVHTMLPARSER_H_INCLUDED__

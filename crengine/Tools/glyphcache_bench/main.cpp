@@ -262,12 +262,11 @@ lChar32 lookup_seq[] = {
 
 int64_t timevalcmp(const struct timeval* t1, const struct timeval* t2);
 
-int main(int /*argc*/, char* /*argv*/[])
-{
-    const int glyphCodes_tofill_sz = sizeof(glyphCodes_tofill)/sizeof(lChar32);
-    const int lookup_seq_sz = sizeof(lookup_seq)/sizeof(lChar32);
+int main(int /*argc*/, char* /*argv*/[]) {
+    const int glyphCodes_tofill_sz = sizeof(glyphCodes_tofill) / sizeof(lChar32);
+    const int lookup_seq_sz = sizeof(lookup_seq) / sizeof(lChar32);
     const int bench_sz = 100000;
-    
+
     LVFontGlobalGlyphCacheA globalCacheA(0x40000);
     LVFontLocalGlyphCacheA localCacheA(&globalCacheA);
     LVFontGlyphCacheItemA* itemA;
@@ -288,25 +287,21 @@ int main(int /*argc*/, char* /*argv*/[])
     printf("size of cache data: %u\n", glyphCodes_tofill_sz);
 
     // fill cache
-    for (i = 0; i < glyphCodes_tofill_sz; i++)
-    {
+    for (i = 0; i < glyphCodes_tofill_sz; i++) {
         itemA = LVFontGlyphCacheItemA::newItem(&localCacheA, glyphCodes_tofill[i], 10, 10);
-        if (itemA)
-        {
+        if (itemA) {
             itemA->origin_x = 0;
             itemA->origin_y = 0;
             localCacheA.put(itemA);
         }
         itemB = LVFontGlyphCacheItemB::newItem(&localCacheB, glyphCodes_tofill[i], 10, 10);
-        if (itemB)
-        {
+        if (itemB) {
             itemB->origin_x = 0;
             itemB->origin_y = 0;
             localCacheB.put(itemB);
         }
         item = LVFontGlyphCacheItem::newItem(&localCache, glyphCodes_tofill[i], 10, 10, 10, 10);
-        if (item)
-        {
+        if (item) {
             item->origin_x = 0;
             item->origin_y = 0;
             localCache.put(item);
@@ -321,10 +316,8 @@ int main(int /*argc*/, char* /*argv*/[])
     printf("bench cache based on linked list...\n");
     gettimeofday(&ts1, NULL);
     tmp = 0;
-    for (j = 0; j < bench_sz; j++)
-    {
-        for (i = 0; i < lookup_seq_sz; i++)
-        {
+    for (j = 0; j < bench_sz; j++) {
+        for (i = 0; i < lookup_seq_sz; i++) {
             itemA = localCacheA.getByChar(lookup_seq[i]);
             tmp += itemA->origin_x;
         }
@@ -337,10 +330,8 @@ int main(int /*argc*/, char* /*argv*/[])
     // bench lookup based on hash table
     printf("bench cache based on hash table (candidate introduced in cr3.2.32)...\n");
     gettimeofday(&ts1, NULL);
-    for (j = 0; j < bench_sz; j++)
-    {
-        for (i = 0; i < lookup_seq_sz; i++)
-        {
+    for (j = 0; j < bench_sz; j++) {
+        for (i = 0; i < lookup_seq_sz; i++) {
             itemB = localCacheB.getByChar(lookup_seq[i]);
             tmp += itemB->origin_x;
         }
@@ -353,10 +344,8 @@ int main(int /*argc*/, char* /*argv*/[])
     // bench lookup based on hash table
     printf("bench cache based on hash table (current version)...\n");
     gettimeofday(&ts1, NULL);
-    for (j = 0; j < bench_sz; j++)
-    {
-        for (i = 0; i < lookup_seq_sz; i++)
-        {
+    for (j = 0; j < bench_sz; j++) {
+        for (i = 0; i < lookup_seq_sz; i++) {
             item = localCache.get(lookup_seq[i]);
             tmp += item->origin_x;
         }
@@ -373,14 +362,13 @@ int main(int /*argc*/, char* /*argv*/[])
     return 0;
 }
 
-int64_t timevalcmp(const struct timeval* t1, const struct timeval* t2)
-{
-	if (!t1 || !t2)
-		return 0;
-	// check for overflow exclusion
-	if (t1->tv_sec - t2->tv_sec > 2000000L)
-		return LONG_MAX;
-	if (t2->tv_sec - t1->tv_sec > 2000000L)
-		return LONG_MIN;
-	return (t1->tv_sec - t2->tv_sec)*1000000 + (t1->tv_usec - t2->tv_usec);
+int64_t timevalcmp(const struct timeval* t1, const struct timeval* t2) {
+    if (!t1 || !t2)
+        return 0;
+    // check for overflow exclusion
+    if (t1->tv_sec - t2->tv_sec > 2000000L)
+        return LONG_MAX;
+    if (t2->tv_sec - t1->tv_sec > 2000000L)
+        return LONG_MIN;
+    return (t1->tv_sec - t2->tv_sec) * 1000000 + (t1->tv_usec - t2->tv_usec);
 }

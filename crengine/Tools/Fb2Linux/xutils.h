@@ -27,26 +27,23 @@
 class MyXImage
 {
 private:
-    XImage * _img;
+    XImage* _img;
 public:
     /// creates image buffer of specified size
-    MyXImage( int dx, int dy );
+    MyXImage(int dx, int dy);
     ~MyXImage();
     /// returns scanline pointer (pixel is 32bit unsigned)
-    unsigned * getScanLine( int y );
+    unsigned* getScanLine(int y);
     /// fills buffer with specified color
-    void fill( unsigned pixel );
+    void fill(unsigned pixel);
     /// returns XImage object
-    XImage * getXImage()
-    {
+    XImage* getXImage() {
         return _img;
     }
 };
 
-
-
 /// draw gray bitmap buffer to X drawable
-void DrawBuf2Drawable(Display *display, Drawable d, GC gc, int x, int y, LVDrawBuf * buf, unsigned * palette, int scale=1 );
+void DrawBuf2Drawable(Display* display, Drawable d, GC gc, int x, int y, LVDrawBuf* buf, unsigned* palette, int scale = 1);
 
 #endif
 

@@ -25,41 +25,37 @@
 #include <lvstream.h>
 
 // default implementation, with RAM buffer
-class LVDefStreamBuffer : public LVStreamBuffer
+class LVDefStreamBuffer: public LVStreamBuffer
 {
 protected:
     LVStreamRef m_stream;
-    lUInt8 * m_buf;
+    lUInt8* m_buf;
     lvpos_t m_pos;
     lvsize_t m_size;
     bool m_readonly;
     bool m_writeonly;
 public:
-    static LVStreamBufferRef create( LVStreamRef stream, lvpos_t pos, lvsize_t size, bool readonly );
+    static LVStreamBufferRef create(LVStreamRef stream, lvpos_t pos, lvsize_t size, bool readonly);
 
-    LVDefStreamBuffer( LVStreamRef stream, lvpos_t pos, lvsize_t size, bool readonly );
+    LVDefStreamBuffer(LVStreamRef stream, lvpos_t pos, lvsize_t size, bool readonly);
     /// get pointer to read-only buffer, returns NULL if unavailable
-    virtual const lUInt8 * getReadOnly()
-    {
+    virtual const lUInt8* getReadOnly() {
         return m_writeonly ? NULL : m_buf;
     }
     /// get pointer to read-write buffer, returns NULL if unavailable
-    virtual lUInt8 * getReadWrite()
-    {
+    virtual lUInt8* getReadWrite() {
         return m_readonly ? NULL : m_buf;
     }
     /// get buffer size
-    virtual lvsize_t getSize()
-    {
+    virtual lvsize_t getSize() {
         return m_size;
     }
     /// write on close
     virtual bool close();
     /// flush on destroy
-    virtual ~LVDefStreamBuffer()
-    {
+    virtual ~LVDefStreamBuffer() {
         close(); // NOLINT: Call to virtual function during destruction
     }
 };
 
-#endif  // __LVDEFSTREAMBUFFER_H_INCLUDED__
+#endif // __LVDEFSTREAMBUFFER_H_INCLUDED__

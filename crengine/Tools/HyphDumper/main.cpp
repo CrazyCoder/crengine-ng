@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
     return pdb2pattern(argv[1], argv[2]);
 }
 
-int pdb2pattern(const char *srcfilename, const char *dstfilename) {
+int pdb2pattern(const char* srcfilename, const char* dstfilename) {
     bool res = false;
     lString32 id = Utf8ToUnicode(srcfilename);
     MyTexHyph* hyph = new MyTexHyph(id);

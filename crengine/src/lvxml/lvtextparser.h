@@ -18,14 +18,14 @@
 
 class LVXMLParserCallback;
 
-class LVTextParser : public LVTextFileBase
+class LVTextParser: public LVTextFileBase
 {
 protected:
-    LVXMLParserCallback * m_callback;
+    LVXMLParserCallback* m_callback;
     bool m_isPreFormatted;
 public:
     /// constructor
-    LVTextParser( LVStreamRef stream, LVXMLParserCallback * callback, bool isPreFormatted );
+    LVTextParser(LVStreamRef stream, LVXMLParserCallback* callback, bool isPreFormatted);
     /// descructor
     virtual ~LVTextParser();
     /// returns true if format is recognized by parser
@@ -34,4 +34,4 @@ public:
     virtual bool Parse();
 };
 
-#endif  // __LVTEXTPARSER_H_INCLUDED__
+#endif // __LVTEXTPARSER_H_INCLUDED__

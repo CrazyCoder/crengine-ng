@@ -11,10 +11,9 @@
 // That's how many nav/ncx toc nodes we parse before giving up
 #define EPUB_TOC_MAX_ITER 5000
 
-bool DetectEpubFormat( LVStreamRef stream );
-bool ImportEpubDocument( LVStreamRef stream, ldomDocument * doc, LVDocViewCallback * progressCallback, CacheLoadingCallback * formatCallback, bool metadataOnly = false );
-lString32 EpubGetRootFilePath( LVContainerRef m_arc );
+bool DetectEpubFormat(LVStreamRef stream);
+bool ImportEpubDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback, bool metadataOnly = false);
+lString32 EpubGetRootFilePath(LVContainerRef m_arc);
 LVStreamRef GetEpubCoverpage(LVContainerRef arc);
-
 
 #endif // EPUBFMT_H

@@ -19,40 +19,37 @@
 // lvdrawbuff private stuff
 #include "../lvdrawbuf/lvdrawbuf_utils.h"
 
-LVDrawBufImgSource::LVDrawBufImgSource(LVColorDrawBuf *buf, bool own)
-    : _buf(buf)
-    , _own(own)
-    , _dx( buf->GetWidth() )
-    , _dy( buf->GetHeight() )
-{
+LVDrawBufImgSource::LVDrawBufImgSource(LVColorDrawBuf* buf, bool own)
+        : _buf(buf)
+        , _own(own)
+        , _dx(buf->GetWidth())
+        , _dy(buf->GetHeight()) {
 }
 
-LVDrawBufImgSource::~LVDrawBufImgSource()
-{
-    if ( _own )
+LVDrawBufImgSource::~LVDrawBufImgSource() {
+    if (_own)
         delete _buf;
 }
 
-bool LVDrawBufImgSource::Decode(LVImageDecoderCallback *callback)
-{
-    callback->OnStartDecode( this );
+bool LVDrawBufImgSource::Decode(LVImageDecoderCallback* callback) {
+    callback->OnStartDecode(this);
     //bool res = false;
-    if ( _buf->GetBitsPerPixel()==32 ) {
+    if (_buf->GetBitsPerPixel() == 32) {
         // 32 bpp
-        for ( int y=0; y<_dy; y++ ) {
-            callback->OnLineDecoded( this, y, (lUInt32 *)_buf->GetScanLine(y) );
+        for (int y = 0; y < _dy; y++) {
+            callback->OnLineDecoded(this, y, (lUInt32*)_buf->GetScanLine(y));
         }
     } else {
         // 16 bpp
-        lUInt32 * row = new lUInt32[_dx];
-        for ( int y=0; y<_dy; y++ ) {
-            lUInt16 * src = (lUInt16 *)_buf->GetScanLine(y);
-            for ( int x=0; x<_dx; x++ )
+        lUInt32* row = new lUInt32[_dx];
+        for (int y = 0; y < _dy; y++) {
+            lUInt16* src = (lUInt16*)_buf->GetScanLine(y);
+            for (int x = 0; x < _dx; x++)
                 row[x] = rgb565to888(src[x]);
-            callback->OnLineDecoded( this, y, row );
+            callback->OnLineDecoded(this, y, row);
         }
         delete[] row;
     }
-    callback->OnEndDecode( this, false );
+    callback->OnEndDecode(this, false);
     return true;
 }

@@ -23,7 +23,7 @@
 #define GAMMA_TABLES_IMPL
 #include "gammatbl.h"
 
-LVFontManager *fontMan = NULL;
+LVFontManager* fontMan = NULL;
 
 static double gammaLevel = 1.0;
 int gammaIndex = GAMMA_NO_CORRECTION_INDEX;
@@ -86,15 +86,17 @@ double LVFontManager::GetGamma() {
 }
 
 /// sets current gamma level
-void LVFontManager::SetGamma( double gamma ) {
+void LVFontManager::SetGamma(double gamma) {
     // gammaLevel = cr_ft_gamma_levels[GAMMA_LEVELS/2];
     // gammaIndex = GAMMA_LEVELS/2;
     int oldGammaIndex = gammaIndex;
     for (int i = 0; i < GAMMA_LEVELS; i++) {
         double diff1 = cr_gamma_levels[i] - gamma;
-        if (diff1 < 0) diff1 = -diff1;
+        if (diff1 < 0)
+            diff1 = -diff1;
         double diff2 = gammaLevel - gamma;
-        if (diff2 < 0) diff2 = -diff2;
+        if (diff2 < 0)
+            diff2 = -diff2;
         if (diff1 < diff2) {
             gammaLevel = cr_gamma_levels[i];
             gammaIndex = i;

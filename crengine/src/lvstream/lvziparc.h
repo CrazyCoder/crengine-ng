@@ -15,28 +15,32 @@
 
 #include <crsetup.h>
 
-#if (USE_ZLIB==1)
+#if (USE_ZLIB == 1)
 
 #include "lvarccontainerbase.h"
 
-class LVZipArc : public LVArcContainerBase
+class LVZipArc: public LVArcContainerBase
 {
 protected:
     // whether the alternative "truncated" method was used, or is to be used
     bool m_alt_reading_method = false;
 public:
-    LVZipArc( LVStreamRef stream );
+    LVZipArc(LVStreamRef stream);
     virtual ~LVZipArc();
 
-    bool isAltReadingMethod() { return m_alt_reading_method; }
-    void setAltReadingMethod() { m_alt_reading_method = true; }
+    bool isAltReadingMethod() {
+        return m_alt_reading_method;
+    }
+    void setAltReadingMethod() {
+        m_alt_reading_method = true;
+    }
 
-    virtual LVStreamRef OpenStream( const char32_t * fname, lvopen_mode_t /*mode*/ );
+    virtual LVStreamRef OpenStream(const char32_t* fname, lvopen_mode_t /*mode*/);
     virtual int ReadContents();
 
-    static LVArcContainerBase * OpenArchieve( LVStreamRef stream );
+    static LVArcContainerBase* OpenArchieve(LVStreamRef stream);
 };
 
-#endif  // (USE_ZLIB==1)
+#endif // (USE_ZLIB==1)
 
-#endif  // __LVZIPARC_H_INCLUDED__
+#endif // __LVZIPARC_H_INCLUDED__

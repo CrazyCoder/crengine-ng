@@ -14,7 +14,7 @@
 
 #include "lvjpegimagesource.h"
 
-#if (USE_LIBJPEG==1)
+#if (USE_LIBJPEG == 1)
 
 #include "lvimagedecodercallback.h"
 #include <crlog.h>
@@ -26,17 +26,17 @@ typedef boolean wxjpeg_boolean;
 #endif
 
 METHODDEF(void)
-cr_jpeg_error (j_common_ptr cinfo);
+cr_jpeg_error(j_common_ptr cinfo);
 
-
-typedef struct {
-    struct jpeg_source_mgr pub;     /* public fields */
-    LVStream * stream;              /* source stream */
-    JOCTET * buffer;                /* start of buffer */
-    bool start_of_file;             /* have we gotten any data yet? */
+typedef struct
+{
+    struct jpeg_source_mgr pub; /* public fields */
+    LVStream* stream;           /* source stream */
+    JOCTET* buffer;             /* start of buffer */
+    bool start_of_file;         /* have we gotten any data yet? */
 } cr_jpeg_source_mgr;
 
-#define INPUT_BUF_SIZE  4096        /* choose an efficiently fread'able size */
+#define INPUT_BUF_SIZE 4096 /* choose an efficiently fread'able size */
 
 /*
  * Initialize source --- called by jpeg_read_header
@@ -44,9 +44,8 @@ typedef struct {
  */
 
 METHODDEF(void)
-cr_init_source (j_decompress_ptr cinfo)
-{
-    cr_jpeg_source_mgr * src = (cr_jpeg_source_mgr*) cinfo->src;
+cr_init_source(j_decompress_ptr cinfo) {
+    cr_jpeg_source_mgr* src = (cr_jpeg_source_mgr*)cinfo->src;
 
     /* We reset the empty-input-file flag for each image,
      * but we don't clear the input buffer.
@@ -89,11 +88,10 @@ cr_init_source (j_decompress_ptr cinfo)
  */
 
 METHODDEF(wxjpeg_boolean)
-cr_fill_input_buffer (j_decompress_ptr cinfo)
-{
-    cr_jpeg_source_mgr * src = (cr_jpeg_source_mgr *) cinfo->src;
+cr_fill_input_buffer(j_decompress_ptr cinfo) {
+    cr_jpeg_source_mgr* src = (cr_jpeg_source_mgr*)cinfo->src;
     lvsize_t bytesRead = 0;
-    if ( src->stream->Read( src->buffer, INPUT_BUF_SIZE, &bytesRead ) != LVERR_OK )
+    if (src->stream->Read(src->buffer, INPUT_BUF_SIZE, &bytesRead) != LVERR_OK)
         cr_jpeg_error((jpeg_common_struct*)cinfo);
 
     if (bytesRead <= 0) {
@@ -101,8 +99,8 @@ cr_fill_input_buffer (j_decompress_ptr cinfo)
             ERREXIT(cinfo, JERR_INPUT_EMPTY);
         WARNMS(cinfo, JWRN_JPEG_EOF);
         /* Insert a fake EOI marker */
-        src->buffer[0] = (JOCTET) 0xFF;
-        src->buffer[1] = (JOCTET) JPEG_EOI;
+        src->buffer[0] = (JOCTET)0xFF;
+        src->buffer[1] = (JOCTET)JPEG_EOI;
         bytesRead = 2;
     }
 
@@ -126,24 +124,23 @@ cr_fill_input_buffer (j_decompress_ptr cinfo)
  */
 
 METHODDEF(void)
-cr_skip_input_data (j_decompress_ptr cinfo, long num_bytes)
-{
-    cr_jpeg_source_mgr * src = (cr_jpeg_source_mgr *) cinfo->src;
+cr_skip_input_data(j_decompress_ptr cinfo, long num_bytes) {
+    cr_jpeg_source_mgr* src = (cr_jpeg_source_mgr*)cinfo->src;
 
     /* Just a dumb implementation for now.  Could use fseek() except
      * it doesn't work on pipes.  Not clear that being smart is worth
      * any trouble anyway --- large skips are infrequent.
      */
     if (num_bytes > 0) {
-        while (num_bytes > (long) src->pub.bytes_in_buffer) {
-          num_bytes -= (long) src->pub.bytes_in_buffer;
-          (void) cr_fill_input_buffer(cinfo);
-          /* note we assume that fill_input_buffer will never return FALSE,
+        while (num_bytes > (long)src->pub.bytes_in_buffer) {
+            num_bytes -= (long)src->pub.bytes_in_buffer;
+            (void)cr_fill_input_buffer(cinfo);
+            /* note we assume that fill_input_buffer will never return FALSE,
            * so suspension need not be handled.
            */
         }
-        src->pub.next_input_byte += (size_t) num_bytes;
-        src->pub.bytes_in_buffer -= (size_t) num_bytes;
+        src->pub.next_input_byte += (size_t)num_bytes;
+        src->pub.bytes_in_buffer -= (size_t)num_bytes;
     }
 }
 
@@ -155,11 +152,9 @@ cr_skip_input_data (j_decompress_ptr cinfo, long num_bytes)
  * is possible.
  */
 GLOBAL(wxjpeg_boolean)
-cr_resync_to_restart (j_decompress_ptr, int)
-{
+cr_resync_to_restart(j_decompress_ptr, int) {
     return FALSE;
 }
-
 
 /*
  * Terminate source --- called by jpeg_finish_decompress
@@ -171,15 +166,13 @@ cr_resync_to_restart (j_decompress_ptr, int)
  */
 
 METHODDEF(void)
-cr_term_source (j_decompress_ptr)
-{
-  /* no work necessary here */
+cr_term_source(j_decompress_ptr) {
+    /* no work necessary here */
 }
 
 GLOBAL(void)
-cr_jpeg_src (j_decompress_ptr cinfo, LVStream * stream)
-{
-    cr_jpeg_source_mgr * src;
+cr_jpeg_src(j_decompress_ptr cinfo, LVStream* stream) {
+    cr_jpeg_source_mgr* src;
 
     /* The source object and input buffer are made permanent so that a series
      * of JPEG images can be read from the same file by calling jpeg_stdio_src
@@ -190,33 +183,30 @@ cr_jpeg_src (j_decompress_ptr cinfo, LVStream * stream)
      */
     if (cinfo->src == NULL) { /* first time for this JPEG object? */
         src = new cr_jpeg_source_mgr();
-        cinfo->src = (struct jpeg_source_mgr *) src;
+        cinfo->src = (struct jpeg_source_mgr*)src;
         src->buffer = new JOCTET[INPUT_BUF_SIZE];
     }
 
-    src = (cr_jpeg_source_mgr *) cinfo->src;
+    src = (cr_jpeg_source_mgr*)cinfo->src;
     src->pub.init_source = cr_init_source;
     src->pub.fill_input_buffer = cr_fill_input_buffer;
     src->pub.skip_input_data = cr_skip_input_data;
     src->pub.resync_to_restart = jpeg_resync_to_restart; /* use default method */
     src->pub.term_source = cr_term_source;
     src->stream = stream;
-    src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
+    src->pub.bytes_in_buffer = 0;    /* forces fill_input_buffer on first read */
     src->pub.next_input_byte = NULL; /* until buffer loaded */
 }
 
 GLOBAL(void)
-cr_jpeg_src_free (j_decompress_ptr cinfo)
-{
-    cr_jpeg_source_mgr * src = (cr_jpeg_source_mgr *) cinfo->src;
-    if ( src && src->buffer )
-    {
+cr_jpeg_src_free(j_decompress_ptr cinfo) {
+    cr_jpeg_source_mgr* src = (cr_jpeg_source_mgr*)cinfo->src;
+    if (src && src->buffer) {
         delete[] src->buffer;
         src->buffer = NULL;
     }
     delete src;
 }
-
 
 /*
  * ERROR HANDLING:
@@ -241,24 +231,22 @@ cr_jpeg_src_free (j_decompress_ptr cinfo)
  * Here's the extended error handler struct:
  */
 
-
 /*
  * Here's the routine that will replace the standard error_exit method:
  */
 
 METHODDEF(void)
-cr_jpeg_error (j_common_ptr cinfo)
-{
+cr_jpeg_error(j_common_ptr cinfo) {
     //fprintf(stderr, "cr_jpeg_error() : fatal error while decoding JPEG image\n");
 
     char buffer[JMSG_LENGTH_MAX];
 
     /* Create the message */
-    (*cinfo->err->format_message) (cinfo, buffer);
+    (*cinfo->err->format_message)(cinfo, buffer);
     CRLog::error("cr_jpeg_error: %s", buffer);
 
     /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
-    my_error_ptr myerr = (my_error_ptr) cinfo->err;
+    my_error_ptr myerr = (my_error_ptr)cinfo->err;
 
     /* Always display the message. */
     /* We could postpone this until after returning, if we chose. */
@@ -269,15 +257,12 @@ cr_jpeg_error (j_common_ptr cinfo)
     longjmp(myerr->setjmp_buffer, -1);
 }
 
-
-
-LVJpegImageSource::LVJpegImageSource(ldomNode *node, LVStreamRef stream)
-    : LVNodeImageSource(node, stream)
-{
+LVJpegImageSource::LVJpegImageSource(ldomNode* node, LVStreamRef stream)
+        : LVNodeImageSource(node, stream) {
     //CRLog::trace("creating LVJpegImageSource");
-    
+
     // testing setjmp
-    
+
     //        jmp_buf buf;
     //        if (setjmp(buf)) {
     //            CRLog::trace("longjmp is working ok");
@@ -286,49 +271,48 @@ LVJpegImageSource::LVJpegImageSource(ldomNode *node, LVStreamRef stream)
     //        longjmp(buf, -1);
 }
 
-bool LVJpegImageSource::Decode(LVImageDecoderCallback *callback)
-{
+bool LVJpegImageSource::Decode(LVImageDecoderCallback* callback) {
     //CRLog::trace("LVJpegImageSource::decode called");
     memset(&cinfo, 0, sizeof(jpeg_decompress_struct));
     /* Step 1: allocate and initialize JPEG decompression object */
-    
+
     /* We use our private extension JPEG error handler.
          * Note that this struct must live as long as the main JPEG parameter
          * struct, to avoid dangling-pointer problems.
          */
-    
+
     /* We set up the normal JPEG error routines, then override error_exit. */
     cinfo.err = jpeg_std_error(&jerr.pub);
     jerr.pub.error_exit = cr_jpeg_error;
-    
+
     /* Now we can initialize the JPEG decompression object. */
     jpeg_create_decompress(&cinfo);
-    
-    lUInt8 * buffer = NULL;
-    lUInt32 * row = NULL;
-    
+
+    lUInt8* buffer = NULL;
+    lUInt32* row = NULL;
+
     if (setjmp(jerr.setjmp_buffer)) {
         CRLog::error("JPEG setjmp error handling");
         /* If we get here, the JPEG code has signaled an error.
          * We need to clean up the JPEG object, close the input file, and return.
          */
-        if ( buffer )
+        if (buffer)
             delete[] buffer;
-        if ( row )
+        if (row)
             delete[] row;
         CRLog::debug("JPEG decoder cleanup");
-        cr_jpeg_src_free (&cinfo);
+        cr_jpeg_src_free(&cinfo);
         jpeg_destroy_decompress(&cinfo);
         return false;
     }
-    
-    _stream->SetPos( 0 );
+
+    _stream->SetPos(0);
     /* Step 2: specify data source (eg, a file) */
-    cr_jpeg_src( &cinfo, _stream.get() );
+    cr_jpeg_src(&cinfo, _stream.get());
     /* Step 3: read file parameters with jpeg_read_header() */
-    
+
     //fprintf(stderr, "    try to call jpeg_read_header...\n");
-    (void) jpeg_read_header(&cinfo, TRUE);
+    (void)jpeg_read_header(&cinfo, TRUE);
     /* We can ignore the return value from jpeg_read_header since
              *   (a) suspension is not possible with the stdio data source, and
              *   (b) we passed TRUE to reject a tables-only JPEG file as an error.
@@ -337,28 +321,27 @@ bool LVJpegImageSource::Decode(LVImageDecoderCallback *callback)
     _width = cinfo.image_width;
     _height = cinfo.image_height;
     //fprintf(stderr, "    jpeg_read_header() finished succesfully: image size = %d x %d\n", _width, _height);
-    
-    if ( callback )
-    {
+
+    if (callback) {
         callback->OnStartDecode(this);
         /* Step 4: set parameters for decompression */
-        
+
         /* In this example, we don't need to change any of the defaults set by
                  * jpeg_read_header(), so we do nothing here.
                  */
         cinfo.out_color_space = JCS_RGB;
-        
+
         /* Step 5: Start decompressor */
-        
-        (void) jpeg_start_decompress(&cinfo);
+
+        (void)jpeg_start_decompress(&cinfo);
         /* We can ignore the return value since suspension is not possible
                  * with the stdio data source.
                  */
-        buffer = new lUInt8 [ cinfo.output_width * cinfo.output_components ];
-        row = new lUInt32 [ cinfo.output_width ];
+        buffer = new lUInt8[cinfo.output_width * cinfo.output_components];
+        row = new lUInt32[cinfo.output_width];
         /* Step 6: while (scan lines remain to be read) */
         /*           jpeg_read_scanlines(...); */
-        
+
         /* Here we use the library's state variable cinfo.output_scanline as the
                  * loop counter, so that we don't have to keep track ourselves.
                  */
@@ -368,32 +351,30 @@ bool LVJpegImageSource::Decode(LVImageDecoderCallback *callback)
                      * Here the array is only one element long, but you could ask for
                      * more than one scanline at a time if that's more convenient.
                      */
-            (void) jpeg_read_scanlines(&cinfo, &buffer, 1);
+            (void)jpeg_read_scanlines(&cinfo, &buffer, 1);
             /* Assume put_scanline_someplace wants a pointer and sample count. */
-            lUInt8 * p = buffer;
-            for (int x=0; x<(int)cinfo.output_width; x++)
-            {
-                row[x] = (((lUInt32)p[0])<<16) | (((lUInt32)p[1])<<8) | (((lUInt32)p[2])<<0);
+            lUInt8* p = buffer;
+            for (int x = 0; x < (int)cinfo.output_width; x++) {
+                row[x] = (((lUInt32)p[0]) << 16) | (((lUInt32)p[1]) << 8) | (((lUInt32)p[2]) << 0);
                 p += 3;
             }
-            callback->OnLineDecoded( this, y, row );
+            callback->OnLineDecoded(this, y, row);
         }
         callback->OnEndDecode(this, false);
     }
-    
-    if ( buffer )
+
+    if (buffer)
         delete[] buffer;
-    if ( row )
+    if (row)
         delete[] row;
-    cr_jpeg_src_free (&cinfo);
+    cr_jpeg_src_free(&cinfo);
     jpeg_destroy_decompress(&cinfo);
     return true;
 }
 
-bool LVJpegImageSource::CheckPattern(const lUInt8 *buf, int)
-{
+bool LVJpegImageSource::CheckPattern(const lUInt8* buf, int) {
     //check for SOI marker at beginning of file
-    return (buf[0]==0xFF && buf[1]==0xD8);
+    return (buf[0] == 0xFF && buf[1] == 0xD8);
 }
 
-#endif  // (USE_LIBJPEG==1)
+#endif // (USE_LIBJPEG==1)

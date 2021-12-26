@@ -28,24 +28,29 @@
 #include <fontconfig/fontconfig.h>
 #endif
 
-#if USE_LOCALE_DATA==1
+#if USE_LOCALE_DATA == 1
 #include <crlocaledata.h>
 #include "../locale_data/fc-lang-data.h"
 #endif
 
-inline int myabs(int n) { return n < 0 ? -n : n; }
+inline int myabs(int n) {
+    return n < 0 ? -n : n;
+}
 
 lString8 familyName(FT_Face face) {
     lString8 faceName(face->family_name);
-    if ( face->style_name ) {
+    if (face->style_name) {
         if (faceName == "Arial" && !strcmp(face->style_name, "Narrow"))
             faceName << " " << face->style_name;
         else if (strstr(face->style_name, "ExtraCondensed"))
-            faceName << " " << "ExtraCondensed";
+            faceName << " "
+                     << "ExtraCondensed";
         else if (strstr(face->style_name, "SemiCondensed"))
-            faceName << " " << "SemiCondensed";
+            faceName << " "
+                     << "SemiCondensed";
         else if (strstr(face->style_name, "Condensed"))
-            faceName << " " << "Condensed";
+            faceName << " "
+                     << "Condensed";
     }
     return faceName;
 }
@@ -57,20 +62,15 @@ int getFontWeight(FT_Face face) {
     bool bold_flag = (face->style_flags & FT_STYLE_FLAG_BOLD) != 0;
     lString32 style32(face->style_name);
     style32 = style32.lowercase();
-    if (style32.pos("extrablack") >= 0 || style32.pos("ultrablack") >= 0
-          || style32.pos("extra black") >= 0 || style32.pos("ultra black") >= 0)
+    if (style32.pos("extrablack") >= 0 || style32.pos("ultrablack") >= 0 || style32.pos("extra black") >= 0 || style32.pos("ultra black") >= 0)
         weight = 950;
-    else if (style32.pos("extrabold") >= 0 || style32.pos("ultrabold") >= 0
-          || style32.pos("extra bold") >= 0 || style32.pos("ultra bold") >= 0)
+    else if (style32.pos("extrabold") >= 0 || style32.pos("ultrabold") >= 0 || style32.pos("extra bold") >= 0 || style32.pos("ultra bold") >= 0)
         weight = 800;
-    else if (style32.pos("demibold") >= 0 || style32.pos("semibold") >= 0
-          || style32.pos("demi bold") >= 0 || style32.pos("semi bold") >= 0)
+    else if (style32.pos("demibold") >= 0 || style32.pos("semibold") >= 0 || style32.pos("demi bold") >= 0 || style32.pos("semi bold") >= 0)
         weight = 600;
-    else if (style32.pos("extralight") >= 0 || style32.pos("ultralight") >= 0
-          || style32.pos("extra light") >= 0 || style32.pos("ultra light") >= 0)
+    else if (style32.pos("extralight") >= 0 || style32.pos("ultralight") >= 0 || style32.pos("extra light") >= 0 || style32.pos("ultra light") >= 0)
         weight = 200;
-    else if (style32.pos("demilight") >= 0 || style32.pos("light") >= 0
-          || style32.pos("demi light") >= 0)
+    else if (style32.pos("demilight") >= 0 || style32.pos("light") >= 0 || style32.pos("demi light") >= 0)
         weight = 300;
     else if (style32.pos("regular") >= 0 || style32.pos("normal") >= 0 || style32.pos("book") >= 0 || style32.pos("text") >= 0)
         weight = 400;
@@ -90,10 +90,10 @@ int getFontWeight(FT_Face face) {
     return weight;
 }
 
-#if USE_LOCALE_DATA==1
+#if USE_LOCALE_DATA == 1
 LVHashTable<lString8, font_lang_compat>* getSupportedLangs(FT_Face face) {
     LVHashTable<lString8, font_lang_compat>* langs = new LVHashTable<lString8, font_lang_compat>(16);
-#define FC_LANG_START_INTERVAL_CODE     0xF0F0FFFF
+#define FC_LANG_START_INTERVAL_CODE 0xF0F0FFFF
     bool fullSupport;
     bool partialSupport;
     unsigned int codePoint = 0;
@@ -119,7 +119,7 @@ LVHashTable<lString8, font_lang_compat>* getSupportedLangs(FT_Face face) {
                     if (i >= rec->char_set_sz)
                         break;
                     tmp = rec->char_set[i];
-                    if (FC_LANG_START_INTERVAL_CODE == tmp) {       // code of start interval
+                    if (FC_LANG_START_INTERVAL_CODE == tmp) { // code of start interval
                         if (i + 2 < rec->char_set_sz) {
                             i++;
                             first = rec->char_set[i];
@@ -167,8 +167,7 @@ lUInt32 LVFreeTypeFontManager::GetFontListHash(int documentId) {
     return _cache.GetFontListHash(documentId) * 75 + _fallbackFontFaces.getHash();
 }
 
-bool LVFreeTypeFontManager::SetFallbackFontFaces(lString8 facesStr)
-{
+bool LVFreeTypeFontManager::SetFallbackFontFaces(lString8 facesStr) {
     FONT_MAN_GUARD
     lString8Collection faces = lString8Collection(facesStr, lString8(";"));
     int count = 0;
@@ -178,7 +177,7 @@ bool LVFreeTypeFontManager::SetFallbackFontFaces(lString8 facesStr)
             lString8 face = faces[i];
             face.trim();
             CRLog::trace("Looking for fallback font %s", face.c_str());
-            LVFontCacheItem *item = _cache.findFallback(face, -1);
+            LVFontCacheItem* item = _cache.findFallback(face, -1);
             if (item) {
                 bool exist = false;
                 for (int j = 0; j < _fallbackFontFaces.length(); j++)
@@ -189,7 +188,7 @@ bool LVFreeTypeFontManager::SetFallbackFontFaces(lString8 facesStr)
                 if (!exist) {
                     _fallbackFontFaces.add(face);
                     count++;
-                    if (8*sizeof(lUInt32) == count) {
+                    if (8 * sizeof(lUInt32) == count) {
                         CRLog::warn("Too many fallback fonts specified, skipping.");
                         break;
                     }
@@ -224,16 +223,15 @@ lString8 LVFreeTypeFontManager::GetFallbackFontFaces() {
     return faces;
 }
 
-int LVFreeTypeFontManager::GetFallbackFontCount()
-{
+int LVFreeTypeFontManager::GetFallbackFontCount() {
     return _fallbackFontFaces.length();
 }
 
 LVFontRef LVFreeTypeFontManager::GetFallbackFont(int size, int index) {
     FONT_MAN_GUARD
-    if ( _fallbackFontFaces.empty() )
+    if (_fallbackFontFaces.empty())
         return LVFontRef();
-    if ( index < 0 || index >= _fallbackFontFaces.length() )
+    if (index < 0 || index >= _fallbackFontFaces.length())
         return LVFontRef();
     // reduce number of possible distinct sizes for fallback font
     if (size > 40)
@@ -242,7 +240,7 @@ LVFontRef LVFreeTypeFontManager::GetFallbackFont(int size, int index) {
         size &= 0xFFFC;
     else if (size > 16)
         size &= 0xFFFE;
-    LVFontCacheItem *item = _cache.findFallback(_fallbackFontFaces[index], size);
+    LVFontCacheItem* item = _cache.findFallback(_fallbackFontFaces[index], size);
     lUInt32 fallbackMask = 1 << index;
     if (!item->getFont().isNull()) {
         item->getFont()->setFallbackMask(fallbackMask);
@@ -254,19 +252,18 @@ LVFontRef LVFreeTypeFontManager::GetFallbackFont(int size, int index) {
     return fontRef;
 }
 
-LVFontRef LVFreeTypeFontManager::GetFallbackFont(int size, int weight, bool italic, int index)
-{
+LVFontRef LVFreeTypeFontManager::GetFallbackFont(int size, int weight, bool italic, int index) {
     FONT_MAN_GUARD
-    if ( _fallbackFontFaces.empty() )
+    if (_fallbackFontFaces.empty())
         return LVFontRef();
-    if ( index < 0 || index >= _fallbackFontFaces.length() )
+    if (index < 0 || index >= _fallbackFontFaces.length())
         return LVFontRef();
     // reduce number of possible distinct sizes for fallback font
-    if ( size>40 )
+    if (size > 40)
         size &= 0xFFF8;
-    else if ( size>28 )
+    else if (size > 28)
         size &= 0xFFFC;
-    else if ( size>16 )
+    else if (size > 16)
         size &= 0xFFFE;
     // We don't use/extend findFallback(), which was made to work
     // assuming the fallback font is a standalone regular font
@@ -300,28 +297,27 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
     int error;
 #ifdef FT_CONFIG_OPTION_SUBPIXEL_RENDERING
     // ClearType-style LCD rendering
-    switch (mode)
-    {
-    case font_aa_lcd_rgb:
-    case font_aa_lcd_bgr:
-    case font_aa_lcd_v_rgb:
-    case font_aa_lcd_v_bgr:
-        error = FT_Library_SetLcdFilter(_library, FT_LCD_FILTER_DEFAULT);
-        if (FT_Err_Ok != error)
-            CRLog::debug("FT_Library_SetLcdFilter() failed, error=%d", error);
-        break;
-    case font_aa_lcd_pentile:
-    case font_aa_lcd_pentile_m:
-    case font_aa_lcd_v_pentile:
-    case font_aa_lcd_v_pentile_m:
-        CRLog::warn("Pentile unavailable with ClearType-style LCD rendering");
-        CRLog::warn("Recompile FreeType without FT_CONFIG_OPTION_SUBPIXEL_RENDERING");
-        break;
-    default:
-        error = FT_Library_SetLcdFilter(_library, FT_LCD_FILTER_NONE);
-        if (FT_Err_Ok != error)
-            CRLog::debug("FT_Library_SetLcdFilter() failed, error=%d", error);
-        break;
+    switch (mode) {
+        case font_aa_lcd_rgb:
+        case font_aa_lcd_bgr:
+        case font_aa_lcd_v_rgb:
+        case font_aa_lcd_v_bgr:
+            error = FT_Library_SetLcdFilter(_library, FT_LCD_FILTER_DEFAULT);
+            if (FT_Err_Ok != error)
+                CRLog::debug("FT_Library_SetLcdFilter() failed, error=%d", error);
+            break;
+        case font_aa_lcd_pentile:
+        case font_aa_lcd_pentile_m:
+        case font_aa_lcd_v_pentile:
+        case font_aa_lcd_v_pentile_m:
+            CRLog::warn("Pentile unavailable with ClearType-style LCD rendering");
+            CRLog::warn("Recompile FreeType without FT_CONFIG_OPTION_SUBPIXEL_RENDERING");
+            break;
+        default:
+            error = FT_Library_SetLcdFilter(_library, FT_LCD_FILTER_NONE);
+            if (FT_Err_Ok != error)
+                CRLog::debug("FT_Library_SetLcdFilter() failed, error=%d", error);
+            break;
     }
 #else
     // Harmony LCD rendering
@@ -329,7 +325,7 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
         case font_aa_lcd_rgb:
         case font_aa_lcd_v_rgb: {
             // {{-⅓, 0}, {0, 0}, {⅓, 0}}
-            FT_Vector sub[3] = {{-21, 0}, {0, 0}, { 21, 0}};
+            FT_Vector sub[3] = { { -21, 0 }, { 0, 0 }, { 21, 0 } };
             error = FT_Library_SetLcdGeometry(_library, sub);
             if (FT_Err_Ok != error)
                 CRLog::debug("FT_Library_SetLcdGeometry() failed, error=%d", error);
@@ -338,7 +334,7 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
         case font_aa_lcd_bgr:
         case font_aa_lcd_v_bgr: {
             // {{⅓, 0}, {0, 0}, {-⅓, 0}}
-            FT_Vector sub[3] = {{21, 0}, {0, 0}, {-21, 0}};
+            FT_Vector sub[3] = { { 21, 0 }, { 0, 0 }, { -21, 0 } };
             error = FT_Library_SetLcdGeometry(_library, sub);
             if (FT_Err_Ok != error)
                 CRLog::debug("FT_Library_SetLcdGeometry() failed, error=%d", error);
@@ -346,7 +342,7 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
         }
         case font_aa_lcd_pentile: {
             // {{-⅙, ¼}, {-⅙, -¼}, {⅓, 0}}
-            FT_Vector sub[3] = {{-11, 16}, {-11, -16}, { 22, 0}};
+            FT_Vector sub[3] = { { -11, 16 }, { -11, -16 }, { 22, 0 } };
             error = FT_Library_SetLcdGeometry(_library, sub);
             if (FT_Err_Ok != error)
                 CRLog::debug("FT_Library_SetLcdGeometry() failed, error=%d", error);
@@ -354,15 +350,15 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
         }
         case font_aa_lcd_pentile_m: {
             // TODO: test & fix this
-            FT_Vector sub[3] = {{ -22, 0}, {11, 16}, {11, -16}};
+            FT_Vector sub[3] = { { -22, 0 }, { 11, 16 }, { 11, -16 } };
             error = FT_Library_SetLcdGeometry(_library, sub);
             if (FT_Err_Ok != error)
                 CRLog::debug("FT_Library_SetLcdGeometry() failed, error=%d", error);
-                break;
-            }
+            break;
+        }
         case font_aa_lcd_v_pentile: {
             // TODO: test & fix this
-            FT_Vector sub[3] = {{ 16, -11}, {-16, -11}, {0, 22}};
+            FT_Vector sub[3] = { { 16, -11 }, { -16, -11 }, { 0, 22 } };
             error = FT_Library_SetLcdGeometry(_library, sub);
             if (FT_Err_Ok != error)
                 CRLog::debug("FT_Library_SetLcdGeometry() failed, error=%d", error);
@@ -370,16 +366,16 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
         }
         case font_aa_lcd_v_pentile_m: {
             // TODO: test & fix this
-            FT_Vector sub[3] = {{ 22, 0}, {-11, -16}, {-11, 16}};
+            FT_Vector sub[3] = { { 22, 0 }, { -11, -16 }, { -11, 16 } };
             error = FT_Library_SetLcdGeometry(_library, sub);
             if (FT_Err_Ok != error)
                 CRLog::debug("FT_Library_SetLcdGeometry() failed, error=%d", error);
             break;
         }
         default: {
-            FT_Vector sub[3] = {{0, 0},
-                                {0, 0},
-                                {0, 0}};
+            FT_Vector sub[3] = { { 0, 0 },
+                                 { 0, 0 },
+                                 { 0, 0 } };
             error = FT_Library_SetLcdGeometry(_library, sub);
             if (FT_Err_Ok != error)
                 CRLog::debug("FT_Library_SetLcdGeometry() failed, error=%d", error);
@@ -389,7 +385,7 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
     gc();
     clearGlyphCache();
     FONT_MAN_GUARD
-    LVPtrVector<LVFontCacheItem> *fonts = _cache.getInstances();
+    LVPtrVector<LVFontCacheItem>* fonts = _cache.getInstances();
     for (int i = 0; i < fonts->length(); i++) {
         LVFontRef font = fonts->get(i)->getFont();
         font->SetAntialiasMode(_antialiasMode);
@@ -399,97 +395,95 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
 
 void LVFreeTypeFontManager::SetHintingMode(hinting_mode_t mode) {
     FONT_MAN_GUARD
-    CRLog::debug("Hinting mode is changed: %d", (int) mode);
+    CRLog::debug("Hinting mode is changed: %d", (int)mode);
     _hintingMode = mode;
     gc();
     clearGlyphCache();
-    LVPtrVector<LVFontCacheItem> *fonts = _cache.getInstances();
+    LVPtrVector<LVFontCacheItem>* fonts = _cache.getInstances();
     for (int i = 0; i < fonts->length(); i++) {
         fonts->get(i)->getFont()->setHintingMode(mode);
     }
 }
 
-void LVFreeTypeFontManager::SetKerning(bool kerningEnabled)
-{
+void LVFreeTypeFontManager::SetKerning(bool kerningEnabled) {
     FONT_MAN_GUARD
-    CRLog::debug("Kerning mode is changed: %d", (int) kerningEnabled);
+    CRLog::debug("Kerning mode is changed: %d", (int)kerningEnabled);
     _allowKerning = kerningEnabled;
     gc();
     clearGlyphCache();
-    LVPtrVector<LVFontCacheItem> *fonts = _cache.getInstances();
+    LVPtrVector<LVFontCacheItem>* fonts = _cache.getInstances();
     for (int i = 0; i < fonts->length(); i++) {
         fonts->get(i)->getFont()->setKerning(kerningEnabled);
     }
 }
 
-void LVFreeTypeFontManager::SetShapingMode( shaping_mode_t mode )
-{
+void LVFreeTypeFontManager::SetShapingMode(shaping_mode_t mode) {
     FONT_MAN_GUARD
-    CRLog::debug("Shaping mode is changed: %d", (int) mode);
+    CRLog::debug("Shaping mode is changed: %d", (int)mode);
     _shapingMode = mode;
     gc();
     clearGlyphCache();
-    LVPtrVector< LVFontCacheItem > * fonts = _cache.getInstances();
-    for ( int i=0; i<fonts->length(); i++ ) {
-        fonts->get(i)->getFont()->setShapingMode( mode );
+    LVPtrVector<LVFontCacheItem>* fonts = _cache.getInstances();
+    for (int i = 0; i < fonts->length(); i++) {
+        fonts->get(i)->getFont()->setShapingMode(mode);
     }
 }
 
 void LVFreeTypeFontManager::clearGlyphCache() {
     FONT_MAN_GUARD
     _globalCache.clear();
-    #if USE_HARFBUZZ==1
+#if USE_HARFBUZZ == 1
     // needs to clear each font _glyph_cache2 (for Gamma change, which
     // does not call any individual font method)
-    LVPtrVector< LVFontCacheItem > * fonts = _cache.getInstances();
-    for ( int i=0; i<fonts->length(); i++ ) {
+    LVPtrVector<LVFontCacheItem>* fonts = _cache.getInstances();
+    for (int i = 0; i < fonts->length(); i++) {
         fonts->get(i)->getFont()->clearCache();
     }
-    #endif
+#endif
 }
 
 bool LVFreeTypeFontManager::initSystemFonts() {
 #if (DEBUG_FONT_SYNTHESIS == 1)
     fontMan->RegisterFont(lString8("/usr/share/fonts/liberation/LiberationSans-Regular.ttf"));
     CRLog::debug("fonts:");
-    LVFontRef fnt4 = dumpFontRef( fontMan->GetFont(24, 200, true, css_ff_sans_serif, cs8("Arial, Helvetica") ) );
-    LVFontRef fnt1 = dumpFontRef( fontMan->GetFont(18, 200, false, css_ff_sans_serif, cs8("Arial, Helvetica") ) );
-    LVFontRef fnt2 = dumpFontRef( fontMan->GetFont(20, 400, false, css_ff_sans_serif, cs8("Arial, Helvetica") ) );
-    LVFontRef fnt3 = dumpFontRef( fontMan->GetFont(22, 600, false, css_ff_sans_serif, cs8("Arial, Helvetica") ) );
-    LVFontRef fnt5 = dumpFontRef( fontMan->GetFont(26, 400, true, css_ff_sans_serif, cs8("Arial, Helvetica") ) );
-    LVFontRef fnt6 = dumpFontRef( fontMan->GetFont(28, 600, true, css_ff_sans_serif, cs8("Arial, Helvetica") ) );
+    LVFontRef fnt4 = dumpFontRef(fontMan->GetFont(24, 200, true, css_ff_sans_serif, cs8("Arial, Helvetica")));
+    LVFontRef fnt1 = dumpFontRef(fontMan->GetFont(18, 200, false, css_ff_sans_serif, cs8("Arial, Helvetica")));
+    LVFontRef fnt2 = dumpFontRef(fontMan->GetFont(20, 400, false, css_ff_sans_serif, cs8("Arial, Helvetica")));
+    LVFontRef fnt3 = dumpFontRef(fontMan->GetFont(22, 600, false, css_ff_sans_serif, cs8("Arial, Helvetica")));
+    LVFontRef fnt5 = dumpFontRef(fontMan->GetFont(26, 400, true, css_ff_sans_serif, cs8("Arial, Helvetica")));
+    LVFontRef fnt6 = dumpFontRef(fontMan->GetFont(28, 600, true, css_ff_sans_serif, cs8("Arial, Helvetica")));
     CRLog::debug("end of font testing");
 #elif (USE_FONTCONFIG == 1)
     {
         CRLog::info("Reading list of system fonts using FONTCONFIG");
         lString32Collection fonts;
-        
+
         int facesFound = 0;
-        
-        FcFontSet *fontset;
-        
-        FcObjectSet *os = FcObjectSetBuild(FC_FILE, FC_WEIGHT, FC_FAMILY,
+
+        FcFontSet* fontset;
+
+        FcObjectSet* os = FcObjectSetBuild(FC_FILE, FC_WEIGHT, FC_FAMILY,
                                            FC_SLANT, FC_SPACING, FC_INDEX,
                                            FC_STYLE, FC_SCALABLE,
 #ifdef FC_COLOR
                                            FC_COLOR,
 #endif
                                            NULL);
-        FcPattern *pat = FcPatternCreate();
+        FcPattern* pat = FcPatternCreate();
         //FcBool b = 1;
         FcPatternAddBool(pat, FC_SCALABLE, 1);
-        
+
         fontset = FcFontList(NULL, pat, os);
-        
+
         FcPatternDestroy(pat);
         FcObjectSetDestroy(os);
-        
+
         // load fonts from file
         CRLog::debug("FONTCONFIG: %d font files found", fontset->nfont);
-        for(int i = 0; i < fontset->nfont; i++) {
-            FcChar8 *s=(FcChar8*)"";
-            FcChar8 *family=(FcChar8*)"";
-            FcChar8 *style=(FcChar8*)"";
+        for (int i = 0; i < fontset->nfont; i++) {
+            FcChar8* s = (FcChar8*)"";
+            FcChar8* family = (FcChar8*)"";
+            FcChar8* style = (FcChar8*)"";
             //FcBool b;
             FcResult res;
 
@@ -499,101 +493,101 @@ bool LVFreeTypeFontManager::initSystemFonts() {
             //    continue;
             //if ( !b )
             //    continue; // skip non-scalable fonts
-            res = FcPatternGetString(fontset->fonts[i], FC_FILE, 0, (FcChar8 **)&s);
-            if(res != FcResultMatch) {
+            res = FcPatternGetString(fontset->fonts[i], FC_FILE, 0, (FcChar8**)&s);
+            if (res != FcResultMatch) {
                 continue;
             }
-            lString8 fn( (const char *)s );
-            lString32 fn32( fn.c_str() );
+            lString8 fn((const char*)s);
+            lString32 fn32(fn.c_str());
             fn32.lowercase();
-            if (!fn32.endsWith(".ttf") && !fn32.endsWith(".odf") && !fn32.endsWith(".otf") && !fn32.endsWith(".pfb") && !fn32.endsWith(".pfa") && !fn32.endsWith(".ttc") ) {
+            if (!fn32.endsWith(".ttf") && !fn32.endsWith(".odf") && !fn32.endsWith(".otf") && !fn32.endsWith(".pfb") && !fn32.endsWith(".pfa") && !fn32.endsWith(".ttc")) {
                 continue;
             }
             int weight = FC_WEIGHT_REGULAR;
             res = FcPatternGetInteger(fontset->fonts[i], FC_WEIGHT, 0, &weight);
-            if(res != FcResultMatch) {
+            if (res != FcResultMatch) {
                 CRLog::debug("no FC_WEIGHT for %s", s);
                 //continue;
             }
-            switch ( weight ) {
-            case FC_WEIGHT_THIN:          //    0
-                weight = 100;
-                break;
-            case FC_WEIGHT_EXTRALIGHT:    //    40
-            case 45:                      // TODO: find what is it...
-                //case FC_WEIGHT_ULTRALIGHT        FC_WEIGHT_EXTRALIGHT
-                weight = 200;
-                break;
-            case FC_WEIGHT_LIGHT:         //    50
+            switch (weight) {
+                case FC_WEIGHT_THIN: //    0
+                    weight = 100;
+                    break;
+                case FC_WEIGHT_EXTRALIGHT: //    40
+                case 45:                   // TODO: find what is it...
+                    //case FC_WEIGHT_ULTRALIGHT        FC_WEIGHT_EXTRALIGHT
+                    weight = 200;
+                    break;
+                case FC_WEIGHT_LIGHT:     //    50
 #ifdef FC_WEIGHT_DEMILIGHT
-            case FC_WEIGHT_DEMILIGHT:     //    55
+                case FC_WEIGHT_DEMILIGHT: //    55
 #endif
-                weight = 300;
-                break;
-            case FC_WEIGHT_BOOK:          //    75
-            case FC_WEIGHT_REGULAR:       //    80
-                //case FC_WEIGHT_NORMAL:            FC_WEIGHT_REGULAR
-                weight = 400;
-                break;
-            case FC_WEIGHT_MEDIUM:        //    100
-                weight = 500;
-                break;
-            case FC_WEIGHT_DEMIBOLD:      //    180
-                //case FC_WEIGHT_SEMIBOLD:          FC_WEIGHT_DEMIBOLD
-                weight = 600;
-                break;
-            case FC_WEIGHT_BOLD:          //    200
-                weight = 700;
-                break;
-            case FC_WEIGHT_EXTRABOLD:     //    205
-                //case FC_WEIGHT_ULTRABOLD:         FC_WEIGHT_EXTRABOLD
-                weight = 800;
-                break;
-            case FC_WEIGHT_BLACK:         //    210
-                //case FC_WEIGHT_HEAVY:             FC_WEIGHT_BLACK
-                weight = 900;
-                break;
+                    weight = 300;
+                    break;
+                case FC_WEIGHT_BOOK:    //    75
+                case FC_WEIGHT_REGULAR: //    80
+                    //case FC_WEIGHT_NORMAL:            FC_WEIGHT_REGULAR
+                    weight = 400;
+                    break;
+                case FC_WEIGHT_MEDIUM: //    100
+                    weight = 500;
+                    break;
+                case FC_WEIGHT_DEMIBOLD: //    180
+                    //case FC_WEIGHT_SEMIBOLD:          FC_WEIGHT_DEMIBOLD
+                    weight = 600;
+                    break;
+                case FC_WEIGHT_BOLD: //    200
+                    weight = 700;
+                    break;
+                case FC_WEIGHT_EXTRABOLD: //    205
+                    //case FC_WEIGHT_ULTRABOLD:         FC_WEIGHT_EXTRABOLD
+                    weight = 800;
+                    break;
+                case FC_WEIGHT_BLACK: //    210
+                    //case FC_WEIGHT_HEAVY:             FC_WEIGHT_BLACK
+                    weight = 900;
+                    break;
 #ifdef FC_WEIGHT_EXTRABLACK
-            case FC_WEIGHT_EXTRABLACK:    //    215
-                //case FC_WEIGHT_ULTRABLACK:        FC_WEIGHT_EXTRABLACK
-                weight = 950;
-                break;
+                case FC_WEIGHT_EXTRABLACK: //    215
+                    //case FC_WEIGHT_ULTRABLACK:        FC_WEIGHT_EXTRABLACK
+                    weight = 950;
+                    break;
 #endif
-            default:
-                weight = 400;
-                break;
+                default:
+                    weight = 400;
+                    break;
             }
             FcBool scalable = FcFalse;
             res = FcPatternGetBool(fontset->fonts[i], FC_SCALABLE, 0, &scalable);
-            if(res != FcResultMatch) {
+            if (res != FcResultMatch) {
                 CRLog::debug("no FC_SCALABLE for %s", s);
             }
             int index = 0;
             res = FcPatternGetInteger(fontset->fonts[i], FC_INDEX, 0, &index);
-            if(res != FcResultMatch) {
+            if (res != FcResultMatch) {
                 CRLog::debug("no FC_INDEX for %s", s);
                 //continue;
             }
-            res = FcPatternGetString(fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)&family);
-            if(res != FcResultMatch) {
+            res = FcPatternGetString(fontset->fonts[i], FC_FAMILY, 0, (FcChar8**)&family);
+            if (res != FcResultMatch) {
                 CRLog::debug("no FC_FAMILY for %s", s);
                 continue;
             }
-            res = FcPatternGetString(fontset->fonts[i], FC_STYLE, 0, (FcChar8 **)&style);
-            if(res != FcResultMatch) {
+            res = FcPatternGetString(fontset->fonts[i], FC_STYLE, 0, (FcChar8**)&style);
+            if (res != FcResultMatch) {
                 CRLog::debug("no FC_STYLE for %s", s);
                 style = (FcChar8*)"";
                 //continue;
             }
             int slant = FC_SLANT_ROMAN;
             res = FcPatternGetInteger(fontset->fonts[i], FC_SLANT, 0, &slant);
-            if(res != FcResultMatch) {
+            if (res != FcResultMatch) {
                 CRLog::debug("no FC_SLANT for %s", s);
                 //continue;
             }
             int spacing = 0;
             res = FcPatternGetInteger(fontset->fonts[i], FC_SPACING, 0, &spacing);
-            if(res != FcResultMatch) {
+            if (res != FcResultMatch) {
                 //CRLog::debug("no FC_SPACING for %s", s);
                 //continue;
             }
@@ -607,23 +601,23 @@ bool LVFreeTypeFontManager::initSystemFonts() {
             //                    default: cr_weight=300; break;
             //                }
             css_font_family_t fontFamily = css_ff_sans_serif;
-            lString32 face32((const char *)family);
+            lString32 face32((const char*)family);
             face32.lowercase();
-            if ( spacing==FC_MONO )
+            if (spacing == FC_MONO)
                 fontFamily = css_ff_monospace;
             else if (face32.pos("sans") >= 0)
                 fontFamily = css_ff_sans_serif;
             else if (face32.pos("serif") >= 0)
                 fontFamily = css_ff_serif;
-            
+
             //css_ff_inherit,
             //css_ff_serif,
             //css_ff_sans_serif,
             //css_ff_cursive,
             //css_ff_fantasy,
             //css_ff_monospace,
-            bool italic = (slant!=FC_SLANT_ROMAN);
-            
+            bool italic = (slant != FC_SLANT_ROMAN);
+
             lString8 face((const char*)family);
             lString8 style8((const char*)style);
             style8.lowercase();
@@ -633,42 +627,39 @@ bool LVFreeTypeFontManager::initSystemFonts() {
                 face << " SemiCondensed";
             else if (style8.pos("condensed") >= 0)
                 face << " Condensed";
-            
+
             LVFontDef def(
-                        lString8((const char*)s),
-                        -1, // height==-1 for scalable fonts
-                        weight,
-                        italic,
-                        -1, // OpenType features = -1 for not yet instantiated fonts
-                        fontFamily,
-                        face,
-                        index
-                        );
+                    lString8((const char*)s),
+                    -1, // height==-1 for scalable fonts
+                    weight,
+                    italic,
+                    -1, // OpenType features = -1 for not yet instantiated fonts
+                    fontFamily,
+                    face,
+                    index);
             CRLog::debug("FONTCONFIG: Font family:%s style:%s weight:%d slant:%d spacing:%d file:%s", family, style, weight, slant, spacing, s);
-            if ( _cache.findDuplicate( &def ) ) {
+            if (_cache.findDuplicate(&def)) {
                 CRLog::debug("is duplicate, skipping");
                 continue;
             }
-            _cache.update( &def, LVFontRef(NULL) );
-            
-            if ( scalable != FcFalse && !def.getItalic() ) {
-                LVFontDef newDef( def );
+            _cache.update(&def, LVFontRef(NULL));
+
+            if (scalable != FcFalse && !def.getItalic()) {
+                LVFontDef newDef(def);
                 newDef.setItalic(2); // can italicize
-                if ( !_cache.findDuplicate( &newDef ) )
-                    _cache.update( &newDef, LVFontRef(NULL) );
+                if (!_cache.findDuplicate(&newDef))
+                    _cache.update(&newDef, LVFontRef(NULL));
             }
-            
+
             facesFound++;
-            
-            
         }
-        
+
         FcFontSetDestroy(fontset);
         CRLog::info("FONTCONFIG: %d fonts registered", facesFound);
-        
-        const char * fallback_faces = "Arial Unicode MS; AR PL ShanHeiSun Uni; Liberation Sans; Roboto; DejaVu Sans; Noto Sans; Droid Sans";
+
+        const char* fallback_faces = "Arial Unicode MS; AR PL ShanHeiSun Uni; Liberation Sans; Roboto; DejaVu Sans; Noto Sans; Droid Sans";
         SetFallbackFontFaces(lString8(fallback_faces));
-        
+
         return facesFound > 0;
     }
 #elif (CR3_OSX == 1)
@@ -690,7 +681,7 @@ bool LVFreeTypeFontManager::initSystemFonts() {
     facesFound += fontMan->RegisterFont(lString8("/Library/Fonts/Georgia Bold.ttf"));
     facesFound += fontMan->RegisterFont(lString8("/Library/Fonts/Georgia Italic.ttf"));
     facesFound += fontMan->RegisterFont(lString8("/Library/Fonts/Georgia Bold Italic.ttf"));
-    
+
     return facesFound > 0;
 
 #else
@@ -700,8 +691,8 @@ bool LVFreeTypeFontManager::initSystemFonts() {
 
 LVFreeTypeFontManager::~LVFreeTypeFontManager() {
     FONT_MAN_GUARD
-    LVHashTable<lString8, LVHashTable<lString8, font_lang_compat>* >::iterator it = _supportedLangs.forwardIterator();
-    LVHashTable<lString8, LVHashTable<lString8, font_lang_compat>* >::pair* p;
+    LVHashTable<lString8, LVHashTable<lString8, font_lang_compat>*>::iterator it = _supportedLangs.forwardIterator();
+    LVHashTable<lString8, LVHashTable<lString8, font_lang_compat>*>::pair* p;
     while ((p = it.next()) != NULL) {
         LVHashTable<lString8, font_lang_compat>* langTable = p->value;
         if (langTable)
@@ -712,14 +703,16 @@ LVFreeTypeFontManager::~LVFreeTypeFontManager() {
     if (_library)
         FT_Done_FreeType(_library);
 #if (DEBUG_FONT_MAN == 1)
-    if ( _log ) {
+    if (_log) {
         fclose(_log);
     }
 #endif
 }
 
 LVFreeTypeFontManager::LVFreeTypeFontManager()
-        : _library(NULL), _globalCache(GLYPH_CACHE_SIZE), _supportedLangs(16) {
+        : _library(NULL)
+        , _globalCache(GLYPH_CACHE_SIZE)
+        , _supportedLangs(16) {
     FONT_MAN_GUARD
     int error = FT_Init_FreeType(&_library);
     if (error) {
@@ -728,7 +721,7 @@ LVFreeTypeFontManager::LVFreeTypeFontManager()
     }
 #if (DEBUG_FONT_MAN == 1)
     _log = fopen(DEBUG_FONT_MAN_LOG_FILE, "at");
-    if ( _log ) {
+    if (_log) {
         fprintf(_log, "=========================== LOGGING STARTED ===================\n");
     }
 #endif
@@ -753,51 +746,49 @@ lString8 LVFreeTypeFontManager::makeFontFileName(lString8 name) {
     return filename;
 }
 
-void LVFreeTypeFontManager::getFaceList(lString32Collection &list) {
+void LVFreeTypeFontManager::getFaceList(lString32Collection& list) {
     FONT_MAN_GUARD
     _cache.getFaceList(list);
 }
 
-void LVFreeTypeFontManager::getFontFileNameList(lString32Collection &list) {
+void LVFreeTypeFontManager::getFontFileNameList(lString32Collection& list) {
     FONT_MAN_GUARD
     _cache.getFontFileNameList(list);
 }
 
 bool LVFreeTypeFontManager::SetAlias(lString8 alias, lString8 facename, int id, bool bold, bool italic) {
     FONT_MAN_GUARD
-    lString8 fontname=lString8("\0");
+    lString8 fontname = lString8("\0");
     LVFontDef def(
-        fontname,
-        -1,
-        bold?700:400,
-        italic,
-        -1, // OpenType features = -1 for not yet instantiated fonts
-        css_ff_inherit,
-        facename,
-        -1,
-        id
-    );
-    LVFontCacheItem * item = _cache.find( &def);
+            fontname,
+            -1,
+            bold ? 700 : 400,
+            italic,
+            -1, // OpenType features = -1 for not yet instantiated fonts
+            css_ff_inherit,
+            facename,
+            -1,
+            id);
+    LVFontCacheItem* item = _cache.find(&def);
     LVFontDef def1(
-        fontname,
-        -1,
-        bold?700:400,
-        italic,
-        -1, // OpenType features = -1 for not yet instantiated fonts
-        css_ff_inherit,
-        alias,
-        -1,
-        id
-    );
+            fontname,
+            -1,
+            bold ? 700 : 400,
+            italic,
+            -1, // OpenType features = -1 for not yet instantiated fonts
+            css_ff_inherit,
+            alias,
+            -1,
+            id);
 
     int index = 0;
 
     FT_Face face = NULL;
 
     // for all faces in file
-    for ( ;; index++ ) {
-        int error = FT_New_Face( _library, item->getDef()->getName().c_str(), index, &face ); /* create face object */
-        if ( error ) {
+    for (;; index++) {
+        int error = FT_New_Face(_library, item->getDef()->getName().c_str(), index, &face); /* create face object */
+        if (error) {
             if (index == 0) {
                 CRLog::error("FT_New_Face returned error %d", error);
             }
@@ -806,7 +797,7 @@ bool LVFreeTypeFontManager::SetAlias(lString8 alias, lString8 facename, int id, 
         int num_faces = face->num_faces;
 
         css_font_family_t fontFamily = css_ff_sans_serif;
-        if ( face->face_flags & FT_FACE_FLAG_FIXED_WIDTH )
+        if (face->face_flags & FT_FACE_FLAG_FIXED_WIDTH)
             fontFamily = css_ff_monospace;
         //lString8 familyName(!facename.empty() ? facename : ::familyName(face));
         // We don't need this here and in other places below: all fonts (except
@@ -832,33 +823,31 @@ bool LVFreeTypeFontManager::SetAlias(lString8 alias, lString8 facename, int id, 
                 fontFamily,
                 alias,
                 index,
-                id
-        );
+                id);
 
-        if ( face ) {
-            FT_Done_Face( face );
+        if (face) {
+            FT_Done_Face(face);
             face = NULL;
         }
 
-        if ( _cache.findDuplicate( &def2 ) ) {
+        if (_cache.findDuplicate(&def2)) {
             CRLog::trace("font definition is duplicate");
             return false;
         }
-        _cache.update( &def2, LVFontRef(NULL) );
+        _cache.update(&def2, LVFontRef(NULL));
         if (!def.getItalic()) {
-            LVFontDef newDef( def2 );
+            LVFontDef newDef(def2);
             newDef.setItalic(2); // can italicize
-            if ( !_cache.findDuplicate( &newDef ) )
-                _cache.update( &newDef, LVFontRef(NULL) );
+            if (!_cache.findDuplicate(&newDef))
+                _cache.update(&newDef, LVFontRef(NULL));
         }
-        if ( index>=num_faces-1 )
+        if (index >= num_faces - 1)
             break;
     }
-    item = _cache.find( &def1);
-    if (item->getDef()->getTypeFace()==alias ) {
+    item = _cache.find(&def1);
+    if (item->getDef()->getTypeFace() == alias) {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
@@ -867,9 +856,9 @@ LVFontRef LVFreeTypeFontManager::GetFont(int size, int weight, bool italic, css_
                                          int features, int documentId, bool useBias) {
     FONT_MAN_GUARD
 #if (DEBUG_FONT_MAN == 1)
-    if ( _log ) {
-fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\n",
-        size, weight, italic?1:0, (int)family, typeface.c_str() );
+    if (_log) {
+        fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\n",
+                size, weight, italic ? 1 : 0, (int)family, typeface.c_str());
     }
 #endif
     lString8 fontname;
@@ -882,30 +871,27 @@ fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\
             family,
             typeface,
             -1,
-            documentId
-    );
+            documentId);
 #if (DEBUG_FONT_MAN == 1)
-    if ( _log )
-        fprintf( _log, "GetFont: %s %d %s %s\n",
-                 typeface.c_str(),
-                 size,
-                 weight>400?"bold":"",
-                 italic?"italic":"" );
+    if (_log)
+        fprintf(_log, "GetFont: %s %d %s %s\n",
+                typeface.c_str(),
+                size,
+                weight > 400 ? "bold" : "",
+                italic ? "italic" : "");
 #endif
-    LVFontCacheItem *item = _cache.find( &def, useBias );
+    LVFontCacheItem* item = _cache.find(&def, useBias);
 #if (DEBUG_FONT_MAN == 1)
-    if ( item && _log ) { //_log &&
+    if (item && _log) { //_log &&
         fprintf(_log, "   found item: (file=%s[%d], size=%d, weight=%d, italic=%d, family=%d, typeface=%s, weightDelta=%d) FontRef=%d\n",
-                item->getDef()->getName().c_str(), item->getDef()->getIndex(), item->getDef()->getSize(), item->getDef()->getWeight(), item->getDef()->getItalic()?1:0,
+                item->getDef()->getName().c_str(), item->getDef()->getIndex(), item->getDef()->getSize(), item->getDef()->getWeight(), item->getDef()->getItalic() ? 1 : 0,
                 (int)item->getDef()->getFamily(), item->getDef()->getTypeFace().c_str(),
-                weight - item->getDef()->getWeight(), item->getFont().isNull()?0:item->getFont()->getHeight()
-                                                                               );
+                weight - item->getDef()->getWeight(), item->getFont().isNull() ? 0 : item->getFont()->getHeight());
     }
 #endif
     bool italicize = false;
 
-    if (NULL == item)
-    {
+    if (NULL == item) {
         CRLog::error("_cache.find() return NULL: size=%d, weight=%d, italic=%d, family=%d, typeface=%s", size, weight, italic, family, typeface.c_str());
         CRLog::error("possible font cache cleared!");
         return LVFontRef(NULL);
@@ -914,11 +900,10 @@ fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\
     LVFontDef newDef(*item->getDef());
 
     if (!item->getFont().isNull()) {
-        if ( item->getDef()->getFeatures() != features ) {
+        if (item->getDef()->getFeatures() != features) {
             // Be sure we ignore any instantiated font found in cache that
             // has features different than the ones requested.
-        }
-        else {
+        } else {
 #if USE_FT_EMBOLDEN
             int deltaWeight = myabs(weight - item->getDef()->getWeight());
             if (deltaWeight >= 25) {
@@ -932,10 +917,10 @@ fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\
                 // This instantiated cached font has a too low weight
                 // embolden using LVFontBoldTransform
                 CRLog::debug("font: apply Embolding to increase weight from %d to %d",
-                                    newDef.getWeight(), newDef.getWeight() + 200 );
-                newDef.setWeight( newDef.getWeight() + 200 );
-                LVFontRef ref = LVFontRef( new LVFontBoldTransform( item->getFont(), &_globalCache ) );
-                _cache.update( &newDef, ref );
+                             newDef.getWeight(), newDef.getWeight() + 200);
+                newDef.setWeight(newDef.getWeight() + 200);
+                LVFontRef ref = LVFontRef(new LVFontBoldTransform(item->getFont(), &_globalCache));
+                _cache.update(&newDef, ref);
                 return ref;
             }
 #endif
@@ -947,12 +932,12 @@ fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\
     }
     lString8 fname = item->getDef()->getName();
 #if (DEBUG_FONT_MAN == 1)
-    if ( _log ) {
+    if (_log) {
         int index = item->getDef()->getIndex();
-        fprintf(_log, "   no instance: adding new one for filename=%s, index = %d\n", fname.c_str(), index );
+        fprintf(_log, "   no instance: adding new one for filename=%s, index = %d\n", fname.c_str(), index);
     }
 #endif
-    LVFreeTypeFace *font = new LVFreeTypeFace(_lock, _library, &_globalCache);
+    LVFreeTypeFace* font = new LVFreeTypeFace(_lock, _library, &_globalCache);
     lString8 pathname = makeFontFileName(fname);
     //def.setName( fname );
     //def.setIndex( index );
@@ -987,10 +972,10 @@ fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\
         //    item->getDef()->getTypeFace().c_str(), item->getDef()->getSize() );
         LVFontRef ref(font);
         // Instantiate this font with the requested OpenType features
-        newDef.setFeatures( features );
-        font->setFeatures( features ); // followup setKerningMode() will create/update hb_features if needed
-        font->setKerning( GetKerning() );
-        font->setShapingMode( GetShapingMode() );
+        newDef.setFeatures(features);
+        font->setFeatures(features); // followup setKerningMode() will create/update hb_features if needed
+        font->setKerning(GetKerning());
+        font->setShapingMode(GetShapingMode());
         font->setFaceName(item->getDef()->getTypeFace());
         newDef.setSize(size);
         //item->setFont( ref );
@@ -1001,17 +986,17 @@ fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\
             // embolden
             // Will make some of this font's methods do embolden the glyphs and widths
             font->setSynthWeight(weight);
-            newDef.setWeight( weight, false );
+            newDef.setWeight(weight, false);
             // Now newDef contains fake/synthetic weight
         }
 #else
         int deltaWeight = weight - newDef.getWeight();
         if (deltaWeight >= 200) {
             CRLog::debug("font: apply Embolding to increase weight from %d to %d",
-                                newDef.getWeight(), newDef.getWeight() + 200 );
+                         newDef.getWeight(), newDef.getWeight() + 200);
             // Create a wrapper with LVFontBoldTransform which will bolden the glyphs
-            newDef.setWeight( newDef.getWeight() + 200 );
-            ref = LVFontRef( new LVFontBoldTransform( ref, &_globalCache ) );
+            newDef.setWeight(newDef.getWeight() + 200);
+            ref = LVFontRef(new LVFontBoldTransform(ref, &_globalCache));
         }
 #endif
         // build fallback chain
@@ -1022,10 +1007,10 @@ fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\
             }
         }
         // filling in the language support table if it is empty
-#if USE_LOCALE_DATA==1
+#if USE_LOCALE_DATA == 1
         LVHashTable<lString8, font_lang_compat>* langTable = NULL;
         if (!_supportedLangs.get(font->getTypeFace(), langTable) || NULL == langTable) {
-            FT_Face face = (FT_Face) font->GetHandle();
+            FT_Face face = (FT_Face)font->GetHandle();
             if (NULL != face) {
                 langTable = getSupportedLangs(face);
                 _supportedLangs.set(font->getTypeFace(), langTable);
@@ -1033,7 +1018,7 @@ fprintf(_log, "GetFont(size=%d, weight=%d, italic=%d, family=%d, typeface='%s')\
         }
 #endif
         // add to cache
-        _cache.update( &newDef, ref );
+        _cache.update(&newDef, ref);
         //            int rsz = ref->getSize();
         //            if ( rsz!=size ) {
         //                size++;
@@ -1059,7 +1044,7 @@ bool LVFreeTypeFontManager::checkCharSet(FT_Face face) {
     for (int i = 0; i < _requiredChars.length(); i++) {
         lChar32 ch = _requiredChars[i];
         FT_UInt ch_glyph_index = FT_Get_Char_Index(face, ch);
-        if ( ch_glyph_index == 0 ) {
+        if (ch_glyph_index == 0) {
             CRLog::debug("Required char not found in font: %04x", ch);
             return false; // no required char!!!
         }
@@ -1067,9 +1052,9 @@ bool LVFreeTypeFontManager::checkCharSet(FT_Face face) {
     return true;
 }
 
-font_lang_compat LVFreeTypeFontManager::checkFontLangCompat(const lString8 &typeface, const lString8 &langTag) {
+font_lang_compat LVFreeTypeFontManager::checkFontLangCompat(const lString8& typeface, const lString8& langTag) {
     font_lang_compat res = font_lang_compat_invalid_tag;
-#if USE_LOCALE_DATA==1
+#if USE_LOCALE_DATA == 1
     CRLocaleData loc(langTag);
     if (loc.isValid()) {
         LVHashTable<lString8, font_lang_compat>* langTable = NULL;
@@ -1082,7 +1067,7 @@ font_lang_compat LVFreeTypeFontManager::checkFontLangCompat(const lString8 &type
             }
             LVFontRef fntRef = GetFont(-1, 400, false, css_ff_inherit, typeface, -1);
             if (!fntRef.isNull()) {
-                FT_Face face = (FT_Face) fntRef->GetHandle();
+                FT_Face face = (FT_Face)fntRef->GetHandle();
                 if (NULL != face) {
                     langTable = getSupportedLangs(face);
                     _supportedLangs.set(typeface, langTable);
@@ -1168,7 +1153,7 @@ bool LVFreeTypeFontManager::RegisterDocumentFont(int documentId, LVContainerRef 
     LVStreamRef stream = container->OpenStream(name.c_str(), LVOM_READ);
     if (stream.isNull())
         return false;
-    lUInt32 size = (lUInt32) stream->GetSize();
+    lUInt32 size = (lUInt32)stream->GetSize();
     if (size < 100 || size > 5000000)
         return false;
     LVByteArrayRef buf(new LVByteArray(size, 0));
@@ -1230,13 +1215,11 @@ bool LVFreeTypeFontManager::RegisterDocumentFont(int documentId, LVContainerRef 
                 familyName,
                 index,
                 documentId,
-                buf
-        );
+                buf);
 #if (DEBUG_FONT_MAN == 1)
-        if ( _log ) {
+        if (_log) {
             fprintf(_log, "registering font: (file=%s[%d], size=%d, weight=%d, italic=%d, family=%d, typeface=%s)\n",
-                    def.getName().c_str(), def.getIndex(), def.getSize(), def.getWeight(), def.getItalic()?1:0, (int)def.getFamily(), def.getTypeFace().c_str()
-                    );
+                    def.getName().c_str(), def.getIndex(), def.getSize(), def.getWeight(), def.getItalic() ? 1 : 0, (int)def.getFamily(), def.getTypeFace().c_str());
         }
 #endif
         if (face) {
@@ -1308,8 +1291,7 @@ bool LVFreeTypeFontManager::RegisterExternalFont(int documentId, lString32 name,
         if ((!scal && !color) || !charset) {
             CRLog::debug("    won't register font %s: %s",
                          name.c_str(),
-                         !charset ? "no mandatory characters in charset" : "font nor scalable nor color"
-            );
+                         !charset ? "no mandatory characters in charset" : "font nor scalable nor color");
             if (face) {
                 FT_Done_Face(face);
                 face = NULL;
@@ -1336,34 +1318,32 @@ bool LVFreeTypeFontManager::RegisterExternalFont(int documentId, lString32 name,
                 fontFamily,
                 family_name,
                 index,
-                documentId
-        );
+                documentId);
 #if (DEBUG_FONT_MAN == 1)
-        if ( _log ) {
+        if (_log) {
             fprintf(_log, "registering font: (file=%s[%d], size=%d, weight=%d, italic=%d, family=%d, typeface=%s)\n",
-                    def.getName().c_str(), def.getIndex(), def.getSize(), def.getWeight(), def.getItalic()?1:0, (int)def.getFamily(), def.getTypeFace().c_str()
-                    );
+                    def.getName().c_str(), def.getIndex(), def.getSize(), def.getWeight(), def.getItalic() ? 1 : 0, (int)def.getFamily(), def.getTypeFace().c_str());
         }
 #endif
-        if ( _cache.findDuplicate(&def) ) {
+        if (_cache.findDuplicate(&def)) {
             CRLog::trace("font definition is duplicate");
             return false;
         }
         _cache.update(&def, LVFontRef(NULL));
-        if ( scal && !def.getItalic() ) {
+        if (scal && !def.getItalic()) {
             LVFontDef newDef(def);
             newDef.setItalic(2); // can italicize
-            if ( !_cache.findDuplicate(&newDef) )
+            if (!_cache.findDuplicate(&newDef))
                 _cache.update(&newDef, LVFontRef(NULL));
         }
         res = true;
 
-        if ( face ) {
+        if (face) {
             FT_Done_Face(face);
             face = NULL;
         }
 
-        if ( index >= num_faces - 1 )
+        if (index >= num_faces - 1)
             break;
     }
 
@@ -1373,17 +1353,16 @@ bool LVFreeTypeFontManager::RegisterExternalFont(int documentId, lString32 name,
 bool LVFreeTypeFontManager::RegisterFont(lString8 name) {
     FONT_MAN_GUARD
 #ifdef LOAD_TTF_FONTS_ONLY
-    if ( name.pos( cs8(".ttf") ) < 0 && name.pos( cs8(".TTF") ) < 0 )
-    return false; // load ttf fonts only
+    if (name.pos(cs8(".ttf")) < 0 && name.pos(cs8(".TTF")) < 0)
+        return false; // load ttf fonts only
 #endif
     //CRLog::trace("RegisterFont(%s)", name.c_str());
     lString8 fname = makeFontFileName(name);
     //CRLog::trace("font file name : %s", fname.c_str());
 #if (DEBUG_FONT_MAN == 1)
-    if ( _log ) {
+    if (_log) {
         fprintf(_log, "RegisterFont( %s ) path=%s\n",
-                name.c_str(), fname.c_str()
-                );
+                name.c_str(), fname.c_str());
     }
 #endif
     bool res = false;
@@ -1415,8 +1394,7 @@ bool LVFreeTypeFontManager::RegisterFont(lString8 name) {
         if ((!scal && !color) || !charset) {
             CRLog::debug("    won't register font %s: %s",
                          name.c_str(),
-                         !charset ? "no mandatory characters in charset" : "font nor scalable nor color"
-            );
+                         !charset ? "no mandatory characters in charset" : "font nor scalable nor color");
             if (face) {
                 FT_Done_Face(face);
                 face = NULL;
@@ -1441,13 +1419,11 @@ bool LVFreeTypeFontManager::RegisterFont(lString8 name) {
                 -1, // OpenType features = -1 for not yet instantiated fonts
                 fontFamily,
                 familyName,
-                index
-        );
+                index);
 #if (DEBUG_FONT_MAN == 1)
-        if ( _log ) {
+        if (_log) {
             fprintf(_log, "registering font: (file=%s[%d], size=%d, weight=%d, italic=%d, family=%d, typeface=%s)\n",
-                    def.getName().c_str(), def.getIndex(), def.getSize(), def.getWeight(), def.getItalic()?1:0, (int)def.getFamily(), def.getTypeFace().c_str()
-                    );
+                    def.getName().c_str(), def.getIndex(), def.getSize(), def.getWeight(), def.getItalic() ? 1 : 0, (int)def.getFamily(), def.getTypeFace().c_str());
         }
 #endif
 
@@ -1468,14 +1444,14 @@ bool LVFreeTypeFontManager::RegisterFont(lString8 name) {
             // when italic is requested.
             // (Strange that italic and embolden are managed differently...
             // maybe it makes the 2x2 combinations easier to manage?)
-            LVFontDef newDef( def );
+            LVFontDef newDef(def);
             newDef.setItalic(2); // can italicize
-            if ( !_cache.findDuplicate( &newDef ) )
-                _cache.update( &newDef, LVFontRef(NULL) );
+            if (!_cache.findDuplicate(&newDef))
+                _cache.update(&newDef, LVFontRef(NULL));
         }
         res = true;
 
-        if ( index >= num_faces - 1 )
+        if (index >= num_faces - 1)
             break;
     }
 
@@ -1488,10 +1464,9 @@ bool LVFreeTypeFontManager::Init(lString8 path) {
     return (_library != NULL);
 }
 
-bool LVFreeTypeFontManager::SetAsPreferredFontWithBias(lString8 face, int bias, bool clearOthersBias)
-{
+bool LVFreeTypeFontManager::SetAsPreferredFontWithBias(lString8 face, int bias, bool clearOthersBias) {
     FONT_MAN_GUARD
     return _cache.setAsPreferredFontWithBias(face, bias, clearOthersBias);
 }
 
-#endif  // (USE_FREETYPE==1)
+#endif // (USE_FREETYPE==1)

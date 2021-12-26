@@ -4,7 +4,8 @@
 #include <lvstring.h>
 
 /// source document formats
-typedef enum {
+typedef enum
+{
     doc_format_none,
     doc_format_fb2,
     doc_format_fb3,
@@ -24,8 +25,7 @@ typedef enum {
 } doc_format_t;
 
 lString32 LVDocFormatName(int fmt);
-int LVDocFormatFromExtension(lString32 &pathName);
+int LVDocFormatFromExtension(lString32& pathName);
 lString8 LVDocFormatCssFileName(int fmt);
-
 
 #endif // CRBOOKFORMATS_H

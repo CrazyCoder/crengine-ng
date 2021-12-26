@@ -22,54 +22,47 @@
 
 #include "lvnamedcontainer.h"
 
-class LVArcContainerBase : public LVNamedContainer
+class LVArcContainerBase: public LVNamedContainer
 {
 protected:
-    LVContainer * m_parent;
+    LVContainer* m_parent;
     LVStreamRef m_stream;
 public:
-    virtual LVStreamRef OpenStream( const char32_t *, lvopen_mode_t )
-    {
+    virtual LVStreamRef OpenStream(const char32_t*, lvopen_mode_t) {
         return LVStreamRef();
     }
-    virtual LVContainer * GetParentContainer()
-    {
+    virtual LVContainer* GetParentContainer() {
         return (LVContainer*)m_parent;
     }
-    virtual const LVContainerItemInfo * GetObjectInfo(int index)
-    {
-        if (index>=0 && index<m_list.length())
+    virtual const LVContainerItemInfo* GetObjectInfo(int index) {
+        if (index >= 0 && index < m_list.length())
             return m_list[index];
         return NULL;
     }
-    virtual const LVContainerItemInfo * GetObjectInfo(lString32 name)
-    {
-        for ( int i=0; i<m_list.length(); i++ )
-            if (m_list[i]->GetName()==name )
+    virtual const LVContainerItemInfo* GetObjectInfo(lString32 name) {
+        for (int i = 0; i < m_list.length(); i++)
+            if (m_list[i]->GetName() == name)
                 return m_list[i];
         return NULL;
     }
-    virtual int GetObjectCount() const
-    {
+    virtual int GetObjectCount() const {
         return m_list.length();
     }
-    virtual lverror_t GetSize( lvsize_t * pSize )
-    {
+    virtual lverror_t GetSize(lvsize_t* pSize) {
         if (m_fname.empty())
             return LVERR_FAIL;
         *pSize = GetObjectCount();
         return LVERR_OK;
     }
-    LVArcContainerBase( LVStreamRef stream ) : m_parent(NULL), m_stream(stream)
-    {
+    LVArcContainerBase(LVStreamRef stream)
+            : m_parent(NULL)
+            , m_stream(stream) {
     }
-    virtual ~LVArcContainerBase()
-    {
+    virtual ~LVArcContainerBase() {
         SetName(NULL);
         Clear();
     }
     virtual int ReadContents() = 0;
-
 };
 
-#endif  // __LVARCCONTAINERBASE_H_INCLUDED__
+#endif // __LVARCCONTAINERBASE_H_INCLUDED__

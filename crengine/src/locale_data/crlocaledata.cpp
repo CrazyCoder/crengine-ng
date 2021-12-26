@@ -12,7 +12,7 @@
 
 #include <crlocaledata.h>
 
-#if USE_LOCALE_DATA==1
+#if USE_LOCALE_DATA == 1
 
 #include <lvstring8collection.h>
 
@@ -21,18 +21,15 @@
 #include "iso-3166-1_data.c"
 #include "iso-15924_data.c"
 
-CRLocaleData::CRLocaleData(const char* langtag)
-{
+CRLocaleData::CRLocaleData(const char* langtag) {
     parseTag(lString8(langtag));
 }
 
-CRLocaleData::CRLocaleData(const lString8 &langtag)
-{
+CRLocaleData::CRLocaleData(const lString8& langtag) {
     parseTag(langtag);
 }
 
-lString8 CRLocaleData::langTag() const
-{
+lString8 CRLocaleData::langTag() const {
     if (m_lang_code.empty())
         return lString8::empty_str;
 
@@ -62,8 +59,7 @@ lString8 CRLocaleData::langTag() const
     return tag;
 }
 
-int CRLocaleData::calcMatch(const CRLocaleData& other) const
-{
+int CRLocaleData::calcMatch(const CRLocaleData& other) const {
     lString8 this_lang_code_lc = m_lang_code;
     this_lang_code_lc = this_lang_code_lc.lowercase();
     lString8 other_lang_code_lc = other.langCode();
@@ -86,8 +82,7 @@ int CRLocaleData::calcMatch(const CRLocaleData& other) const
     return match;
 }
 
-void CRLocaleData::parseTag(const lString8& langtag)
-{
+void CRLocaleData::parseTag(const lString8& langtag) {
     m_langtag_src = langtag;
     lString8 tag = langtag;
     bool lang_ok = false;
@@ -277,4 +272,4 @@ void CRLocaleData::parseTag(const lString8& langtag)
     m_isValid = lang_ok && script_ok && region_ok;
 }
 
-#endif  // #if USE_LOCALE_DATA==1
+#endif // #if USE_LOCALE_DATA==1

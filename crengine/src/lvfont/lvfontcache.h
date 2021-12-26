@@ -23,24 +23,32 @@
 #include "lvfontdef.h"
 
 /// font cache item
-class LVFontCacheItem {
+class LVFontCacheItem
+{
     friend class LVFontCache;
 
     LVFontDef _def;
     LVFontRef _fnt;
 public:
-    LVFontDef *getDef() { return &_def; }
+    LVFontDef* getDef() {
+        return &_def;
+    }
 
-    LVFontRef &getFont() { return _fnt; }
+    LVFontRef& getFont() {
+        return _fnt;
+    }
 
-    void setFont(LVFontRef &fnt) { _fnt = fnt; }
+    void setFont(LVFontRef& fnt) {
+        _fnt = fnt;
+    }
 
-    LVFontCacheItem(const LVFontDef &def)
-            : _def(def) {}
+    LVFontCacheItem(const LVFontDef& def)
+            : _def(def) { }
 };
 
 /// font cache
-class LVFontCache {
+class LVFontCache
+{
     LVPtrVector<LVFontCacheItem> _registered_list;
     LVPtrVector<LVFontCacheItem> _instance_list;
 public:
@@ -50,27 +58,31 @@ public:
     }
 
     void gc(); // garbage collector
-    void update(const LVFontDef *def, LVFontRef ref);
+    void update(const LVFontDef* def, LVFontRef ref);
 
-    void removefont(const LVFontDef *def);
+    void removefont(const LVFontDef* def);
 
     void removeDocumentFonts(int documentId);
 
-    int length() { return _registered_list.length(); }
+    int length() {
+        return _registered_list.length();
+    }
 
-    void addInstance(const LVFontDef *def, LVFontRef ref);
+    void addInstance(const LVFontDef* def, LVFontRef ref);
 
-    bool setAsPreferredFontWithBias( lString8 face, int bias, bool clearOthersBias );
+    bool setAsPreferredFontWithBias(lString8 face, int bias, bool clearOthersBias);
 
-    LVPtrVector<LVFontCacheItem> *getInstances() { return &_instance_list; }
+    LVPtrVector<LVFontCacheItem>* getInstances() {
+        return &_instance_list;
+    }
 
-    LVFontCacheItem *find(const LVFontDef *def, bool useBias=false);
+    LVFontCacheItem* find(const LVFontDef* def, bool useBias = false);
 
-    LVFontCacheItem *findFallback(lString8 face, int size);
+    LVFontCacheItem* findFallback(lString8 face, int size);
 
-    LVFontCacheItem *findDuplicate(const LVFontDef *def);
+    LVFontCacheItem* findDuplicate(const LVFontDef* def);
 
-    LVFontCacheItem *findDocumentFontDuplicate(int documentId, lString8 name);
+    LVFontCacheItem* findDocumentFontDuplicate(int documentId, lString8 name);
 
     /// get hash of installed fonts and fallback font
     virtual lUInt32 GetFontListHash(int documentId) {
@@ -83,7 +95,7 @@ public:
         return 0;
     }
 
-    virtual void getFaceList(lString32Collection &list) {
+    virtual void getFaceList(lString32Collection& list) {
         list.clear();
         for (int i = 0; i < _registered_list.length(); i++) {
             if (_registered_list[i]->getDef()->getDocumentId() != -1)
@@ -95,7 +107,7 @@ public:
         list.sort();
     }
 
-    virtual void getFontFileNameList(lString32Collection &list) {
+    virtual void getFontFileNameList(lString32Collection& list) {
         list.clear();
         for (int i = 0; i < _registered_list.length(); i++) {
             if (_registered_list[i]->getDef()->getDocumentId() == -1) {
@@ -117,9 +129,9 @@ public:
         }
     }
 
-    LVFontCache() {}
+    LVFontCache() { }
 
-    virtual ~LVFontCache() {}
+    virtual ~LVFontCache() { }
 };
 
-#endif  // __LV_FONTCACHE_H_INCLUDED__
+#endif // __LV_FONTCACHE_H_INCLUDED__

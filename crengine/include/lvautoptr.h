@@ -4,62 +4,60 @@
 #include <stddef.h>
 
 /// auto pointer
-template <class T >
-class LVAutoPtr {
-    T * p;
-    LVAutoPtr( const LVAutoPtr & v ) {
+template <class T>
+class LVAutoPtr
+{
+    T* p;
+    LVAutoPtr(const LVAutoPtr& v) {
         CR_UNUSED(v);
     } // no copy allowed
-    LVAutoPtr & operator = (const LVAutoPtr & v) {
+    LVAutoPtr& operator=(const LVAutoPtr& v) {
         CR_UNUSED(v);
         return *this;
     } // no copy
 public:
     LVAutoPtr()
-        : p(NULL)
-{
+            : p(NULL) {
     }
-    explicit LVAutoPtr( T* ptr )
-        : p(ptr)
-    {
+    explicit LVAutoPtr(T* ptr)
+            : p(ptr) {
     }
     bool isNull() const {
         return p == NULL;
     }
-    bool operator !() const { return p == NULL; }
-    inline void clear()
-    {
+    bool operator!() const {
+        return p == NULL;
+    }
+    inline void clear() {
         if (p)
             delete p;
         p = NULL;
     }
-    ~LVAutoPtr()
-    {
+    ~LVAutoPtr() {
         clear();
     }
-    inline T * operator -> ()
-    {
+    inline T* operator->() {
         return p;
     }
-    inline const T * operator -> () const
-    {
+    inline const T* operator->() const {
         return p;
     }
-    inline T & operator [] (int index) { return p[index]; }
-    inline T * get() const { return p; }
-    inline T & operator * ()
-    {
+    inline T& operator[](int index) {
+        return p[index];
+    }
+    inline T* get() const {
+        return p;
+    }
+    inline T& operator*() {
         return *p;
     }
-    inline const T & operator * () const
-    {
+    inline const T& operator*() const {
         return *p;
     }
-    inline LVAutoPtr & operator = ( T* ptr )
-    {
-        if ( p==ptr )
+    inline LVAutoPtr& operator=(T* ptr) {
+        if (p == ptr)
             return *this;
-        if ( p )
+        if (p)
             delete p;
         p = ptr;
         return *this;
@@ -67,60 +65,60 @@ public:
 };
 
 /// unique pointer
-template <class T >
-class LVUniquePtr {
-    T * p;
+template <class T>
+class LVUniquePtr
+{
+    T* p;
 public:
     LVUniquePtr()
-        : p(NULL)
-{
+            : p(NULL) {
     }
-    explicit LVUniquePtr( T* ptr )
-        : p(ptr)
-    {
+    explicit LVUniquePtr(T* ptr)
+            : p(ptr) {
     }
-    LVUniquePtr( const LVUniquePtr & v ) { p = v.p; v.p = NULL; }
-    LVUniquePtr & operator = (const LVUniquePtr & v) {
+    LVUniquePtr(const LVUniquePtr& v) {
+        p = v.p;
+        v.p = NULL;
+    }
+    LVUniquePtr& operator=(const LVUniquePtr& v) {
         clear();
-        p = v.p; v.p = NULL;
+        p = v.p;
+        v.p = NULL;
         return *this;
     } // no copy
     bool isNull() const {
         return p == NULL;
     }
-    bool operator !() const { return p == NULL; }
-    inline void clear()
-    {
+    bool operator!() const {
+        return p == NULL;
+    }
+    inline void clear() {
         if (p)
             delete p;
         p = NULL;
     }
-    ~LVUniquePtr()
-    {
+    ~LVUniquePtr() {
         clear();
     }
-    inline T * operator -> ()
-    {
+    inline T* operator->() {
         return p;
     }
-    inline const T * operator -> () const
-    {
+    inline const T* operator->() const {
         return p;
     }
-    inline T * get() const { return p; }
-    inline T & operator * ()
-    {
+    inline T* get() const {
+        return p;
+    }
+    inline T& operator*() {
         return *p;
     }
-    inline const T & operator * () const
-    {
+    inline const T& operator*() const {
         return *p;
     }
-    inline LVUniquePtr & operator = ( T* ptr )
-    {
-        if ( p==ptr )
+    inline LVUniquePtr& operator=(T* ptr) {
+        if (p == ptr)
             return *this;
-        if ( p )
+        if (p)
             delete p;
         p = ptr;
         return *this;
@@ -128,20 +126,21 @@ public:
 };
 
 /// unique pointer
-template <class T >
-class LVClonePtr {
-    T * p;
+template <class T>
+class LVClonePtr
+{
+    T* p;
 public:
     LVClonePtr()
-        : p(NULL)
-{
+            : p(NULL) {
     }
-    explicit LVClonePtr( T* ptr )
-        : p(ptr ? (T*)ptr->clone() : NULL)
-    {
+    explicit LVClonePtr(T* ptr)
+            : p(ptr ? (T*)ptr->clone() : NULL) {
     }
-    LVClonePtr( const LVClonePtr & v ) { p = v.p ? (T*)v.p->clone() : NULL; }
-    LVClonePtr & operator = (const LVClonePtr & v) {
+    LVClonePtr(const LVClonePtr& v) {
+        p = v.p ? (T*)v.p->clone() : NULL;
+    }
+    LVClonePtr& operator=(const LVClonePtr& v) {
         clear();
         p = v.p ? (T*)v.p->clone() : NULL;
         return *this;
@@ -149,45 +148,43 @@ public:
     bool isNull() const {
         return p == NULL;
     }
-    bool operator !() const { return p == NULL; }
-    inline void clear()
-    {
+    bool operator!() const {
+        return p == NULL;
+    }
+    inline void clear() {
         if (p)
             delete p;
         p = NULL;
     }
-    ~LVClonePtr()
-    {
+    ~LVClonePtr() {
         clear();
     }
-    inline T * operator -> ()
-    {
+    inline T* operator->() {
         return p;
     }
-    inline const T * operator -> () const
-    {
+    inline const T* operator->() const {
         return p;
     }
-    inline T & operator [] (int index) { return p[index]; }
-    inline T * get() const { return p; }
-    inline T & operator * ()
-    {
+    inline T& operator[](int index) {
+        return p[index];
+    }
+    inline T* get() const {
+        return p;
+    }
+    inline T& operator*() {
         return *p;
     }
-    inline const T & operator * () const
-    {
+    inline const T& operator*() const {
         return *p;
     }
-    inline LVClonePtr & operator = ( T* ptr )
-    {
-        if ( p==ptr )
+    inline LVClonePtr& operator=(T* ptr) {
+        if (p == ptr)
             return *this;
-        if ( p )
+        if (p)
             delete p;
         p = ptr ? (T*)ptr->clone() : NULL;
         return *this;
     }
 };
-
 
 #endif // LVAUTOPTR_H

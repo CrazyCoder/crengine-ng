@@ -19,7 +19,8 @@
 #endif
 
 /// timer to interval expiration, in milliseconds
-class CRTimerUtil {
+class CRTimerUtil
+{
     lInt64 _start;
     volatile lInt64 _interval;
 public:
@@ -27,11 +28,11 @@ public:
 #ifdef _WIN32
         FILETIME ts;
         GetSystemTimeAsFileTime(&ts);
-        return ((lInt64)ts.dwLowDateTime)/10000 + ((lInt64)ts.dwHighDateTime)*1000;
+        return ((lInt64)ts.dwLowDateTime) / 10000 + ((lInt64)ts.dwHighDateTime) * 1000;
 #else
         timeval ts;
         gettimeofday(&ts, 0);
-        return ((lInt64)ts.tv_usec)/1000 + ((lInt64)ts.tv_sec)*1000;
+        return ((lInt64)ts.tv_usec) / 1000 + ((lInt64)ts.tv_sec) * 1000;
 #endif
     }
 
@@ -47,9 +48,9 @@ public:
         _interval = expirationIntervalMillis;
     }
 
-    CRTimerUtil(const CRTimerUtil & t) {
-    	_start = t._start;
-    	_interval = t._interval;
+    CRTimerUtil(const CRTimerUtil& t) {
+        _start = t._start;
+        _interval = t._interval;
     }
 
     void restart() {
@@ -61,23 +62,23 @@ public:
         _interval = expirationIntervalMillis;
     }
 
-    CRTimerUtil & operator = (const CRTimerUtil & t) {
-    	_start = t._start;
-    	_interval = t._interval;
-    	return *this;
+    CRTimerUtil& operator=(const CRTimerUtil& t) {
+        _start = t._start;
+        _interval = t._interval;
+        return *this;
     }
 
     void cancel() {
-    	_interval = 0;
+        _interval = 0;
     }
 
     /// returns true if timeout is infinite
     bool infinite() {
-        return _interval==-1;
+        return _interval == -1;
     }
     /// returns true if expirationIntervalMillis is expired
     bool expired() {
-        if ( _interval==-1 )
+        if (_interval == -1)
             return false;
         return getSystemTimeMillis() - _start >= _interval;
     }

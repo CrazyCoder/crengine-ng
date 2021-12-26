@@ -25,13 +25,13 @@
 #include <lvstream_types.h>
 
 /// Read or write buffer for stream region
-class LVStreamBuffer : public LVRefCounter
+class LVStreamBuffer: public LVRefCounter
 {
 public:
     /// get pointer to read-only buffer, returns NULL if unavailable
-    virtual const lUInt8 * getReadOnly() = 0;
+    virtual const lUInt8* getReadOnly() = 0;
     /// get pointer to read-write buffer, returns NULL if unavailable
-    virtual lUInt8 * getReadWrite() = 0;
+    virtual lUInt8* getReadWrite() = 0;
     /// get buffer size
     virtual lvsize_t getSize() = 0;
     /// flush on destroy
@@ -39,9 +39,11 @@ public:
         close(); // NOLINT: Call to virtual function during destruction
     }
     /// detach from stream, write changes if necessary
-    virtual bool close() { return true; }
+    virtual bool close() {
+        return true;
+    }
 };
 
 typedef LVFastRef<LVStreamBuffer> LVStreamBufferRef;
 
-#endif  // __LVSTREAMBUFFER_H_INCLUDED__
+#endif // __LVSTREAMBUFFER_H_INCLUDED__

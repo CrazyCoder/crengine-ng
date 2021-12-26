@@ -17,22 +17,22 @@
 #include "lvnamedstream.h"
 
 #define BASE64_BUF_SIZE 128
-class LVBase64Stream : public LVNamedStream
+class LVBase64Stream: public LVNamedStream
 {
 private:
-    lString8    m_curr_text;
-    int         m_text_pos;
-    lvsize_t    m_size;
-    lvpos_t     m_pos;
-    int         m_iteration;
-    lUInt32     m_value;
-    lUInt8      m_bytes[BASE64_BUF_SIZE];
-    int         m_bytes_count;
-    int         m_bytes_pos;
+    lString8 m_curr_text;
+    int m_text_pos;
+    lvsize_t m_size;
+    lvpos_t m_pos;
+    int m_iteration;
+    lUInt32 m_value;
+    lUInt8 m_bytes[BASE64_BUF_SIZE];
+    int m_bytes_count;
+    int m_bytes_pos;
     int readNextBytes();
     int bytesAvailable();
     bool rewind();
-    bool skip( lvsize_t count );
+    bool skip(lvsize_t count);
 public:
     virtual ~LVBase64Stream() { }
     LVBase64Stream(lString8 data);
@@ -41,13 +41,13 @@ public:
     virtual bool Eof() {
         return m_pos >= m_size;
     }
-    virtual lvsize_t  GetSize() {
+    virtual lvsize_t GetSize() {
         return m_size;
     }
     virtual lvpos_t GetPos() {
         return m_pos;
     }
-    virtual lverror_t GetPos( lvpos_t * pos ) {
+    virtual lverror_t GetPos(lvpos_t* pos) {
         if (pos)
             *pos = m_pos;
         return LVERR_OK;
@@ -60,4 +60,4 @@ public:
     }
 };
 
-#endif  // __LVBASE64STREAM_H_INCLUDED__
+#endif // __LVBASE64STREAM_H_INCLUDED__

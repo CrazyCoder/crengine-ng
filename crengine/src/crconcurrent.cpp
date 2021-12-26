@@ -1,16 +1,16 @@
 #include <crconcurrent.h>
 #include <crlog.h>
 
-CRMutex * _refMutex = NULL;
-CRMutex * _fontMutex = NULL;
-CRMutex * _fontManMutex = NULL;
-CRMutex * _fontGlyphCacheMutex = NULL;
-CRMutex * _fontLocalGlyphCacheMutex = NULL;
-CRMutex * _crengineMutex = NULL;
+CRMutex* _refMutex = NULL;
+CRMutex* _fontMutex = NULL;
+CRMutex* _fontManMutex = NULL;
+CRMutex* _fontGlyphCacheMutex = NULL;
+CRMutex* _fontLocalGlyphCacheMutex = NULL;
+CRMutex* _crengineMutex = NULL;
 
 void CRSetupEngineConcurrency() {
     if (!concurrencyProvider) {
-    	CRLog::error("CRSetupEngineConcurrency() : No concurrency provider is set");
+        CRLog::error("CRSetupEngineConcurrency() : No concurrency provider is set");
         return;
     }
     if (!_refMutex)
@@ -24,12 +24,13 @@ void CRSetupEngineConcurrency() {
     if (!_fontLocalGlyphCacheMutex)
         _fontLocalGlyphCacheMutex = concurrencyProvider->createMutex();
     if (!_crengineMutex)
-    	_crengineMutex = concurrencyProvider->createMutex();
+        _crengineMutex = concurrencyProvider->createMutex();
 }
 
-CRConcurrencyProvider * concurrencyProvider = NULL;
+CRConcurrencyProvider* concurrencyProvider = NULL;
 
-CRThreadExecutor::CRThreadExecutor() : _stopped(false) {
+CRThreadExecutor::CRThreadExecutor()
+        : _stopped(false) {
     _monitor = concurrencyProvider->createMonitor();
     _thread = concurrencyProvider->createThread(this);
     _thread->start();
@@ -45,7 +46,7 @@ void CRThreadExecutor::run() {
     for (;;) {
         if (_stopped)
             break;
-        CRRunnable * task = NULL;
+        CRRunnable* task = NULL;
         {
             CRGuard guard(_monitor);
             CR_UNUSED(guard);
@@ -64,7 +65,7 @@ void CRThreadExecutor::run() {
     CRLog::trace("Exiting thread executor");
 }
 
-void CRThreadExecutor::execute(CRRunnable * task) {
+void CRThreadExecutor::execute(CRRunnable* task) {
     CRGuard guard(_monitor);
     CR_UNUSED(guard);
     if (_stopped) {
@@ -81,7 +82,7 @@ void CRThreadExecutor::stop() {
         CR_UNUSED(guard);
         _stopped = true;
         while (_queue.length() > 0) {
-            CRRunnable * p = _queue.popFront();
+            CRRunnable* p = _queue.popFront();
             delete p;
         }
         _monitor->notify();

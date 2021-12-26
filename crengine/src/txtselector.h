@@ -20,7 +20,8 @@
 // TEXT SELECTION TOOL
 
 /// text selection tool commands
-enum text_selection_cmd_t {
+enum text_selection_cmd_t
+{
     CMD_SEL_MIDDLE_WORD = 4500,     // select middle word for initial interval
     CMD_SEL_MIDDLE_SENTENCE,        // select middle sentence for initial interval
     CMD_SEL_MIDDLE_PARA,            // select middle paragraph for initial interval
@@ -68,18 +69,22 @@ enum text_selection_cmd_t {
 };
 
 /// text selection tool
-class ldomTextSelectionTool {
+class ldomTextSelectionTool
+{
 public:
-    enum interval_t {
+    enum interval_t
+    {
         WORD,
         SENTENCE,
         PARA
     };
-    enum direction_t {
+    enum direction_t
+    {
         FORWARD,
         BACK
     };
-    enum origin_t {
+    enum origin_t
+    {
         START,
         END,
         ALL
@@ -88,20 +93,17 @@ private:
     ldomXRange _initialRange;
     ldomXRange _currRange;
     interval_t _currInterval;
-    origin_t   _currOrigin;
-
-
+    origin_t _currOrigin;
 public:
-
     /// create selection tool for specified initial range (usually current page)
-    ldomTextSelectionTool( ldomXRange & initialRange, interval_t initialInterval, origin_t initialOrigin );
+    ldomTextSelectionTool(ldomXRange& initialRange, interval_t initialInterval, origin_t initialOrigin);
 
     /// selects middle interval of specified type
-    bool selectMiddleInterval( interval_t interval, ldomXPointer &positionToShow );
+    bool selectMiddleInterval(interval_t interval, ldomXPointer& positionToShow);
     /// moves selection, returns true if selection is moved, and it's necessary to ensure positionToShow is visible on screen
-    bool moveBy( interval_t interval, direction_t dir, origin_t origin, int count, ldomXPointer &positionToShow );
+    bool moveBy(interval_t interval, direction_t dir, origin_t origin, int count, ldomXPointer& positionToShow);
     /// moves selection, returns true if selection is moved, and it's necessary to ensure positionToShow is visible on screen
-    bool doCommand( int cmd, int param, ldomXPointer &positionToShow );
+    bool doCommand(int cmd, int param, ldomXPointer& positionToShow);
 };
 
 #endif // TXTSELECTOR_H

@@ -14,20 +14,17 @@
 #include "lvtextrobustparser.h"
 
 /// constructor
-LVTextRobustParser::LVTextRobustParser( LVStreamRef stream, LVXMLParserCallback * callback, bool isPreFormatted )
-    : LVTextParser(stream, callback, isPreFormatted)
-{
+LVTextRobustParser::LVTextRobustParser(LVStreamRef stream, LVXMLParserCallback* callback, bool isPreFormatted)
+        : LVTextParser(stream, callback, isPreFormatted) {
 }
 
 /// descructor
-LVTextRobustParser::~LVTextRobustParser()
-{
+LVTextRobustParser::~LVTextRobustParser() {
 }
 
 /// returns true if format is recognized by parser
-bool LVTextRobustParser::CheckFormat()
-{
-    m_lang_name = lString32( "en" );
-    SetCharset( lString32( "utf-8" ).c_str() );
+bool LVTextRobustParser::CheckFormat() {
+    m_lang_name = lString32("en");
+    SetCharset(lString32("utf-8").c_str());
     return true;
 }

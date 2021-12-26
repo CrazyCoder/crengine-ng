@@ -16,21 +16,21 @@
 
 #include <crsetup.h>
 
-#if (USE_LIBPNG==1)
+#if (USE_LIBPNG == 1)
 
 #include "lvnodeimagesource.h"
 
-class LVPngImageSource : public LVNodeImageSource
+class LVPngImageSource: public LVNodeImageSource
 {
 protected:
 public:
-    LVPngImageSource( ldomNode * node, LVStreamRef stream );
+    LVPngImageSource(ldomNode* node, LVStreamRef stream);
     virtual ~LVPngImageSource();
-    virtual void   Compact();
-    virtual bool   Decode( LVImageDecoderCallback * callback );
-    static bool CheckPattern( const lUInt8 * buf, int len );
+    virtual void Compact();
+    virtual bool Decode(LVImageDecoderCallback* callback);
+    static bool CheckPattern(const lUInt8* buf, int len);
 };
 
-#endif  // (USE_LIBPNG==1)
+#endif // (USE_LIBPNG==1)
 
-#endif  // __LVPNGIMAGESOURCE_H_INCLUDED__
+#endif // __LVPNGIMAGESOURCE_H_INCLUDED__

@@ -13,8 +13,7 @@
 
 #include "lvhtmlparser.h"
 
-static lString32 htmlCharset( lString32 htmlHeader )
-{
+static lString32 htmlCharset(lString32 htmlHeader) {
     // Parse meta http-equiv or
     // meta charset
     // https://www.w3.org/TR/2011/WD-html5-author-20110809/the-meta-element.html
@@ -37,18 +36,18 @@ static lString32 htmlCharset( lString32 htmlHeader )
                             if (pos > 0) {
                                 pos = htmlHeader.pos("=", pos);
                                 if (pos > 0) {
-                                    pos += 1;       // skip "="
+                                    pos += 1; // skip "="
                                     // skip spaces
                                     lChar32 ch;
-                                    for ( int i=0; i + pos < (int)htmlHeader.length(); i++ ) {
+                                    for (int i = 0; i + pos < (int)htmlHeader.length(); i++) {
                                         ch = htmlHeader[i + pos];
-                                        if ( !IsSpaceChar(ch) )
+                                        if (!IsSpaceChar(ch))
                                             break;
                                         pos++;
                                     }
-                                    for ( int i=0; i + pos < (int)htmlHeader.length(); i++ ) {
+                                    for (int i = 0; i + pos < (int)htmlHeader.length(); i++) {
                                         ch = htmlHeader[pos + i];
-                                        if ( (ch>='a' && ch<='z') || (ch>='0' && ch<='9') || (ch=='-') || (ch=='_') )
+                                        if ((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || (ch == '-') || (ch == '_'))
                                             enc += ch;
                                         else
                                             break;
@@ -65,21 +64,21 @@ static lString32 htmlCharset( lString32 htmlHeader )
             if (pos > 0) {
                 pos = htmlHeader.pos("=", pos);
                 if (pos > 0) {
-                    pos += 1;           // skip "="
+                    pos += 1; // skip "="
                     // skip spaces
                     lChar32 ch;
-                    for ( int i=0; i + pos < (int)htmlHeader.length(); i++ ) {
+                    for (int i = 0; i + pos < (int)htmlHeader.length(); i++) {
                         ch = htmlHeader[i + pos];
-                        if ( !IsSpaceChar(ch) )
+                        if (!IsSpaceChar(ch))
                             break;
                         pos++;
                     }
                     ch = htmlHeader[pos];
-                    if ('\"' == ch)     // encoding in quotes
+                    if ('\"' == ch) // encoding in quotes
                         pos++;
-                    for ( int i=0; i + pos < (int)htmlHeader.length(); i++ ) {
+                    for (int i = 0; i + pos < (int)htmlHeader.length(); i++) {
                         ch = htmlHeader[pos + i];
-                        if ( (ch>='a' && ch<='z') || (ch>='0' && ch<='9') || (ch=='-') || (ch=='_') )
+                        if ((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || (ch == '-') || (ch == '_'))
                             enc += ch;
                         else
                             break;
@@ -93,43 +92,41 @@ static lString32 htmlCharset( lString32 htmlHeader )
     return enc;
 }
 
-
 /// returns true if format is recognized by parser
-bool LVHTMLParser::CheckFormat()
-{
+bool LVHTMLParser::CheckFormat() {
     Reset();
     // encoding test
-    if ( !AutodetectEncoding(!this->m_encoding_name.empty()) )
+    if (!AutodetectEncoding(!this->m_encoding_name.empty()))
         return false;
-    lChar32 * chbuf = new lChar32[XML_PARSER_DETECT_SIZE];
-    FillBuffer( XML_PARSER_DETECT_SIZE );
-    int charsDecoded = ReadTextBytes( 0, m_buf_len, chbuf, XML_PARSER_DETECT_SIZE-1, 0 );
+    lChar32* chbuf = new lChar32[XML_PARSER_DETECT_SIZE];
+    FillBuffer(XML_PARSER_DETECT_SIZE);
+    int charsDecoded = ReadTextBytes(0, m_buf_len, chbuf, XML_PARSER_DETECT_SIZE - 1, 0);
     chbuf[charsDecoded] = 0;
     bool res = false;
-    if ( charsDecoded > 30 ) {
-        lString32 s( chbuf, charsDecoded );
+    if (charsDecoded > 30) {
+        lString32 s(chbuf, charsDecoded);
         s.lowercase();
-        if ( s.pos("<html") >=0 && ( s.pos("<head") >= 0 || s.pos("<body") >=0 ) ) {
+        if (s.pos("<html") >= 0 && (s.pos("<head") >= 0 || s.pos("<body") >= 0)) {
             res = true;
         }
-        if ( !res ) { // check <!doctype html> (and others) which may have no/implicit <html/head/body>
+        if (!res) { // check <!doctype html> (and others) which may have no/implicit <html/head/body>
             int doctype_pos = s.pos("<!doctype ");
-            if ( doctype_pos >= 0 ) {
+            if (doctype_pos >= 0) {
                 int html_pos = s.pos("html", doctype_pos);
-                if ( html_pos >= 0 && html_pos < 32 )
+                if (html_pos >= 0 && html_pos < 32)
                     res = true;
             }
         }
-        if ( !res ) { // check filename extension and present of common HTML tags
-            lString32 name=m_stream->GetName();
+        if (!res) { // check filename extension and present of common HTML tags
+            lString32 name = m_stream->GetName();
             name.lowercase();
             bool html_ext = name.endsWith(".htm") || name.endsWith(".html") || name.endsWith(".hhc") || name.endsWith(".xhtml");
-            if ( html_ext && (s.pos("<!--")>=0 || s.pos("ul")>=0 || s.pos("<p>")>=0) )
+            if (html_ext && (s.pos("<!--") >= 0 || s.pos("ul") >= 0 || s.pos("<p>") >= 0))
                 res = true;
         }
-        lString32 enc = htmlCharset( s );
-        if ( !enc.empty() )
-            SetCharset( enc.c_str() );
+        lString32 enc = htmlCharset(s);
+        if (!enc.empty())
+            SetCharset(enc.c_str());
         //else if ( s.pos("<html xmlns=\"http://www.w3.org/1999/xhtml\"") >= 0 )
         //    res = true;
     }
@@ -140,20 +137,17 @@ bool LVHTMLParser::CheckFormat()
 }
 
 /// constructor
-LVHTMLParser::LVHTMLParser( LVStreamRef stream, LVXMLParserCallback * callback )
-: LVXMLParser( stream, callback )
-{
+LVHTMLParser::LVHTMLParser(LVStreamRef stream, LVXMLParserCallback* callback)
+        : LVXMLParser(stream, callback) {
     m_citags = true;
 }
 
 /// destructor
-LVHTMLParser::~LVHTMLParser()
-{
+LVHTMLParser::~LVHTMLParser() {
 }
 
 /// parses input stream
-bool LVHTMLParser::Parse()
-{
+bool LVHTMLParser::Parse() {
     bool res = LVXMLParser::Parse();
     return res;
 }

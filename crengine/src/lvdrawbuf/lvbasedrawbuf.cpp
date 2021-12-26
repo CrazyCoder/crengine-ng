@@ -19,44 +19,37 @@ inline static lUInt32 AA(lUInt32 color) {
 }
 
 inline static lUInt32 RR(lUInt32 color) {
-	return (color >> 16) & 0xFF;
+    return (color >> 16) & 0xFF;
 }
 
 inline static lUInt32 GG(lUInt32 color) {
-	return (color >> 8) & 0xFF;
+    return (color >> 8) & 0xFF;
 }
 
 inline static lUInt32 BB(lUInt32 color) {
-	return color & 0xFF;
+    return color & 0xFF;
 }
 
 inline static lUInt32 RRGGBB(lUInt32 r, lUInt32 g, lUInt32 b) {
-	return ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
+    return ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
 }
 
 inline static lUInt32 AARRGGBB(lUInt32 a, lUInt32 r, lUInt32 g, lUInt32 b) {
     return ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
 }
 
-
-
-
-void LVBaseDrawBuf::SetClipRect( const lvRect * clipRect )
-{
-    if (clipRect)
-    {
+void LVBaseDrawBuf::SetClipRect(const lvRect* clipRect) {
+    if (clipRect) {
         _clip = *clipRect;
-        if (_clip.left<0)
+        if (_clip.left < 0)
             _clip.left = 0;
-        if (_clip.top<0)
+        if (_clip.top < 0)
             _clip.top = 0;
-        if (_clip.right>_dx)
+        if (_clip.right > _dx)
             _clip.right = _dx;
         if (_clip.bottom > _dy)
             _clip.bottom = _dy;
-    }
-    else
-    {
+    } else {
         _clip.top = 0;
         _clip.left = 0;
         _clip.right = _dx;
@@ -64,40 +57,45 @@ void LVBaseDrawBuf::SetClipRect( const lvRect * clipRect )
     }
 }
 
-
 /// get linearly interpolated pixel value (coordinates are fixed floating points *16)
-lUInt32 LVBaseDrawBuf::GetInterpolatedColor(int x16, int y16) const
-{
-	int shx = x16 & 0x0F;
-	int shy = y16 & 0x0F;
-	int nshx = 16 - shx;
-	int nshy = 16 - shy;
-	int x = x16 >> 4;
-	int y = y16 >> 4;
-	int x1 = x + 1;
-	int y1 = y + 1;
-	if (x1 >= _dx)
-		x1 = x;
-	if (y1 >= _dy)
-		y1 = y;
+lUInt32 LVBaseDrawBuf::GetInterpolatedColor(int x16, int y16) const {
+    int shx = x16 & 0x0F;
+    int shy = y16 & 0x0F;
+    int nshx = 16 - shx;
+    int nshy = 16 - shy;
+    int x = x16 >> 4;
+    int y = y16 >> 4;
+    int x1 = x + 1;
+    int y1 = y + 1;
+    if (x1 >= _dx)
+        x1 = x;
+    if (y1 >= _dy)
+        y1 = y;
     lUInt32 cl00 = GetPixel(x, y);
     lUInt32 cl01 = GetPixel(x1, y);
     lUInt32 cl10 = GetPixel(x, y1);
     lUInt32 cl11 = GetPixel(x1, y1);
     lUInt32 a = (((AA(cl00) * nshx + AA(cl01) * shx) * nshy +
-                  (AA(cl10) * nshx + AA(cl11) * shx) * shy) >> 8) & 0xFF;
+                  (AA(cl10) * nshx + AA(cl11) * shx) * shy) >>
+                 8) &
+                0xFF;
     lUInt32 r = (((RR(cl00) * nshx + RR(cl01) * shx) * nshy +
-                  (RR(cl10) * nshx + RR(cl11) * shx) * shy) >> 8) & 0xFF;
-	lUInt32 g = (((GG(cl00) * nshx + GG(cl01) * shx) * nshy +
-                  (GG(cl10) * nshx + GG(cl11) * shx) * shy) >> 8) & 0xFF;
-	lUInt32 b = (((BB(cl00) * nshx + BB(cl01) * shx) * nshy +
-                  (BB(cl10) * nshx + BB(cl11) * shx) * shy) >> 8) & 0xFF;
+                  (RR(cl10) * nshx + RR(cl11) * shx) * shy) >>
+                 8) &
+                0xFF;
+    lUInt32 g = (((GG(cl00) * nshx + GG(cl01) * shx) * nshy +
+                  (GG(cl10) * nshx + GG(cl11) * shx) * shy) >>
+                 8) &
+                0xFF;
+    lUInt32 b = (((BB(cl00) * nshx + BB(cl01) * shx) * nshy +
+                  (BB(cl10) * nshx + BB(cl11) * shx) * shy) >>
+                 8) &
+                0xFF;
     return AARRGGBB(a, r, g, b);
 }
 
 /// get average pixel value for area (coordinates are fixed floating points *16)
-lUInt32 LVBaseDrawBuf::GetAvgColor(lvRect & rc16) const
-{
+lUInt32 LVBaseDrawBuf::GetAvgColor(lvRect& rc16) const {
     if (!_data)
         return 0;
     int x0 = rc16.left;
@@ -122,7 +120,7 @@ lUInt32 LVBaseDrawBuf::GetAvgColor(lvRect & rc16) const
     int s = 0;
     int maxy = ((y1 - 1) >> 4);
     int maxx = ((x1 - 1) >> 4);
-    for (int y = (y0 >> 4); y <= maxy; y++ ) {
+    for (int y = (y0 >> 4); y <= maxy; y++) {
         int yy0 = y << 4;
         int yy1 = (y + 1) << 4;
         if (yy0 < y0)
@@ -132,8 +130,7 @@ lUInt32 LVBaseDrawBuf::GetAvgColor(lvRect & rc16) const
         int ys = yy1 - yy0; // 0..16
         if (ys < 1)
             continue;
-        for (int x = (x0 >> 4); x <= maxx; x++ ) {
-
+        for (int x = (x0 >> 4); x <= maxx; x++) {
             int xx0 = x << 4;
             int xx1 = (x + 1) << 4;
             if (xx0 < x0)

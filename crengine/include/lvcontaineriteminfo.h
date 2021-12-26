@@ -24,12 +24,12 @@
 class LVContainerItemInfo
 {
 public:
-    virtual lvsize_t        GetSize() const = 0;
-    virtual const lChar32 * GetName() const = 0;
-    virtual lUInt32         GetFlags() const = 0;
-    virtual bool            IsContainer() const = 0;
-    LVContainerItemInfo() {}
-    virtual ~LVContainerItemInfo() {}
+    virtual lvsize_t GetSize() const = 0;
+    virtual const lChar32* GetName() const = 0;
+    virtual lUInt32 GetFlags() const = 0;
+    virtual bool IsContainer() const = 0;
+    LVContainerItemInfo() { }
+    virtual ~LVContainerItemInfo() { }
 };
 
-#endif  // __LVCONTAINERITEMINFO_H_INCLUDED__
+#endif // __LVCONTAINERITEMINFO_H_INCLUDED__

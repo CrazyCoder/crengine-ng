@@ -24,11 +24,13 @@
 #include <lvstream.h>
 
 /// base proxy class for streams: redirects all calls to base stream
-class StreamProxy : public LVStream {
+class StreamProxy: public LVStream
+{
 protected:
     LVStreamRef _base;
 public:
-    StreamProxy(LVStreamRef baseStream) : _base(baseStream) { }
+    StreamProxy(LVStreamRef baseStream)
+            : _base(baseStream) { }
     virtual ~StreamProxy() { }
 
     /// Seek (change file pos)
@@ -38,7 +40,7 @@ public:
         \param pNewPos points to place to store new file position
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Seek( lvoffset_t offset, lvseek_origin_t origin, lvpos_t * pNewPos ) {
+    virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t* pNewPos) {
         return _base->Seek(offset, origin, pNewPos);
     }
 
@@ -47,7 +49,9 @@ public:
         \param pNewPos points to place to store file position
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Tell( lvpos_t * pPos ) { return _base->Tell(pPos); }
+    virtual lverror_t Tell(lvpos_t* pPos) {
+        return _base->Tell(pPos);
+    }
 
     /// Set file position
     /**
@@ -55,27 +59,31 @@ public:
         \return lverror_t status: LVERR_OK if success
     */
     //virtual lverror_t SetPos(lvpos_t p) { return Seek(p, LVSEEK_SET, NULL); }
-    virtual lvpos_t   SetPos(lvpos_t p) { return _base->SetPos(p); }
+    virtual lvpos_t SetPos(lvpos_t p) {
+        return _base->SetPos(p);
+    }
 
     /// Get file position
     /**
         \return lvpos_t file position
     */
-    virtual lvpos_t   GetPos()  { return _base->GetPos();  }
+    virtual lvpos_t GetPos() {
+        return _base->GetPos();
+    }
 
-    virtual lvsize_t  GetSize()
-    {
+    virtual lvsize_t GetSize() {
         return _base->GetSize();
     }
 
-    virtual lverror_t GetSize( lvsize_t * pSize )
-    {
+    virtual lverror_t GetSize(lvsize_t* pSize) {
         return _base->GetSize(pSize);
     }
 
-    virtual lverror_t SetSize( lvsize_t size ) { return _base->SetSize(size); }
+    virtual lverror_t SetSize(lvsize_t size) {
+        return _base->SetSize(size);
+    }
 
-    virtual lverror_t Read( void * buf, lvsize_t count, lvsize_t * nBytesRead ) {
+    virtual lverror_t Read(void* buf, lvsize_t count, lvsize_t* nBytesRead) {
         return _base->Read(buf, count, nBytesRead);
     }
 
@@ -86,14 +94,13 @@ public:
         \param nBytesWritten is place to store real number of bytes written to stream
         \return lverror_t status: LVERR_OK if success
     */
-    virtual lverror_t Write( const void * buf, lvsize_t count, lvsize_t * nBytesWritten ) {
+    virtual lverror_t Write(const void* buf, lvsize_t count, lvsize_t* nBytesWritten) {
         return _base->Write(buf, count, nBytesWritten);
     }
 
     virtual bool Eof() {
         return _base->Eof();
     }
-
 };
 
 #endif // __STREAMPROXY_H_INCLUDED__

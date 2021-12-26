@@ -18,13 +18,12 @@
 #include <lvstring.h>
 #include <lvstream.h>
 
-
 #define XML_FLAG_NO_SPACE_TEXT 1
 
 /// don't treat CR/LF and TAB characters as space nor remove duplicate spaces
-#define TXTFLG_PRE        1
+#define TXTFLG_PRE 1
 /// text is to be interpreted literally, as textual data, not as marked up or entity references
-#define TXTFLG_CDATA      2
+#define TXTFLG_CDATA 2
 
 #define TXTFLG_TRIM                         4
 #define TXTFLG_TRIM_ALLOW_START_SPACE       8
@@ -38,17 +37,17 @@
 #define TXTFLG_PROCESS_ATTRIBUTE            0x20000
 
 /// converts XML text: decode character entities, convert space chars
-void PreProcessXmlString( lString32 & s, lUInt32 flags, const lChar32 * enc_table=NULL );
+void PreProcessXmlString(lString32& s, lUInt32 flags, const lChar32* enc_table = NULL);
 /// converts XML text in-place: decode character entities, convert space chars, returns new length of string
-int PreProcessXmlString(lChar32 * str, int len, lUInt32 flags, const lChar32 * enc_table = NULL);
+int PreProcessXmlString(lChar32* str, int len, lUInt32 flags, const lChar32* enc_table = NULL);
 
 /// read stream contents to string
-lString32 LVReadTextFile( LVStreamRef stream );
+lString32 LVReadTextFile(LVStreamRef stream);
 /// read file contents to string
-lString32 LVReadTextFile( lString32 filename );
+lString32 LVReadTextFile(lString32 filename);
 
 LVStreamRef GetFB2Coverpage(LVStreamRef stream);
 
-extern const char * * HTML_AUTOCLOSE_TABLE[];
+extern const char** HTML_AUTOCLOSE_TABLE[];
 
-#endif  // __LVXMLUTILS_H_INCLUDED__
+#endif // __LVXMLUTILS_H_INCLUDED__

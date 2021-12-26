@@ -20,10 +20,10 @@
 
 #include "lvfontcache.h"
 
-
 #if (USE_BITMAP_FONTS == 1)
 
-class LVBitmapFontManager : public LVFontManager {
+class LVBitmapFontManager: public LVFontManager
+{
 private:
     lString8 _path;
     LVFontCache _cache;
@@ -43,18 +43,18 @@ public:
 
     virtual LVFontRef
     GetFont(int size, int weight, bool italic, css_font_family_t family, lString8 typeface,
-            int features=0, int documentId = -1, bool useBias=false);
+            int features = 0, int documentId = -1, bool useBias = false);
 
-    virtual void GetAvailableFontWeights(LVArray<int>& weights, lString8 typeface) {}
+    virtual void GetAvailableFontWeights(LVArray<int>& weights, lString8 typeface) { }
 
     virtual bool RegisterFont(lString8 name);
 
     /// returns registered font files
-    virtual void getFontFileNameList(lString32Collection &list);
+    virtual void getFontFileNameList(lString32Collection& list);
 
     virtual bool Init(lString8 path);
 };
 
-#endif  // (USE_BITMAP_FONTS==1)
+#endif // (USE_BITMAP_FONTS==1)
 
-#endif  // __LV_BITMAPFONTMAN_H_INCLUDED__
+#endif // __LV_BITMAPFONTMAN_H_INCLUDED__

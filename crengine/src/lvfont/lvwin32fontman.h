@@ -20,18 +20,16 @@
 
 #include "lvfontcache.h"
 
-
 #if !defined(__SYMBIAN32__) && defined(_WIN32) && USE_FREETYPE != 1
 
-class LVWin32FontManager : public LVFontManager
+class LVWin32FontManager: public LVFontManager
 {
 private:
-    lString8    _path;
+    lString8 _path;
     LVFontCache _cache;
     //FILE * _log;
 public:
-    virtual int GetFontCount()
-    {
+    virtual int GetFontCount() {
         return _cache.length();
     }
     virtual ~LVWin32FontManager();
@@ -41,23 +39,21 @@ public:
         _cache.gc();
     }
     virtual LVFontRef GetFont(int size, int weight, bool bitalic, css_font_family_t family, lString8 typeface,
-                              int features=0, int documentId = -1, bool useBias=false);
-    virtual void GetAvailableFontWeights(LVArray<int>& weights, lString8 typeface) {}
-    virtual bool RegisterFont( const LOGFONTA * lf );
-    virtual bool RegisterFont( lString8 name )
-    {
+                              int features = 0, int documentId = -1, bool useBias = false);
+    virtual void GetAvailableFontWeights(LVArray<int>& weights, lString8 typeface) { }
+    virtual bool RegisterFont(const LOGFONTA* lf);
+    virtual bool RegisterFont(lString8 name) {
         return false;
     }
-    virtual bool Init( lString8 path );
+    virtual bool Init(lString8 path);
 
-    virtual void getFaceList( lString32Collection & list )
-    {
+    virtual void getFaceList(lString32Collection& list) {
         _cache.getFaceList(list);
     }
     /// returns registered font files
-    virtual void getFontFileNameList( lString32Collection & list );
+    virtual void getFontFileNameList(lString32Collection& list);
 };
 
-#endif  // !defined(__SYMBIAN32__) && defined(_WIN32) && USE_FREETYPE!=1
+#endif // !defined(__SYMBIAN32__) && defined(_WIN32) && USE_FREETYPE!=1
 
-#endif  // __LV_WIN32FONTMAN_H_INCLUDED__
+#endif // __LV_WIN32FONTMAN_H_INCLUDED__

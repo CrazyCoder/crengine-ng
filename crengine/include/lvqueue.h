@@ -1,21 +1,25 @@
 #ifndef LVQUEUE_H_INCLUDED
 #define LVQUEUE_H_INCLUDED
 
-template < typename T >
-class LVQueue {
+template <typename T>
+class LVQueue
+{
     friend struct Iterator;
-    struct Item {
+    struct Item
+    {
         T value;
-        Item * next;
-        Item * prev;
-        Item(T & v) : value(v), next(NULL), prev(NULL) {}
+        Item* next;
+        Item* prev;
+        Item(T& v)
+                : value(v)
+                , next(NULL)
+                , prev(NULL) { }
     };
-    Item * head;
-    Item * tail;
+    Item* head;
+    Item* tail;
     int count;
 
-
-    Item * remove(Item * p) {
+    Item* remove(Item* p) {
         if (!p)
             return NULL;
         if (!p->prev)
@@ -30,13 +34,13 @@ class LVQueue {
         p->prev = NULL;
         count--;
         if (count == 0) {
-        	head = tail = NULL;
+            head = tail = NULL;
         }
 
         return p;
     }
-    void moveToHead(Item * item) {
-        Item * p = remove(item);
+    void moveToHead(Item* item) {
+        Item* p = remove(item);
         if (head) {
             head->prev = p;
             p->next = head;
@@ -47,19 +51,27 @@ class LVQueue {
         count++;
     }
 public:
-    struct Iterator {
+    struct Iterator
+    {
     private:
-        LVQueue * queue;
-        Item * currentItem;
+        LVQueue* queue;
+        Item* currentItem;
     public:
-        Iterator(const Iterator & v) {
+        Iterator(const Iterator& v) {
             queue = v.queue;
             currentItem = v.currentItem;
         }
-        Iterator(LVQueue * _queue) : queue(_queue), currentItem(NULL) {
+        Iterator(LVQueue* _queue)
+                : queue(_queue)
+                , currentItem(NULL) {
         }
-        T get() { return currentItem ? currentItem->value : T(); }
-        void set(T value) { if (currentItem) currentItem->value = value; }
+        T get() {
+            return currentItem ? currentItem->value : T();
+        }
+        void set(T value) {
+            if (currentItem)
+                currentItem->value = value;
+        }
         bool next() {
             if (!currentItem) {
                 // first time
@@ -73,8 +85,8 @@ public:
         T remove() {
             if (!currentItem)
                 return T();
-            Item * next = currentItem->next;
-            Item * p = queue->remove(currentItem);
+            Item* next = currentItem->next;
+            Item* p = queue->remove(currentItem);
             currentItem = next;
             T res = p->value;
             delete p;
@@ -85,22 +97,30 @@ public:
                 queue->moveToHead(currentItem);
         }
     };
-
 public:
-    Iterator iterator() { return Iterator(this); }
-    LVQueue() : head(NULL), tail(NULL), count(0) {}
-    ~LVQueue() { clear(); }
-//    T & operator [] (int index) {
-//        Item * p = head;
-//        for (int i = 0; i < index; i++) {
-//            if (!p)
-//                return
-//        }
-//    }
+    Iterator iterator() {
+        return Iterator(this);
+    }
+    LVQueue()
+            : head(NULL)
+            , tail(NULL)
+            , count(0) { }
+    ~LVQueue() {
+        clear();
+    }
+    //    T & operator [] (int index) {
+    //        Item * p = head;
+    //        for (int i = 0; i < index; i++) {
+    //            if (!p)
+    //                return
+    //        }
+    //    }
 
-    int length() { return count; }
+    int length() {
+        return count;
+    }
     void pushBack(T item) {
-        Item * p = new Item(item);
+        Item* p = new Item(item);
         if (tail) {
             tail->next = p;
             p->prev = tail;
@@ -111,7 +131,7 @@ public:
         count++;
     }
     void pushFront(T item) {
-        Item * p = new Item(item);
+        Item* p = new Item(item);
         if (head) {
             head->prev = p;
             p->next = head;
@@ -124,7 +144,7 @@ public:
     T popFront() {
         if (!head)
             return T();
-        Item * p = remove(head);
+        Item* p = remove(head);
         T res = p->value;
         delete p;
         return res;
@@ -132,14 +152,14 @@ public:
     T popBack() {
         if (!tail)
             return T();
-        Item * p = remove(tail);
+        Item* p = remove(tail);
         T res = p->value;
         delete p;
         return res;
     }
     void clear() {
         while (head) {
-            Item * p = head;
+            Item* p = head;
             head = p->next;
             delete p;
         }
@@ -148,7 +168,5 @@ public:
         count = 0;
     }
 };
-
-
 
 #endif // LVQUEUE_H_INCLUDED

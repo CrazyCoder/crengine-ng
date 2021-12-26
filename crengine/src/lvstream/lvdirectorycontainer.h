@@ -15,35 +15,32 @@
 
 #include "lvnamedcontainer.h"
 
-class LVDirectoryContainerItemInfo : public LVCommonContainerItemInfo
+class LVDirectoryContainerItemInfo: public LVCommonContainerItemInfo
 {
     friend class LVDirectoryContainer;
 };
 
-class LVDirectoryContainer : public LVNamedContainer
+class LVDirectoryContainer: public LVNamedContainer
 {
 protected:
-    LVDirectoryContainer * m_parent;
+    LVDirectoryContainer* m_parent;
 public:
-    virtual LVStreamRef OpenStream( const char32_t * fname, lvopen_mode_t mode );
-    virtual LVContainer * GetParentContainer()
-    {
+    virtual LVStreamRef OpenStream(const char32_t* fname, lvopen_mode_t mode);
+    virtual LVContainer* GetParentContainer() {
         return (LVContainer*)m_parent;
     }
-    virtual const LVContainerItemInfo * GetObjectInfo(int index)
-    {
-        if (index>=0 && index<m_list.length())
+    virtual const LVContainerItemInfo* GetObjectInfo(int index) {
+        if (index >= 0 && index < m_list.length())
             return m_list[index];
         return NULL;
     }
-    virtual int GetObjectCount() const
-    {
+    virtual int GetObjectCount() const {
         return m_list.length();
     }
-    virtual lverror_t GetSize( lvsize_t * pSize );
+    virtual lverror_t GetSize(lvsize_t* pSize);
     LVDirectoryContainer();
     virtual ~LVDirectoryContainer();
-    static LVDirectoryContainer * OpenDirectory( const char32_t * path, const char32_t * mask = U"*.*" );
+    static LVDirectoryContainer* OpenDirectory(const char32_t* path, const char32_t* mask = U"*.*");
 };
 
-#endif  // __LVDIRECTORYCONTAINER_H_INCLUDED__
+#endif // __LVDIRECTORYCONTAINER_H_INCLUDED__

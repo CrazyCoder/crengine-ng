@@ -28,78 +28,66 @@
        lUInt32 calcHash( LVRef<T> & r1 ) should be defined
 */
 
-template <class ref_t> 
-class LVRefCache {
-
-    class LVRefCacheRec {
+template <class ref_t>
+class LVRefCache
+{
+    class LVRefCacheRec
+    {
         ref_t style;
         lUInt32 hash;
-        LVRefCacheRec * next;
-        LVRefCacheRec(ref_t & s, lUInt32 h)
-            : style(s), hash(h), next(NULL) { }
-        friend class LVRefCache< ref_t >;
+        LVRefCacheRec* next;
+        LVRefCacheRec(ref_t& s, lUInt32 h)
+                : style(s)
+                , hash(h)
+                , next(NULL) { }
+        friend class LVRefCache<ref_t>;
     };
-
 private:
     int size;
-    LVRefCacheRec ** table;
-
+    LVRefCacheRec** table;
 public:
     // check whether equal object already exists if cache
     // if found, replace reference with cached value
-    void cacheIt(ref_t & style)
-    {
-        lUInt32 hash = calcHash( style );
+    void cacheIt(ref_t& style) {
+        lUInt32 hash = calcHash(style);
         lUInt32 index = hash & (size - 1);
-        LVRefCacheRec **rr;
+        LVRefCacheRec** rr;
         rr = &table[index];
-        while ( *rr != NULL )
-        {
-            if ( *(*rr)->style.get() == *style.get() )
-            {
+        while (*rr != NULL) {
+            if (*(*rr)->style.get() == *style.get()) {
                 style = (*rr)->style;
                 return;
             }
             rr = &(*rr)->next;
         }
-        *rr = new LVRefCacheRec( style, hash );
+        *rr = new LVRefCacheRec(style, hash);
     }
     // garbage collector: remove unused entries
-    void gc()
-    {
-        for (int index = 0; index < size; index++)
-        {
-            LVRefCacheRec **rr;
+    void gc() {
+        for (int index = 0; index < size; index++) {
+            LVRefCacheRec** rr;
             rr = &table[index];
-            while ( *rr != NULL )
-            {
-                if ( (*rr)->style.getRefCount() == 1 )
-                {
-                    LVRefCacheRec * r = (*rr);
+            while (*rr != NULL) {
+                if ((*rr)->style.getRefCount() == 1) {
+                    LVRefCacheRec* r = (*rr);
                     *rr = r->next;
                     delete r;
-                }
-                else
-                {
+                } else {
                     rr = &(*rr)->next;
                 }
             }
         }
     }
-    LVRefCache( int sz )
-    {
+    LVRefCache(int sz) {
         size = sz;
-        table = new LVRefCacheRec * [ sz ];
-        for( int i=0; i<sz; i++ )
+        table = new LVRefCacheRec*[sz];
+        for (int i = 0; i < sz; i++)
             table[i] = NULL;
     }
-    ~LVRefCache()
-    {
+    ~LVRefCache() {
         LVRefCacheRec *r, *r2;
-        for ( int i=0; i < size; i++ )
-        {
-            for ( r = table[ i ]; r;  )
-            {
+        for (int i = 0; i < size; i++) {
+            for (r = table[i]; r;) {
                 r2 = r;
                 r = r->next;
                 delete r2;
@@ -110,51 +98,53 @@ public:
 };
 
 template <class ref_t>
-class LVIndexedRefCache {
-
+class LVIndexedRefCache
+{
     // hash table item
-    struct LVRefCacheRec {
+    struct LVRefCacheRec
+    {
         int index;
         ref_t style;
         lUInt32 hash;
-        LVRefCacheRec * next;
-        LVRefCacheRec(ref_t & s, lUInt32 h)
-            : style(s), hash(h), next(NULL) { }
+        LVRefCacheRec* next;
+        LVRefCacheRec(ref_t& s, lUInt32 h)
+                : style(s)
+                , hash(h)
+                , next(NULL) { }
     };
 
     // index item
-    struct LVRefCacheIndexRec {
-        LVRefCacheRec * item;
+    struct LVRefCacheIndexRec
+    {
+        LVRefCacheRec* item;
         int refcount; // refcount, or next free index if item==NULL
     };
-
 private:
     int size;
-    LVRefCacheRec ** table;
+    LVRefCacheRec** table;
 
-    LVRefCacheIndexRec * index;
+    LVRefCacheIndexRec* index;
     int indexsize;
     int nextindex;
     int freeindex;
     int numitems;
 
-    int indexItem( LVRefCacheRec * rec )
-    {
+    int indexItem(LVRefCacheRec* rec) {
         int n;
-        if ( freeindex ) {
+        if (freeindex) {
             n = freeindex;
             freeindex = index[freeindex].refcount; // next free index
         } else {
             n = ++nextindex;
         }
-        if ( n>=indexsize ) {
+        if (n >= indexsize) {
             // resize
-            if ( indexsize==0 )
-                indexsize = size/2;
+            if (indexsize == 0)
+                indexsize = size / 2;
             else
                 indexsize *= 2;
-            index = cr_realloc( index, indexsize );
-            for ( int i=nextindex+1; i<indexsize; i++ ) {
+            index = cr_realloc(index, indexsize);
+            for (int i = nextindex + 1; i < indexsize; i++) {
                 index[i].item = NULL;
                 index[i].refcount = 0;
             }
@@ -166,14 +156,13 @@ private:
     }
 
     // remove item from hash table
-    void removeItem( LVRefCacheRec * item )
-    {
+    void removeItem(LVRefCacheRec* item) {
         lUInt32 hash = item->hash;
         lUInt32 tindex = hash & (size - 1);
-        LVRefCacheRec **rr = &table[tindex];
-        for ( ; *rr; rr = &(*rr)->next ) {
-            if ( *rr == item ) {
-                LVRefCacheRec * tmp = *rr;
+        LVRefCacheRec** rr = &table[tindex];
+        for (; *rr; rr = &(*rr)->next) {
+            if (*rr == item) {
+                LVRefCacheRec* tmp = *rr;
                 *rr = (*rr)->next;
                 delete tmp;
                 numitems--;
@@ -182,38 +171,32 @@ private:
         }
         // not found!
     }
-
 public:
-
-    LVArray<ref_t> * getIndex()
-    {
-        LVArray<ref_t> * list = new LVArray<ref_t>(indexsize, ref_t());
-        for ( int i=1; i<indexsize; i++ ) {
-            if ( index[i].item )
+    LVArray<ref_t>* getIndex() {
+        LVArray<ref_t>* list = new LVArray<ref_t>(indexsize, ref_t());
+        for (int i = 1; i < indexsize; i++) {
+            if (index[i].item)
                 list->set(i, index[i].item->style);
         }
         return list;
     }
 
-    int length()
-    {
+    int length() {
         return numitems;
     }
 
-    void release( ref_t r )
-    {
+    void release(ref_t r) {
         int i = find(r);
-        if (  i>0 )
+        if (i > 0)
             release(i);
     }
 
-    void release( int n )
-    {
-        if ( n<1 || n>nextindex )
+    void release(int n) {
+        if (n < 1 || n > nextindex)
             return;
-        if ( index[n].item ) {
-            if ( (--index[n].refcount)<=0 ) {
-                removeItem( index[n].item );
+        if (index[n].item) {
+            if ((--index[n].refcount) <= 0) {
+                removeItem(index[n].item);
                 // next free
                 index[n].refcount = freeindex;
                 index[n].item = NULL;
@@ -223,9 +206,8 @@ public:
     }
 
     // get by index
-    ref_t get( int n )
-    {
-        if ( n>0 && n<=nextindex && index[n].item )
+    ref_t get(int n) {
+        if (n > 0 && n <= nextindex && index[n].item)
             return index[n].item->style;
         return ref_t();
     }
@@ -233,12 +215,11 @@ public:
     // check whether equal object already exists if cache
     // if found, replace reference with cached value
     // returns index of item - use it to release reference
-    bool cache( lUInt16 &indexholder, ref_t & style)
-    {
-        int newindex = cache( style );
+    bool cache(lUInt16& indexholder, ref_t& style) {
+        int newindex = cache(style);
         // printf("newindex: %d  /  provided indexholder: %d\n", newindex, (int)indexholder);
-        if ( indexholder != newindex ) {
-            release( indexholder );
+        if (indexholder != newindex) {
+            release(indexholder);
             indexholder = (lUInt16)newindex;
             return true;
         } else { // indexholder == newindex
@@ -258,7 +239,7 @@ public:
             // asked to cache something: so don't drop it!)
             // printf("released: refcount for %d = %d\n", indexholder, this->index[indexholder].refcount);
             if (this->index[indexholder].refcount > 1)
-                release( indexholder );
+                release(indexholder);
             return false;
             // This returned boolean seems not used anywhere, so it's not
             // clear whether we should return true or false when the
@@ -267,9 +248,8 @@ public:
         }
     }
 
-    bool addIndexRef( lUInt16 n )
-    {
-        if ( n>0 && n<=nextindex && index[n].item ) {
+    bool addIndexRef(lUInt16 n) {
+        if (n > 0 && n <= nextindex && index[n].item) {
             index[n].refcount++;
             return true;
         } else
@@ -279,16 +259,13 @@ public:
     // check whether equal object already exists if cache
     // if found, replace reference with cached value
     // returns index of item - use it to release reference
-    int cache(ref_t & style)
-    {
-        lUInt32 hash = calcHash( style );
+    int cache(ref_t& style) {
+        lUInt32 hash = calcHash(style);
         lUInt32 index = hash & (size - 1);
-        LVRefCacheRec **rr;
+        LVRefCacheRec** rr;
         rr = &table[index];
-        while ( *rr != NULL )
-        {
-            if ( (*rr)->hash==hash && *(*rr)->style.get() == *style.get() )
-            {
+        while (*rr != NULL) {
+            if ((*rr)->hash == hash && *(*rr)->style.get() == *style.get()) {
                 style = (*rr)->style;
                 int n = (*rr)->index;
                 this->index[n].refcount++;
@@ -296,24 +273,21 @@ public:
             }
             rr = &(*rr)->next;
         }
-        *rr = new LVRefCacheRec( style, hash );
+        *rr = new LVRefCacheRec(style, hash);
         numitems++;
-        return indexItem( *rr );
+        return indexItem(*rr);
     }
 
     // check whether equal object already exists if cache
     // if found, replace reference with cached value
     // returns index of item - use it to release reference
-    int find(ref_t & style)
-    {
-        lUInt32 hash = calcHash( style );
+    int find(ref_t& style) {
+        lUInt32 hash = calcHash(style);
         lUInt32 index = hash & (size - 1);
-        LVRefCacheRec **rr;
+        LVRefCacheRec** rr;
         rr = &table[index];
-        while ( *rr != NULL )
-        {
-            if ( (*rr)->hash==hash && *(*rr)->style.get() == *style.get() )
-            {
+        while (*rr != NULL) {
+            if ((*rr)->hash == hash && *(*rr)->style.get() == *style.get()) {
                 int n = (*rr)->index;
                 return n;
             }
@@ -323,51 +297,48 @@ public:
     }
 
     /// from index array
-    LVIndexedRefCache( LVArray<ref_t> &list )
-    : index(NULL)
-    , indexsize(0)
-    , nextindex(0)
-    , freeindex(0)
-    , numitems(0)
-    {
+    LVIndexedRefCache(LVArray<ref_t>& list)
+            : index(NULL)
+            , indexsize(0)
+            , nextindex(0)
+            , freeindex(0)
+            , numitems(0) {
         setIndex(list);
     }
 
-    int nearestPowerOf2( int n )
-    {
+    int nearestPowerOf2(int n) {
         int res;
-        for ( res = 1; res<n; res<<=1 )
+        for (res = 1; res < n; res <<= 1)
             ;
         return res;
     }
 
     /// init from index array
-    void setIndex( LVArray<ref_t> &list )
-    {
+    void setIndex(LVArray<ref_t>& list) {
         clear();
-        size = nearestPowerOf2(list.length()>0 ? list.length() : 32);
-        if ( table )
+        size = nearestPowerOf2(list.length() > 0 ? list.length() : 32);
+        if (table)
             delete[] table;
-        table = new LVRefCacheRec * [ size ];
-        for( int i=0; i<size; i++ )
+        table = new LVRefCacheRec*[size];
+        for (int i = 0; i < size; i++)
             table[i] = NULL;
         indexsize = list.length();
-        nextindex = indexsize > 0 ? indexsize-1 : 0;
-        if ( indexsize ) {
-            index = cr_realloc( index, indexsize );
+        nextindex = indexsize > 0 ? indexsize - 1 : 0;
+        if (indexsize) {
+            index = cr_realloc(index, indexsize);
             index[0].item = NULL;
-            index[0].refcount=0;
-            for ( int i=1; i<indexsize; i++ ) {
-                if ( list[i].isNull() ) {
+            index[0].refcount = 0;
+            for (int i = 1; i < indexsize; i++) {
+                if (list[i].isNull()) {
                     // add free node
                     index[i].item = NULL;
                     index[i].refcount = freeindex;
                     freeindex = i;
                 } else {
                     // add item
-                    lUInt32 hash = calcHash( list[i] );
+                    lUInt32 hash = calcHash(list[i]);
                     lUInt32 hindex = hash & (size - 1);
-                    LVRefCacheRec * rec = new LVRefCacheRec(list[i], hash);
+                    LVRefCacheRec* rec = new LVRefCacheRec(list[i], hash);
                     rec->index = i;
                     rec->next = table[hindex];
                     table[hindex] = rec;
@@ -379,27 +350,23 @@ public:
         }
     }
 
-    LVIndexedRefCache( int sz )
-    : index(NULL)
-    , indexsize(0)
-    , nextindex(0)
-    , freeindex(0)
-    , numitems(0)
-    {
+    LVIndexedRefCache(int sz)
+            : index(NULL)
+            , indexsize(0)
+            , nextindex(0)
+            , freeindex(0)
+            , numitems(0) {
         size = sz;
-        table = new LVRefCacheRec * [ sz ];
-        for( int i=0; i<sz; i++ )
+        table = new LVRefCacheRec*[sz];
+        for (int i = 0; i < sz; i++)
             table[i] = NULL;
     }
-    void clear( int sz = 0 )
-    {
-        if ( sz==-1 )
+    void clear(int sz = 0) {
+        if (sz == -1)
             sz = size;
         LVRefCacheRec *r, *r2;
-        for ( int i=0; i < size; i++ )
-        {
-            for ( r = table[ i ]; r;  )
-            {
+        for (int i = 0; i < size; i++) {
+            for (r = table[i]; r;) {
                 r2 = r;
                 r = r->next;
                 delete r2;
@@ -407,111 +374,106 @@ public:
             table[i] = NULL;
         }
         if (index) {
-            free( index );
+            free(index);
             index = NULL;
             indexsize = 0;
             nextindex = 0;
             freeindex = 0;
         }
         numitems = 0;
-        if ( sz ) {
+        if (sz) {
             size = sz;
-            if ( table )
+            if (table)
                 delete[] table;
-            table = new LVRefCacheRec * [ sz ];
-            for( int i=0; i<sz; i++ )
+            table = new LVRefCacheRec*[sz];
+            for (int i = 0; i < sz; i++)
                 table[i] = NULL;
         }
     }
-    ~LVIndexedRefCache()
-    {
+    ~LVIndexedRefCache() {
         clear();
         delete[] table;
     }
 };
 
-template <typename keyT, class dataT> class LVCacheMap
+template <typename keyT, class dataT>
+class LVCacheMap
 {
 private:
-    class Pair {
-    public: 
+    class Pair
+    {
+    public:
         keyT key;
         dataT data;
         int lastAccess;
     };
-    Pair * buf;
+    Pair* buf;
     int size;
     int orig_size;
     int numitems;
     int lastAccess;
-    void checkOverflow( int oldestAccessTime )
-    {
+    void checkOverflow(int oldestAccessTime) {
         int i;
-        if ( oldestAccessTime==-1 ) {
-            for ( i=0; i<size; i++ )
-                if ( oldestAccessTime==-1 || buf[i].lastAccess>oldestAccessTime )
+        if (oldestAccessTime == -1) {
+            for (i = 0; i < size; i++)
+                if (oldestAccessTime == -1 || buf[i].lastAccess > oldestAccessTime)
                     oldestAccessTime = buf[i].lastAccess;
         }
-        if ( oldestAccessTime>1000000000 ) {
+        if (oldestAccessTime > 1000000000) {
             int maxLastAccess = 0;
-            for ( i=0; i<size; i++ ) {
+            for (i = 0; i < size; i++) {
                 buf[i].lastAccess -= 1000000000;
-                if ( maxLastAccess==0 || buf[i].lastAccess>maxLastAccess )
+                if (maxLastAccess == 0 || buf[i].lastAccess > maxLastAccess)
                     maxLastAccess = buf[i].lastAccess;
             }
-            lastAccess = maxLastAccess+1;
+            lastAccess = maxLastAccess + 1;
         }
     }
 public:
-    int length()
-    {
+    int length() {
         return numitems;
     }
-    LVCacheMap( int maxSize )
-    : size(maxSize), orig_size(maxSize), numitems(0), lastAccess(1)
-    {
-        buf = new Pair[ size ];
+    LVCacheMap(int maxSize)
+            : size(maxSize)
+            , orig_size(maxSize)
+            , numitems(0)
+            , lastAccess(1) {
+        buf = new Pair[size];
         clear();
     }
-    void reduceSize(int newSize)
-    {
+    void reduceSize(int newSize) {
         if (newSize < orig_size) {
             clear();
             size = newSize;
         }
     }
-    void restoreSize()
-    {
+    void restoreSize() {
         size = orig_size;
         clear();
     }
-    void clear()
-    {
-        for ( int i=0; i<size; i++ )
-        {
+    void clear() {
+        for (int i = 0; i < size; i++) {
             buf[i].key = keyT();
             buf[i].data = dataT();
             buf[i].lastAccess = 0;
         }
         numitems = 0;
     }
-    bool get( keyT key, dataT & data )
-    {
-        for ( int i=0; i<size; i++ ) {
-            if ( buf[i].key == key ) {
+    bool get(keyT key, dataT& data) {
+        for (int i = 0; i < size; i++) {
+            if (buf[i].key == key) {
                 data = buf[i].data;
                 buf[i].lastAccess = ++lastAccess;
-                if ( lastAccess>1000000000 )
+                if (lastAccess > 1000000000)
                     checkOverflow(-1);
                 return true;
             }
         }
         return false;
     }
-    bool remove( keyT key )
-    {
-        for ( int i=0; i<size; i++ ) {
-            if ( buf[i].key == key ) {
+    bool remove(keyT key) {
+        for (int i = 0; i < size; i++) {
+            if (buf[i].key == key) {
                 buf[i].key = keyT();
                 buf[i].data = dataT();
                 buf[i].lastAccess = 0;
@@ -521,32 +483,30 @@ public:
         }
         return false;
     }
-    void set( keyT key, dataT data )
-    {
+    void set(keyT key, dataT data) {
         int oldestAccessTime = -1;
         int oldestIndex = 0;
-        for ( int i=0; i<size; i++ ) {
-            if ( buf[i].key == key ) {
+        for (int i = 0; i < size; i++) {
+            if (buf[i].key == key) {
                 buf[i].data = data;
                 buf[i].lastAccess = ++lastAccess;
                 return;
             }
             int at = buf[i].lastAccess;
-            if ( at < oldestAccessTime || oldestAccessTime==-1 ) {
+            if (at < oldestAccessTime || oldestAccessTime == -1) {
                 oldestAccessTime = at;
                 oldestIndex = i;
             }
         }
         checkOverflow(oldestAccessTime);
-        if ( buf[oldestIndex].key==keyT() )
+        if (buf[oldestIndex].key == keyT())
             numitems++;
         buf[oldestIndex].key = key;
         buf[oldestIndex].data = data;
         buf[oldestIndex].lastAccess = ++lastAccess;
         return;
     }
-    ~LVCacheMap()
-    {
+    ~LVCacheMap() {
         delete[] buf;
     }
 };

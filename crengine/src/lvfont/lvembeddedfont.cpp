@@ -15,19 +15,19 @@
 #include <lvembeddedfont.h>
 #include <lvserialbuf.h>
 
-static const char *EMBEDDED_FONT_LIST_MAGIC = "FNTL";
-static const char *EMBEDDED_FONT_DEF_MAGIC = "FNTD";
+static const char* EMBEDDED_FONT_LIST_MAGIC = "FNTL";
+static const char* EMBEDDED_FONT_DEF_MAGIC = "FNTD";
 
 ////////////////////////////////////////////////////////////////////
 // LVEmbeddedFontDef
 ////////////////////////////////////////////////////////////////////
-bool LVEmbeddedFontDef::serialize(SerialBuf &buf) {
+bool LVEmbeddedFontDef::serialize(SerialBuf& buf) {
     buf.putMagic(EMBEDDED_FONT_DEF_MAGIC);
     buf << _url << _face << _bold << _italic;
     return !buf.error();
 }
 
-bool LVEmbeddedFontDef::deserialize(SerialBuf &buf) {
+bool LVEmbeddedFontDef::deserialize(SerialBuf& buf) {
     if (!buf.checkMagic(EMBEDDED_FONT_DEF_MAGIC))
         return false;
     buf >> _url >> _face >> _bold >> _italic;
@@ -37,7 +37,7 @@ bool LVEmbeddedFontDef::deserialize(SerialBuf &buf) {
 ////////////////////////////////////////////////////////////////////
 // LVEmbeddedFontList
 ////////////////////////////////////////////////////////////////////
-LVEmbeddedFontDef *LVEmbeddedFontList::findByUrl(lString32 url) {
+LVEmbeddedFontDef* LVEmbeddedFontList::findByUrl(lString32 url) {
     for (int i = 0; i < length(); i++) {
         if (get(i)->getUrl() == url)
             return get(i);
@@ -45,17 +45,17 @@ LVEmbeddedFontDef *LVEmbeddedFontList::findByUrl(lString32 url) {
     return NULL;
 }
 
-bool LVEmbeddedFontList::addAll(LVEmbeddedFontList &list) {
+bool LVEmbeddedFontList::addAll(LVEmbeddedFontList& list) {
     bool changed = false;
     for (int i = 0; i < list.length(); i++) {
-        LVEmbeddedFontDef *def = list.get(i);
+        LVEmbeddedFontDef* def = list.get(i);
         changed = add(def->getUrl(), def->getFace(), def->getBold(), def->getItalic()) || changed;
     }
     return changed;
 }
 
 bool LVEmbeddedFontList::add(lString32 url, lString8 face, bool bold, bool italic) {
-    LVEmbeddedFontDef *def = findByUrl(url);
+    LVEmbeddedFontDef* def = findByUrl(url);
     if (def) {
         bool changed = false;
         if (def->getFace() != face) {
@@ -77,7 +77,7 @@ bool LVEmbeddedFontList::add(lString32 url, lString8 face, bool bold, bool itali
     return false;
 }
 
-bool LVEmbeddedFontList::serialize(SerialBuf &buf) {
+bool LVEmbeddedFontList::serialize(SerialBuf& buf) {
     buf.putMagic(EMBEDDED_FONT_LIST_MAGIC);
     lUInt32 count = length();
     buf << count;
@@ -89,7 +89,7 @@ bool LVEmbeddedFontList::serialize(SerialBuf &buf) {
     return !buf.error();
 }
 
-bool LVEmbeddedFontList::deserialize(SerialBuf &buf) {
+bool LVEmbeddedFontList::deserialize(SerialBuf& buf) {
     if (!buf.checkMagic(EMBEDDED_FONT_LIST_MAGIC))
         return false;
     lUInt32 count = 0;
@@ -97,7 +97,7 @@ bool LVEmbeddedFontList::deserialize(SerialBuf &buf) {
     if (buf.error())
         return false;
     for (lUInt32 i = 0; i < count; i++) {
-        LVEmbeddedFontDef *item = new LVEmbeddedFontDef();
+        LVEmbeddedFontDef* item = new LVEmbeddedFontDef();
         if (!item->deserialize(buf)) {
             delete item;
             return false;

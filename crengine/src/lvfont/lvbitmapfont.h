@@ -26,21 +26,23 @@
 #if (USE_FREETYPE != 1) && (USE_BITMAP_FONTS == 1)
 
 /* C++ wrapper class */
-class LBitmapFont : public LVBaseFont {
+class LBitmapFont: public LVBaseFont
+{
 private:
     lvfont_handle m_font;
 public:
-    LBitmapFont() : m_font(NULL) {}
+    LBitmapFont()
+            : m_font(NULL) { }
 
-    virtual bool getGlyphInfo(lUInt32 code, LVFont::glyph_info_t *glyph, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
+    virtual bool getGlyphInfo(lUInt32 code, LVFont::glyph_info_t* glyph, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
 
-    virtual bool getGlyphExtraMetric( glyph_extra_metric_t metric, lUInt32 code, int & value, bool scaled_to_px=true, lChar32 def_char=0, lUInt32 fallbackPassMask=0 ) {
+    virtual bool getGlyphExtraMetric(glyph_extra_metric_t metric, lUInt32 code, int& value, bool scaled_to_px = true, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0) {
         return false;
     }
 
     virtual lUInt16
-    measureText(const lChar32 *text, int len, lUInt16 *widths, lUInt8 *flags, int max_width,
-                lChar32 def_char, TextLangCfg * lang_cfg = NULL, int letter_spacing = 0, bool allow_hyphenation = true, lUInt32 hints=0, lUInt32 fallbackPassMask = 0);
+    measureText(const lChar32* text, int len, lUInt16* widths, lUInt8* flags, int max_width,
+                lChar32 def_char, TextLangCfg* lang_cfg = NULL, int letter_spacing = 0, bool allow_hyphenation = true, lUInt32 hints = 0, lUInt32 fallbackPassMask = 0);
 
     /** \brief measure text
         \param text is text string pointer
@@ -48,8 +50,7 @@ public:
         \return width of specified string 
     */
     virtual lUInt32 getTextWidth(
-            const lChar32 *text, int len, TextLangCfg * lang_cfg = NULL
-    );
+            const lChar32* text, int len, TextLangCfg* lang_cfg = NULL);
 
     /// returns font baseline offset
     virtual int getBaseline();
@@ -68,7 +69,7 @@ public:
 
     //virtual bool getGlyphImage(lUInt32 code, lUInt8 *buf, lChar32 def_char = 0);
 
-    virtual LVFontGlyphCacheItem *getGlyph(lUInt32 ch, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
+    virtual LVFontGlyphCacheItem* getGlyph(lUInt32 ch, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
 
     /// returns char width
     virtual int getCharWidth(lChar32 ch, lChar32 def_char = 0) {
@@ -78,33 +79,48 @@ public:
         return 0;
     }
 
-    virtual int getLeftSideBearing( lChar32 ch, bool negative_only=false, bool italic_only=false ) { return 0; }
+    virtual int getLeftSideBearing(lChar32 ch, bool negative_only = false, bool italic_only = false) {
+        return 0;
+    }
 
-    virtual int getRightSideBearing( lChar32 ch, bool negative_only=false, bool italic_only=false ) { return 0; }
+    virtual int getRightSideBearing(lChar32 ch, bool negative_only = false, bool italic_only = false) {
+        return 0;
+    }
 
-    virtual int getExtraMetric(font_extra_metric_t metric, bool scaled_to_px=true) { return 0; }
+    virtual int getExtraMetric(font_extra_metric_t metric, bool scaled_to_px = true) {
+        return 0;
+    }
 
-    virtual bool hasOTMathSupport() const { return false; }
+    virtual bool hasOTMathSupport() const {
+        return false;
+    }
 
-    virtual lvfont_handle GetHandle() { return m_font; }
+    virtual lvfont_handle GetHandle() {
+        return m_font;
+    }
 
-    int LoadFromFile(const char *fname);
+    int LoadFromFile(const char* fname);
 
     // LVFont functions overrides
     virtual void Clear() {
-        if (m_font) lvfontClose(m_font);
+        if (m_font)
+            lvfontClose(m_font);
         m_font = NULL;
     }
 
-    virtual bool IsNull() const { return m_font == NULL; }
+    virtual bool IsNull() const {
+        return m_font == NULL;
+    }
 
-    virtual bool operator!() const { return IsNull(); }
+    virtual bool operator!() const {
+        return IsNull();
+    }
 
     virtual ~LBitmapFont() {
         Clear(); // NOLINT: Call to virtual function during destruction
     }
 };
 
-#endif  // (USE_FREETYPE!=1) && (USE_BITMAP_FONTS==1)
+#endif // (USE_FREETYPE!=1) && (USE_BITMAP_FONTS==1)
 
 #endif // __LV_BITMAPFONT_H_INCLUDED__

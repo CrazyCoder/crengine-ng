@@ -19,10 +19,11 @@
 
 class LVXMLParserCallback;
 
-class PMLTextImport {
-    LVXMLParserCallback * callback;
+class PMLTextImport
+{
+    LVXMLParserCallback* callback;
     bool insideInvisibleText;
-    const lChar32 * cp1252;
+    const lChar32* cp1252;
     int align; // 0, 'c' or 'r'
     lString32 line;
     int chapterIndent;
@@ -35,24 +36,24 @@ class PMLTextImport {
     bool inLink;
     lString32 styleTags;
 public:
-    PMLTextImport( LVXMLParserCallback * cb );
-    void addChar( lChar32 ch );
+    PMLTextImport(LVXMLParserCallback* cb);
+    void addChar(lChar32 ch);
 
-    const lChar32 * getStyleTagName( lChar32 ch );
+    const lChar32* getStyleTagName(lChar32 ch);
 
     int styleTagPos(lChar32 ch);
 
-    void closeStyleTag( lChar32 ch, bool updateStack );
+    void closeStyleTag(lChar32 ch, bool updateStack);
 
-    void openStyleTag( lChar32 ch, bool updateStack );
+    void openStyleTag(lChar32 ch, bool updateStack);
 
     void openStyleTags();
 
     void closeStyleTags();
 
-    void onStyleTag(lChar32 ch );
+    void onStyleTag(lChar32 ch);
 
-    void onImage( lString32 url );
+    void onImage(lString32 url);
 
     void startParagraph();
 
@@ -67,23 +68,23 @@ public:
 
     void endOfParagraph();
 
-    void addSeparator( int /*width*/ );
+    void addSeparator(int /*width*/);
 
-    void startOfChapterTitle( bool startNewPage, int level );
+    void startOfChapterTitle(bool startNewPage, int level);
 
-    void addChapterTitle( int /*level*/, lString32 title );
+    void addChapterTitle(int /*level*/, lString32 title);
 
     void endOfChapterTitle();
 
-    void addAnchor( lString32 ref );
+    void addAnchor(lString32 ref);
 
-    void startLink( lString32 ref );
+    void startLink(lString32 ref);
 
     void endLink();
 
-    lString32 readParam( const lChar32 * str, int & j );
+    lString32 readParam(const lChar32* str, int& j);
 
-    void processLine( lString32 text );
+    void processLine(lString32 text);
 };
 
-#endif  // __PMLTEXTIMPORT_H_INCLUDED__
+#endif // __PMLTEXTIMPORT_H_INCLUDED__

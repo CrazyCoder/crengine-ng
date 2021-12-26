@@ -16,7 +16,7 @@
 
 #include <crsetup.h>
 
-#if (USE_GIF==1)
+#if (USE_GIF == 1)
 
 #include <lvtypes.h>
 
@@ -26,27 +26,27 @@ class LVImageDecoderCallback;
 class LVGifFrame
 {
 protected:
-    int        m_cx;
-    int        m_cy;
+    int m_cx;
+    int m_cy;
     int m_left;
     int m_top;
-    unsigned char m_bpp;     // bits per pixel
-    unsigned char m_flg_ltc; // GTC (gobal table of colors) flag
+    unsigned char m_bpp;            // bits per pixel
+    unsigned char m_flg_ltc;        // GTC (gobal table of colors) flag
     unsigned char m_flg_interlaced; // interlace flag
 
-    LVGifImageSource * m_pImage;
-    lUInt32 *    m_local_color_table;
+    LVGifImageSource* m_pImage;
+    lUInt32* m_local_color_table;
 
-    unsigned char * m_buffer;
+    unsigned char* m_buffer;
 public:
-    int DecodeFromBuffer( unsigned char * buf, int buf_size, int &bytes_read );
-    LVGifFrame(LVGifImageSource * pImage);
+    int DecodeFromBuffer(unsigned char* buf, int buf_size, int& bytes_read);
+    LVGifFrame(LVGifImageSource* pImage);
     ~LVGifFrame();
     void Clear();
-    lUInt32 * GetColorTable();
-    void Draw( LVImageDecoderCallback * callback );
+    lUInt32* GetColorTable();
+    void Draw(LVImageDecoderCallback* callback);
 };
 
-#endif  // (USE_GIF==1)
+#endif // (USE_GIF==1)
 
-#endif  // __LVGIFFRAME_H_INCLUDED__
+#endif // __LVGIFFRAME_H_INCLUDED__

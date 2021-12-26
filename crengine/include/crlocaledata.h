@@ -15,7 +15,7 @@
 
 #include <crsetup.h>
 
-#if USE_LOCALE_DATA==1
+#if USE_LOCALE_DATA == 1
 
 #include <lvstring.h>
 
@@ -73,24 +73,24 @@ protected:
 private:
     bool m_isValid;
 
-    lString8 m_langtag_src;			// full langtag (source)
-    lString8 m_lang_code;			// ISO 639-3 lang id/code
-    lString8 m_lang_part2b;			// Equivalent 639-2 identifier of the bibliographic application code set, if there is one
-    lString8 m_lang_part2t;			// Equivalent 639-2 identifier of the terminology application code set, if there is one
-    lString8 m_lang_part1;			// Equivalent 639-1 identifier, if there is one
-    lString8 m_lang_name;			// Reference language name
+    lString8 m_langtag_src; // full langtag (source)
+    lString8 m_lang_code;   // ISO 639-3 lang id/code
+    lString8 m_lang_part2b; // Equivalent 639-2 identifier of the bibliographic application code set, if there is one
+    lString8 m_lang_part2t; // Equivalent 639-2 identifier of the terminology application code set, if there is one
+    lString8 m_lang_part1;  // Equivalent 639-1 identifier, if there is one
+    lString8 m_lang_name;   // Reference language name
 
-    lString8 m_script_code;			// script code
-    lString8 m_script_name;			// script name (english)
-    lString8 m_script_alias;			// script alias
-    unsigned int m_script_num;		// script: numeric
+    lString8 m_script_code;    // script code
+    lString8 m_script_name;    // script name (english)
+    lString8 m_script_alias;   // script alias
+    unsigned int m_script_num; // script: numeric
 
-    lString8 m_region_name;			// region name (english)
-    lString8 m_region_alpha2;		// region: alpha2 code
-    lString8 m_region_alpha3;		// region: alpha2 code
-    unsigned int m_region_num;		// script: numeric
+    lString8 m_region_name;    // region name (english)
+    lString8 m_region_alpha2;  // region: alpha2 code
+    lString8 m_region_alpha3;  // region: alpha2 code
+    unsigned int m_region_num; // script: numeric
 };
 
-#endif  // USE_LOCALE_DATA==1
+#endif // USE_LOCALE_DATA==1
 
-#endif  // CRLOCALEDATA_H
+#endif // CRLOCALEDATA_H

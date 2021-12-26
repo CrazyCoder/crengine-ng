@@ -16,22 +16,22 @@
 
 #include <crsetup.h>
 
-#if (USE_NANOSVG==1)
+#if (USE_NANOSVG == 1)
 
 #include "lvnodeimagesource.h"
 
-class LVSvgImageSource : public LVNodeImageSource
+class LVSvgImageSource: public LVNodeImageSource
 {
 protected:
 public:
-    LVSvgImageSource( ldomNode * node, LVStreamRef stream );
+    LVSvgImageSource(ldomNode* node, LVStreamRef stream);
     virtual ~LVSvgImageSource();
-    virtual void   Compact();
-    virtual bool   Decode( LVImageDecoderCallback * callback );
-    int DecodeFromBuffer(unsigned char *buf, int buf_size, LVImageDecoderCallback * callback);
-    static bool CheckPattern( const lUInt8 * buf, int len );
+    virtual void Compact();
+    virtual bool Decode(LVImageDecoderCallback* callback);
+    int DecodeFromBuffer(unsigned char* buf, int buf_size, LVImageDecoderCallback* callback);
+    static bool CheckPattern(const lUInt8* buf, int len);
 };
 
-#endif  // (USE_NANOSVG==1)
+#endif // (USE_NANOSVG==1)
 
-#endif  // __LVSVGIMAGESOURCE_H_INCLUDED__
+#endif // __LVSVGIMAGESOURCE_H_INCLUDED__

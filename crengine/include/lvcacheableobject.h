@@ -15,20 +15,24 @@
 
 #include <lvtypes.h>
 
-class CacheObjectListener {
+class CacheObjectListener
+{
 public:
-    virtual void onCachedObjectDeleted(lUInt32 objectId) { CR_UNUSED(objectId); }
+    virtual void onCachedObjectDeleted(lUInt32 objectId) {
+        CR_UNUSED(objectId);
+    }
 
-    virtual ~CacheObjectListener() {}
+    virtual ~CacheObjectListener() { }
 };
 
 /// object deletion listener callback function type
-typedef void(*onObjectDestroyedCallback_t)(CacheObjectListener *pcache, lUInt32 pobject);
+typedef void (*onObjectDestroyedCallback_t)(CacheObjectListener* pcache, lUInt32 pobject);
 
 /// to handle object deletion listener
-class CacheableObject {
+class CacheableObject
+{
     onObjectDestroyedCallback_t _callback;
-    CacheObjectListener *_cache;
+    CacheObjectListener* _cache;
     lUInt32 _objectId;
 public:
     CacheableObject();
@@ -38,14 +42,16 @@ public:
             _callback(_cache, _objectId);
     }
 
-    virtual lUInt32 getObjectId() { return _objectId; }
+    virtual lUInt32 getObjectId() {
+        return _objectId;
+    }
 
     /// set callback to call on object destroy
     void setOnObjectDestroyedCallback(onObjectDestroyedCallback_t callback,
-                                      CacheObjectListener *pcache) {
+                                      CacheObjectListener* pcache) {
         _callback = callback;
         _cache = pcache;
     }
 };
 
-#endif  // __LVCACHEABLEOBJECT_H_INCLUDED__
+#endif // __LVCACHEABLEOBJECT_H_INCLUDED__

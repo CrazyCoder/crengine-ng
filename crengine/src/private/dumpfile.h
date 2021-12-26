@@ -18,22 +18,24 @@
 class DumpFile
 {
 public:
-    FILE * f;
-    DumpFile( const char * fname )
-     : f(NULL)
-    {
-        if ( fname )
-            f = fopen( fname, "at" );
-        if ( !f )
+    FILE* f;
+    DumpFile(const char* fname)
+            : f(NULL) {
+        if (fname)
+            f = fopen(fname, "at");
+        if (!f)
             f = stdout;
         fprintf(f, "DumpFile log started\n");
     }
-    ~DumpFile()
-    {
-        if ( f!=stdout )
+    ~DumpFile() {
+        if (f != stdout)
             fclose(f);
     }
-    operator FILE * () { if (f) fflush(f); return f?f:stdout; }
+    operator FILE*() {
+        if (f)
+            fflush(f);
+        return f ? f : stdout;
+    }
 };
 #endif
 

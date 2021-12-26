@@ -22,66 +22,61 @@
 
 #include "lvnamedstream.h"
 
-class LVStreamFragment : public LVNamedStream
+class LVStreamFragment: public LVNamedStream
 {
 private:
     LVStreamRef m_stream;
-    lvsize_t    m_start;
-    lvsize_t    m_size;
-    lvpos_t     m_pos;
+    lvsize_t m_start;
+    lvsize_t m_size;
+    lvpos_t m_pos;
 public:
-    LVStreamFragment( LVStreamRef stream, lvsize_t start, lvsize_t size )
-        : m_stream(stream), m_start(start), m_size(size), m_pos(0)
-    {
+    LVStreamFragment(LVStreamRef stream, lvsize_t start, lvsize_t size)
+            : m_stream(stream)
+            , m_start(start)
+            , m_size(size)
+            , m_pos(0) {
     }
-    virtual bool Eof()
-    {
+    virtual bool Eof() {
         return m_pos >= m_size;
     }
-    virtual lvsize_t  GetSize()
-    {
+    virtual lvsize_t GetSize() {
         return m_size;
     }
 
-    virtual lverror_t Seek(lvoffset_t pos, lvseek_origin_t origin, lvpos_t* newPos)
-    {
-        if ( origin==LVSEEK_SET )
+    virtual lverror_t Seek(lvoffset_t pos, lvseek_origin_t origin, lvpos_t* newPos) {
+        if (origin == LVSEEK_SET)
             pos += m_start;
-        else if ( origin==LVSEEK_END ) {
+        else if (origin == LVSEEK_END) {
             origin = LVSEEK_SET;
             pos = m_start + m_size;
         }
-        lverror_t res = m_stream->Seek( pos, origin, &m_pos );
+        lverror_t res = m_stream->Seek(pos, origin, &m_pos);
         if (res == LVERR_OK)
             m_pos -= m_start;
-        if (newPos)
-        {
-            *newPos =  m_pos;
+        if (newPos) {
+            *newPos = m_pos;
         }
         return res;
     }
-    virtual lverror_t Write(const void*, lvsize_t, lvsize_t*)
-    {
+    virtual lverror_t Write(const void*, lvsize_t, lvsize_t*) {
         return LVERR_NOTIMPL;
     }
-    virtual lverror_t Read(void* buf, lvsize_t size, lvsize_t* pBytesRead)
-    {
+    virtual lverror_t Read(void* buf, lvsize_t size, lvsize_t* pBytesRead) {
         lvsize_t bytesRead = 0;
         lvpos_t p;
-        lverror_t res = m_stream->Seek( m_pos+m_start, LVSEEK_SET, &p );
-        if ( res!=LVERR_OK )
+        lverror_t res = m_stream->Seek(m_pos + m_start, LVSEEK_SET, &p);
+        if (res != LVERR_OK)
             return res;
-        res = m_stream->Read( buf, size, &bytesRead );
+        res = m_stream->Read(buf, size, &bytesRead);
         if (res == LVERR_OK)
             m_pos += bytesRead;
         if (pBytesRead)
             *pBytesRead = bytesRead;
         return res;
     }
-    virtual lverror_t SetSize(lvsize_t)
-    {
+    virtual lverror_t SetSize(lvsize_t) {
         return LVERR_NOTIMPL;
     }
 };
 
-#endif  // __LVSTREAMFRAGMENT_H_INCLUDED__
+#endif // __LVSTREAMFRAGMENT_H_INCLUDED__

@@ -25,11 +25,8 @@ extern "C" {
 }
 #include "w32utils.h"
 
-
-void DrawBuf2DC(HDC dc, int x, int y, LVDrawBuf * buf, COLORREF * palette, int scale )
-{
-
-    COLORREF * drawpixels;
+void DrawBuf2DC(HDC dc, int x, int y, LVDrawBuf* buf, COLORREF* palette, int scale) {
+    COLORREF* drawpixels;
     HDC drawdc;
     HBITMAP drawbmp;
 
@@ -48,53 +45,47 @@ void DrawBuf2DC(HDC dc, int x, int y, LVDrawBuf * buf, COLORREF * palette, int s
     bmi.bmiHeader.biClrUsed = 0;
     bmi.bmiHeader.biClrImportant = 0;
 
-    drawbmp = CreateDIBSection( NULL, &bmi, DIB_RGB_COLORS, (void**)(&drawpixels), NULL, 0 );
+    drawbmp = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)(&drawpixels), NULL, 0);
     drawdc = CreateCompatibleDC(NULL);
     SelectObject(drawdc, drawbmp);
 
-
     int pixelsPerByte = (8 / buf->GetBitsPerPixel());
-    int mask = (1<<buf->GetBitsPerPixel()) - 1;
-    for (int yy=0; yy<buf->GetHeight(); yy++)
-    {
-       unsigned char * src = buf->GetScanLine(yy);
-       for (int yyi = 0; yyi<scale; yyi++)
-       {
-          for (int xx=0; xx<bytesPerRow; xx++)
-          {
-             unsigned int b = src[xx];
-             int x0 = 0;
-             for (int shift = 8-buf->GetBitsPerPixel(); x0<pixelsPerByte; shift -= buf->GetBitsPerPixel(), x0++ )
-             {
-                 int dindex = (xx*pixelsPerByte + x0)*scale;
-                 if ( dindex>=buf_width )
-                      break;
-                 COLORREF * px = drawpixels + dindex;
-                 for (int xxi=0; xxi<scale; xxi++)
-                 {
-                     px[xxi] = palette[(b >> shift)&mask];
-                 }
-             }
-          }
-          BitBlt( dc, x, y+yy*scale+yyi, buf_width*scale, 1, drawdc, 0, 0, SRCCOPY );
-       }
+    int mask = (1 << buf->GetBitsPerPixel()) - 1;
+    for (int yy = 0; yy < buf->GetHeight(); yy++) {
+        unsigned char* src = buf->GetScanLine(yy);
+        for (int yyi = 0; yyi < scale; yyi++) {
+            for (int xx = 0; xx < bytesPerRow; xx++) {
+                unsigned int b = src[xx];
+                int x0 = 0;
+                for (int shift = 8 - buf->GetBitsPerPixel(); x0 < pixelsPerByte; shift -= buf->GetBitsPerPixel(), x0++) {
+                    int dindex = (xx * pixelsPerByte + x0) * scale;
+                    if (dindex >= buf_width)
+                        break;
+                    COLORREF* px = drawpixels + dindex;
+                    for (int xxi = 0; xxi < scale; xxi++) {
+                        px[xxi] = palette[(b >> shift) & mask];
+                    }
+                }
+            }
+            BitBlt(dc, x, y + yy * scale + yyi, buf_width * scale, 1, drawdc, 0, 0, SRCCOPY);
+        }
     }
-    DeleteObject( drawbmp );
-    DeleteObject( drawdc );
+    DeleteObject(drawbmp);
+    DeleteObject(drawdc);
 }
 
-void SaveBitmapToFile( const char * fname, LVGrayDrawBuf * bmp )
-{
+void SaveBitmapToFile(const char* fname, LVGrayDrawBuf* bmp) {
     if (!bmp)
         return;
     LVStreamRef stream = LVOpenFileStream(fname, LVOM_WRITE);
     if (!stream)
         return;
-    int rowsize = ((bmp->GetWidth()+1)/2);
+    int rowsize = ((bmp->GetWidth() + 1) / 2);
     int img_size = rowsize * bmp->GetHeight();
     int padding = rowsize - rowsize;
     BITMAPFILEHEADER fh = { 0 };
-    struct {
+    struct
+    {
         BITMAPINFOHEADER hdr;
         RGBQUAD colors[16];
     } bmi = { 0 };
@@ -113,24 +104,21 @@ void SaveBitmapToFile( const char * fname, LVGrayDrawBuf * bmp )
     bmi.hdr.biClrUsed = 16;
     bmi.hdr.biClrImportant = 16;
     static lUInt8 gray[8] = { 0xFF, 0x00, 0x00, 0x00, 0xFF, 0xAA, 0x55, 0x00 };
-    lUInt8 * pal = bmp->GetBitsPerPixel()==1?gray+0:gray+4;
-    for (int i=0; i<4; i++)
-    {
+    lUInt8* pal = bmp->GetBitsPerPixel() == 1 ? gray + 0 : gray + 4;
+    for (int i = 0; i < 4; i++) {
         bmi.colors[i].rgbBlue = pal[i];
         bmi.colors[i].rgbGreen = pal[i];
         bmi.colors[i].rgbRed = pal[i];
     }
-    stream->Write( &fh, sizeof(fh), NULL );
-    stream->Write( &bmi, sizeof(bmi), NULL );
-    static const lUInt8 dummy[3] = {0,0,0};
-    for (int y=0; y<bmp->GetHeight(); y++)
-    {
-        LVArray<lUInt8> row( (bmp->GetWidth()+1)/2, 0 );
-        for ( int x=0; x<bmp->GetWidth(); x++)
-        {
-            int cl = bmp->GetPixel(x, bmp->GetHeight()-1-y);
+    stream->Write(&fh, sizeof(fh), NULL);
+    stream->Write(&bmi, sizeof(bmi), NULL);
+    static const lUInt8 dummy[3] = { 0, 0, 0 };
+    for (int y = 0; y < bmp->GetHeight(); y++) {
+        LVArray<lUInt8> row((bmp->GetWidth() + 1) / 2, 0);
+        for (int x = 0; x < bmp->GetWidth(); x++) {
+            int cl = bmp->GetPixel(x, bmp->GetHeight() - 1 - y);
             //int cl = (src[x/8] >> ((1-(x&3))*2)) & 3;
-            row[x/2] = row[x/2] | (cl << ((x&1)?0:4));
+            row[x / 2] = row[x / 2] | (cl << ((x & 1) ? 0 : 4));
         }
         row[0] = 0x11;
         row[1] = 0x11;
@@ -140,7 +128,7 @@ void SaveBitmapToFile( const char * fname, LVGrayDrawBuf * bmp )
         row[5] = 0x33;
         *stream << row;
         if (padding)
-            stream->Write( dummy, padding, NULL );
+            stream->Write(dummy, padding, NULL);
     }
 }
 

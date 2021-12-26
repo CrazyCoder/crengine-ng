@@ -20,18 +20,21 @@
 struct ldomNode;
 
 /// DocView Callback interface - track progress, external links, etc.
-class LVDocViewCallback {
+class LVDocViewCallback
+{
 public:
     /// on starting file loading
-    virtual void OnLoadFileStart( lString32 filename ) { CR_UNUSED(filename); }
+    virtual void OnLoadFileStart(lString32 filename) {
+        CR_UNUSED(filename);
+    }
     /// format detection finished
-    virtual void OnLoadFileFormatDetected( doc_format_t /*fileFormat*/) { }
+    virtual void OnLoadFileFormatDetected(doc_format_t /*fileFormat*/) { }
     /// file loading is finished successfully - drawCoveTo() may be called there
     virtual void OnLoadFileEnd() { }
     /// first page is loaded from file an can be formatted for preview
     virtual void OnLoadFileFirstPagesReady() { }
     /// file progress indicator, called with values 0..100
-    virtual void OnLoadFileProgress( int /*percent*/) { }
+    virtual void OnLoadFileProgress(int /*percent*/) { }
     /// file load finiished with error
     virtual void OnLoadFileError(lString32 /*message*/) { }
     /// node style update started
@@ -51,11 +54,13 @@ public:
     /// format progress, called with values 0..100
     virtual void OnExportProgress(int /*percent*/) { }
     /// Override to handle external links
-    virtual void OnExternalLink(lString32 /*url*/, ldomNode * /*node*/) { }
+    virtual void OnExternalLink(lString32 /*url*/, ldomNode* /*node*/) { }
     /// Called when page images should be invalidated (clearImageCache() called in LVDocView)
     virtual void OnImageCacheClear() { }
     /// return true if reload will be processed by external code, false to let internal code process it
-    virtual bool OnRequestReload() { return false; }
+    virtual bool OnRequestReload() {
+        return false;
+    }
     /// save cache file started
     virtual void OnSaveCacheFileStart() { }
     /// save cache file finished
@@ -66,4 +71,4 @@ public:
     virtual ~LVDocViewCallback() { }
 };
 
-#endif  // __LVDOCVIEWCALLBACK_H_INCLUDED__
+#endif // __LVDOCVIEWCALLBACK_H_INCLUDED__

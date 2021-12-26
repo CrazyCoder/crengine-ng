@@ -26,10 +26,9 @@ extern "C" {
 }
 
 /// draw gray bitmap buffer to Windows device context
-void DrawBuf2DC(HDC dc, int x, int y, LVDrawBuf * buf, COLORREF * palette, int scale=1 );
+void DrawBuf2DC(HDC dc, int x, int y, LVDrawBuf* buf, COLORREF* palette, int scale = 1);
 /// save gray bitmap to .BMP file
-void SaveBitmapToFile( const char * fname, LVGrayDrawBuf * bmp );
-
+void SaveBitmapToFile(const char* fname, LVGrayDrawBuf* bmp);
 
 #endif
 

@@ -18,11 +18,11 @@
 #include "lvtextparser.h"
 
 /// parser of CoolReader's text format bookmarks
-class LVTextBookmarkParser : public LVTextParser
+class LVTextBookmarkParser: public LVTextParser
 {
 public:
     /// constructor
-    LVTextBookmarkParser( LVStreamRef stream, LVXMLParserCallback * callback );
+    LVTextBookmarkParser(LVStreamRef stream, LVXMLParserCallback* callback);
     /// descructor
     virtual ~LVTextBookmarkParser();
     /// returns true if format is recognized by parser
@@ -31,4 +31,4 @@ public:
     virtual bool Parse();
 };
 
-#endif  // __LVTEXTBOOKMARKPARSER_H_INCLUDED__
+#endif // __LVTEXTBOOKMARKPARSER_H_INCLUDED__

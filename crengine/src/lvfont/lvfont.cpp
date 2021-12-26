@@ -21,8 +21,8 @@ int LVFont::getVisualAligmentWidth() {
     FONT_GUARD
     if (_visual_alignment_width == -1) {
         //lChar32 chars[] = { getHyphChar(), ',', '.', '!', ':', ';', 0 };
-        lChar32 chars[] = {getHyphChar(), ',', '.', '!', ':', ';',
-                           (lChar32) U'\xff0c', (lChar32) U'\x3302', (lChar32) U'\xff01', 0};
+        lChar32 chars[] = { getHyphChar(), ',', '.', '!', ':', ';',
+                            (lChar32)U'\xff0c', (lChar32)U'\x3302', (lChar32)U'\xff01', 0 };
         //                  (lChar32)U'，', (lChar32)U'。', (lChar32)U'！', 0 };
         //                  65292 12290 65281
         //                  ff0c 3002 ff01
@@ -38,15 +38,8 @@ int LVFont::getVisualAligmentWidth() {
 }
 
 /// to compare two fonts
-bool operator==(const LVFont &r1, const LVFont &r2) {
+bool operator==(const LVFont& r1, const LVFont& r2) {
     if (&r1 == &r2)
         return true;
-    return r1.getSize() == r2.getSize()
-           && r1.getWeight() == r2.getWeight()
-           && r1.getItalic() == r2.getItalic()
-           && r1.getFontFamily() == r2.getFontFamily()
-           && r1.getTypeFace() == r2.getTypeFace()
-           && r1.getShapingMode() == r2.getShapingMode()
-           && r1.getKerning() == r2.getKerning()
-           && r1.getHintingMode() == r2.getHintingMode();
+    return r1.getSize() == r2.getSize() && r1.getWeight() == r2.getWeight() && r1.getItalic() == r2.getItalic() && r1.getFontFamily() == r2.getFontFamily() && r1.getTypeFace() == r2.getTypeFace() && r1.getShapingMode() == r2.getShapingMode() && r1.getKerning() == r2.getKerning() && r1.getHintingMode() == r2.getHintingMode();
 }

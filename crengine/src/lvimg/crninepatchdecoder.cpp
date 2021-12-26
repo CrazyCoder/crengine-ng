@@ -18,7 +18,7 @@ bool CRNinePatchDecoder::isUsedPixel(lUInt32 pixel) {
     return (pixel == 0x000000); // black
 }
 
-void CRNinePatchDecoder::decodeHLine(lUInt32 *line, int &x0, int &x1) {
+void CRNinePatchDecoder::decodeHLine(lUInt32* line, int& x0, int& x1) {
     bool foundUsed = false;
     for (int x = 0; x < _dx; x++) {
         if (isUsedPixel(line[x])) {
@@ -31,7 +31,7 @@ void CRNinePatchDecoder::decodeHLine(lUInt32 *line, int &x0, int &x1) {
     }
 }
 
-void CRNinePatchDecoder::decodeVLine(lUInt32 pixel, int y, int &y0, int &y1) {
+void CRNinePatchDecoder::decodeVLine(lUInt32 pixel, int y, int& y0, int& y1) {
     if (isUsedPixel(pixel)) {
         if (y0 == 0)
             y0 = y;
@@ -39,7 +39,7 @@ void CRNinePatchDecoder::decodeVLine(lUInt32 pixel, int y, int &y0, int &y1) {
     }
 }
 
-bool CRNinePatchDecoder::OnLineDecoded(LVImageSource *obj, int y, lUInt32 *data) {
+bool CRNinePatchDecoder::OnLineDecoded(LVImageSource* obj, int y, lUInt32* data) {
     CR_UNUSED(obj);
     if (y == 0) {
         decodeHLine(data, _info->frame.left, _info->frame.right);

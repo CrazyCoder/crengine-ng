@@ -16,13 +16,12 @@
 
 #include "crninepatchdecoder.h"
 
-static void fixNegative(int &n) {
+static void fixNegative(int& n) {
     if (n < 0)
         n = 0;
 }
 
-
-void CR9PatchInfo::applyPadding(lvRect &dstPadding) const {
+void CR9PatchInfo::applyPadding(lvRect& dstPadding) const {
     if (dstPadding.left < padding.left)
         dstPadding.left = padding.left;
     if (dstPadding.right < padding.right)
@@ -44,7 +43,7 @@ static void fixNegative(int n[4]) {
 }
 
 /// caclulate dst and src rectangles (src does not include layout frame)
-void CR9PatchInfo::calcRectangles(const lvRect &dst, const lvRect &src, lvRect dstitems[9],
+void CR9PatchInfo::calcRectangles(const lvRect& dst, const lvRect& src, lvRect dstitems[9],
                                   lvRect srcitems[9]) const {
     for (int i = 0; i < 9; i++) {
         srcitems[i].clear();
@@ -94,15 +93,13 @@ void CR9PatchInfo::calcRectangles(const lvRect &dst, const lvRect &src, lvRect d
     }
 }
 
-CR9PatchInfo *LVImageSource::DetectNinePatch() {
+CR9PatchInfo* LVImageSource::DetectNinePatch() {
     if (_ninePatch)
         return _ninePatch;
     _ninePatch = new CR9PatchInfo();
     CRNinePatchDecoder decoder(GetWidth(), GetHeight(), _ninePatch);
     Decode(&decoder);
-    if (_ninePatch->frame.left > 0 && _ninePatch->frame.top > 0
-        && _ninePatch->frame.left < _ninePatch->frame.right
-        && _ninePatch->frame.top < _ninePatch->frame.bottom) {
+    if (_ninePatch->frame.left > 0 && _ninePatch->frame.top > 0 && _ninePatch->frame.left < _ninePatch->frame.right && _ninePatch->frame.top < _ninePatch->frame.bottom) {
         // remove 1 pixel frame
         _ninePatch->padding.left--;
         _ninePatch->padding.top--;

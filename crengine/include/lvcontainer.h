@@ -27,20 +27,22 @@ class LVContainerItemInfo;
 
 typedef LVFastRef<LVStream> LVStreamRef;
 
-class LVContainer : public LVStorageObject
+class LVContainer: public LVStorageObject
 {
 public:
-    virtual LVContainer * GetParentContainer() = 0;
+    virtual LVContainer* GetParentContainer() = 0;
     //virtual const LVContainerItemInfo * GetObjectInfo(const char32_t * pname);
-    virtual const LVContainerItemInfo * GetObjectInfo(int index) = 0;
-    virtual const LVContainerItemInfo * operator [] (int index) { return GetObjectInfo(index); }
+    virtual const LVContainerItemInfo* GetObjectInfo(int index) = 0;
+    virtual const LVContainerItemInfo* operator[](int index) {
+        return GetObjectInfo(index);
+    }
     virtual int GetObjectCount() const = 0;
-    virtual LVStreamRef OpenStream( const lChar32 * fname, lvopen_mode_t mode ) = 0;
-    LVContainer() {}
+    virtual LVStreamRef OpenStream(const lChar32* fname, lvopen_mode_t mode) = 0;
+    LVContainer() { }
     virtual ~LVContainer() { }
 };
 
 /// Container reference
 typedef LVFastRef<LVContainer> LVContainerRef;
 
-#endif  // __LVCONTAINER_H_INCLUDED__
+#endif // __LVCONTAINER_H_INCLUDED__

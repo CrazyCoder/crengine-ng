@@ -21,10 +21,10 @@ class LVImageSource;
 class LVImageDecoderCallback
 {
 public:
-    virtual ~LVImageDecoderCallback() {}
-    virtual void OnStartDecode( LVImageSource * obj ) = 0;
-    virtual bool OnLineDecoded( LVImageSource * obj, int y, lUInt32 * data ) = 0;
-    virtual void OnEndDecode( LVImageSource * obj, bool errors ) = 0;
+    virtual ~LVImageDecoderCallback() { }
+    virtual void OnStartDecode(LVImageSource* obj) = 0;
+    virtual bool OnLineDecoded(LVImageSource* obj, int y, lUInt32* data) = 0;
+    virtual void OnEndDecode(LVImageSource* obj, bool errors) = 0;
 };
 
-#endif  // __LVIMAGEDECODERCALLBACK_H_INCLUDED__
+#endif // __LVIMAGEDECODERCALLBACK_H_INCLUDED__

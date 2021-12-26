@@ -16,15 +16,15 @@
 
 #include "lvtextparser.h"
 
-class LVTextRobustParser : public LVTextParser
+class LVTextRobustParser: public LVTextParser
 {
 public:
     /// constructor
-    LVTextRobustParser( LVStreamRef stream, LVXMLParserCallback * callback, bool isPreFormatted );
+    LVTextRobustParser(LVStreamRef stream, LVXMLParserCallback* callback, bool isPreFormatted);
     /// destructor
     virtual ~LVTextRobustParser();
     /// returns true if format is recognized by parser
     virtual bool CheckFormat();
 };
 
-#endif  // __LVTEXTROBUSTPARSER_H_INCLUDED__
+#endif // __LVTEXTROBUSTPARSER_H_INCLUDED__

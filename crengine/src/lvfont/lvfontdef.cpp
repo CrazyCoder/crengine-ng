@@ -14,8 +14,7 @@
 
 #include "lvfontdef.h"
 
-
-int LVFontDef::CalcDuplicateMatch(const LVFontDef &def) const {
+int LVFontDef::CalcDuplicateMatch(const LVFontDef& def) const {
     if (def._documentId != -1 && _documentId != def._documentId)
         return false;
     bool size_match = (_size == -1 || def._size == -1) ? true
@@ -24,7 +23,7 @@ int LVFontDef::CalcDuplicateMatch(const LVFontDef &def) const {
                                                              : (def._weight == _weight);
     bool italic_match = (_italic == def._italic || _italic == -1 || def._italic == -1);
 
-    bool features_match = (_features == def._features || _features==-1 || def._features==-1);
+    bool features_match = (_features == def._features || _features == -1 || def._features == -1);
 
     bool family_match = (_family == css_ff_inherit || def._family == css_ff_inherit ||
                          def._family == _family);
@@ -32,13 +31,13 @@ int LVFontDef::CalcDuplicateMatch(const LVFontDef &def) const {
     return size_match && weight_match && italic_match && features_match && family_match && typeface_match;
 }
 
-int LVFontDef::CalcMatch(const LVFontDef &def, bool useBias) const {
+int LVFontDef::CalcMatch(const LVFontDef& def, bool useBias) const {
     if (_documentId != -1 && _documentId != def._documentId)
         return 0;
     int size_match = (_size == -1 || def._size == -1) ? 256
                                                       : (def._size > _size ? _size * 256 / def._size
                                                                            : def._size * 256 /
-                                                                             _size);
+                                                                                     _size);
     int weight_diff = def._weight - _weight;
     if (weight_diff < 0)
         weight_diff = -weight_diff;
@@ -53,20 +52,19 @@ int LVFontDef::CalcMatch(const LVFontDef &def, bool useBias) const {
     // To avoid this inconsistency, we give arbitrarily a small increase to
     // the score of the smaller weight font (mostly so that with the above
     // case, we keep synthesizing the 550 from the 400)
-    if ( _weight < def._weight )
+    if (_weight < def._weight)
         weight_match += 1;
     int italic_match = (_italic == def._italic || _italic == -1 || def._italic == -1) ? 256 : 0;
     if ((_italic == 2 || def._italic == 2) && _italic > 0 && def._italic > 0)
         italic_match = 128;
     // OpenType features
-    int features_match = (_features == def._features || _features==-1 || def._features==-1) ?
-                256
-                :   0;
+    int features_match = (_features == def._features || _features == -1 || def._features == -1) ? 256
+                                                                                                : 0;
     int family_match = (_family == css_ff_inherit || def._family == css_ff_inherit ||
                         def._family == _family)
-                       ? 256
-                       : ((_family == css_ff_monospace) == (def._family == css_ff_monospace) ? 64
-                                                                                             : 0);
+                               ? 256
+                               : ((_family == css_ff_monospace) == (def._family == css_ff_monospace) ? 64
+                                                                                                     : 0);
     int typeface_match = (_typeface == def._typeface) ? 256 : 0;
 
     // bias
@@ -92,18 +90,17 @@ int LVFontDef::CalcMatch(const LVFontDef &def, bool useBias) const {
     // be re-synthesized. Otherwise, we'll get some italic when not wanting
     // italic (or vice versa), depending on which has been instantiated first...
     //
-    if ( !_real_weight ) {        // 'this' is an instantiated fake weight font
-        if ( def._italic > 0 ) {  // italic requested
-            if ( _italic == 0 ) { // 'this' is fake bold but non-italic
+    if (!_real_weight) {          // 'this' is an instantiated fake weight font
+        if (def._italic > 0) {    // italic requested
+            if (_italic == 0) {   // 'this' is fake bold but non-italic
                 weight_match = 0; // => drop score
                 italic_match = 0;
                 // The regular (italic or fake italic) is available
                 // and will get a better score than 'this'
             }
             // otherwise, 'this' is a fake bold italic, and it can match
-        }
-        else {                    // non-italic requested
-            if ( _italic > 0 ) {  // 'this' is fake bold of (real or fake) italic
+        } else {                  // non-italic requested
+            if (_italic > 0) {    // 'this' is fake bold of (real or fake) italic
                 weight_match = 0; // => drop score
                 italic_match = 0;
                 // The regular is available and will get a better score
@@ -111,20 +108,14 @@ int LVFontDef::CalcMatch(const LVFontDef &def, bool useBias) const {
             }
         }
         // Also, never use a synthetic weight font to synthesize another one
-        if ( weight_diff >= 25 ) {
+        if (weight_diff >= 25) {
             weight_match = 0;
             italic_match = 0;
         }
     }
 
     // final score
-    int score = bias
-        + (size_match     * 100)
-        + (weight_match   * 5)
-        + (italic_match   * 5)
-        + (features_match * 1000)
-        + (family_match   * 100)
-        + (typeface_match * 1000);
+    int score = bias + (size_match * 100) + (weight_match * 5) + (italic_match * 5) + (features_match * 1000) + (family_match * 100) + (typeface_match * 1000);
 
     return score;
 }
@@ -138,12 +129,7 @@ int LVFontDef::CalcFallbackMatch(lString8 face, int size) const {
     int weight_match = (_weight == -1) ? 256 : (256 - _weight * 256 / 800);
     int italic_match = _italic == 0 ? 256 : 0;
     // Don't let instantiated font with non-zero features be usable as a fallback font
-    int features_match = (_features == -1 || _features == 0 ) ?
-                256
-                :   0;
-    return
-            +(size_match * 100)
-            + (weight_match * 5)
-            + (italic_match * 5)
-            + (features_match * 1000);
+    int features_match = (_features == -1 || _features == 0) ? 256
+                                                             : 0;
+    return +(size_match * 100) + (weight_match * 5) + (italic_match * 5) + (features_match * 1000);
 }

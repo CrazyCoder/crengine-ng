@@ -21,42 +21,39 @@
 
 #include "lvnamedstream.h"
 
-const lChar32 * LVNamedStream::GetName()
-{
+const lChar32* LVNamedStream::GetName() {
     if (m_fname.empty())
         return NULL;
     return m_fname.c_str();
 }
 
-void LVNamedStream::SetName(const lChar32 * name)
-{
+void LVNamedStream::SetName(const lChar32* name) {
     m_fname = name;
     m_filename.clear();
     m_path.clear();
     if (m_fname.empty())
         return;
-    const lChar32 * fn = m_fname.c_str();
+    const lChar32* fn = m_fname.c_str();
 
-    const lChar32 * p = fn + m_fname.length() - 1;
-    for ( ;p>fn; p--) {
-        if (p[-1] == '/' || p[-1]=='\\')
+    const lChar32* p = fn + m_fname.length() - 1;
+    for (; p > fn; p--) {
+        if (p[-1] == '/' || p[-1] == '\\')
             break;
     }
     int pos = (int)(p - fn);
-    if (p>fn)
+    if (p > fn)
         m_path = m_fname.substr(0, pos);
     m_filename = m_fname.substr(pos, m_fname.length() - pos);
 }
 
-lverror_t LVNamedStream::getcrc32( lUInt32 & dst )
-{
-    if ( _crc!=0 ) {
+lverror_t LVNamedStream::getcrc32(lUInt32& dst) {
+    if (_crc != 0) {
         dst = _crc;
         return LVERR_OK;
     } else {
-        if ( !_crcFailed ) {
-            lverror_t res = LVStream::getcrc32( dst );
-            if ( res==LVERR_OK ) {
+        if (!_crcFailed) {
+            lverror_t res = LVStream::getcrc32(dst);
+            if (res == LVERR_OK) {
                 _crc = dst;
                 return LVERR_OK;
             }

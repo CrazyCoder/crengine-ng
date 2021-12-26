@@ -19,54 +19,52 @@
 //==================================================
 // Linux/Unix/MacOS/Android
 //==================================================
-#if defined(_LINUX) || defined (LINUX)
+#if defined(_LINUX) || defined(LINUX)
 
 #ifdef ANDROID
-#define CR_USE_THREADS                       1
+#define CR_USE_THREADS 1
 #define USE_ATOMIC_REFCOUNT
-#define USE_LIMITED_FONT_SIZES_SET           0
+#define USE_LIMITED_FONT_SIZES_SET 0
 #else
-#define CR_USE_THREADS                       0
+#define CR_USE_THREADS 0
 #endif // ANDROID
 
-#define USE_ANSI_FILES                       0
-#define GRAY_INVERSE                         0
-#define USE_FT_EMBOLDEN                      1
-#define MATHML_SUPPORT                       1
+#define USE_ANSI_FILES  0
+#define GRAY_INVERSE    0
+#define USE_FT_EMBOLDEN 1
+#define MATHML_SUPPORT  1
 
-#define ALLOW_KERNING                        1
-#define USE_GLYPHCACHE_HASHTABLE             1
-#define GLYPH_CACHE_SIZE                     0x40000
-#define ZIP_STREAM_BUFFER_SIZE               0x40000
-#define FILE_STREAM_BUFFER_SIZE              0x20000
+#define ALLOW_KERNING            1
+#define USE_GLYPHCACHE_HASHTABLE 1
+#define GLYPH_CACHE_SIZE         0x40000
+#define ZIP_STREAM_BUFFER_SIZE   0x40000
+#define FILE_STREAM_BUFFER_SIZE  0x20000
 
-#endif  // defined(_LINUX) || defined (LINUX)
-
+#endif // defined(_LINUX) || defined (LINUX)
 
 //==================================================
 // WIN32
 //==================================================
 #if defined(_WIN32) && !defined(__SYMBIAN32__)
 
-#define CR_USE_THREADS                       0
+#define CR_USE_THREADS 0
 
-#define USE_ANSI_FILES                       0
-#define GRAY_INVERSE                         0
-#define USE_FT_EMBOLDEN                      1
-#define MATHML_SUPPORT                       1
+#define USE_ANSI_FILES  0
+#define GRAY_INVERSE    0
+#define USE_FT_EMBOLDEN 1
+#define MATHML_SUPPORT  1
 
-#define ALLOW_KERNING                        1
-#define USE_GLYPHCACHE_HASHTABLE             1
-#define GLYPH_CACHE_SIZE                     0x20000
-#define ZIP_STREAM_BUFFER_SIZE               0x80000
-#define FILE_STREAM_BUFFER_SIZE              0x40000
+#define ALLOW_KERNING            1
+#define USE_GLYPHCACHE_HASHTABLE 1
+#define GLYPH_CACHE_SIZE         0x20000
+#define ZIP_STREAM_BUFFER_SIZE   0x80000
+#define FILE_STREAM_BUFFER_SIZE  0x40000
 
-#if USE_FREETYPE!=1
+#if USE_FREETYPE != 1
 #define USE_WIN32_FONTS 1
 #endif
 
 #endif // defined(_WIN32) && !defined(__SYMBIAN32__)
-
 
 // Common defines
 
@@ -131,9 +129,8 @@
 #endif
 
 #ifndef GRAY_INVERSE
-#define GRAY_INVERSE     0
+#define GRAY_INVERSE 0
 #endif
-
 
 /** \def LVLONG_FILE_SUPPORT
     \brief define to 1 to use 64 bits for file position types
@@ -152,7 +149,7 @@
 
 #ifndef COLOR_BACKBUFFER
 #define COLOR_BACKBUFFER 0
-#endif  // COLOR_BACKBUFFER
+#endif // COLOR_BACKBUFFER
 
 /// zlib stream decode cache size, used to avoid restart of decoding from beginning to move back
 #ifndef ZIP_STREAM_BUFFER_SIZE
@@ -163,7 +160,6 @@
 #ifndef FILE_STREAM_BUFFER_SIZE
 #define FILE_STREAM_BUFFER_SIZE 0x40000
 #endif
-
 
 #ifndef MATHML_SUPPORT
 #define MATHML_SUPPORT 0
@@ -195,10 +191,10 @@
 #endif
 
 #ifndef USE_BITMAP_FONTS
-#if (USE_WIN32_FONTS!=1) && (USE_FREETYPE!=1)
+#if (USE_WIN32_FONTS != 1) && (USE_FREETYPE != 1)
 #define USE_BITMAP_FONTS 1
 #endif
-#endif  // USE_BITMAP_FONTS
+#endif // USE_BITMAP_FONTS
 
 /// maximum picture zoom (1, 2, 3)
 #ifndef MAX_IMAGE_SCALE_MUL
@@ -207,14 +203,13 @@
 
 // max unpacked size of skin image to hold in cache unpacked
 #ifndef MAX_SKIN_IMAGE_CACHE_ITEM_UNPACKED_SIZE
-#define MAX_SKIN_IMAGE_CACHE_ITEM_UNPACKED_SIZE 80*80*4
+#define MAX_SKIN_IMAGE_CACHE_ITEM_UNPACKED_SIZE 80 * 80 * 4
 #endif
 
 // max skin image file size to hold as a packed copy in memory
 #ifndef MAX_SKIN_IMAGE_CACHE_ITEM_RAM_COPY_PACKED_SIZE
 #define MAX_SKIN_IMAGE_CACHE_ITEM_RAM_COPY_PACKED_SIZE 10000
 #endif
-
 
 // Caching and MMAP options
 
@@ -258,4 +253,4 @@
 #define SCREEN_SIZE_MAX 32767
 #endif
 
-#endif//CRSETUP_H_INCLUDED
+#endif //CRSETUP_H_INCLUDED

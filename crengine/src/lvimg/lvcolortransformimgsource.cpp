@@ -25,18 +25,16 @@ static inline lUInt32 limit256(int n) {
         return (lUInt32)n;
 }
 
-
 LVColorTransformImgSource::LVColorTransformImgSource(LVImageSourceRef src, lUInt32 addRGB, lUInt32 multiplyRGB)
-    : _src( src )
-    , _add(addRGB)
-    , _multiply(multiplyRGB)
-    , _callback(NULL)
-    , _drawbuf(NULL)
-    , _sumR(0)
-    , _sumG(0)
-    , _sumB(0)
-    , _countPixels(0)
-{
+        : _src(src)
+        , _add(addRGB)
+        , _multiply(multiplyRGB)
+        , _callback(NULL)
+        , _drawbuf(NULL)
+        , _sumR(0)
+        , _sumG(0)
+        , _sumB(0)
+        , _countPixels(0) {
 }
 
 LVColorTransformImgSource::~LVColorTransformImgSource() {
@@ -44,8 +42,7 @@ LVColorTransformImgSource::~LVColorTransformImgSource() {
         delete _drawbuf;
 }
 
-void LVColorTransformImgSource::OnStartDecode(LVImageSource *)
-{
+void LVColorTransformImgSource::OnStartDecode(LVImageSource*) {
     _callback->OnStartDecode(this);
     _sumR = _sumG = _sumB = _countPixels = 0;
     if (_drawbuf)
@@ -53,11 +50,11 @@ void LVColorTransformImgSource::OnStartDecode(LVImageSource *)
     _drawbuf = new LVColorDrawBuf(_src->GetWidth(), _src->GetHeight(), 32);
 }
 
-bool LVColorTransformImgSource::OnLineDecoded(LVImageSource *obj, int y, lUInt32 *data) {
+bool LVColorTransformImgSource::OnLineDecoded(LVImageSource* obj, int y, lUInt32* data) {
     CR_UNUSED(obj);
     int dx = _src->GetWidth();
-    
-    lUInt32 * row = (lUInt32*)_drawbuf->GetScanLine(y);
+
+    lUInt32* row = (lUInt32*)_drawbuf->GetScanLine(y);
     for (int x = 0; x < dx; x++) {
         lUInt32 cl = data[x];
         row[x] = cl;
@@ -69,11 +66,9 @@ bool LVColorTransformImgSource::OnLineDecoded(LVImageSource *obj, int y, lUInt32
         }
     }
     return true;
-    
 }
 
-void LVColorTransformImgSource::OnEndDecode(LVImageSource *obj, bool res)
-{
+void LVColorTransformImgSource::OnEndDecode(LVImageSource* obj, bool res) {
     int dx = _src->GetWidth();
     int dy = _src->GetHeight();
     // simple add
@@ -84,14 +79,14 @@ void LVColorTransformImgSource::OnEndDecode(LVImageSource *obj, bool res)
     int mr = ((_multiply >> 16) & 0xFF) << 3;
     int mg = ((_multiply >> 8) & 0xFF) << 3;
     int mb = ((_multiply >> 0) & 0xFF) << 3;
-    
+
     int avgR = _countPixels > 0 ? _sumR / _countPixels : 128;
     int avgG = _countPixels > 0 ? _sumG / _countPixels : 128;
     int avgB = _countPixels > 0 ? _sumB / _countPixels : 128;
-    
+
     for (int y = 0; y < dy; y++) {
-        lUInt32 * row = (lUInt32*)_drawbuf->GetScanLine(y);
-        for ( int x=0; x<dx; x++ ) {
+        lUInt32* row = (lUInt32*)_drawbuf->GetScanLine(y);
+        for (int x = 0; x < dx; x++) {
             lUInt32 cl = row[x];
             lUInt32 a = cl & 0xFF000000;
             if (a != 0xFF000000) {
@@ -112,8 +107,7 @@ void LVColorTransformImgSource::OnEndDecode(LVImageSource *obj, bool res)
     _callback->OnEndDecode(this, res);
 }
 
-bool LVColorTransformImgSource::Decode(LVImageDecoderCallback *callback)
-{
+bool LVColorTransformImgSource::Decode(LVImageDecoderCallback* callback) {
     _callback = callback;
-    return _src->Decode( this );
+    return _src->Decode(this);
 }

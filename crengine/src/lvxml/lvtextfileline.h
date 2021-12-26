@@ -17,7 +17,8 @@
 
 #include "lvtextfilebase.h"
 
-typedef enum {
+typedef enum
+{
     la_unknown,  // not detected
     la_empty,    // empty line
     la_left,     // left aligned
@@ -37,21 +38,27 @@ public:
     lUInt16 lpos;   // left non-space char position
     lUInt16 rpos;   // right non-space char posision + 1
     lineAlign_t align;
-    bool empty() { return rpos==0; }
-    bool isHeading() { return (flags & LINE_IS_HEADER)!=0; }
-    LVTextFileLine( LVTextFileBase * file, int maxsize )
-        : flags(0), lpos(0), rpos(0), align(la_unknown)
-    {
-        text = file->ReadLine( maxsize, flags );
+    bool empty() {
+        return rpos == 0;
+    }
+    bool isHeading() {
+        return (flags & LINE_IS_HEADER) != 0;
+    }
+    LVTextFileLine(LVTextFileBase* file, int maxsize)
+            : flags(0)
+            , lpos(0)
+            , rpos(0)
+            , align(la_unknown) {
+        text = file->ReadLine(maxsize, flags);
         //CRLog::debug("  line read: %s", UnicodeToUtf8(text).c_str() );
-        if ( !text.empty() ) {
-            const lChar32 * s = text.c_str();
-            for ( int p=0; *s; s++ ) {
-                if ( *s == '\t' ) {
-                    p = (p + 8)%8;
+        if (!text.empty()) {
+            const lChar32* s = text.c_str();
+            for (int p = 0; *s; s++) {
+                if (*s == '\t') {
+                    p = (p + 8) % 8;
                 } else {
-                    if ( *s != ' ' ) {
-                        if ( rpos==0 && p>0 ) {
+                    if (*s != ' ') {
+                        if (rpos == 0 && p > 0) {
                             //CRLog::debug("   lpos = %d", p);
                             lpos = (lUInt16)p;
                         }
@@ -64,4 +71,4 @@ public:
     }
 };
 
-#endif  // __LVTEXTFILELINE_H_INCLUDED__
+#endif // __LVTEXTFILELINE_H_INCLUDED__

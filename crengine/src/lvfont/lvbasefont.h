@@ -21,26 +21,31 @@
 
 class LVDrawBuf;
 
-class LVBaseFont : public LVFont {
+class LVBaseFont: public LVFont
+{
 protected:
     lString8 _typeface;
     css_font_family_t _family;
 public:
     /// returns font typeface name
-    virtual lString8 getTypeFace() const { return _typeface; }
+    virtual lString8 getTypeFace() const {
+        return _typeface;
+    }
 
     /// returns font family id
-    virtual css_font_family_t getFontFamily() const { return _family; }
+    virtual css_font_family_t getFontFamily() const {
+        return _family;
+    }
 
     /// draws text string
-    virtual int DrawTextString( LVDrawBuf * buf, int x, int y,
-                       const lChar32 * text, int len,
-                       lChar32 def_char, lUInt32 * palette = NULL,
-                       bool addHyphen = false, TextLangCfg * lang_cfg = NULL,
-                       lUInt32 flags=0, int letter_spacing=0, int width=-1,
-                       int text_decoration_back_gap=0,
-                       int target_w=-1, int target_h=-1,
-                       lUInt32 fallbackPassMask = 0);
+    virtual int DrawTextString(LVDrawBuf* buf, int x, int y,
+                               const lChar32* text, int len,
+                               lChar32 def_char, lUInt32* palette = NULL,
+                               bool addHyphen = false, TextLangCfg* lang_cfg = NULL,
+                               lUInt32 flags = 0, int letter_spacing = 0, int width = -1,
+                               int text_decoration_back_gap = 0,
+                               int target_w = -1, int target_h = -1,
+                               lUInt32 fallbackPassMask = 0);
 };
 
-#endif  // __LV_BASEFONT_H_INCLUDED__
+#endif // __LV_BASEFONT_H_INCLUDED__

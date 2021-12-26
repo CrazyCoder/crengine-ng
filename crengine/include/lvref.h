@@ -22,34 +22,34 @@
 /**
     For fast and efficient allocation of ref counter structures
 */
-#if (LDOM_USE_OWN_MEM_MAN==1)
-extern ldomMemManStorage * pmsREF;
+#if (LDOM_USE_OWN_MEM_MAN == 1)
+extern ldomMemManStorage* pmsREF;
 #endif
 
 /// Reference counter structure
 /**
     For internal usage in LVRef<> class
 */
-class ref_count_rec_t {
+class ref_count_rec_t
+{
 public:
     int _refcount;
-    void * _obj;
+    void* _obj;
     static ref_count_rec_t null_ref;
     static ref_count_rec_t protected_null_ref;
 
-    ref_count_rec_t( void * obj ) : _refcount(1), _obj(obj) { }
-#if (LDOM_USE_OWN_MEM_MAN==1)
-    void * operator new( size_t )
-    {
-        if (pmsREF == NULL)
-        {
+    ref_count_rec_t(void* obj)
+            : _refcount(1)
+            , _obj(obj) { }
+#if (LDOM_USE_OWN_MEM_MAN == 1)
+    void* operator new(size_t) {
+        if (pmsREF == NULL) {
             pmsREF = new ldomMemManStorage(sizeof(ref_count_rec_t));
         }
         return pmsREF->alloc();
     }
-    void operator delete( void * p )
-    {
-        pmsREF->free((ldomMemBlock *)p);
+    void operator delete(void* p) {
+        pmsREF->free((ldomMemBlock*)p);
     }
 #endif
 };
@@ -59,10 +59,17 @@ class LVRefCounter
 {
     int refCount;
 public:
-    LVRefCounter() : refCount(0) { }
-    void AddRef() { refCount++; }
-    int Release() { return --refCount; }
-    int getRefCount() { return refCount; }
+    LVRefCounter()
+            : refCount(0) { }
+    void AddRef() {
+        refCount++;
+    }
+    int Release() {
+        return --refCount;
+    }
+    int getRefCount() {
+        return refCount;
+    }
 };
 
 /// Fast smart pointer with reference counting
@@ -75,31 +82,32 @@ public:
     T should implement AddRef() and Release() methods.
     \param T class of stored object
  */
-template <class T> class LVFastRef
+template <class T>
+class LVFastRef
 {
 private:
-    T * _ptr;
-    inline void Release()
-    {
-        if ( _ptr ) {
-            if ( _ptr->Release()==0 ) {
+    T* _ptr;
+    inline void Release() {
+        if (_ptr) {
+            if (_ptr->Release() == 0) {
                 delete _ptr;
             }
-            _ptr=NULL;
+            _ptr = NULL;
         }
     }
 public:
     /// Default constructor.
     /** Initializes pointer to NULL */
-    LVFastRef() : _ptr(NULL) { }
+    LVFastRef()
+            : _ptr(NULL) { }
 
     /// Constructor by object pointer.
     /** Initializes pointer to given value 
     \param ptr is a pointer to object
      */
-    explicit LVFastRef( T * ptr ) {
+    explicit LVFastRef(T* ptr) {
         _ptr = ptr;
-        if ( _ptr )
+        if (_ptr)
             _ptr->AddRef();
     }
 
@@ -107,34 +115,36 @@ public:
     /** Creates copy of object pointer. Increments reference counter instead of real copy.
     \param ref is reference to copy
      */
-    LVFastRef( const LVFastRef & ref )
-    {
+    LVFastRef(const LVFastRef& ref) {
         _ptr = ref._ptr;
-        if ( _ptr )
+        if (_ptr)
             _ptr->AddRef();
     }
 
     /// Destructor.
     /** Decrements reference counter; deletes object if counter became 0. */
-    ~LVFastRef() { Release(); }
+    ~LVFastRef() {
+        Release();
+    }
 
     /// Clears pointer.
     /** Sets object pointer to NULL. */
-    void Clear() { Release(); }
+    void Clear() {
+        Release();
+    }
 
     /// Copy operator.
     /** Duplicates a pointer from specified reference. 
     Increments counter instead of copying of object. 
     \param ref is reference to copy
      */
-    LVFastRef & operator = ( const LVFastRef & ref )
-    {
-        if ( _ptr ) {
-            if ( _ptr==ref._ptr )
+    LVFastRef& operator=(const LVFastRef& ref) {
+        if (_ptr) {
+            if (_ptr == ref._ptr)
                 return *this;
             Release();
         }
-        if ( ref._ptr )
+        if (ref._ptr)
             (_ptr = ref._ptr)->AddRef();
         return *this;
     }
@@ -144,14 +154,13 @@ public:
     Reference counter is being initialized to 1.
     \param obj pointer to object
      */
-    LVFastRef & operator = ( T * obj )
-    {
-        if ( _ptr ) {
-            if ( _ptr==obj )
+    LVFastRef& operator=(T* obj) {
+        if (_ptr) {
+            if (_ptr == obj)
                 return *this;
             Release();
         }
-        if ( obj )
+        if (obj)
             (_ptr = obj)->AddRef();
         return *this;
     }
@@ -160,34 +169,46 @@ public:
     /** Imitates usual pointer behavior. 
     Usual way to access object fields. 
      */
-    T * operator -> () const { return _ptr; }
+    T* operator->() const {
+        return _ptr;
+    }
 
     /// Dereferences pointer to object.
     /** Imitates usual pointer behavior. */
-    T & operator * () const { return *_ptr; }
+    T& operator*() const {
+        return *_ptr;
+    }
 
     /// To check reference counter value.
     /** It might be useful in some cases. 
     \return reference counter value.
      */
-    int getRefCount() const { return _ptr->getRefCount(); }
+    int getRefCount() const {
+        return _ptr->getRefCount();
+    }
 
     /// Returns stored pointer to object.
     /** Usual way to get pointer value. 
     \return stored pointer to object.
      */
-    T * get() const { return _ptr; }
+    T* get() const {
+        return _ptr;
+    }
 
     /// Checks whether pointer is NULL or not.
     /** \return true if pointer is NULL.
     \sa isNull() */
-    bool operator ! () const { return !_ptr; }
+    bool operator!() const {
+        return !_ptr;
+    }
 
     /// Checks whether pointer is NULL or not.
     /** \return true if pointer is NULL. 
     \sa operator !()
      */
-    bool isNull() const { return (_ptr == NULL); }
+    bool isNull() const {
+        return (_ptr == NULL);
+    }
 };
 
 /// Fast smart pointer with reference counting and protection by mutex
@@ -200,34 +221,35 @@ public:
     T should implement AddRef() and Release() methods.
     \param T class of stored object
  */
-template <class T> class LVProtectedFastRef
+template <class T>
+class LVProtectedFastRef
 {
 private:
-    T * _ptr;
-    inline T * Release()
-    {
-        T * res = NULL;
-        if ( _ptr ) {
-            if ( _ptr->Release()==0 ) {
+    T* _ptr;
+    inline T* Release() {
+        T* res = NULL;
+        if (_ptr) {
+            if (_ptr->Release() == 0) {
                 res = _ptr;
             }
-            _ptr=NULL;
+            _ptr = NULL;
         }
         return res;
     }
 public:
     /// Default constructor.
     /** Initializes pointer to NULL */
-    LVProtectedFastRef() : _ptr(NULL) { }
+    LVProtectedFastRef()
+            : _ptr(NULL) { }
 
     /// Constructor by object pointer.
     /** Initializes pointer to given value
     \param ptr is a pointer to object
      */
-    explicit LVProtectedFastRef( T * ptr ) {
+    explicit LVProtectedFastRef(T* ptr) {
         REF_GUARD
         _ptr = ptr;
-        if ( _ptr )
+        if (_ptr)
             _ptr->AddRef();
     }
 
@@ -235,18 +257,17 @@ public:
     /** Creates copy of object pointer. Increments reference counter instead of real copy.
     \param ref is reference to copy
      */
-    LVProtectedFastRef( const LVProtectedFastRef & ref )
-    {
+    LVProtectedFastRef(const LVProtectedFastRef& ref) {
         REF_GUARD
         _ptr = ref._ptr;
-        if ( _ptr )
+        if (_ptr)
             _ptr->AddRef();
     }
 
     /// Destructor.
     /** Decrements reference counter; deletes object if counter became 0. */
     ~LVProtectedFastRef() {
-        T * removed = NULL;
+        T* removed = NULL;
         {
             REF_GUARD
             removed = Release();
@@ -258,7 +279,7 @@ public:
     /// Clears pointer.
     /** Sets object pointer to NULL. */
     void Clear() {
-        T * removed = NULL;
+        T* removed = NULL;
         {
             REF_GUARD
             removed = Release();
@@ -272,17 +293,16 @@ public:
     Increments counter instead of copying of object.
     \param ref is reference to copy
      */
-    LVProtectedFastRef & operator = ( const LVProtectedFastRef & ref )
-    {
-        T * removed = NULL;
+    LVProtectedFastRef& operator=(const LVProtectedFastRef& ref) {
+        T* removed = NULL;
         {
             REF_GUARD
-            if ( _ptr ) {
-                if ( _ptr==ref._ptr )
+            if (_ptr) {
+                if (_ptr == ref._ptr)
                     return *this;
                 removed = Release();
             }
-            if ( ref._ptr )
+            if (ref._ptr)
                 (_ptr = ref._ptr)->AddRef();
         }
         if (removed)
@@ -295,17 +315,16 @@ public:
     Reference counter is being initialized to 1.
     \param obj pointer to object
      */
-    LVProtectedFastRef & operator = ( T * obj )
-    {
-        T * removed = NULL;
+    LVProtectedFastRef& operator=(T* obj) {
+        T* removed = NULL;
         {
             REF_GUARD
-            if ( _ptr ) {
-                if ( _ptr==obj )
+            if (_ptr) {
+                if (_ptr == obj)
                     return *this;
                 removed = Release();
             }
-            if ( obj )
+            if (obj)
                 (_ptr = obj)->AddRef();
         }
         if (removed)
@@ -317,37 +336,47 @@ public:
     /** Imitates usual pointer behavior.
     Usual way to access object fields.
      */
-    T * operator -> () const { return _ptr; }
+    T* operator->() const {
+        return _ptr;
+    }
 
     /// Dereferences pointer to object.
     /** Imitates usual pointer behavior. */
-    T & operator * () const { return *_ptr; }
+    T& operator*() const {
+        return *_ptr;
+    }
 
     /// To check reference counter value.
     /** It might be useful in some cases.
     \return reference counter value.
      */
-    int getRefCount() const { return _ptr->getRefCount(); }
+    int getRefCount() const {
+        return _ptr->getRefCount();
+    }
 
     /// Returns stored pointer to object.
     /** Usual way to get pointer value.
     \return stored pointer to object.
      */
-    T * get() const { return _ptr; }
+    T* get() const {
+        return _ptr;
+    }
 
     /// Checks whether pointer is NULL or not.
     /** \return true if pointer is NULL.
     \sa isNull() */
-    bool operator ! () const { return !_ptr; }
+    bool operator!() const {
+        return !_ptr;
+    }
 
     /// Checks whether pointer is NULL or not.
     /** \return true if pointer is NULL.
     \sa operator !()
      */
-    bool isNull() const { return (_ptr == NULL); }
+    bool isNull() const {
+        return (_ptr == NULL);
+    }
 };
-
-
 
 /// Smart pointer with reference counting
 /**
@@ -359,20 +388,21 @@ public:
     Separate counter object is used, so no counter support is required for T.
     \param T class of stored object
 */
-template <class T> class LVRef
+template <class T>
+class LVRef
 {
 private:
-    ref_count_rec_t * _ptr;
+    ref_count_rec_t* _ptr;
     //========================================
-    ref_count_rec_t * AddRef() const { ++_ptr->_refcount; return _ptr; }
+    ref_count_rec_t* AddRef() const {
+        ++_ptr->_refcount;
+        return _ptr;
+    }
     //========================================
-    void Release()
-    { 
-        if (--_ptr->_refcount == 0)
-        {
-            if (_ptr != &ref_count_rec_t::null_ref)
-            {
-                if ( _ptr->_obj )
+    void Release() {
+        if (--_ptr->_refcount == 0) {
+            if (_ptr != &ref_count_rec_t::null_ref) {
+                if (_ptr->_obj)
                     delete (reinterpret_cast<T*>(_ptr->_obj));
                 delete _ptr;
             }
@@ -380,30 +410,28 @@ private:
     }
     //========================================
 public:
-
-	/// creates reference to copy
-	LVRef & clone()
-	{
-		if ( isNull() )
-			return LVRef(NULL);
-		return LVRef( new T( *_ptr ) );
-	}
+    /// creates reference to copy
+    LVRef& clone() {
+        if (isNull())
+            return LVRef(NULL);
+        return LVRef(new T(*_ptr));
+    }
 
     /// Default constructor.
     /** Initializes pointer to NULL */
-    LVRef() : _ptr(&ref_count_rec_t::null_ref) { ref_count_rec_t::null_ref._refcount++; }
+    LVRef()
+            : _ptr(&ref_count_rec_t::null_ref) {
+        ref_count_rec_t::null_ref._refcount++;
+    }
 
     /// Constructor by object pointer.
     /** Initializes pointer to given value 
         \param ptr is a pointer to object
     */
-    explicit LVRef( T * ptr ) {
-        if (ptr)
-        {
+    explicit LVRef(T* ptr) {
+        if (ptr) {
             _ptr = new ref_count_rec_t(ptr);
-        }
-        else
-        {
+        } else {
             ref_count_rec_t::null_ref._refcount++;
             _ptr = &ref_count_rec_t::null_ref;
         }
@@ -413,33 +441,36 @@ public:
     /** Creates copy of object pointer. Increments reference counter instead of real copy.
         \param ref is reference to copy
     */
-    LVRef( const LVRef & ref ) { _ptr = ref.AddRef(); }
+    LVRef(const LVRef& ref) {
+        _ptr = ref.AddRef();
+    }
 
     /// Destructor.
     /** Decrements reference counter; deletes object if counter became 0. */
-    ~LVRef() { Release(); }
+    ~LVRef() {
+        Release();
+    }
 
     /// Clears pointer.
     /** Sets object pointer to NULL. */
-    void Clear() { Release(); _ptr = &ref_count_rec_t::null_ref; ++_ptr->_refcount; }
+    void Clear() {
+        Release();
+        _ptr = &ref_count_rec_t::null_ref;
+        ++_ptr->_refcount;
+    }
 
     /// Copy operator.
     /** Duplicates a pointer from specified reference. 
         Increments counter instead of copying of object. 
         \param ref is reference to copy
     */
-    LVRef & operator = ( const LVRef & ref )
-    {
-        if (!ref._ptr->_obj)
-        {
+    LVRef& operator=(const LVRef& ref) {
+        if (!ref._ptr->_obj) {
             Clear();
-        }
-        else
-        {
-            if (_ptr!=ref._ptr)
-            {
+        } else {
+            if (_ptr != ref._ptr) {
                 Release();
-                _ptr = ref.AddRef(); 
+                _ptr = ref.AddRef();
             }
         }
         return *this;
@@ -450,16 +481,11 @@ public:
         Reference counter is being initialized to 1.
         \param obj pointer to object
     */
-    LVRef & operator = ( T * obj )
-    {
-        if ( !obj )
-        {
+    LVRef& operator=(T* obj) {
+        if (!obj) {
             Clear();
-        }
-        else
-        {
-            if (_ptr->_obj!=obj)
-            {
+        } else {
+            if (_ptr->_obj != obj) {
                 Release();
                 _ptr = new ref_count_rec_t(obj);
             }
@@ -471,71 +497,83 @@ public:
     /** Imitates usual pointer behavior. 
         Usual way to access object fields. 
     */
-    T * operator -> () const { return reinterpret_cast<T*>(_ptr->_obj); }
+    T* operator->() const {
+        return reinterpret_cast<T*>(_ptr->_obj);
+    }
 
     /// Dereferences pointer to object.
     /** Imitates usual pointer behavior. */
-    T & operator * () const { return *(reinterpret_cast<T*>(_ptr->_obj)); }
+    T& operator*() const {
+        return *(reinterpret_cast<T*>(_ptr->_obj));
+    }
 
     /// To check reference counter value.
     /** It might be useful in some cases. 
         \return reference counter value.
     */
-    int getRefCount() const { return _ptr->_refcount; }
+    int getRefCount() const {
+        return _ptr->_refcount;
+    }
 
     /// Returns stored pointer to object.
     /** Usual way to get pointer value. 
         \return stored pointer to object.
     */
-    T * get() const { return reinterpret_cast<T*>(_ptr->_obj); }
+    T* get() const {
+        return reinterpret_cast<T*>(_ptr->_obj);
+    }
 
     /// Checks whether pointer is NULL or not.
     /** \return true if pointer is NULL.
         \sa isNull() */
-    bool operator ! () const { return !_ptr->_obj; }
+    bool operator!() const {
+        return !_ptr->_obj;
+    }
 
     /// Checks whether pointer is NULL or not.
     /** \return true if pointer is NULL. 
         \sa operator !()
     */
-    bool isNull() const { return _ptr->_obj == NULL; }
+    bool isNull() const {
+        return _ptr->_obj == NULL;
+    }
 };
 
-template <typename T >
+template <typename T>
 class LVRefVec
 {
-    LVRef<T> * _array;
+    LVRef<T>* _array;
     int _size;
     int _count;
 public:
     /// default constructor
-    LVRefVec() : _array(NULL), _size(0), _count(0) {}
+    LVRefVec()
+            : _array(NULL)
+            , _size(0)
+            , _count(0) { }
     /// creates array of given size
-    LVRefVec( int len, LVRef<T> value )
-    {
+    LVRefVec(int len, LVRef<T> value) {
         _size = _count = len;
         _array = new LVRef<T>[_size];
-        for (int i=0; i<_count; i++)
+        for (int i = 0; i < _count; i++)
             _array[i] = value;
     }
-    LVRefVec( const LVRefVec & v )
-    {
+    LVRefVec(const LVRefVec& v) {
         _size = _count = v._count;
-        if ( _size ) {
+        if (_size) {
             _array = new LVRef<T>[_size];
-            for (int i=0; i<_count; i++)
+            for (int i = 0; i < _count; i++)
                 _array[i] = v._array[i];
         } else {
             _array = NULL;
         }
     }
-    LVRefVec & operator = ( const LVRefVec & v )
-    {
+    LVRefVec& operator=(const LVRefVec& v) {
         clear();
         _size = _count = v._count;
-        if ( _size ) {
+        if (_size) {
             _array = new LVRef<T>[_size];
-            for (int i=0; i<_count; i++)
+            for (int i = 0; i < _count; i++)
                 _array[i] = v._array[i];
         } else {
             _array = NULL;
@@ -543,126 +581,125 @@ public:
         return *this;
     }
     /// retrieves item from specified position
-    LVRef<T> operator [] ( int pos ) const { return _array[pos]; }
+    LVRef<T> operator[](int pos) const {
+        return _array[pos];
+    }
     /// retrieves item reference from specified position
-    LVRef<T> & operator [] ( int pos ) { return _array[pos]; }
+    LVRef<T>& operator[](int pos) {
+        return _array[pos];
+    }
     /// ensures that size of vector is not less than specified value
-    void reserve( int size )
-    {
-        if ( size > _size )
-        {
-            LVRef<T> * newarray = new LVRef<T>[ size ];
-            for ( int i=0; i<_size; i++ )
-                newarray[ i ] = _array[ i ];
-            if ( _array )
-                delete [] _array;
+    void reserve(int size) {
+        if (size > _size) {
+            LVRef<T>* newarray = new LVRef<T>[size];
+            for (int i = 0; i < _size; i++)
+                newarray[i] = _array[i];
+            if (_array)
+                delete[] _array;
             _array = newarray;
             _size = size;
         }
     }
     /// sets item by index (extends vector if necessary)
-    void set( int index, LVRef<T> item )
-    {
-        reserve( index );
+    void set(int index, LVRef<T> item) {
+        reserve(index);
         _array[index] = item;
     }
     /// returns size of buffer
-    int size() const { return _size; }
+    int size() const {
+        return _size;
+    }
     /// returns number of items in vector
-    int length() const { return _count; }
+    int length() const {
+        return _count;
+    }
     /// returns true if there are no items in vector
-    bool empty() const { return _count==0; }
+    bool empty() const {
+        return _count == 0;
+    }
     /// clears all items
-    void clear()
-    {
-        if (_array)
-        {
-            delete [] _array;
+    void clear() {
+        if (_array) {
+            delete[] _array;
             _array = NULL;
         }
         _size = 0;
         _count = 0;
     }
     /// copies range to beginning of array
-    void trim( int pos, int count, int reserved )
-    {
-        if ( pos<0 || count<=0 || pos+count > _count )
+    void trim(int pos, int count, int reserved) {
+        if (pos < 0 || count <= 0 || pos + count > _count)
             throw;
         int i;
         int new_sz = count;
         if (new_sz < reserved)
             new_sz = reserved;
-        T* new_array = (T*)malloc( new_sz * sizeof( T ) );
-        if (_array)
-        {
-            for ( i=0; i<count; i++ )
-            {
-                new_array[i] = _array[ pos + i ];
+        T* new_array = (T*)malloc(new_sz * sizeof(T));
+        if (_array) {
+            for (i = 0; i < count; i++) {
+                new_array[i] = _array[pos + i];
             }
-            free( _array );
+            free(_array);
         }
         _array = new_array;
         _count = count;
         _size = new_sz;
     }
     /// removes several items from vector
-    void erase( int pos, int count )
-    {
-        if ( pos<0 || count<=0 || pos+count > _count )
+    void erase(int pos, int count) {
+        if (pos < 0 || count <= 0 || pos + count > _count)
             throw;
         int i;
-        for (i=pos+count; i<_count; i++)
-        {
-            _array[i-count] = _array[i];
+        for (i = pos + count; i < _count; i++) {
+            _array[i - count] = _array[i];
         }
         _count -= count;
     }
 
     /// adds new item to end of vector
-    void add( LVRef<T> item )
-    { 
-        insert( -1, item );
+    void add(LVRef<T> item) {
+        insert(-1, item);
     }
 
-    void add( LVRefVec<T> & list )
-    {
-        for ( int i=0; i<list.length(); i++ )
-            add( list[i] );
+    void add(LVRefVec<T>& list) {
+        for (int i = 0; i < list.length(); i++)
+            add(list[i]);
     }
 
     /// adds new item to end of vector
-    void append( const LVRef<T> * items, int count )
-    {
-        reserve( _count + count );
-        for (int i=0; i<count; i++)
-            _array[ _count+i ] = items[i];
+    void append(const LVRef<T>* items, int count) {
+        reserve(_count + count);
+        for (int i = 0; i < count; i++)
+            _array[_count + i] = items[i];
         _count += count;
     }
-    
-    LVRef<T> * addSpace( int count )
-    {
-        reserve( _count + count );
-        LVRef<T> * ptr = _array + _count;
+
+    LVRef<T>* addSpace(int count) {
+        reserve(_count + count);
+        LVRef<T>* ptr = _array + _count;
         _count += count;
         return ptr;
     }
-    
+
     /// inserts new item to specified position
-    void insert( int pos, LVRef<T> item )
-    {
-        if (pos<0 || pos>_count)
+    void insert(int pos, LVRef<T> item) {
+        if (pos < 0 || pos > _count)
             pos = _count;
-        if ( _count >= _size )
-            reserve( _count * 3 / 2  + 8 );
-        for (int i=_count; i>pos; --i)
-            _array[i] = _array[i-1];
+        if (_count >= _size)
+            reserve(_count * 3 / 2 + 8);
+        for (int i = _count; i > pos; --i)
+            _array[i] = _array[i - 1];
         _array[pos] = item;
         _count++;
     }
     /// returns array pointer
-    LVRef<T> * ptr() { return _array; }
+    LVRef<T>* ptr() {
+        return _array;
+    }
     /// destructor
-    ~LVRefVec() { clear(); }
+    ~LVRefVec() {
+        clear();
+    }
 };
 
 #if 0
@@ -823,6 +860,5 @@ public:
     bool isNull() const { return _ptr->_obj == NULL; }
 };
 #endif
-
 
 #endif

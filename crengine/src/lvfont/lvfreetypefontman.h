@@ -32,7 +32,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-class LVFreeTypeFontManager : public LVFontManager {
+class LVFreeTypeFontManager: public LVFontManager
+{
 private:
     lString8 _path;
     lString8Collection _fallbackFontFaces;
@@ -40,9 +41,9 @@ private:
     FT_Library _library;
     LVFontGlobalGlyphCache _globalCache;
     lString32 _requiredChars;
-    LVHashTable<lString8, LVHashTable<lString8, font_lang_compat>* > _supportedLangs;
+    LVHashTable<lString8, LVHashTable<lString8, font_lang_compat>*> _supportedLangs;
 #if (DEBUG_FONT_MAN == 1)
-    FILE * _log;
+    FILE* _log;
 #endif
     LVMutex _lock;
 public:
@@ -50,7 +51,7 @@ public:
     virtual lUInt32 GetFontListHash(int documentId);
 
     /// set fallback font face list semicolon separated (returns true if any font is found)
-    virtual bool SetFallbackFontFaces(lString8 facesStr );
+    virtual bool SetFallbackFontFaces(lString8 facesStr);
 
     /// get fallback font face (returns empty string if no fallback font is set)
     virtual lString8 GetFallbackFontFace(int index = 0);
@@ -62,10 +63,10 @@ public:
     virtual int GetFallbackFontCount();
 
     /// returns fallback font for specified size
-    virtual LVFontRef GetFallbackFont(int size, int index=0);
+    virtual LVFontRef GetFallbackFont(int size, int index = 0);
 
     /// returns fallback font for specified size, weight and italic
-    virtual LVFontRef GetFallbackFont(int size, int weight=400, bool italic=false, int index=0 );
+    virtual LVFontRef GetFallbackFont(int size, int weight = 400, bool italic = false, int index = 0);
 
     bool isBitmapModeForSize(int size);
 
@@ -81,16 +82,20 @@ public:
     }
 
     /// get kerning mode
-    virtual bool GetKerning() { return _allowKerning; }
+    virtual bool GetKerning() {
+        return _allowKerning;
+    }
 
     /// set kerning mode
     virtual void SetKerning(bool kerningEnabled);
 
     /// sets shaping mode
-    virtual void SetShapingMode( shaping_mode_t mode );
+    virtual void SetShapingMode(shaping_mode_t mode);
 
     /// get shaping mode
-    virtual shaping_mode_t GetShapingMode() { return _shapingMode; }
+    virtual shaping_mode_t GetShapingMode() {
+        return _shapingMode;
+    }
 
     /// clear glyph cache
     virtual void clearGlyphCache();
@@ -110,21 +115,21 @@ public:
     lString8 makeFontFileName(lString8 name);
 
     /// returns available typefaces
-    virtual void getFaceList(lString32Collection &list);
+    virtual void getFaceList(lString32Collection& list);
 
     /// returns registered font files
-    virtual void getFontFileNameList(lString32Collection &list);
+    virtual void getFontFileNameList(lString32Collection& list);
 
     bool SetAlias(lString8 alias, lString8 facename, int id, bool bold, bool italic);
 
     virtual LVFontRef GetFont(int size, int weight, bool italic, css_font_family_t family, lString8 typeface,
-            int features = 0, int documentId = -1, bool useBias = false);
+                              int features = 0, int documentId = -1, bool useBias = false);
 
     virtual void GetAvailableFontWeights(LVArray<int>& weights, lString8 typeface);
 
     bool checkCharSet(FT_Face face);
 
-    virtual font_lang_compat checkFontLangCompat(const lString8 &typeface, const lString8 &langTag);
+    virtual font_lang_compat checkFontLangCompat(const lString8& typeface, const lString8& langTag);
 
     //bool isMonoSpaced( FT_Face face );
     /// registers document font
@@ -140,9 +145,9 @@ public:
 
     virtual bool Init(lString8 path);
 
-    virtual bool SetAsPreferredFontWithBias( lString8 face, int bias, bool clearOthersBias );
+    virtual bool SetAsPreferredFontWithBias(lString8 face, int bias, bool clearOthersBias);
 };
 
-#endif  // (USE_FREETYPE==1)
+#endif // (USE_FREETYPE==1)
 
-#endif  // __LV_FREETYPEFONTMAN_H_INCLUDED__
+#endif // __LV_FREETYPEFONTMAN_H_INCLUDED__
