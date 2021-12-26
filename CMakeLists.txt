@@ -96,16 +96,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   endif()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # Update if necessary
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic -std=gnu11 -fPIC -Wno-misleading-indentation")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -std=c++11 -fPIC -Wno-misleading-indentation -Wno-reorder -Wno-format-overflow")
-  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fomit-frame-pointer")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic -std=gnu11 -fPIC -fomit-frame-pointer")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -Wno-comment -pedantic -std=c++11 -fPIC -fomit-frame-pointer -Wno-reorder -Wno-format-overflow")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # Update if necessary
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic -std=gnu11 -fPIC -Wno-misleading-indentation")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -std=c++11 -fPIC -Wno-misleading-indentation -Wno-reorder")
-  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fomit-frame-pointer")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic -std=gnu11 -fPIC -fomit-frame-pointer")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -std=c++11 -fPIC -fomit-frame-pointer -Wno-reorder")
 endif()
 
 
