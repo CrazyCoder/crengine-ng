@@ -1,3 +1,5 @@
+// clang-format off
+
 /*
  * Copyright (C) 1999-2000 Free Software Foundation, Inc.
  * This file is part of the GNU LIBICONV Library.
@@ -1146,3 +1148,4 @@ static const unsigned short gbkext2_2uni_pagea8[8272] = {
   0xfa1f, 0xfa20, 0xfa21, 0xfa23, 0xfa24, 0xfa27, 0xfa28, 0xfa29,
 };
 
+// clang-format on

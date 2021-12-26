@@ -1,3 +1,4 @@
+// clang-format off
 /*
  * xxHash - Extremely Fast Hash algorithm
  * Copyright (C) 2012-2020 Yann Collet
@@ -41,3 +42,4 @@
 #define XXH_IMPLEMENTATION   /* access definitions */
 
 #include "xxhash.h"
+// clang-format on

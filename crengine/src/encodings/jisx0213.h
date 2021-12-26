@@ -1,3 +1,5 @@
+// clang-format off
+
 /*
  * Copyright (C) 1999-2004 Free Software Foundation, Inc.
  * This file is part of the GNU LIBICONV Library.
@@ -5853,5 +5855,6 @@ static const Summary16 jisx0213_from_ucs_level2_2indx[] = {
   { 11207, 0x0000 }, { 11207, 0x0000 }, { 11207, 0x0000 }, { 11207, 0x0004 },
 };
 
-
 #endif /* _JISX0213_H */
+
+// clang-format on

@@ -1,3 +1,4 @@
+// clang-format off
 /*
  * xxHash - Extremely Fast Hash algorithm
  * Header File
@@ -4764,3 +4765,4 @@ XXH128_hashFromCanonical(const XXH128_canonical_t* src)
 #if defined (__cplusplus)
 }
 #endif
+// clang-format on

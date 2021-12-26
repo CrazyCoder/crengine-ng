@@ -1,3 +1,5 @@
+// clang-format on
+
 /*
  * Copyright (C) 1999-2007 Free Software Foundation, Inc.
  * This file is part of the GNU LIBICONV Library.
@@ -1185,3 +1187,4 @@ static const unsigned short ksc5601_2uni_page4a[4888] = {
   0x71ba, 0x72a7, 0x79a7, 0x7a00, 0x7fb2, 0x8a70,
 };
 
+// clang-format on

@@ -1,3 +1,5 @@
+// clang-format off
+
 /*
  * Copyright (C) 1999-2001 Free Software Foundation, Inc.
  * This file is part of the GNU LIBICONV Library.
@@ -34,3 +36,4 @@ static const unsigned short cp936ext_2uni_pagea8[128-122] = {
                   0x0251, 0xfffd, 0x0144, 0x0148, 0xfffd, 0x0261,
 };
 
+// clang-format on

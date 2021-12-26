@@ -15,6 +15,7 @@ inline unsigned char cr_correct_gamma( unsigned char value, int gamma_index ) { 
 // corrects gamma for byte buffer; gamma_index must be 0..56 (15 means no correction)
 void cr_correct_gamma_buf( unsigned char * buf, int size, int gamma_index );
 
+// clang-format off
 
 #ifdef GAMMA_TABLES_IMPL
 static const unsigned char gamma_table_0[256] = { // gamma=0.300000
@@ -879,6 +880,8 @@ const double cr_gamma_levels[GAMMA_LEVELS] = {
     14.000000,
     15.000000,
 };
+
+// clang-format on
 
 // corrects gamma for byte buffer; gamma_index must be 0..56 (15 means no correction)
 void cr_correct_gamma_buf( unsigned char * buf, int size, int gamma_index ) {

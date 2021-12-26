@@ -1,3 +1,5 @@
+// clang-format off
+
 /*
  * Copyright (C) 1999-2001 Free Software Foundation, Inc.
  * This file is part of the GNU LIBICONV Library.
@@ -1870,3 +1872,4 @@ static const unsigned short big5_2uni_pagec9[7652] = {
   0x9ea4, 0x9f7e, 0x9f49, 0x9f98,
 };
 
+// clang-format on
