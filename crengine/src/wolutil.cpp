@@ -14,6 +14,7 @@
 #include "private/dumpfile.h"
 
 #include <string.h>
+#include <stdio.h>
 
 #define N 4096
 #define F 18
