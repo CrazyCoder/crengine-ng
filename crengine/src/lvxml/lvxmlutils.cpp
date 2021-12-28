@@ -2293,7 +2293,6 @@ int PreProcessXmlString(lChar32* str, int len, lUInt32 flags, const lChar32* enc
                 if (32 == k)
                     k--;
                 entname[k] = 0;
-                int n;
                 lChar32 code = 0;
                 lChar32 code2 = 0;
                 if (str[i + k] == ';' || str[i + k] == ' ') {
