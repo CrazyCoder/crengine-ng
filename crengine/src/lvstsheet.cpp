@@ -444,7 +444,7 @@ static bool next_token(const char*& str) {
     return false;
 }
 
-static bool parse_integer(const char*& str, int& value) {
+static bool parse_uint(const char*& str, unsigned int& value) {
     skip_spaces(str);
     if (*str < '0' || *str > '9') {
         return false; // not a number
@@ -1673,6 +1673,8 @@ static const char* css_bg_repeat_names[] = {
     "inherit",
     NULL
 };
+// TODO: delete css_bg_attachment_names?
+#if 0
 //background attachment names
 static const char* css_bg_attachment_names[] = {
     "scroll",
@@ -1682,6 +1684,7 @@ static const char* css_bg_attachment_names[] = {
     "inherit",
     NULL
 };
+#endif
 //background position names
 static const char* css_bg_position_names[] = {
     "left top", // 0
@@ -1857,8 +1860,8 @@ bool LVCssDeclaration::parse(const char*& decl, lUInt32 domVersionRequested, boo
             switch (prop_code) {
                 // non standard property to ignore declaration depending on gDOMVersionRequested
                 case cssd_cr_ignore_if_dom_version_greater_or_equal: {
-                    int dom_version;
-                    if (parse_integer(decl, dom_version)) {
+                    unsigned int dom_version;
+                    if (parse_uint(decl, dom_version)) {
                         if (domVersionRequested >= dom_version) {
                             return false; // ignore the whole declaration
                         }
