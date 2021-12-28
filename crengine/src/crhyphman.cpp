@@ -1048,8 +1048,8 @@ bool AlgoHyph::hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* f
                                 lUInt16 nw = widths[i] + hyphCharWidth;
                                 if (nw < maxWidth) {
                                     bool disabled = false;
-                                    const char* dblSequences[] = {
-                                        "sh", "th", "ph", "ch", NULL
+                                    const lChar32* dblSequences[] = {
+                                        U"sh", U"th", U"ph", U"ch", NULL
                                     };
                                     next = i + 1;
                                     while ((chprops[next] & CH_PROP_HYPHEN) && next < end - MIN_WORD_LEN_TO_HYPHEN) {
