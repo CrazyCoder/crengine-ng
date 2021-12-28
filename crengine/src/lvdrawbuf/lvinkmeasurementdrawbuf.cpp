@@ -46,7 +46,7 @@ void LVInkMeasurementDrawBuf::FillRect(int x0, int y0, int x1, int y1, lUInt32 c
         updateInkBounds(x0, y0, x1, y1);
 }
 
-void LVInkMeasurementDrawBuf::FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, lUInt8* pattern) {
+void LVInkMeasurementDrawBuf::FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32, const lUInt8*) {
     if (ignore_decorations)
         return;
     FillRect(x0, y0, x1, y1, color0);
@@ -58,7 +58,7 @@ void LVInkMeasurementDrawBuf::Draw(LVImageSourceRef img, int x, int y, int width
     updateInkBounds(x, y, x + width, y + height);
 }
 
-void LVInkMeasurementDrawBuf::BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, lUInt32* palette) {
+void LVInkMeasurementDrawBuf::BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, const lUInt32* palette) {
     // printf("  ink Draw %d %d %d %d\n", x, y, width, height);
     // Used to draw glyph. Trust the font that the bitmap is the glyph
     // bounding box ("blackbox" in cre), so its ink area

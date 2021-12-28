@@ -447,7 +447,7 @@ void LVGrayDrawBuf::FillRect(int x0, int y0, int x1, int y1, lUInt32 color32) {
     }
 }
 
-void LVGrayDrawBuf::FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color032, lUInt32 color132, lUInt8* pattern) {
+void LVGrayDrawBuf::FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color032, lUInt32 color132, const lUInt8* pattern) {
     if (x0 < _clip.left)
         x0 = _clip.left;
     if (y0 < _clip.top)
@@ -671,7 +671,7 @@ void LVGrayDrawBuf::DrawLine(int x0, int y0, int x1, int y1, lUInt32 color0, int
     }
 }
 
-void LVGrayDrawBuf::BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, lUInt32*) {
+void LVGrayDrawBuf::BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, const lUInt32*) {
     int initial_height = height;
     int bx = 0;
     int by = 0;
@@ -840,7 +840,7 @@ void LVGrayDrawBuf::ConvertToBitmap(bool flgDither) {
 
 #if !defined(__SYMBIAN32__) && defined(_WIN32) && !defined(QT_GL)
 /// draws buffer content to DC doing color conversion if necessary
-void LVGrayDrawBuf::DrawTo(HDC dc, int x, int y, int options, lUInt32* palette) {
+void LVGrayDrawBuf::DrawTo(HDC dc, int x, int y, int options, const lUInt32* palette) {
     if (!dc || !_data)
         return;
     LVColorDrawBuf buf(_dx, 1);
@@ -886,7 +886,7 @@ void LVGrayDrawBuf::DrawTo(HDC dc, int x, int y, int options, lUInt32* palette) 
 #endif
 
 /// draws buffer content to another buffer doing color conversion if necessary
-void LVGrayDrawBuf::DrawTo(LVDrawBuf* buf, int x, int y, int options, lUInt32* palette) {
+void LVGrayDrawBuf::DrawTo(LVDrawBuf* buf, int x, int y, int options, const lUInt32* palette) {
     CR_UNUSED2(options, palette);
     lvRect clip;
     buf->GetClipRect(&clip);

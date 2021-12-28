@@ -37,11 +37,11 @@ public:
 
     /// fills rectangle with specified color
     virtual void FillRect(int x0, int y0, int x1, int y1, lUInt32 color);
-    virtual void FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, lUInt8* pattern);
+    virtual void FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, const lUInt8* pattern);
     /// draws image
     virtual void Draw(LVImageSourceRef img, int x, int y, int width, int height, bool dither);
     /// blend font bitmap using specified palette
-    virtual void BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, lUInt32* palette);
+    virtual void BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, const lUInt32* palette);
     /// draw line
     virtual void DrawLine(int x0, int y0, int x1, int y1, lUInt32 color0, int length1 = 1, int length2 = 0, int direction = 0);
 
@@ -67,11 +67,11 @@ public:
     virtual lUInt32 GetBlackColor() const {
         return 0;
     }
-    virtual void DrawTo(LVDrawBuf* buf, int x, int y, int options, lUInt32* palette) { }
+    virtual void DrawTo(LVDrawBuf* buf, int x, int y, int options, const lUInt32* palette) { }
     virtual void DrawOnTop(LVDrawBuf* __restrict buf, int x, int y) { }
     virtual void DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, int options) { }
 #if !defined(__SYMBIAN32__) && defined(_WIN32) && !defined(QT_GL)
-    virtual void DrawTo(HDC dc, int x, int y, int options, lUInt32* palette) { }
+    virtual void DrawTo(HDC dc, int x, int y, int options, const lUInt32* palette) { }
 #endif
     virtual void Invert() { }
     virtual lUInt32 GetPixel(int x, int y) const {

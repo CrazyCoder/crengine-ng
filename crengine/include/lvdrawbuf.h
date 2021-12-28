@@ -202,13 +202,13 @@ public:
         Rect(rc.left, rc.top, rc.right, rc.bottom, borderWidth, color);
     }
     /// fills rectangle with pattern
-    virtual void FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, lUInt8* pattern) = 0;
+    virtual void FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, const lUInt8* pattern) = 0;
     /// inverts image in specified rectangle
     virtual void InvertRect(int x0, int y0, int x1, int y1) = 0;
     /// sets new size
     virtual void Resize(int dx, int dy) = 0;
     /// blend font bitmap using specified palette
-    virtual void BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, lUInt32* palette) = 0;
+    virtual void BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, const lUInt32* palette) = 0;
     /// draws image
     virtual void Draw(LVImageSourceRef img, int x, int y, int width, int height, bool dither = true) = 0;
     /// draws part of source image, possible rescaled
@@ -221,7 +221,7 @@ public:
         CR_UNUSED(rotationAngle);
     }
     /// draws buffer content to another buffer doing color conversion if necessary
-    virtual void DrawTo(LVDrawBuf* buf, int x, int y, int options, lUInt32* palette) = 0;
+    virtual void DrawTo(LVDrawBuf* buf, int x, int y, int options, const lUInt32* palette) = 0;
     // draws buffer on top of another buffer to implement background
     virtual void DrawOnTop(LVDrawBuf* buf, int x, int y) = 0;
     /// draws rescaled buffer content to another buffer doing color conversion if necessary
@@ -234,7 +234,7 @@ public:
     virtual void DrawLine(int x0, int y0, int x1, int y1, lUInt32 color0, int length1, int length2, int direction) = 0;
 #if !defined(__SYMBIAN32__) && defined(_WIN32) && !defined(QT_GL)
     /// draws buffer content to another buffer doing color conversion if necessary
-    virtual void DrawTo(HDC dc, int x, int y, int options, lUInt32* palette) = 0;
+    virtual void DrawTo(HDC dc, int x, int y, int options, const lUInt32* palette) = 0;
 #endif
     /// returns scanline pointer
     virtual lUInt8* GetScanLine(int y) const = 0;

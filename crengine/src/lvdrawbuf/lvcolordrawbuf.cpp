@@ -689,7 +689,7 @@ void LVColorDrawBuf::DrawLine(int x0, int y0, int x1, int y1, lUInt32 color0, in
 }
 
 /// fills rectangle with specified color
-void LVColorDrawBuf::FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, lUInt8* pattern) {
+void LVColorDrawBuf::FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, const lUInt8* pattern) {
     if (x0 < _clip.left)
         x0 = _clip.left;
     if (y0 < _clip.top)
@@ -812,7 +812,7 @@ void LVColorDrawBuf::InvertRect(int x0, int y0, int x1, int y1) {
 }
 
 /// blend font bitmap using specified palette
-void LVColorDrawBuf::BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, lUInt32* palette) {
+void LVColorDrawBuf::BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, const lUInt32* palette) {
     if (!_data)
         return;
     int initial_height = height;
@@ -920,14 +920,14 @@ void LVColorDrawBuf::BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixe
 
 #if !defined(__SYMBIAN32__) && defined(_WIN32) && !defined(QT_GL)
 /// draws buffer content to DC doing color conversion if necessary
-void LVColorDrawBuf::DrawTo(HDC dc, int x, int y, int options, lUInt32* palette) {
+void LVColorDrawBuf::DrawTo(HDC dc, int x, int y, int options, const lUInt32* palette) {
     if (dc != NULL && _drawdc != NULL)
         BitBlt(dc, x, y, _dx, _dy, _drawdc, 0, 0, SRCCOPY);
 }
 #endif
 
 /// draws buffer content to another buffer doing color conversion if necessary
-void LVColorDrawBuf::DrawTo(LVDrawBuf* buf, int x, int y, int options, lUInt32* palette) {
+void LVColorDrawBuf::DrawTo(LVDrawBuf* buf, int x, int y, int options, const lUInt32* palette) {
     CR_UNUSED(options);
     CR_UNUSED(palette);
     //

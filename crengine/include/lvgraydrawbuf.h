@@ -39,14 +39,14 @@ public:
     /// returns black pixel value
     virtual lUInt32 GetBlackColor() const;
     /// draws buffer content to another buffer doing color conversion if necessary
-    virtual void DrawTo(LVDrawBuf* buf, int x, int y, int options, lUInt32* palette);
+    virtual void DrawTo(LVDrawBuf* buf, int x, int y, int options, const lUInt32* palette);
     // draws buffer on top of another buffer to implement background
     virtual void DrawOnTop(LVDrawBuf* buf, int x, int y);
     /// draws rescaled buffer content to another buffer doing color conversion if necessary
     virtual void DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, int options);
 #if !defined(__SYMBIAN32__) && defined(_WIN32) && !defined(QT_GL)
     /// draws buffer content to another buffer doing color conversion if necessary
-    virtual void DrawTo(HDC dc, int x, int y, int options, lUInt32* palette);
+    virtual void DrawTo(HDC dc, int x, int y, int options, const lUInt32* palette);
 #endif
     /// invert image
     virtual void Invert();
@@ -63,13 +63,13 @@ public:
     /// inverts image in specified rectangle
     virtual void InvertRect(int x0, int y0, int x1, int y1);
     /// fills rectangle with pattern
-    virtual void FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, lUInt8* pattern);
+    virtual void FillRectPattern(int x0, int y0, int x1, int y1, lUInt32 color0, lUInt32 color1, const lUInt8* pattern);
     /// sets new size
     virtual void Resize(int dx, int dy);
     /// draws image
     virtual void Draw(LVImageSourceRef img, int x, int y, int width, int height, bool dither);
     /// blend font bitmap using specified palette
-    virtual void BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, lUInt32* palette);
+    virtual void BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, const lUInt32* palette);
     /// constructor
     LVGrayDrawBuf(int dx, int dy, int bpp = 2, void* auxdata = NULL);
     /// destructor
