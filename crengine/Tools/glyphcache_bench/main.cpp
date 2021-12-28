@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <sys/time.h>
 #include <limits.h>
 
@@ -324,8 +325,8 @@ int main(int /*argc*/, char* /*argv*/[]) {
     }
     gettimeofday(&ts2, NULL);
     elapsed = timevalcmp(&ts2, &ts1);
-    printf("%lld us\n", elapsed);
-    printf("t = %lld\n", tmp);
+    printf("%" PRId64 " us\n", elapsed);
+    printf("t = %" PRIu64 "\n", tmp);
 
     // bench lookup based on hash table
     printf("bench cache based on hash table (candidate introduced in cr3.2.32)...\n");
@@ -338,8 +339,8 @@ int main(int /*argc*/, char* /*argv*/[]) {
     }
     gettimeofday(&ts2, NULL);
     elapsed = timevalcmp(&ts2, &ts1);
-    printf("%lld us\n", elapsed);
-    printf("t = %lld\n", tmp);
+    printf("%" PRId64 " us\n", elapsed);
+    printf("t = %" PRIu64 "\n", tmp);
 
     // bench lookup based on hash table
     printf("bench cache based on hash table (current version)...\n");
@@ -352,8 +353,8 @@ int main(int /*argc*/, char* /*argv*/[]) {
     }
     gettimeofday(&ts2, NULL);
     elapsed = timevalcmp(&ts2, &ts1);
-    printf("%lld us\n", elapsed);
-    printf("t = %lld\n", tmp);
+    printf("%" PRId64 " us\n", elapsed);
+    printf("t = %" PRIu64 "\n", tmp);
 
     // cleanup
     globalCacheA.clear();
