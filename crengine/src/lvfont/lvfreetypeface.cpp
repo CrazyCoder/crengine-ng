@@ -287,6 +287,16 @@ static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lChar32
                 if (gammaIndex != GAMMA_NO_CORRECTION_INDEX)
                     cr_correct_gamma_buf(item->bmp, bmp_sz, gammaIndex);
                 break;
+            case BMP_PIXEL_FORMAT_BGRA:
+                // TODO: implement this
+                break;
+            case BMP_PIXEL_FORMAT_MONO:
+                // just ignore gamma on mono color image
+                break;
+            case BMP_PIXEL_FORMAT_GRAY2:
+            case BMP_PIXEL_FORMAT_GRAY4:
+                // TODO: implement this
+                break;
         }
     }
     item->origin_x = (lInt16)slot->bitmap_left;
@@ -327,6 +337,16 @@ static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lUInt32
                 // correct gamma
                 if (gammaIndex != GAMMA_NO_CORRECTION_INDEX)
                     cr_correct_gamma_buf(item->bmp, bmp_sz, gammaIndex);
+                break;
+            case BMP_PIXEL_FORMAT_BGRA:
+                // TODO: implement this
+                break;
+            case BMP_PIXEL_FORMAT_MONO:
+                // just ignore gamma on mono color image
+                break;
+            case BMP_PIXEL_FORMAT_GRAY2:
+            case BMP_PIXEL_FORMAT_GRAY4:
+                // TODO: implement this
                 break;
         }
     }
@@ -1277,18 +1297,20 @@ void LVFreeTypeFace::DrawStretchedGlyph(LVDrawBuf* buf, int glyph_index, int x, 
     // to neighbours, as when unscaled:
     int pad_left = glyph.originX > 0 ? glyph.originX : 0;
     int pad_right = glyph.rsb > 0 ? glyph.rsb : 0;
-    int target_w = w - pad_left - pad_right;
+    unsigned int target_w;
+    if (w > pad_left + pad_right)
+        target_w = (unsigned int)(w - pad_left - pad_right);
+    else
+        target_w = 1;
     // For the height, we can't really trust the font glyphs vertical position
     // and top/bottom side bearings. So, keep 1px on each side if we are stretching
     // vertically, but none if we are horizontally stretching (as these are usually
     // quite thin, and some vertical spacing is already accounted in munder/mover).
     int pad_top_bottom = h > w ? 1 : 0;
-    int target_h = h - 2 * pad_top_bottom;
-
-    // Be sure we don't go negative in our computations
-    if (target_w <= 0)
-        target_w = 1;
-    if (target_h <= 0)
+    unsigned int target_h;
+    if (h > 2 * pad_top_bottom)
+        target_h = (unsigned int)(h - 2 * pad_top_bottom);
+    else
         target_h = 1;
 
     int scale_x = target_w * 256 / glyph.blackBoxX;
@@ -1678,7 +1700,7 @@ lUInt16 LVFreeTypeFace::measureText(const lChar32* text,
     }
     int letter_spacing_w = letter_spacing + FONT_METRIC_TO_PX(_synth_weight_strength);
 
-    int i;
+    unsigned int i;
 
     lUInt16 prev_width = 0;
     lUInt16 cur_width = 0;
@@ -1735,11 +1757,11 @@ lUInt16 LVFreeTypeFace::measureText(const lChar32* text,
         // full shaping without filterChar(), and if any .notdef
         // codepoint, re-shape with filterChar()...
         if (fallbackFont != NULL) { // It has a fallback font, add chars as-is
-            for (i = 0; i < len; i++) {
+            for (i = 0; i < (unsigned int)len; i++) {
                 hb_buffer_add(_hb_buffer, (hb_codepoint_t)(text[i]), i);
             }
         } else { // No fallback font, check codepoint presence or get replacement char
-            for (i = 0; i < len; i++) {
+            for (i = 0; i < (unsigned int)len; i++) {
                 hb_buffer_add(_hb_buffer, (hb_codepoint_t)filterChar(text[i], def_char), i);
             }
         }
@@ -1786,9 +1808,13 @@ lUInt16 LVFreeTypeFace::measureText(const lChar32* text,
         hb_shape(_hb_font, _hb_buffer, _hb_features.ptr(), (unsigned int)_hb_features.length());
 
         // Harfbuzz has guessed and set a direction even if we did not provide one.
+#ifdef DEBUG_MEASURE_TEXT
         bool is_rtl = false;
+#endif
         if (hb_buffer_get_direction(_hb_buffer) == HB_DIRECTION_RTL) {
+#ifdef DEBUG_MEASURE_TEXT
             is_rtl = true;
+#endif
             // "For buffers in the right-to-left (RTL) or bottom-to-top (BTT) text
             // flow direction, the directionality of the buffer itself is reversed
             // for final output as a matter of design. Therefore, HarfBuzz inverts
@@ -1808,7 +1834,7 @@ lUInt16 LVFreeTypeFace::measureText(const lChar32* text,
         glyph_pos = hb_buffer_get_glyph_positions(_hb_buffer, 0);
 
         if (_scale_mul != 1 || _scale_div != 1) {
-            for (i = 0; i < (int)glyph_count; i++) {
+            for (i = 0; i < glyph_count; i++) {
                 glyph_pos[i].x_advance = _scale_mul * glyph_pos[i].x_advance / _scale_div;
                 glyph_pos[i].y_advance = _scale_mul * glyph_pos[i].y_advance / _scale_div;
                 glyph_pos[i].x_offset = _scale_mul * glyph_pos[i].x_offset / _scale_div;
@@ -2039,7 +2065,7 @@ lUInt16 LVFreeTypeFace::measureText(const lChar32* text,
         struct LVCharTriplet triplet;
         struct LVCharPosInfo posInfo;
         triplet.Char = 0;
-        for (i = 0; i < len; i++) {
+        for (i = 0; i < (unsigned int)len; i++) {
             lChar32 ch = text[i];
             bool isHyphen = (ch == UNICODE_SOFT_HYPHEN_CODE);
             if (isHyphen) {
@@ -2053,7 +2079,7 @@ lUInt16 LVFreeTypeFace::measureText(const lChar32* text,
             flags[i] = GET_CHAR_FLAGS(ch); //calcCharFlags( ch );
             triplet.prevChar = triplet.Char;
             triplet.Char = ch;
-            if (i < len - 1)
+            if (i < (unsigned int)(len - 1)) // len is always greater than 0
                 triplet.nextChar = text[i + 1];
             else
                 triplet.nextChar = 0;
@@ -2091,7 +2117,7 @@ lUInt16 LVFreeTypeFace::measureText(const lChar32* text,
 #if (ALLOW_KERNING == 1)
         int use_kerning = _allowKerning && FT_HAS_KERNING(_face);
 #endif
-        for (i = 0; i < len; i++) {
+        for (i = 0; i < (unsigned int)len; i++) {
             lChar32 ch = text[i];
             bool isHyphen = (ch == UNICODE_SOFT_HYPHEN_CODE);
             if (isHyphen) {
@@ -2163,7 +2189,7 @@ lUInt16 LVFreeTypeFace::measureText(const lChar32* text,
 #endif
 
     // fill props for rest of chars
-    for (int ii = i; ii < len; ii++) {
+    for (unsigned int ii = i; ii < (unsigned int)len; ii++) {
         flags[ii] = GET_CHAR_FLAGS(text[ii]);
     }
 
@@ -2827,11 +2853,11 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
 
         // Fill HarfBuzz buffer
         if (fallbackFont) { // It has a fallback font, add chars as-is
-            for (i = 0; i < len; i++) {
+            for (i = 0; i < (unsigned int)len; i++) {
                 hb_buffer_add(_hb_buffer, (hb_codepoint_t)(text[i]), i);
             }
         } else { // No fallback font, check codepoint presence or get replacement char
-            for (i = 0; i < len; i++) {
+            for (i = 0; i < (unsigned int)len; i++) {
                 hb_buffer_add(_hb_buffer, (hb_codepoint_t)filterChar(text[i], def_char), i);
             }
         }
@@ -2881,7 +2907,7 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
         glyph_pos = hb_buffer_get_glyph_positions(_hb_buffer, 0);
 
         if (_scale_mul != 1 || _scale_div != 1) {
-            for (i = 0; i < (int)glyph_count; i++) {
+            for (i = 0; i < glyph_count; i++) {
                 glyph_pos[i].x_advance = _scale_mul * glyph_pos[i].x_advance / _scale_div;
                 glyph_pos[i].y_advance = _scale_mul * glyph_pos[i].y_advance / _scale_div;
                 glyph_pos[i].x_offset = _scale_mul * glyph_pos[i].x_offset / _scale_div;
@@ -2918,7 +2944,7 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
         // to get right).
         int fb_t_start = 0;
         int fb_t_end = len;
-        int hg = 0;                // index in glyph_info/glyph_pos
+        unsigned int hg = 0;       // index in glyph_info/glyph_pos
         while (hg < glyph_count) { // hg is the start of a new cluster at this point
             bool draw_with_fallback = false;
             int hcl = glyph_info[hg].cluster;
@@ -2929,7 +2955,7 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
 #ifdef DEBUG_DRAW_TEXT
             printf("DTHB g%d c%d: ", hg, hcl);
 #endif
-            int hg2 = hg;
+            unsigned int hg2 = hg;
             while (hg2 < glyph_count) {
                 int hcl2 = glyph_info[hg2].cluster;
                 if (hcl2 != hcl) { // New cluster starts at hg2: we can draw hg > hg2-1
@@ -2957,7 +2983,7 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
                 // a cluster/segment with notdef
                 int hclbad = hcl2;
                 int hclgood = -1;
-                int hg3 = hg2 + 1;
+                unsigned int hg3 = hg2 + 1;
                 while (hg3 < glyph_count) {
                     int hcl3 = glyph_info[hg3].cluster;
                     if (hclgood >= 0 && hcl3 != hclgood) {
@@ -3118,9 +3144,9 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
         triplet.Char = 0;
         bool is_rtl = (flags & LFNT_HINT_DIRECTION_KNOWN) && (flags & LFNT_HINT_DIRECTION_IS_RTL);
         for (i = 0; i <= (unsigned int)len; i++) {
-            if (i == len && !addHyphen)
+            if (i == (unsigned int)len && !addHyphen)
                 break;
-            if (i < len) {
+            if (i < (unsigned int)len) {
                 // If RTL, draw glyphs starting from the of the node text
                 ch = is_rtl ? text[len - 1 - i] : text[i];
                 if (ch == '\t')
@@ -3134,7 +3160,7 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
             LVFontGlyphCacheItem* item = getGlyph(ch, def_char, fallbackPassMask);
             if (!item)
                 continue;
-            if ((item && !isHyphen) || i == len) { // only draw soft hyphens at end of string
+            if ((item && !isHyphen) || i == (unsigned int)len) { // only draw soft hyphens at end of string
                 triplet.prevChar = triplet.Char;
                 triplet.Char = ch;
                 if (i < (unsigned int)(len - 1))
@@ -3182,14 +3208,14 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
 #if (ALLOW_KERNING == 1)
         int use_kerning = _allowKerning && FT_HAS_KERNING(_face);
 #endif
-        for (i = 0; i <= len; i++) {
-            if (i == len && (!addHyphen || isHyphen))
+        for (i = 0; i <= (unsigned int)len; i++) {
+            if (i == (unsigned int)len && (!addHyphen || isHyphen))
                 break;
-            if (i < len) {
+            if (i < (unsigned int)len) {
                 ch = text[i];
                 if (ch == '\t')
                     ch = ' ';
-                isHyphen = (ch == UNICODE_SOFT_HYPHEN_CODE) && (i < len - 1);
+                isHyphen = (ch == UNICODE_SOFT_HYPHEN_CODE) && (i < (unsigned int)(len - 1));
             } else {
                 ch = UNICODE_SOFT_HYPHEN_CODE;
                 isHyphen = 0;
@@ -3211,7 +3237,7 @@ int LVFreeTypeFace::DrawTextString(LVDrawBuf* buf, int x, int y, const lChar32* 
             LVFontGlyphCacheItem* item = getGlyph(ch, def_char, fallbackPassMask);
             if (!item)
                 continue;
-            if ((item && !isHyphen) || i >= len - 1) { // avoid soft hyphens inside text string
+            if ((item && !isHyphen) || i >= (unsigned int)(len - 1)) { // avoid soft hyphens inside text string
                 if (transform_stretch) {
                     // Stretched drawing of glyph to the x/y/w/h provided (used with MathML)
                     // Split the targeted width to each glyph in case we have more than one

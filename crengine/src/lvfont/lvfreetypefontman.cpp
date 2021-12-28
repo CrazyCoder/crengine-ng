@@ -111,7 +111,7 @@ LVHashTable<lString8, font_lang_compat>* getSupportedLangs(FT_Face face) {
             FT_UInt glyphIndex;
             partialSupport = false;
             fullSupport = true;
-            for (int i = 0;;) {
+            for (unsigned int i = 0;;) {
                 // get next codePoint
                 if (inRange && codePoint < second) {
                     codePoint++;
