@@ -295,7 +295,7 @@ bool MyTexHyph::dump(LVStreamRef stream, const lString8& title) {
             pattern = pattern->next;
         }
     }
-    if (strPatterns.length() != _pattern_count) {
+    if ((lUInt32)strPatterns.length() != _pattern_count) {
         CRLog::error("Not all patterns processed!");
         return false;
     }
