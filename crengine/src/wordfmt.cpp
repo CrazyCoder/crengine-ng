@@ -33,9 +33,11 @@ int strcasecmp(const char* s1, const char* s2) {
 #endif // _WIN32
 
 #ifdef _DEBUG
-#define TRACE(x, ...) CRLog::trace(x)
+#define TRACE(x)         CRLog::trace(x)
+#define TRACE_VA(x, ...) CRLog::trace(x, ##__VA_ARGS__)
 #else
-#define TRACE(x, ...)
+#define TRACE(x)
+#define TRACE_VA(x, ...)
 #endif
 
 static ldomDocumentWriter* writer = NULL;
@@ -272,7 +274,7 @@ void vSubstring2Diagram(diagram_type* pDiag,
                         USHORT usFontSize, USHORT usMaxFontSize) {
     lString32 s(szString, (int)tStringLength);
 #ifdef _LINUX
-    TRACE("antiword::vSubstring2Diagram(%s)", LCSTR(s));
+    TRACE_VA("antiword::vSubstring2Diagram(%s)", LCSTR(s));
 #else
     TRACE("antiword::vSubstring2Diagram()");
 #endif
@@ -334,7 +336,7 @@ void vStoreStyle(diagram_type* pDiag, output_type* pOutput,
     usBeforeIndent = pStyle->usBeforeIndent; /* Vertical indent before paragraph in twips */
     usAfterIndent = pStyle->usAfterIndent;   /* Vertical indent after paragraph in twips */
 
-    TRACE("antiword::vStoreStyle(al=%d, li1=%d, li=%d, ri=%d)", alignment, sLeftIndent1, sLeftIndent, sRightIndent);
+    TRACE_VA("antiword::vStoreStyle(al=%d, li1=%d, li=%d, ri=%d)", alignment, sLeftIndent1, sLeftIndent, sRightIndent);
     //styleBold = pStyle->style_block_tag
 
 } /* end of vStoreStyle */
