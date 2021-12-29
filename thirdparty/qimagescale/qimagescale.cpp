@@ -528,7 +528,7 @@ static void qt_qimageScaleAARGBA_down_xy(QImageScaleInfo *isi, unsigned int *des
             unsigned int b = ((bx>>4) * yap);
             unsigned int a = ((ax>>4) * yap);
 
-            int j;
+            unsigned int j;
             for (j = (1 << 14) - yap; j > Cy; j -= Cy) {
                 sptr += sow;
                 qt_qimageScaleAARGBA_helper(sptr, xap, Cx, 1, rx, gx, bx, ax);
