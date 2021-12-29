@@ -152,7 +152,7 @@ void ReadEpubNcxPageList(ldomDocument* doc, ldomNode* mapRoot, LVPageMap* pageMa
     lUInt16 navLabel_id = mapRoot->getDocument()->getElementNameIndex(U"navLabel");
     lUInt16 content_id = mapRoot->getDocument()->getElementNameIndex(U"content");
     lUInt16 text_id = mapRoot->getDocument()->getElementNameIndex(U"text");
-    for (int i = 0; i < EPUB_ITEM_MAX_ITER; i++) {
+    for (unsigned int i = 0; i < EPUB_ITEM_MAX_ITER; i++) {
         ldomNode* pageTarget = mapRoot->findChildElement(LXML_NS_ANY, pageTarget_id, i);
         if (!pageTarget)
             break;
@@ -255,7 +255,7 @@ void ReadEpubNavPageMap(ldomDocument* doc, ldomNode* mapRoot, LVPageMap* pageMap
         return;
     lUInt16 li_id = mapRoot->getDocument()->getElementNameIndex(U"li");
     lUInt16 a_id = mapRoot->getDocument()->getElementNameIndex(U"a");
-    for (int i = 0; i < EPUB_ITEM_MAX_ITER; i++) {
+    for (unsigned int i = 0; i < EPUB_ITEM_MAX_ITER; i++) {
         ldomNode* li = mapRoot->findChildElement(LXML_NS_ANY, li_id, i);
         if (!li)
             break;
@@ -287,7 +287,7 @@ void ReadEpubAdobePageMap(ldomDocument* doc, ldomNode* mapRoot, LVPageMap* pageM
     if (!mapRoot || !pageMap)
         return;
     lUInt16 page_id = mapRoot->getDocument()->getElementNameIndex(U"page");
-    for (int i = 0; i < EPUB_ITEM_MAX_ITER; i++) {
+    for (unsigned int i = 0; i < EPUB_ITEM_MAX_ITER; i++) {
         ldomNode* page = mapRoot->findChildElement(LXML_NS_ANY, page_id, i);
         if (!page)
             break;
