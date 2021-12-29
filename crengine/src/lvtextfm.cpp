@@ -50,17 +50,11 @@
 #endif
 
 #if TRACE_LINE_SPLITTING == 1
-#ifdef _MSC_VER
-#define TR(...) CRLog::trace(__VA_ARGS__)
+#define TR_VA(x, ...) CRLog::trace(x, ##__VA_ARGS__)
+#define TR(x)         CRLog::trace(x)
 #else
-#define TR(x...) CRLog::trace(x)
-#endif
-#else
-#ifdef _MSC_VER
-#define TR(...)
-#else
-#define TR(x...)
-#endif
+#define TR_VA(x, ...)
+#define TR(x)
 #endif
 
 #define FRM_ALLOC_SIZE 16
@@ -487,7 +481,7 @@ public:
                 embedded_float_t* flt = m_pbuffer->floats[i];
                 if (flt->to_position) // ignore not yet positioned floats
                     continue;
-                if (flt->y <= y && flt->y + flt->height > y) { // this float is spanning this y
+                if (flt->y <= y && (int)(flt->y + flt->height) > y) { // this float is spanning this y
                     if (flt->is_right) {
                         if (flt->x < fl_right_min_x)
                             fl_right_min_x = flt->x;
@@ -703,7 +697,7 @@ public:
                 embedded_float_t* flt = m_pbuffer->floats[i];
                 if (flt->to_position) // ignore not yet positioned floats (even if
                     continue;         // there shouldn't be any when this is called)
-                if (flt->y < m_y && flt->y + flt->height > m_y) {
+                if (flt->y < m_y && (int)(flt->y + flt->height) > m_y) {
                     has_ongoing_float = true;
                     break;
                 }
@@ -774,7 +768,7 @@ public:
             embedded_float_t* flt = m_pbuffer->floats[i];
             if (flt->to_position) // ignore not yet positioned floats, as they
                 continue;         // are not yet running past m_y
-            if (flt->y < m_y && flt->y + flt->height > m_y) {
+            if (flt->y < m_y && (int)(flt->y + flt->height) > m_y) {
                 m_has_ongoing_float = true;
                 break;
             }
@@ -812,7 +806,7 @@ public:
                     embedded_float_t* flt = m_pbuffer->floats[i];
                     if (flt->to_position) // ignore not yet positioned floats
                         continue;
-                    if (flt->y <= y && flt->y + flt->height > y) { // this float is spanning this y
+                    if (flt->y <= y && (int)(flt->y + flt->height) > y) { // this float is spanning this y
                         if (flt->is_right) {
                             if (flt->x < fl_right_min_x)
                                 fl_right_min_x = flt->x;
@@ -883,7 +877,7 @@ public:
         // allocate buffers
         m_length = pos;
 
-        TR("allocate(%d)", m_length);
+        TR_VA("allocate(%d)", m_length);
         // We start with static buffers, but when m_length reaches STATIC_BUFS_SIZE,
         // we switch to dynamic buffers and we keep using them (realloc'ating when
         // needed).
@@ -1489,7 +1483,7 @@ public:
                 // m_text[k] = '='; // uncomment when debugging
             }
         }
-        TR("%s", LCSTR(lString32(m_text, m_length)));
+        TR_VA("%s", LCSTR(lString32(m_text, m_length)));
 
         // Whether any "-cr-hint: strut-confined" should be applied: only when
         // we have non-space-only text in the paragraph - standalone images
@@ -2103,7 +2097,7 @@ public:
         //        for ( int i=0; i<m_length; i++ ) {
         //            buf << U" " << lChar32(m_text[i]) << U" " << lString32::itoa(m_widths[i]);
         //        }
-        //        TR("%s", LCSTR(buf));
+        //        TR_VA("%s", LCSTR(buf));
     }
 
 #define MIN_WORD_LEN_TO_HYPHENATE 4
@@ -2423,7 +2417,7 @@ public:
         if (preFormattedOnly || !align)
             align = m_para_dir_is_rtl ? LTEXT_ALIGN_RIGHT : LTEXT_ALIGN_LEFT;
 
-        TR("addLine(%d, %d) y=%d  align=%d", start, end, m_y, align);
+        TR_VA("addLine(%d, %d) y=%d  align=%d", start, end, m_y, align);
 
         // Note: parameter needReduceSpace and variable splitBySpaces (which
         // was always true) have been removed, as we always split by space:
@@ -3225,7 +3219,7 @@ public:
                     // Set and adjust word natural width (and min_width which might be used in alignLine())
                     word->width = m_widths[i > 0 ? i - 1 : 0] - (wstart > 0 ? m_widths[wstart - 1] : 0);
                     word->min_width = word->width;
-                    TR("addLine - word(%d, %d) x=%d (%d..%d)[%d] |%s|", wstart, i, frmline->width, wstart > 0 ? m_widths[wstart - 1] : 0, m_widths[i - 1], word->width, LCSTR(lString32(m_text + wstart, i - wstart)));
+                    TR_VA("addLine - word(%d, %d) x=%d (%d..%d)[%d] |%s|", wstart, i, frmline->width, wstart > 0 ? m_widths[wstart - 1] : 0, m_widths[i - 1], word->width, LCSTR(lString32(m_text + wstart, i - wstart)));
                     if (m_flags[wstart] & LCHAR_IS_CLUSTER_TAIL) {
                         // The start of this word is part of a ligature that started
                         // in a previous word: some hyphenation wrap happened on
@@ -3412,7 +3406,7 @@ public:
                         else if ( lastc=='.' || lastc==',' || lastc=='!' || lastc==':' || lastc==';' || lastc=='?') {
                             FONT_GUARD
                             int w = font->getCharWidth(lastc);
-                            TR("floating: %c w=%d", lastc, w);
+                            TR_VA("floating: %c w=%d", lastc, w);
                             if (frmline->width + w + wAlign + x >= maxWidth)
                                 word->width -= w; //fix russian "?" at line end
                         }
@@ -3685,7 +3679,7 @@ public:
 
     /// Split paragraph into lines
     void processParagraph(int start, int end, bool isLastPara) {
-        TR("processParagraph(%d, %d)", start, end);
+        TR_VA("processParagraph(%d, %d)", start, end);
 
         // ensure buffer size is ok for paragraph
         allocate(start, end);
@@ -4030,8 +4024,8 @@ public:
                         printf("  hyphenating: %s\n", LCSTR(lString32(m_text + wstart, len)));
 #endif
 #if TRACE_LINE_SPLITTING == 1
-                    TR("wordBounds(%s) unusedSpace=%d wordWidth=%d",
-                       LCSTR(lString32(m_text + wstart, len)), unusedSpace, m_widths[wend] - m_widths[wstart]);
+                    TR_VA("wordBounds(%s) unusedSpace=%d wordWidth=%d",
+                          LCSTR(lString32(m_text + wstart, len)), unusedSpace, m_widths[wend] - m_widths[wstart]);
 #endif
                     // We have a valid word to look for hyphenation
                     if (len > MAX_WORD_SIZE) // hyphenate() stops/truncates at 64 chars
@@ -4068,7 +4062,7 @@ public:
                         for (int i = 0; i < len; i++) {
                             if (m_flags[wstart + i] & LCHAR_ALLOW_HYPH_WRAP_AFTER) {
                                 if (widths[i] + _hyphen_width > max_width) {
-                                    TR("hyphen found, but max width reached at char %d", i);
+                                    TR_VA("hyphen found, but max width reached at char %d", i);
                                     m_flags[wstart + i] &= ~LCHAR_ALLOW_HYPH_WRAP_AFTER; // reset flag
                                 } else if (wstart + i > pos + 1) {
                                     if (lastHyphWrap >= 0) { // reset flag on previous candidate
@@ -4087,7 +4081,7 @@ public:
                             break;
                         }
                     }
-                    TR("no hyphen found - max_width=%d", max_width);
+                    TR_VA("no hyphen found - max_width=%d", max_width);
                     // Look at previous words if any
                     wordpos = wstart - 1;
                 }
@@ -4387,7 +4381,7 @@ public:
         splitParagraphs();
         // cleanup
         dealloc();
-        TR("format() finished: h=%d  lines=%d", m_y, m_pbuffer->frmlinecount);
+        TR_VA("format() finished: h=%d  lines=%d", m_y, m_pbuffer->frmlinecount);
         return m_y;
     }
 };
@@ -4951,7 +4945,7 @@ void LFormattedText::Draw(LVDrawBuf* buf, int x, int y, ldomMarkedRangeList* mar
         // because of the checks with _hidePartialGlyphs in lvdrawbuf.cpp
         // (todo: get rid of these _hidePartialGlyphs checks ?)
 
-        if (y + flt->y - top_overflow < clip.bottom && y + flt->y + flt->height + bottom_overflow > clip.top) {
+        if (y + flt->y - top_overflow < clip.bottom && (int)(y + flt->y + flt->height + bottom_overflow) > clip.top) {
             // DrawDocument() parameters (y0 + doc_y must be equal to our y,
             // doc_y just shift the viewport, so anything outside is not drawn).
             int x0 = x + flt->x;
