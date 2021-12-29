@@ -697,7 +697,7 @@ static Int64 _chm_fetch_bytes(struct chmFile *h,
                               UInt64 os,
                               Int64 len)
 {
-    Int64 readLen=0, oldOs=0;
+    Int64 readLen=0;
     if (h->fd  ==  CHM_NULL_FD)
         return readLen;
 
@@ -739,6 +739,7 @@ static Int64 _chm_fetch_bytes(struct chmFile *h,
     readLen = pread(h->fd, buf, (long)len, (unsigned int)os);
 #endif
 #else
+    Int64 oldOs=0;
 #ifdef CHM_USE_IO64
     oldOs = lseek64(h->fd, 0, SEEK_CUR);
     lseek64(h->fd, os, SEEK_SET);
