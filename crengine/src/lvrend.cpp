@@ -733,7 +733,6 @@ public:
         // place row cells horizontally
         for (i = 0; i < rows.length(); i++) {
             int x = 0;
-            int miny = -1;
             CCRTableRow* row = rows[i];
             row->index = i;
             for (j = 0; j < rows[i]->cells.length(); j++) {
@@ -793,6 +792,7 @@ public:
              * I can't guess which other case this was supposed to solve...
              * So let's disable it until we find why it was needed.
              *
+            int miny = -1;
             // update min row count
             for (j=0; j<x; j++) {
                 if (miny==-1 || miny>cols[j]->nrows)
@@ -2954,7 +2954,6 @@ lString32 renderListItemMarker(ldomNode* enode, int& marker_width, LFormattedTex
 
 // (Common condition used at multiple occasions, made as as function for clarity)
 bool renderAsListStylePositionInside(const css_style_ref_t style, bool is_rtl = false) {
-    bool render_as_lsp_inside = false;
     if (style->list_style_position == css_lsp_inside) {
         return true;
     } else if (style->list_style_position == css_lsp_outside) {
