@@ -143,12 +143,8 @@ static void CRReinitTimer() {
 }
 #endif
 
+#ifndef LINUX
 static lUInt64 GetCurrentTimeMillis() {
-#if defined(LINUX) || defined(ANDROID) || defined(_LINUX)
-    timeval ts;
-    gettimeofday(&ts, NULL);
-    return ts.tv_sec * (lUInt64)1000 + ts.tv_usec / 1000;
-#else
 #ifdef _WIN32
     if (!__timerInitialized) {
         CRReinitTimer();
@@ -160,10 +156,10 @@ static lUInt64 GetCurrentTimeMillis() {
         return __startTimeMillis + (lUInt64)(__timeAbsolute - __timeStart);
     }
 #else
-#error* You should define GetCurrentTimeMillis() *
-#endif
+#error* You should implement GetCurrentTimeMillis() *
 #endif
 }
+#endif
 
 class CRFileLogger: public CRLog
 {
@@ -177,7 +173,7 @@ protected:
 #ifdef LINUX
         struct timeval tval;
         gettimeofday(&tval, NULL);
-        int ms = tval.tv_usec;
+        int ms = tval.tv_usec / 1000;
         time_t t = tval.tv_sec;
 #if LOG_HEAP_USAGE
         struct mallinfo mi = mallinfo();
@@ -187,16 +183,16 @@ protected:
         lUInt64 ts = GetCurrentTimeMillis();
         //time_t t = (time_t)time(0);
         time_t t = ts / 1000;
-        int ms = (ts % 1000) * 1000;
+        int ms = ts % 1000;
 #if LOG_HEAP_USAGE
         int memusage = 0;
 #endif
-#endif
+#endif // LINUX
         struct tm* bt = localtime(&t);
 #if LOG_HEAP_USAGE
-        fprintf(f, "%04d/%02d/%02d %02d:%02d:%02d.%04d [%d] %s ", bt->tm_year + 1900, bt->tm_mon + 1, bt->tm_mday, bt->tm_hour, bt->tm_min, bt->tm_sec, ms / 100, memusage, level);
+        fprintf(f, "%04d/%02d/%02d %02d:%02d:%02d.%03d [%d] %s ", bt->tm_year + 1900, bt->tm_mon + 1, bt->tm_mday, bt->tm_hour, bt->tm_min, bt->tm_sec, ms, memusage, level);
 #else
-        fprintf(f, "%04d/%02d/%02d %02d:%02d:%02d.%04d %s ", bt->tm_year + 1900, bt->tm_mon + 1, bt->tm_mday, bt->tm_hour, bt->tm_min, bt->tm_sec, ms / 100, level);
+        fprintf(f, "%04d/%02d/%02d %02d:%02d:%02d.%03d %s ", bt->tm_year + 1900, bt->tm_mon + 1, bt->tm_mday, bt->tm_hour, bt->tm_min, bt->tm_sec, ms, level);
 #endif
         vfprintf(f, msg, args);
         fprintf(f, "\n");
