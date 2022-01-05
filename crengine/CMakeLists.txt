@@ -214,13 +214,22 @@ if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
 endif()
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
-  install(TARGETS ${cre_install_libs}
-    EXPORT crengine-ng-targets
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    FRAMEWORK DESTINATION Library/Frameworks
-    COMPONENT libraries)
+  if (WIN32)
+    install(TARGETS ${cre_install_libs}
+      EXPORT crengine-ng-targets
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      RUNTIME DESTINATION .
+      COMPONENT libraries)
+  else()
+    install(TARGETS ${cre_install_libs}
+      EXPORT crengine-ng-targets
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+      FRAMEWORK DESTINATION Library/Frameworks
+      COMPONENT libraries)
+  endif()
 
   install(EXPORT crengine-ng-targets
     FILE crengine-ng-targets.cmake
@@ -254,14 +263,27 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
 endif()
 
 if(NOT SKIP_INSTALL_DATA AND NOT SKIP_INSTALL_ALL)
-  install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
-      DESTINATION ${DATA_INSTALL_DIR}
-      COMPONENT css
-      FILES_MATCHING PATTERN "*.css")
-  install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
-      DESTINATION ${DATA_INSTALL_DIR}/hyph
-      COMPONENT hyph
-      FILES_MATCHING PATTERN "*.pattern")
+  if (WIN32)
+    install(
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
+        DESTINATION .
+        COMPONENT css
+        FILES_MATCHING PATTERN "*.css")
+    install(
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
+        DESTINATION hyph
+        COMPONENT hyph
+        FILES_MATCHING PATTERN "*.pattern")
+  else()
+    install(
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
+        DESTINATION ${DATA_INSTALL_DIR}
+        COMPONENT css
+        FILES_MATCHING PATTERN "*.css")
+    install(
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
+        DESTINATION ${DATA_INSTALL_DIR}/hyph
+        COMPONENT hyph
+        FILES_MATCHING PATTERN "*.pattern")
+  endif()
 endif()

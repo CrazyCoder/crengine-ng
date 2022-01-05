@@ -3,6 +3,10 @@
 include("${CMAKE_CURRENT_LIST_DIR}/crengine-ng-targets.cmake")
 
 set_and_check(CRENGINE_NG_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
-set_and_check(CRENGINE_NG_DATA_DIR "@PACKAGE_DATA_INSTALL_DIR@")
+if(WIN32)
+  set_and_check(CRENGINE_NG_DATA_DIR .)
+else()
+  set_and_check(CRENGINE_NG_DATA_DIR "@PACKAGE_DATA_INSTALL_DIR@")
+endif()
 
 check_required_components(crengine-ng)
