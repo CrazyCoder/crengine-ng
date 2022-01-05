@@ -467,6 +467,6 @@ void LVImageScaledDrawCallback::OnEndDecode(LVImageSource* obj, bool) {
         }
         */
     // And now that it's been rendered we can free the scaled buffer (it was allocated by CRe::qSmoothScaleImage).
-    free(sdata);
+    CRe::qSmoothScaleImageFree(sdata);
 #endif
 }

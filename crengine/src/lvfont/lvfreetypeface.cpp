@@ -384,7 +384,7 @@ static bool downScaleColorGlyphBitmap(FT_GlyphSlot slot, int scale_mul, int scal
                         if (scaled_bmp != NULL) {
                             // We can safely overwrite bitmap since new bitmap is always is less than original
                             memcpy(slot->bitmap.buffer, scaled_bmp, new_bmp_pitch * new_h);
-                            free(scaled_bmp);
+                            CRe::qSmoothScaleImageFree(scaled_bmp);
                         } else {
                             // downscale failed
                             res = false;

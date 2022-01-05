@@ -806,4 +806,16 @@ unsigned char* qSmoothScaleImage(const unsigned char* src, int sw, int sh, bool 
     return buffer;
 }
 
+void qSmoothScaleImageFree(unsigned char * buffer)
+{
+    // The same 'ifdefs' as in qSmoothScaleImage()
+#if defined(__ANDROID__) && __ANDROID_API__ < 17
+    free(buffer);
+#elif defined(__MINGW32__)
+    _aligned_free(buffer);
+#else
+    free(buffer);
+#endif
+}
+
 }

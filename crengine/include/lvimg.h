@@ -71,7 +71,8 @@ unsigned char* convertSVGtoPNG(unsigned char* svg_data, int svg_data_size, float
 namespace CRe
 {
 lUInt8* qSmoothScaleImage(const lUInt8* src, int sw, int sh, bool ignore_alpha, int dw, int dh);
-}
+void qSmoothScaleImageFree(unsigned char* buffer);
+} // namespace CRe
 
 #define IMAGE_SOURCE_FROM_BYTES(imgvar, bufvar)          \
     extern unsigned char bufvar[];                       \

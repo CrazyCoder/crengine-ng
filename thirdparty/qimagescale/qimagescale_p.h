@@ -54,6 +54,8 @@ namespace CRe {
 
 unsigned char* qSmoothScaleImage(const unsigned char* src, int sw, int sh, bool ignore_alpha, int dw, int dh);
 
+void qSmoothScaleImageFree(unsigned char* buffer);
+
 namespace QImageScale {
     struct QImageScaleInfo {
         int *xpoints{nullptr};
