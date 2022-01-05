@@ -16,18 +16,22 @@
 #define __LV_WIN32FONTMAN_H_INCLUDED__
 
 #include <crsetup.h>
+
+#if USE_WIN32_FONTS == 1
+
 #include <lvfntman.h>
 
 #include "lvfontcache.h"
-
-#if !defined(__SYMBIAN32__) && defined(_WIN32) && USE_FREETYPE != 1
+#include "lvfontglyphcache.h"
 
 class LVWin32FontManager: public LVFontManager
 {
 private:
     lString8 _path;
     LVFontCache _cache;
+    LVFontGlobalGlyphCache _globalCache;
     //FILE * _log;
+    friend int CALLBACK LVWin32FontEnumFontFamExProc(const LOGFONTA* lf, const TEXTMETRICA* lpntme, DWORD FontType, LPARAM lParam);
 public:
     virtual int GetFontCount() {
         return _cache.length();
@@ -40,12 +44,18 @@ public:
     }
     virtual LVFontRef GetFont(int size, int weight, bool bitalic, css_font_family_t family, lString8 typeface,
                               int features = 0, int documentId = -1, bool useBias = false);
-    virtual void GetAvailableFontWeights(LVArray<int>& weights, lString8 typeface) { }
-    virtual bool RegisterFont(const LOGFONTA* lf);
+    virtual void GetAvailableFontWeights(LVArray<int>& weights, lString8 typeface);
+    virtual bool RegisterFont(const ENUMLOGFONTEXA* lpelfe);
     virtual bool RegisterFont(lString8 name) {
         return false;
     }
     virtual bool Init(lString8 path);
+
+    /// clear glyph cache
+    virtual void clearGlyphCache();
+
+    /// set antialiasing mode
+    virtual void SetAntialiasMode(font_antialiasing_t mode);
 
     virtual void getFaceList(lString32Collection& list) {
         _cache.getFaceList(list);
@@ -54,6 +64,6 @@ public:
     virtual void getFontFileNameList(lString32Collection& list);
 };
 
-#endif // !defined(__SYMBIAN32__) && defined(_WIN32) && USE_FREETYPE!=1
+#endif // USE_WIN32_FONTS == 1
 
 #endif // __LV_WIN32FONTMAN_H_INCLUDED__

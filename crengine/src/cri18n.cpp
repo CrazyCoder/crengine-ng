@@ -46,8 +46,8 @@ const char* CRI18NTranslator::translate(const char* src) {
     const char* res = src;
 #if CR_EMULATE_GETTEXT == 1
     res = src;
-    CRLog::trace("translation is not supported. returning source string: %s", src);
-    return src;
+    CRLog::trace("translation is not supported. returning source string: %s", res);
+    return res;
 #else
     res = gettext(src);
     CRLog::trace("gettext(%s) is %s", src, res);

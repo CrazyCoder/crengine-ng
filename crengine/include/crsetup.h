@@ -177,6 +177,11 @@
 #define USE_WIN32_FONTS 0
 #endif
 
+#ifndef USE_WIN32DRAW_FONTS
+// define to 1 to use LVWin32DrawFont instead of LVWin32Font
+#define USE_WIN32DRAW_FONTS 0
+#endif
+
 #ifndef LDOM_USE_OWN_MEM_MAN
 #define LDOM_USE_OWN_MEM_MAN 0
 #endif

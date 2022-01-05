@@ -114,6 +114,7 @@ LVFontGlyphCacheItem* LVFontBoldTransform::getGlyph(lUInt32 ch, lChar32 def_char
 
     int oldx = olditem->bmp_width;
     int oldy = olditem->bmp_height;
+    lInt16 old_pitch = olditem->bmp_pitch;
     int dx = oldx ? oldx + _hShift : 0;
     int dy = oldy ? oldy + _vShift : 0;
     int bmp_sz = dx * dy;
@@ -134,7 +135,7 @@ LVFontGlyphCacheItem* LVFontBoldTransform::getGlyph(lUInt32 ch, lChar32 def_char
                         int srcy = y + yy;
                         if (srcy < 0 || srcy >= oldy)
                             continue;
-                        lUInt8* src = olditem->bmp + srcy * oldx;
+                        lUInt8* src = olditem->bmp + srcy * old_pitch;
                         for (int xx = -_hShift; xx <= 0; xx++) {
                             int srcx = x + xx;
                             if (srcx >= 0 && srcx < oldx && src[srcx] > s)

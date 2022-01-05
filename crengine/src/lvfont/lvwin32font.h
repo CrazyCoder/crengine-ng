@@ -16,11 +16,14 @@
 #define __LV_WIN32FONT_H_INCLUDED__
 
 #include <crsetup.h>
-#include <cssdef.h>
+
+#if USE_WIN32_FONTS == 1
+
 #include <lvstring.h>
 #include <lvcolordrawbuf.h>
 
 #include "lvbasefont.h"
+#include "lvfontglyphcache.h"
 
 #if !defined(__SYMBIAN32__) && defined(_WIN32)
 extern "C" {
@@ -28,18 +31,20 @@ extern "C" {
 }
 #endif
 
-#if !defined(__SYMBIAN32__) && defined(_WIN32) && USE_FREETYPE != 1
 class LVBaseWin32Font: public LVBaseFont
 {
 protected:
     HFONT _hfont;
     LOGFONTA _logfont;
+    int _size;
     int _height;
     int _baseline;
+    font_antialiasing_t _aa_mode;
     LVColorDrawBuf _drawbuf;
 public:
     LVBaseWin32Font()
             : _hfont(NULL)
+            , _size(0)
             , _height(0)
             , _baseline(0)
             , _drawbuf(1, 1) { }
@@ -47,6 +52,14 @@ public:
     virtual ~LVBaseWin32Font() {
         Clear();
     }
+
+    /// get antialiasing mode
+    virtual font_antialiasing_t GetAntialiasMode() {
+        return _aa_mode;
+    }
+
+    /// set antialiasing mode
+    virtual void SetAntialiasMode(font_antialiasing_t mode);
 
     /// returns font baseline offset
     virtual int getBaseline() {
@@ -64,11 +77,25 @@ public:
         return false;
     }
 
+    /// returns char glyph left side bearing
+    int getLeftSideBearing(lChar32 ch, bool negative_only = false, bool italic_only = false) {
+        return 0;
+    }
+
+    /// returns char glyph right side bearing
+    virtual int getRightSideBearing(lChar32 ch, bool negative_only = false, bool italic_only = false) {
+        return 0;
+    }
+
     /// returns extra metric
-    virtual int getExtraMetric(font_extra_metric_t metric, bool scaled_to_px = true) = 0;
+    virtual int getExtraMetric(font_extra_metric_t metric, bool scaled_to_px = true) {
+        return 0;
+    }
 
     /// returns if font has OpenType Math tables
-    virtual bool hasOTMathSupport() const = 0;
+    virtual bool hasOTMathSupport() const {
+        return false;
+    }
 
     /// retrieves font handle
     virtual void* GetHandle() {
@@ -106,11 +133,15 @@ public:
     }
 
     virtual lString8 getTypeFace() const {
-        return lString8::empty_str;
+        return lString8(_logfont.lfFaceName);
     }
 
     virtual css_font_family_t getFontFamily() const {
         return css_ff_inherit;
+    }
+
+    virtual bool getGlyphInfo(lUInt32 code, glyph_info_t* glyph, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0) {
+        return false;
     }
 
     virtual LVFontGlyphCacheItem* getGlyph(lUInt32 ch, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0) {
@@ -118,10 +149,11 @@ public:
     }
 
     virtual int getSize() const {
-        return 0;
+        return _size;
     }
 };
 
+#if USE_WIN32DRAW_FONTS == 1
 class LVWin32DrawFont: public LVBaseWin32Font
 {
 private:
@@ -129,12 +161,6 @@ private:
 public:
     LVWin32DrawFont()
             : _hyphen_width(0) { }
-
-    /** \brief get glyph info
-        \param glyph is pointer to glyph_info_t struct to place retrieved info
-        \return true if glyh was found
-    */
-    virtual bool getGlyphInfo(lUInt32 code, glyph_info_t* glyph, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
 
     /** \brief measure text
         \param glyph is pointer to glyph_info_t struct to place retrieved info
@@ -151,6 +177,7 @@ public:
             bool allow_hyphenation = true,
             lUInt32 hints = 0,
             lUInt32 fallbackPassMask = 0);
+
     /** \brief measure text
         \param text is text string pointer
         \param len is number of characters to measure
@@ -163,26 +190,22 @@ public:
     virtual int getCharWidth(lChar32 ch, lChar32 def_char = 0);
 
     /// draws text string
-    virtual void DrawTextString(LVDrawBuf* buf, int x, int y,
-                                const lChar32* text, int len,
-                                lChar32 def_char, lUInt32* palette,
-                                bool addHyphen, TextLangCfg* lang_cfg = NULL,
-                                lUInt32 flags = 0, int letter_spacing = 0, int width = -1,
-                                int text_decoration_back_gap = 0,
-                                int target_w = -1, int target_h = -1,
-                                lUInt32 fallbackPassMask = 0);
-
-    /** \brief get glyph image in 1 byte per pixel format
-        \param code is unicode character
-        \param buf is buffer [width*height] to place glyph data
-        \return true if glyph was found
-    */
-    virtual bool getGlyphImage(lUInt32 code, lUInt8* buf, lChar32 def_char = 0);
+    virtual int DrawTextString(LVDrawBuf* buf, int x, int y,
+                               const lChar32* text, int len,
+                               lChar32 def_char, lUInt32* palette,
+                               bool addHyphen, TextLangCfg* lang_cfg = NULL,
+                               lUInt32 flags = 0, int letter_spacing = 0, int width = -1,
+                               int text_decoration_back_gap = 0,
+                               int target_w = -1, int target_h = -1,
+                               lUInt32 fallbackPassMask = 0);
 };
+#endif // USE_WIN32DRAW_FONTS==1
 
 struct glyph_t
 {
     lUInt8* glyph;
+    unsigned int row_size;
+    FontBmpPixelFormat pf;
     lChar32 ch;
     bool flgNotExists;
     bool flgValid;
@@ -198,7 +221,7 @@ struct glyph_t
     }
     ~glyph_t() {
         if (glyph)
-            delete glyph;
+            free(glyph);
     }
 };
 
@@ -292,6 +315,8 @@ class LVWin32Font: public LVBaseWin32Font
 private:
     lChar32 _unknown_glyph_index;
     GlyphCache _cache;
+    int _hyphen_width;
+    LVFontLocalGlyphCache _glyph_cache;
 
     static int GetGlyphIndex(HDC hdc, wchar_t code);
 
@@ -326,12 +351,7 @@ public:
     virtual lUInt32 getTextWidth(
             const lChar32* text, int len, TextLangCfg* lang_cfg = NULL);
 
-    /** \brief get glyph image in 1 byte per pixel format
-        \param code is unicode character
-        \param buf is buffer [width*height] to place glyph data
-        \return true if glyph was found
-    */
-    virtual bool getGlyphImage(lUInt32 code, lUInt8* buf, lChar32 def_char = 0);
+    virtual LVFontGlyphCacheItem* getGlyph(lUInt32 ch, lChar32 def_char = 0, lUInt32 fallbackPassMask = 0);
 
     virtual void Clear();
 
@@ -339,12 +359,16 @@ public:
 
     virtual bool Create(int size, int weight, bool italic, css_font_family_t family, lString8 typeface);
 
-    LVWin32Font()
-            : _cache(256) { }
+    virtual void clearCache();
+
+    LVWin32Font(LVFontGlobalGlyphCache* globalCache)
+            : _cache(256)
+            , _hyphen_width(0)
+            , _glyph_cache(globalCache) { }
 
     virtual ~LVWin32Font() { }
 };
 
-#endif // !defined(__SYMBIAN32__) && defined(_WIN32) && USE_FREETYPE!=1
+#endif // USE_WIN32_FONTS == 1
 
 #endif // __LV_WIN32FONT_H_INCLUDED__

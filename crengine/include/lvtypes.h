@@ -14,13 +14,8 @@
 
 #include <stddef.h>
 
-#ifdef _WIN32
-typedef long lInt32;           ///< signed 32 bit int
-typedef unsigned long lUInt32; ///< unsigned 32 bit int
-#else
-typedef int lInt32;                     ///< signed 32 bit int
-typedef unsigned int lUInt32;           ///< unsigned 32 bit int
-#endif
+typedef int lInt32;           ///< signed 32 bit int
+typedef unsigned int lUInt32; ///< unsigned 32 bit int
 
 typedef short int lInt16;           ///< signed 16 bit int
 typedef unsigned short int lUInt16; ///< unsigned 16 bit int
@@ -37,7 +32,7 @@ typedef wchar_t lChar16; ///< 16 bit char, only for Windows
 typedef char16_t lChar16;               ///< 16 bit char
 #endif
 
-#if defined(_WIN32) && !defined(CYGWIN)
+#if defined(_WIN32) && defined(_MSC_VER)
 typedef __int64 lInt64;           ///< signed 64 bit int
 typedef unsigned __int64 lUInt64; ///< unsigned 64 bit int
 #else

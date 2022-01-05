@@ -110,9 +110,9 @@ void cr_sigaction(int signal, siginfo_t* info, void* reserved) {
 }
 #endif
 
-static bool signals_are_set = false;
 void crSetSignalHandler() {
 #ifdef _LINUX
+    static bool signals_are_set = false;
     if (signals_are_set)
         return;
     signals_are_set = true;
