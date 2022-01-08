@@ -12,11 +12,7 @@
 /* Strings for the info box */
 #define PURPOSESTRING	"Display MS-Word files"
 
-#if defined(__riscos)
-#define AUTHORSTRING	"© 1998-2005 Adri van Os"
-#else
 #define AUTHORSTRING	"(C) 1998-2005 Adri van Os"
-#endif /* __riscos */
 
 #define VERSIONSTRING	"0.37  (21 Oct 2005)"
 
