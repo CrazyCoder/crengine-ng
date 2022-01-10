@@ -12,6 +12,7 @@ NiLuJe <ninuje@gmail.com>
 ourairquality <info@ourairquality.org>
 EXL <exlmotodev@gmail.com>
 Jellby <jellby@yahoo.com>
+Andy Mender <andymenderunix@gmail.com>
 Andrey Golovizin <ag@sologoc.com>
 Kirill Erofeev <erofeev.info@gmail.com>
 frankyifei <fredyifei@gmail.com>
@@ -24,6 +25,7 @@ data-man <datamanrb@gmail.com>
 jperon <cataclop@hotmail.com>
 macnuts <macnuts@gmx.com>
 phi <crispyfrog@163.com>
+Alexander Kerner <lunohod@openinkpot.org>
+clach04 <clach04@gmail.com>
 
 This list of authors is obtained using a script crengine/Tools/getauthors/getauthos.sh
-Only commits related directly to the engine and hyphenation dictionaries were taken into account.

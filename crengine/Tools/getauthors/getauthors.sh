@@ -12,9 +12,5 @@ die()
     exit 1
 }
 
-# Only for subdirectories:
-#  crengine
-#  cr3gui/data/hyph/
-
 git shortlog -s -e -n --group=author --no-merges \
-    -- "${srctree}/crengine/" "${srctree}/cr3gui/data/hyph/"
+    -- ${srctree}
