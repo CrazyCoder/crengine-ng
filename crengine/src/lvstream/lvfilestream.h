@@ -23,7 +23,6 @@
 #include <crsetup.h>
 
 #include "lvnamedstream.h"
-#include "lvstream_types.h"
 
 #if (USE_ANSI_FILES == 1)
 

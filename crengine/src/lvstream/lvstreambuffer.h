@@ -22,7 +22,6 @@
 #define __LVSTREAMBUFFER_H_INCLUDED__
 
 #include <lvref.h>
-#include <lvstream_types.h>
 
 /// Read or write buffer for stream region
 class LVStreamBuffer: public LVRefCounter

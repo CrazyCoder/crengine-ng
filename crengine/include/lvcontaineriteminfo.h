@@ -19,7 +19,7 @@
 #ifndef __LVCONTAINERITEMINFO_H_INCLUDED__
 #define __LVCONTAINERITEMINFO_H_INCLUDED__
 
-#include <lvstream_types.h>
+#include <lvtypes.h>
 
 class LVContainerItemInfo
 {
