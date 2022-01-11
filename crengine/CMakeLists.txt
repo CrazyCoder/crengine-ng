@@ -44,7 +44,6 @@ set(CRENGINE_NG_SOURCES
     src/lvxml/lvhtmlparser.cpp
     src/lvxml/fb2coverpageparsercallback.cpp
     src/lvxml/lvxmlutils.cpp
-    src/lvbmpbuf.cpp
     src/crhyphman.cpp
     src/crgui.cpp
     src/crskin.cpp

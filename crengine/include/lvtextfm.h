@@ -17,7 +17,7 @@
 
 #include <lvfont.h>
 #include <lvstring32collection.h>
-#include <lvbmpbuf.h>
+#include <lvfnt.h>
 
 #ifdef __cplusplus
 extern "C" {
