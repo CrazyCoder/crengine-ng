@@ -6,7 +6,7 @@ Supported document formats: fb2, fb3, epub (without DRM), rtf, doc, docx, odt, h
 
 In fact, this is a fork of the [CoolReader](https://github.com/buggins/coolreader) project.
 
-The founder and developer of CoolReader is Vadim Lopatin. Other authors are listed in section [Authors and acknowledgment](#authors-and-acknowledgment)
+The founder and developer of CoolReader is Vadim Lopatin. Other authors are listed in AUTHORS file.
 
 Supported platforms: Windows, Linux, MacOS.
 
@@ -16,7 +16,7 @@ This project is in the experimental phase, the main goals are:
  * Some minor improvements are possible.
  * Refactoring legacy code to make it easier to work on codebase. At the moment, the codebase in CoolReader is very cumbersome, poorly structured, poorly documented, there are huge source files (for example, there are 15 thousand SLOC in the lvtinydom.cpp file), which are very difficult to work with.
  * Bugfixes.
- * Support for modern compilers and development environments.
+ * Support for modern compilers.
 
 ## External dependencies
 This library can use other libraries:
