@@ -1,12 +1,22 @@
 # crengine-ng
 crengine-ng is cross-platform library designed to implement text viewers and e-book readers.
 
-In fact, this is a fork of the [CoolReader](https://github.com/buggins/coolreader) project.
-
 ## Description
 Supported document formats: fb2, fb3, epub (without DRM), rtf, doc, docx, odt, htm, chm, pdb, mobi (without DRM), txt, trc, prc.
 
+In fact, this is a fork of the [CoolReader](https://github.com/buggins/coolreader) project.
+
+The founder and developer of CoolReader is Vadim Lopatin. Other authors are listed in section [Authors and acknowledgment](#authors-and-acknowledgment)
+
 Supported platforms: Windows, Linux, MacOS.
+
+## Project goals
+This project is in the experimental phase, the main goals are:
+ * Main goal is the same as CoolReader's crengine - support & development fast and portable library which allows to create e-book readers for different platform including handheld devices.
+ * Some minor improvements are possible.
+ * Refactoring legacy code to make it easier to work on codebase. At the moment, the codebase in CoolReader is very cumbersome, poorly structured, poorly documented, there are huge source files (for example, there are 15 thousand SLOC in the lvtinydom.cpp file), which are very difficult to work with.
+ * Bugfixes.
+ * Support for modern compilers and development environments.
 
 ## External dependencies
 This library can use other libraries:
@@ -24,7 +34,6 @@ This library can use other libraries:
 1. Install dependencies (via package manager or compile from sources)
 
 2. Build using cmake.
-
    cmake options:
    * CRE_BUILD_SHARED - Building crengine-ng as a shared library; default ON
    * CRE_BUILD_STATIC - Building crengine-ng as a static library; default ON
