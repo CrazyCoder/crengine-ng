@@ -1,26 +1,14 @@
-Overview
---------
-
+# crengine-ng
 crengine-ng is cross-platform library designed to implement text viewers and e-book readers.
 
-In fact, this is a fork of CoolReader.
+In fact, this is a fork of the [CoolReader](https://github.com/buggins/coolreader) project.
 
+## Description
 Supported document formats: fb2, fb3, epub (without DRM), rtf, doc, docx, odt, htm, chm, pdb, mobi (without DRM), txt, trc, prc.
 
-Licence
--------
+Supported platforms: Windows, Linux, MacOS.
 
-This library is released under the [GNU General Public License Version 2](https://opensource.org/licenses/GPL-2.0).
-
-The "thirdparty" directory contains some patched libraries with their own licenses (compatible with GPLv2):
- * chmlib - [LGPL-2.1](https://opensource.org/licenses/LGPL-2.1)
- * antiword - [GPL-2.0](https://opensource.org/licenses/GPL-2.0)
- * nanosvg - [ZLib](https://opensource.org/licenses/Zlib)
- * qimagescale - [imlib2](https://directory.fsf.org/wiki/License:Imlib2)
-
-External dependencies
----------------------
-
+## External dependencies
 This library can use other libraries:
  * FreeType - font rendering
  * HarfBuzz - text shaping, font kerning, ligatures
@@ -32,10 +20,8 @@ This library can use other libraries:
  * libunibreak - line breaking and word breaking algorithms
  * utf8proc - for unicode string comparision
 
-Installation
-------------
-
-1. Install dependencies (via package manager or using any other method)
+## Installation
+1. Install dependencies (via package manager or compile from sources)
 
 2. Build using cmake.
 
@@ -71,11 +57,26 @@ Installation
    * WITH_UTF8PROC - Use utf8proc for string comparison, etc; default AUTO; variants: AUTO, ON, OFF
    * USE_FONTCONFIG - Use FontConfig to enumerate available fonts; default ON
 
-  For example:
+   For example:
+```
+$ mkdir ../crengine-ng-build
+$ cd ../crengine-ng-build
+$ cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release -DCRE_BUILD_SHARED=ON -DCRE_BUILD_STATIC=OFF ../crengine-ng
+$ make -j10 VERBOSE=1
+$ make install
+```
 
-        mkdir ../crengine-ng-build
-        cd ../crengine-ng-build
-        cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release -DCRE_BUILD_SHARED=ON -DCRE_BUILD_STATIC=OFF ../crengine-ng
-        make -j10 VERBOSE=1
-        make install
+## Authors and acknowledgment
+The list of contributors can be found in the AUTHORS file.
 
+This list of authors is obtained from git history using the script crengine/Tools/getauthors/getauthos.sh.
+The first significant item in the git log is 'Mon Nov 9 16:33:34 2009 +0300', but the project started around 2000, so this list can be incomplete.
+
+## License
+This project is released under the [GNU General Public License Version 2](https://opensource.org/licenses/GPL-2.0). See LICENSE file.
+
+The "thirdparty" directory contains some patched libraries with their own licenses (compatible with GPLv2):
+ * chmlib - [LGPL-2.1](https://opensource.org/licenses/LGPL-2.1)
+ * antiword - [GPL-2.0](https://opensource.org/licenses/GPL-2.0)
+ * nanosvg - [ZLib](https://opensource.org/licenses/Zlib)
+ * qimagescale - [imlib2](https://directory.fsf.org/wiki/License:Imlib2)
