@@ -8,6 +8,7 @@
 #include <lvstring.h>
 #include <lvstring32collection.h>
 #include <lvstreamutils.h>
+#include <lvbyteorder.h>
 #include <crlog.h>
 
 #include "../../src/lvxml/lvxmlparser.h"

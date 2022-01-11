@@ -12,6 +12,7 @@
 *******************************************************/
 
 #include <lvfnt.h>
+#include <lvbyteorder.h>
 
 #include <stdlib.h>
 #include <stdio.h>

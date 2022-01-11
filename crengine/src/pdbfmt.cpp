@@ -1,6 +1,7 @@
 #include "pdbfmt.h"
 
 #include <lvstreamutils.h>
+#include <lvbyteorder.h>
 #include <crtxtenc.h>
 #include <crlog.h>
 

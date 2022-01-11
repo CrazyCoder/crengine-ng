@@ -9,6 +9,7 @@
 *******************************************************/
 
 #include <lvstreamutils.h>
+#include <lvbyteorder.h>
 
 #include "wolutil.h"
 #include "private/dumpfile.h"

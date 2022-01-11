@@ -28,6 +28,7 @@
 #include <lvcontaineriteminfo.h>
 #include <lvfnt.h>
 #include <lvstring32collection.h>
+#include <lvbyteorder.h>
 #include <crlog.h>
 
 #include "lvxml/lvxmlparser.h"

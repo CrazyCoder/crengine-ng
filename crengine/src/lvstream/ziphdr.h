@@ -14,6 +14,7 @@
 #define __ZIPHDR_H_INCLUDED__
 
 #include <lvtypes.h>
+#include <lvbyteorder.h>
 
 #pragma pack(push, 1)
 
