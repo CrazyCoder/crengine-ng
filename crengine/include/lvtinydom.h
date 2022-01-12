@@ -3098,9 +3098,6 @@ public:
     static bool enabled();
 };
 
-/// unit test for DOM
-void runTinyDomUnitTests();
-
 /// pass true to enable CRC check for
 void enableCacheFileContentsValidation(bool enable);
 

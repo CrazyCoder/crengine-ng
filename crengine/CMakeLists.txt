@@ -17,7 +17,6 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom.cpp
     src/lvstsheet.cpp
     src/txtselector.cpp
-    src/crtest.cpp
     src/textlang.cpp
     src/lvstream/lvdefstreambuffer.cpp
     src/lvstream/lvfilemappedstream.cpp
