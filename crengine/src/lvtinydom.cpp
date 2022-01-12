@@ -15557,7 +15557,7 @@ public:
     /// remove all files
     bool clear() {
         for (int i = 0; i < _files.length(); i++)
-            LVDeleteFile(_files[i]->filename);
+            LVDeleteFile(_cacheDir + _files[i]->filename);
         _files.clear();
         return writeIndex();
     }
