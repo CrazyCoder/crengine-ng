@@ -186,7 +186,7 @@ HyphMethod* TextLangMan::getHyphMethodForLang(lString32 lang_tag) {
     lang_tag.lowercase();
     int left_hyphen_min = 2;
     int right_hyphen_min = 3;
-    for (int i = 0; i < dictList->length(); i++) {
+    for (int i = 0; dictList && i < dictList->length(); i++) {
         dict = dictList->get(i);
         if (dict) {
             if (dict->getType() == HDT_DICT_ALAN || dict->getType() == HDT_DICT_TEX)
@@ -211,7 +211,7 @@ HyphMethod* TextLangMan::getHyphMethodForLang(lString32 lang_tag) {
     if (m_pos > 0) {
         lString32 lang_tag2 = lang_tag.substr(0, m_pos);
         lang_tag2.lowercase();
-        for (int i = 0; i < dictList->length(); i++) {
+        for (int i = 0; dictList && i < dictList->length(); i++) {
             dict = dictList->get(i);
             if (dict) {
                 if (dict->getType() == HDT_DICT_ALAN || dict->getType() == HDT_DICT_TEX)
