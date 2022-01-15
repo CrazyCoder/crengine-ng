@@ -49,7 +49,7 @@ public:
     virtual bool RegisterFont(lString8 name) {
         return false;
     }
-    virtual bool Init(lString8 path);
+    virtual bool Init(lString8 path, bool initSystemFonts);
 
     /// clear glyph cache
     virtual void clearGlyphCache();

@@ -52,7 +52,7 @@ public:
     /// returns registered font files
     virtual void getFontFileNameList(lString32Collection& list);
 
-    virtual bool Init(lString8 path);
+    virtual bool Init(lString8 path, bool initSystemFonts);
 };
 
 #endif // (USE_BITMAP_FONTS==1)

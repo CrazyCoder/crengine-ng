@@ -90,7 +90,7 @@ public:
     virtual void UnregisterDocumentFonts(int /*documentId*/) { }
 
     /// initializes font manager
-    virtual bool Init(lString8 path) = 0;
+    virtual bool Init(lString8 path, bool initSystemFonts) = 0;
 
     /// get count of registered fonts
     virtual int GetFontCount() = 0;
@@ -192,7 +192,7 @@ LVFontRef LVCreateFontTransform(LVFontRef baseFont, int transformFlags);
 extern LVFontManager* fontMan;
 
 /// initializes font manager
-bool InitFontManager(lString8 path);
+bool InitFontManager(lString8 path, bool initSystemFonts = true);
 
 /// deletes font manager
 bool ShutdownFontManager();

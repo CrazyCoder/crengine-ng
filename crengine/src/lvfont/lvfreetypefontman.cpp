@@ -1458,9 +1458,10 @@ bool LVFreeTypeFontManager::RegisterFont(lString8 name) {
     return res;
 }
 
-bool LVFreeTypeFontManager::Init(lString8 path) {
+bool LVFreeTypeFontManager::Init(lString8 path, bool initSystemFonts_) {
     _path = path;
-    initSystemFonts();
+    if (initSystemFonts_)
+        initSystemFonts();
     return (_library != NULL);
 }
 

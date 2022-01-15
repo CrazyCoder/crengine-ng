@@ -143,7 +143,7 @@ public:
 
     virtual bool RegisterFont(lString8 name);
 
-    virtual bool Init(lString8 path);
+    virtual bool Init(lString8 path, bool initSystemFonts_);
 
     virtual bool SetAsPreferredFontWithBias(lString8 face, int bias, bool clearOthersBias);
 };

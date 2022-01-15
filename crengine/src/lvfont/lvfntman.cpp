@@ -109,7 +109,7 @@ void LVFontManager::SetGamma(double gamma) {
     }
 }
 
-bool InitFontManager(lString8 path) {
+bool InitFontManager(lString8 path, bool initSystemFonts) {
     if (fontMan) {
         return true;
         //delete fontMan;
@@ -121,7 +121,7 @@ bool InitFontManager(lString8 path) {
 #else
     fontMan = new LVBitmapFontManager;
 #endif
-    return fontMan->Init(path);
+    return fontMan->Init(path, initSystemFonts);
 }
 
 bool ShutdownFontManager() {

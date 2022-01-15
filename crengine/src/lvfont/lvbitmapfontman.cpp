@@ -115,7 +115,7 @@ void LVBitmapFontManager::getFontFileNameList(lString32Collection& list) {
     _cache.getFontFileNameList(list);
 }
 
-bool LVBitmapFontManager::Init(lString8 path) {
+bool LVBitmapFontManager::Init(lString8 path, bool initSystemFonts) {
     _path = path;
     return true;
 }

@@ -191,19 +191,21 @@ bool LVWin32FontManager::RegisterFont(const ENUMLOGFONTEXA* lpelfe) {
     return true;
 }
 
-bool LVWin32FontManager::Init(lString8 path) {
+bool LVWin32FontManager::Init(lString8 path, bool initSystemFonts) {
     LVColorDrawBuf drawbuf(1, 1);
     LOGFONTA lf;
     memset(&lf, 0, sizeof(lf));
     lf.lfCharSet = ANSI_CHARSET;
-    int res = EnumFontFamiliesExA(
-            drawbuf.GetDC(),              // handle to DC
-            &lf,                          // font information
-            LVWin32FontEnumFontFamExProc, // callback function (FONTENUMPROC)
-            (LPARAM)this,                 // additional data
-            0                             // not used; must be 0
-    );
-
+    int res = true;
+    if (initSystemFonts) {
+        res = EnumFontFamiliesExA(
+                drawbuf.GetDC(),              // handle to DC
+                &lf,                          // font information
+                LVWin32FontEnumFontFamExProc, // callback function (FONTENUMPROC)
+                (LPARAM)this,                 // additional data
+                0                             // not used; must be 0
+        );
+    }
     return res != 0;
 }
 
