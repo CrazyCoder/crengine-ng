@@ -698,7 +698,7 @@ bool LVDeleteDirectory(lString32 filename) {
 #ifdef _WIN32
     return RemoveDirectoryW(UnicodeToUtf16(filename).c_str()) ? true : false;
 #else
-    if (unlink(UnicodeToUtf8(filename).c_str()))
+    if (rmdir(UnicodeToUtf8(filename).c_str()))
         return false;
     return true;
 #endif
