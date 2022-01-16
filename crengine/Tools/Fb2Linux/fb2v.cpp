@@ -264,7 +264,7 @@ int main(int argc, const char* argv[]) {
 
     // stylesheet can be placed to file fb2.css
     // if not found, default stylesheet will be used
-    char cssfn[1024];
+    char cssfn[1024 + 10];
     sprintf(cssfn, "%sfb2.css", exedir);
     lString8 css = readFileToString(cssfn);
     if (css.length() > 0) {
