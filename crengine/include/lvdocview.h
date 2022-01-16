@@ -459,7 +459,7 @@ public:
         m_cursorPos = ptr;
     }
     /// try swappping of document to cache, if size is big enough, and no swapping attempt yet done
-    void swapToCache();
+    bool swapToCache();
     /// save document to cache file, with timeout option
     ContinuousOperationResult swapToCache(CRTimerUtil& maxTime);
     /// save unsaved data to cache file (if one is created), with timeout option

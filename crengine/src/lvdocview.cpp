@@ -2928,8 +2928,8 @@ void LVDocView::Render(int dx, int dy, LVRendPageList* pages) {
                     fs, mfs);
             if (fs >= mfs) {
                 CRTimerUtil timeout(100); // 0.1 seconds
-                swapToCache(timeout);
-                m_swapDone = true;
+                ContinuousOperationResult res = swapToCache(timeout);
+                m_swapDone = (CR_DONE == res);
             }
         }
 
@@ -5124,10 +5124,14 @@ ContinuousOperationResult LVDocView::swapToCache(CRTimerUtil& maxTime) {
     return m_doc->swapToCache(maxTime);
 }
 
-void LVDocView::swapToCache() {
+bool LVDocView::swapToCache() {
     CRTimerUtil infinite;
-    swapToCache(infinite);
-    m_swapDone = true;
+    ContinuousOperationResult res = swapToCache(infinite);
+    if (CR_DONE == res) {
+        m_swapDone = true;
+        return true;
+    }
+    return false;
 }
 
 bool LVDocView::LoadDocument(const char* fname, bool metadataOnly) {
