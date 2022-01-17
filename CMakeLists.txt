@@ -61,6 +61,7 @@ option(USE_FONTCONFIG "Use FontConfig to enumerate available fonts" ON)
 # other
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
 option(BUILD_LITE  "Remove most features" OFF)
+option(ENABLE_UNITTESTING "Enable unit testing using googletest" OFF)
 
 # check option consistency
 if (NOT WITH_FREETYPE)

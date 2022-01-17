@@ -181,6 +181,10 @@ if(BUILD_TOOLS)
   add_subdirectory(Tools)
 endif(BUILD_TOOLS)
 
+if(ENABLE_UNITTESTING)
+  add_subdirectory(tests)
+endif(ENABLE_UNITTESTING)
+
 # Installation
 include(GNUInstallDirs)
 

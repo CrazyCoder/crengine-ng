@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dirs="include src Tools"
+dirs="include src Tools tests"
 regex_pat=".*\.(h|c|cpp)"
 
 excludes="^src\/locale_data\/files\/.*$ ^src/xxhash.h$ ^src/xxhash.c$ ^Tools\/Fb2Test\/.*$ ^Tools\/FontConv\/.*$"

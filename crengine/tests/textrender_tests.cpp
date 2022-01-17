@@ -1,0 +1,536 @@
+/**
+ *  crengine-ng
+ *  Copyright (c) 2022 Aleksey Chernov
+ *
+ *  \file textrender_tests.cpp
+ *  \brief crengine-ng unit test module.
+ *  Tests various text rendering options.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <crsetup.h>
+
+#if USE_FREETYPE == 1 && BUILD_LITE != 1
+
+#include <crlog.h>
+#include <lvdocview.h>
+#include <lvtinydom.h>
+#include <lvstreamutils.h>
+#include <lvbyteorder.h>
+
+#include "lvtinydom_cachefile.h"
+#include "lvtinydom_private.h"
+#include "savetobmp.h"
+#include "compare-two-binfiles.h"
+
+#include "gtest/gtest.h"
+
+#ifndef TESTS_DATADIR
+#error Please define TESTS_DATADIR, which points to the directory with the data files for the tests
+#endif
+
+#ifndef TESTS_TMPDIR
+#define TESTS_TMPDIR "/tmp/"
+#endif
+
+#ifndef RENDER_REFERENCE_DIR
+#error Please define RENDER_REFERENCE_DIR, which points to the directory with the render reference files
+#endif
+
+#if USE_LIMITED_FONT_SIZES_SET == 1
+#error With (USE_LIMITED_FONT_SIZES_SET == 1) this test will be incorrect!
+#endif
+
+#if USE_ZLIB != 1
+#error These unit tests do not work without zlib!
+#endif
+
+// Fixtures
+
+class TextRenderTests: public testing::Test
+{
+protected:
+    bool m_initOK;
+    lString8 m_css;
+protected:
+    virtual void SetUp() override {
+        m_initOK = LVLoadStylesheetFile(Utf8ToUnicode(CSS_DIR "fb2.css"), m_css);
+    }
+
+    virtual void TearDown() override {
+        m_css = lString8::empty_str;
+    }
+};
+
+// units tests
+
+TEST_F(TextRenderTests, RenderTestsAntialiasingNone) {
+    CRLog::info("====================================");
+    CRLog::info("Starting RenderTestsAntialiasingNone");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "80");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    props->setString(PROP_FONT_SHAPING, "0");
+    props->setString(PROP_FONT_KERNING_ENABLED, "0");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    // "0" - none; "3" - gray; "4" - RGB, "5" - BGR, "8" - RGB_V, "9" - BGR_V
+    props->setString(PROP_FONT_ANTIALIASING, "0");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "antialiasing/01-hinting-no,shaping-simple,aa-none.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAntialiasingNone");
+    CRLog::info("====================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsAntialiasingGray) {
+    CRLog::info("====================================");
+    CRLog::info("Starting RenderTestsAntialiasingGray");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "80");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    props->setString(PROP_FONT_SHAPING, "0");
+    props->setString(PROP_FONT_KERNING_ENABLED, "0");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    // "0" - none; "3" - gray; "4" - RGB, "5" - BGR, "8" - RGB_V, "9" - BGR_V
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "antialiasing/02-hinting-no,shaping-simple,aa-gray.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAntialiasingGray");
+    CRLog::info("====================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsAntialiasingRGB) {
+    CRLog::info("===================================");
+    CRLog::info("Starting RenderTestsAntialiasingRGB");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "80");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    props->setString(PROP_FONT_SHAPING, "0");
+    props->setString(PROP_FONT_KERNING_ENABLED, "0");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    // "0" - none; "3" - gray; "4" - RGB, "5" - BGR, "8" - RGB_V, "9" - BGR_V
+    props->setString(PROP_FONT_ANTIALIASING, "4");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "antialiasing/03-hinting-no,shaping-simple,aa-rgb.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAntialiasingRGB");
+    CRLog::info("===================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsLigaturesOff) {
+    CRLog::info("================================");
+    CRLog::info("Starting RenderTestsLigaturesOff");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "50");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    // "0" - simple, "1" - light harfbuzz, "2" - full harfbuzz
+    props->setString(PROP_FONT_SHAPING, "0");
+    props->setString(PROP_FONT_KERNING_ENABLED, "0");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "ligatures.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "ligatures/01-hinting-no,shaping-simple,ligatures-off.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsLigaturesOff");
+    CRLog::info("================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsLigaturesOn) {
+    CRLog::info("===============================");
+    CRLog::info("Starting RenderTestsLigaturesOn");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "50");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    // "0" - simple, "1" - light harfbuzz, "2" - full harfbuzz
+    props->setString(PROP_FONT_SHAPING, "2");
+    props->setString(PROP_FONT_KERNING_ENABLED, "0");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "ligatures.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "ligatures/02-hinting-no,shaping-full,ligatures-on.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsLigaturesOn");
+    CRLog::info("===============================");
+}
+
+TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOff) {
+    CRLog::info("===========================================");
+    CRLog::info("Starting RenderTestsShapingSimpleKerningOff");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "130");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    // "0" - simple, "1" - light harfbuzz, "2" - full harfbuzz
+    props->setString(PROP_FONT_SHAPING, "0");
+    // "0" - disable, "1" - enabled
+    props->setString(PROP_FONT_KERNING_ENABLED, "0");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "kerning.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/01-hinting-no,shaping-simple,kerning-off.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsShapingSimpleKerningOff");
+    CRLog::info("===========================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOn) {
+    CRLog::info("==========================================");
+    CRLog::info("Starting RenderTestsShapingSimpleKerningOn");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "130");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    // "0" - simple, "1" - light harfbuzz, "2" - full harfbuzz
+    props->setString(PROP_FONT_SHAPING, "0");
+    // "0" - disable, "1" - enabled
+    props->setString(PROP_FONT_KERNING_ENABLED, "1");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "kerning.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/02-hinting-no,shaping-simple,kerning-on.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsShapingSimpleKerningOn");
+    CRLog::info("==========================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsShapingLightKerningOff) {
+    CRLog::info("==========================================");
+    CRLog::info("Starting RenderTestsShapingLightKerningOff");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "130");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    // "0" - simple, "1" - light harfbuzz, "2" - full harfbuzz
+    props->setString(PROP_FONT_SHAPING, "1");
+    // "0" - disable, "1" - enabled
+    props->setString(PROP_FONT_KERNING_ENABLED, "0");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "kerning.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/03-hinting-no,shaping-light,kerning-off.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsShapingLightKerningOff");
+    CRLog::info("==========================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsShapingLightKerningOn) {
+    CRLog::info("=========================================");
+    CRLog::info("Starting RenderTestsShapingLightKerningOn");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "130");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    // "0" - simple, "1" - light harfbuzz, "2" - full harfbuzz
+    props->setString(PROP_FONT_SHAPING, "1");
+    // "0" - disable, "1" - enabled
+    props->setString(PROP_FONT_KERNING_ENABLED, "1");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "kerning.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/04-hinting-no,shaping-light,kerning-on.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsShapingLightKerningOn");
+    CRLog::info("=========================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsShapingFullKerningOff) {
+    CRLog::info("=========================================");
+    CRLog::info("Starting RenderTestsShapingFullKerningOff");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "130");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    // "0" - simple, "1" - light harfbuzz, "2" - full harfbuzz
+    props->setString(PROP_FONT_SHAPING, "2");
+    // "0" - disable, "1" - enabled
+    props->setString(PROP_FONT_KERNING_ENABLED, "0");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "kerning.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/05-hinting-no,shaping-full,kerning-off.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsShapingFullKerningOff");
+    CRLog::info("=========================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsShapingFullKerningOn) {
+    CRLog::info("========================================");
+    CRLog::info("Starting RenderTestsShapingFullKerningOn");
+    ASSERT_TRUE(m_initOK);
+
+    LVDocView view(32, false);
+    view.setStyleSheet(m_css);
+    view.setMinFontSize(8);
+    view.setMaxFontSize(200);
+    // set properties
+    CRPropRef props = LVCreatePropsContainer();
+    props->setString(PROP_FONT_FACE, "FreeSerif");
+    props->setString(PROP_FONT_SIZE, "130");
+    props->setString(PROP_FONT_GAMMA, "1.0");
+    props->setString(PROP_FONT_HINTING, "0");
+    // "0" - simple, "1" - light harfbuzz, "2" - full harfbuzz
+    props->setString(PROP_FONT_SHAPING, "2");
+    // "0" - disable, "1" - enabled
+    props->setString(PROP_FONT_KERNING_ENABLED, "1");
+    props->setString(PROP_FONT_BASE_WEIGHT, "400");
+    props->setString(PROP_FONT_COLOR, "0x00000000");
+    props->setString(PROP_BACKGROUND_COLOR, "0x00FFFFFF");
+    props->setString(PROP_STATUS_LINE, "0");
+    props->setString(PROP_FONT_ANTIALIASING, "3");
+    CRPropRef unknown = view.propsApply(props);
+    EXPECT_EQ(unknown->getCount(), 0); // all properties accepted
+    view.Resize(640, 360);
+    // open document
+    bool res = view.LoadDocument(TESTS_DATADIR "kerning.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = view.getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/06-hinting-no,shaping-full,kerning-on.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsShapingFullKerningOn");
+    CRLog::info("========================================");
+}
+
+#endif // USE_FREETYPE == 1 && BUILD_LITE != 1

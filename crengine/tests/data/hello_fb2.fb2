@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">
+ <description>
+  <title-info>
+   <genre>comp_programming</genre>
+   <author>
+    <first-name>First Name</first-name>
+    <last-name>Last Name</last-name>
+   </author>
+   <book-title>Minimal fb2 test document</book-title>
+   <keywords>fb2, minimal, test</keywords>
+   <lang>en</lang>
+  </title-info>
+  <document-info>
+   <author>
+    <first-name>First Name</first-name>
+    <last-name>Last Name</last-name>
+   </author>
+   <program-used>FictionBook Editor Release 2.6.6</program-used>
+   <date value="2022-01-16">16 January 2022</date>
+   <id>BCF055D7-B30F-4C9C-8EF8-D31D835914AF</id>
+   <version>1.0</version>
+  </document-info>
+ </description>
+ <body>
+  <section>
+   <p>Hello, world.</p>
+  </section>
+ </body>
+</FictionBook>
