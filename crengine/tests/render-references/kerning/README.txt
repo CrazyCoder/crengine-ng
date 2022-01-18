@@ -1,4 +1,4 @@
-Render references for ligatures.
+Render references for kerning feature.
 
 width: 640
 height: 360
@@ -9,4 +9,4 @@ TextColor: black
 Hiniting: None
 Text shaping: <various>
 Kerning: <various>
-Antialiasing: gray
+Antialiasing: Gray
