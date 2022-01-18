@@ -9,5 +9,5 @@ TextColor: black
 Hinting: None
 Text shaping: Simple
 Kerning: off
-Antialiasing: Gray, RGB
+Antialiasing: Gray
 Font Gamma: <various>
