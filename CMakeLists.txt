@@ -5,8 +5,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
 #  VERSION_DEV_A/CODE description:
 # alphaX - 0X; beta X - 1X; rcX - 2X; releaseX - 3X (or empty)
-set(VERSION_MAJOR 4)
-set(VERSION_MINOR 0)
+set(VERSION_MAJOR 0)
+set(VERSION_MINOR 9)
 set(VERSION_PATCH 0)
 set(VERSION_DEV_A "rc1")
 set(VERSION_DEV_CODE 21)
