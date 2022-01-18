@@ -426,4 +426,166 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOn) {
     CRLog::info("========================================");
 }
 
+TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_0_7) {
+    CRLog::info("=======================================");
+    CRLog::info("Starting RenderTestsAAGrayTextGamma_0_7");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
+    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "0.7"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/01-aa-gray,gamma-0_7.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAAGrayTextGamma_0_7");
+    CRLog::info("=======================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsAARGBTextGamma_0_7) {
+    CRLog::info("======================================");
+    CRLog::info("Starting RenderTestsAARGBTextGamma_0_7");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "4")); // "4" - AA RGB
+    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "0.7"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/02-aa-rgb,gamma-0_7.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAARGBTextGamma_0_7");
+    CRLog::info("======================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_0) {
+    CRLog::info("=======================================");
+    CRLog::info("Starting RenderTestsAAGrayTextGamma_1_0");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
+    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "1.0"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/03-aa-gray,gamma-1_0.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAAGrayTextGamma_1_0");
+    CRLog::info("=======================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsAARGBTextGamma_1_0) {
+    CRLog::info("======================================");
+    CRLog::info("Starting RenderTestsAARGBTextGamma_1_0");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "4")); // "4" - AA RGB
+    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "1.0"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/04-aa-rgb,gamma-1_0.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAARGBTextGamma_1_0");
+    CRLog::info("======================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_7) {
+    CRLog::info("=======================================");
+    CRLog::info("Starting RenderTestsAAGrayTextGamma_1_7");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
+    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "1.7"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/05-aa-gray,gamma-1_7.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAAGrayTextGamma_1_7");
+    CRLog::info("=======================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsAARGBTextGamma_1_7) {
+    CRLog::info("======================================");
+    CRLog::info("Starting RenderTestsAARGBTextGamma_1_7");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "4")); // "4" - AA RGB
+    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "1.7"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/06-aa-rgb,gamma-1_7.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsAARGBTextGamma_1_7");
+    CRLog::info("======================================");
+}
+
 #endif // USE_FREETYPE == 1 && BUILD_LITE != 1
