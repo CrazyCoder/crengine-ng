@@ -6,7 +6,7 @@ bpp: 32
 Font: FreeSerif, 130 px
 Background color: white
 TextColor: black
-Hiniting: None
+Hinting: None
 Text shaping: <various>
 Kerning: <various>
 Antialiasing: Gray
