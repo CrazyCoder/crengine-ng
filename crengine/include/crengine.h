@@ -1,9 +1,9 @@
 /** \file crengine.h
-    \brief CREngine main include file
+    \brief crengine-ng main include file
 
     Include this file to use CR engine.
 
-    (c) Vadim Lopatin, 2000-2008
+    (c) Vadim Lopatin, 2000-2018
 
     This source code is distributed under the terms of
     GNU General Public License.
@@ -15,28 +15,30 @@
 #define CRENGINE_H_INCLUDED
 
 /**
-    \mainpage CoolReader Engine Library
+    \mainpage crengine-ng library
     \author Vadim Lopatin
-    \date 2000-2008
+    \date 2000-2018
 
     \section main_intro Introduction
 
-    CoolReader Engine is a XML/CSS based 
-    visualization library for writing e-book readers.
+    crengine-ng is a XML/CSS based visualization library for writing e-book readers.
+    It is a fork of the CoolReader project.
+
+    Supported platforms: Windows, Linux, MacOS.
 
     The goal is to write fast, compact and portable library
     which allows to create e-book readers for different platform
     including handheld devices with limited resources.
-    
-    This library is partially based on CoolReader2 e-book reader, 
+
+    This library is partially based on CoolReader 2 e-book reader, 
     but most parts are rewritten from scratch.
 
     \b Features:
 
     - Different font engines support
-        - grayscale bitmap font engine
+        - TTF fonts support via Freetype library (recomended)
         - Win32 font support
-        - TTF fonts support via Freetype library
+        - grayscale bitmap font engine
     - Text formatter with support of different paragraph and font styles, 
         which allows to prepare text to be drawed
     - XML parser with support of unicode (UTF-8 and UTF-16) and 8-bit encodings
@@ -85,25 +87,22 @@
 
     \section main_authors Authors
 
-    - Vadim Lopatin (http://www.coolreader.org/) - most source code
-    - Alan (http://alreader.kms.ru/) - hyphenation sypport code
-    
+    - Vadim Lopatin (https://github.com/buggins/coolreader/) - most source code
+    - Alan (http://alreader.kms.ru/) - hyphenation support code
+    - Other authors - in file AUTHORS
 
     \section main_install Installation
 
-    - download source code from CoolReader homepage http://www.coolreader.org/
+    - download source code from crengine-ng homepage https://gitlab.com/coolreader-ng/crengine-ng
     - unpack archieve into some folder
-    - change options in crsetup.h file if necessary
     - build library
-    - build sample applications located in /tools folder
-
-    \note current version supports only build under Win32 with MS VC++ 6.0
+    - build sample applications located in /Tools folder
 
 
     \section getting_started Getting started
 
 
-    Please see Tools/Fb2Test/Fb2Test.cpp source code for sample code.
+    Please see Tools/Fb2Linux/fb2v.cpp source code for sample code.
 
     Library implements \a LVDocView class which can read XML document from 
     file and draw it in grayscale buffer.
@@ -118,12 +117,12 @@
     \b fontMan->RegisterFont( lString8(fn) );
 
     Typical usage of LVDocView:
-    - Load document using LVDocView::LoadDocument() method. 
+    - Load document using LVDocView::LoadDocument() method.
     - Call LVDocView::setStyleSheet() to set stylesheet for document.
-    - Set draw buffer dimensions using LVDocView::Resize(dx, dy).
+    - Set draw buffer dimensions using LVDocView::Resize().
     - LVDocView::Draw() draws document into gray buffer. 
     - \a DrawBuf2DC() can be used to draw gray bitmap in Windows device context.
-    - LVDocView::GetPos() and LVDocView::SetPos() can be used to scroll throuh document.
+    - LVDocView::GetPos() and LVDocView::SetPos() can be used to scroll through document.
 
 
 
