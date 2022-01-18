@@ -30,8 +30,8 @@ set(FONTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/fonts)
 file(MAKE_DIRECTORY ${FONTS_DIR})
 file(GLOB FREEFONT_OTF_FILES ${freefont_SOURCE_DIR}/*.otf)
 file(COPY ${FREEFONT_OTF_FILES} DESTINATION ${FONTS_DIR})
-file(GLOB ROBOTO_TTF_FILES ${robotofont_SOURCE_DIR}/*.ttf)
-file(COPY ${ROBOTO_TTF_FILES} DESTINATION ${FONTS_DIR})
+# From Roboto family we use only one file Roboto-Regular.ttf for testing purposes
+file(COPY ${robotofont_SOURCE_DIR}/Roboto-Regular.ttf DESTINATION ${FONTS_DIR})
 
 add_definitions(-DTESTS_DATADIR=\"${CMAKE_CURRENT_SOURCE_DIR}/data/\")
 add_definitions(-DTESTS_TMPDIR=\"${CMAKE_CURRENT_BINARY_DIR}/\")

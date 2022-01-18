@@ -588,4 +588,134 @@ TEST_F(TextRenderTests, RenderTestsAARGBTextGamma_1_7) {
     CRLog::info("======================================");
 }
 
+TEST_F(TextRenderTests, RenderTestsSynthWeight100) {
+    CRLog::info("==================================");
+    CRLog::info("Starting RenderTestsSynthWeight100");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "100"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/01-roboto-synth-weight-100.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsSynthWeight100");
+    CRLog::info("==================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsSynthWeight250) {
+    CRLog::info("==================================");
+    CRLog::info("Starting RenderTestsSynthWeight250");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "250"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/02-roboto-synth-weight-250.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsSynthWeight250");
+    CRLog::info("==================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsRealWeight400) {
+    CRLog::info("=================================");
+    CRLog::info("Starting RenderTestsRealWeight400");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "400"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/03-roboto-real-weight-400.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsRealWeight400");
+    CRLog::info("=================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsSynthWeight650) {
+    CRLog::info("==================================");
+    CRLog::info("Starting RenderTestsSynthWeight650");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "650"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/04-roboto-synth-weight-650.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsSynthWeight650");
+    CRLog::info("==================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsSynthWeight900) {
+    CRLog::info("==================================");
+    CRLog::info("Starting RenderTestsSynthWeight900");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "900"));
+
+    // open document
+    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
+    EXPECT_TRUE(res); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    EXPECT_FALSE(image.isNull());
+    LVDrawBuf* drawBuf = image->getDrawBuf();
+    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
+    ASSERT_TRUE(res);
+
+    // compare output file with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/05-roboto-synth-weight-900.bmp.gz", "output.bmp"));
+
+    CRLog::info("Finished RenderTestsSynthWeight900");
+    CRLog::info("==================================");
+}
+
 #endif // USE_FREETYPE == 1 && BUILD_LITE != 1
