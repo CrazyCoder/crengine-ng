@@ -37,7 +37,7 @@ This library can use other libraries:
    cmake options:
    * CRE_BUILD_SHARED - Building crengine-ng as a shared library; default ON
    * CRE_BUILD_STATIC - Building crengine-ng as a static library; default ON
-   * ADD_DEBUG_EXTRA_OPTS - Add extra debug flags and technique; default OFF
+   * ADD_DEBUG_EXTRA_OPTS - Add extra debug flags and technique (use sanitizer, etc); default OFF
    * DOC_DATA_COMPRESSION_LEVEL - Document buffer cache compression; default 1; variants: 0, 1, 2, 3, 4, 5
    * DOC_BUFFER_SIZE - Total RAM buffers size for document; default 0x400000
    * MAX_IMAGE_SCALE_MUL - Maximum image scale multiplier; default 0; variants: 0, 1, 2
@@ -47,6 +47,8 @@ This library can use other libraries:
    * USE_LOCALE_DATA - Use built-in locale data; default ON
    * LDOM_USE_OWN_MEM_MAN - Use own ldom memory manager; default ON
    * USE_GIF - Allow GIF support via embedded decoder; default ON
+   * BUILD_TOOLS - Build some debug tools & utils; default OFF
+   * ENABLE_UNITTESTING - Enable building unit tests using googletest; default OFF
 
    To use bundled third party:
 
