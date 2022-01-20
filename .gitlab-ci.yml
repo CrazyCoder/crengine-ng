@@ -4,9 +4,38 @@
 # Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+
+variables:
+  DEPLOY_PATH: /tmp/crengine-ng-image/
+  BUILD_WORKDIR: /tmp/crengine-ng-build/
+
+default:
+  image: ubuntu:20.04
+
 stages:
-- test
+  - test
+
 sast:
   stage: test
 include:
 - template: Security/SAST.gitlab-ci.yml
+
+# TODO: install & use libunibreak as static lib (4.0)
+# TODO: use cache...
+unittests-ubuntu:
+  stage: test
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt update
+    - apt-get install -y tzdata
+    - apt install -qq -y build-essential cmake curl pkg-config zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libzstd-dev libutf8proc-dev
+  script:
+    - mkdir $BUILD_WORKDIR
+    - cd $BUILD_WORKDIR
+    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DEPLOY_PATH -DCRE_BUILD_SHARED=OFF -DCRE_BUILD_STATIC=ON -DWITH_LIBPNG=ON -DWITH_LIBJPEG=ON -DWITH_FREETYPE=ON -DWITH_HARFBUZZ=ON -DWITH_LIBUNIBREAK=OFF -DWITH_FRIBIDI=ON -DWITH_ZSTD=ON -DWITH_UTF8PROC=ON -DENABLE_UNITTESTING=ON $CI_PROJECT_DIR
+    - cmake --build .
+    - ./crengine/tests/unittests --gtest_output="xml:$CI_PROJECT_DIR/report.xml"
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
