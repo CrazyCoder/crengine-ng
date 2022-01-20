@@ -16,6 +16,8 @@
 #ifndef __LVTHREAD_H_INCLUDED__
 #define __LVTHREAD_H_INCLUDED__
 
+#include <crsetup.h>
+
 #if (CR_USE_THREADS == 1)
 
 #if defined(_LINUX)
