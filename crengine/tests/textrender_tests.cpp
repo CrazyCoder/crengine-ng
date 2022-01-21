@@ -49,10 +49,6 @@
 #error Please define RENDER_REFERENCE_DIR, which points to the directory with the render reference files
 #endif
 
-#if USE_LIMITED_FONT_SIZES_SET == 1
-#error With (USE_LIMITED_FONT_SIZES_SET == 1) this test will be incorrect!
-#endif
-
 #if USE_ZLIB != 1
 #error These unit tests do not work without zlib!
 #endif
@@ -117,25 +113,23 @@ protected:
 
 // units tests
 
-TEST_F(TextRenderTests, RenderTestsAntialiasingNone) {
+TEST_F(TextRenderTests, DISABLED_RenderTestsAntialiasingNone) {
     CRLog::info("====================================");
     CRLog::info("Starting RenderTestsAntialiasingNone");
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
     // "0" - none; "3" - gray; "4" - RGB, "5" - BGR, "8" - RGB_V, "9" - BGR_V
-    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "0"));
+    ASSERT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "0"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "antialiasing/01-hinting-no,shaping-simple,aa-none.bmp.gz", "output.bmp"));
@@ -150,19 +144,17 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingGray) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
     // "0" - none; "3" - gray; "4" - RGB, "5" - BGR, "8" - RGB_V, "9" - BGR_V
-    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3"));
+    ASSERT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "antialiasing/02-hinting-no,shaping-simple,aa-gray.bmp.gz", "output.bmp"));
@@ -177,19 +169,17 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingRGB) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
     // "0" - none; "3" - gray; "4" - RGB, "5" - BGR, "8" - RGB_V, "9" - BGR_V
-    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "4"));
+    ASSERT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "4"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     // FreeType can be compiled with either ClearType LCD subpixel antialiasing
@@ -209,19 +199,17 @@ TEST_F(TextRenderTests, RenderTestsLigaturesOff) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "50"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "50"));
     // "0" - simple, "1" - harfbuzz light, "2" - harfbuzz full
-    EXPECT_TRUE(setProperty(PROP_FONT_SHAPING, "0"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SHAPING, "0"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "ligatures.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "ligatures.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "ligatures/01-hinting-no,shaping-simple,ligatures-off.bmp.gz", "output.bmp"));
@@ -236,19 +224,17 @@ TEST_F(TextRenderTests, RenderTestsLigaturesOn) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "50"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "50"));
     // "0" - simple, "1" - harfbuzz light, "2" - harfbuzz full
-    EXPECT_TRUE(setProperty(PROP_FONT_SHAPING, "2"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SHAPING, "2"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "ligatures.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "ligatures.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "ligatures/02-hinting-no,shaping-full,ligatures-on.bmp.gz", "output.bmp"));
@@ -263,21 +249,19 @@ TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOff) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
     // "0" - simple, "1" - harfbuzz light, "2" - harfbuzz full
-    EXPECT_TRUE(setProperty(PROP_FONT_SHAPING, "0"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SHAPING, "0"));
     // "0" - disable, "1" - enabled
-    EXPECT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "0"));
+    ASSERT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "0"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "kerning.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "kerning.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/01-hinting-no,shaping-simple,kerning-off.bmp.gz", "output.bmp"));
@@ -292,21 +276,19 @@ TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOn) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
     // "0" - simple, "1" - harfbuzz light, "2" - harfbuzz full
-    EXPECT_TRUE(setProperty(PROP_FONT_SHAPING, "0"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SHAPING, "0"));
     // "0" - disable, "1" - enabled
-    EXPECT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "1"));
+    ASSERT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "1"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "kerning.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "kerning.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/02-hinting-no,shaping-simple,kerning-on.bmp.gz", "output.bmp"));
@@ -321,21 +303,19 @@ TEST_F(TextRenderTests, RenderTestsShapingLightKerningOff) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
     // "0" - simple, "1" - harfbuzz light, "2" - harfbuzz full
-    EXPECT_TRUE(setProperty(PROP_FONT_SHAPING, "1"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SHAPING, "1"));
     // "0" - disable, "1" - enabled
-    EXPECT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "0"));
+    ASSERT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "0"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "kerning.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "kerning.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/03-hinting-no,shaping-light,kerning-off.bmp.gz", "output.bmp"));
@@ -350,21 +330,19 @@ TEST_F(TextRenderTests, RenderTestsShapingLightKerningOn) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
     // "0" - simple, "1" - harfbuzz light, "2" - harfbuzz full
-    EXPECT_TRUE(setProperty(PROP_FONT_SHAPING, "1"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SHAPING, "1"));
     // "0" - disable, "1" - enabled
-    EXPECT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "1"));
+    ASSERT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "1"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "kerning.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "kerning.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/04-hinting-no,shaping-light,kerning-on.bmp.gz", "output.bmp"));
@@ -379,21 +357,19 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOff) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
     // "0" - simple, "1" - harfbuzz light, "2" - harfbuzz full
-    EXPECT_TRUE(setProperty(PROP_FONT_SHAPING, "2"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SHAPING, "2"));
     // "0" - disable, "1" - enabled
-    EXPECT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "0"));
+    ASSERT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "0"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "kerning.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "kerning.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/05-hinting-no,shaping-full,kerning-off.bmp.gz", "output.bmp"));
@@ -408,21 +384,19 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOn) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "130"));
     // "0" - simple, "1" - harfbuzz light, "2" - harfbuzz full
-    EXPECT_TRUE(setProperty(PROP_FONT_SHAPING, "2"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SHAPING, "2"));
     // "0" - disable, "1" - enabled
-    EXPECT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "1"));
+    ASSERT_TRUE(setProperty(PROP_FONT_KERNING_ENABLED, "1"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "kerning.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "kerning.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "kerning/06-hinting-no,shaping-full,kerning-on.bmp.gz", "output.bmp"));
@@ -437,19 +411,17 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_0_7) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
-    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
-    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "0.7"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    ASSERT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
+    ASSERT_TRUE(setProperty(PROP_FONT_GAMMA, "0.7"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/01-aa-gray,gamma-0_7.bmp.gz", "output.bmp"));
@@ -464,19 +436,17 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_0) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
-    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
-    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "1.0"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    ASSERT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
+    ASSERT_TRUE(setProperty(PROP_FONT_GAMMA, "1.0"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/02-aa-gray,gamma-1_0.bmp.gz", "output.bmp"));
@@ -491,19 +461,17 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_7) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
-    EXPECT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
-    EXPECT_TRUE(setProperty(PROP_FONT_GAMMA, "1.7"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    ASSERT_TRUE(setProperty(PROP_FONT_ANTIALIASING, "3")); // "3" - AA Gray
+    ASSERT_TRUE(setProperty(PROP_FONT_GAMMA, "1.7"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-gamma/03-aa-gray,gamma-1_7.bmp.gz", "output.bmp"));
@@ -512,24 +480,22 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_7) {
     CRLog::info("=======================================");
 }
 
-TEST_F(TextRenderTests, RenderTestsSynthWeight100) {
+TEST_F(TextRenderTests, DISABLED_RenderTestsSynthWeight100) {
     CRLog::info("==================================");
     CRLog::info("Starting RenderTestsSynthWeight100");
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
-    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "100"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "100"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/01-roboto-synth-weight-100.bmp.gz", "output.bmp"));
@@ -538,24 +504,22 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight100) {
     CRLog::info("==================================");
 }
 
-TEST_F(TextRenderTests, RenderTestsSynthWeight250) {
+TEST_F(TextRenderTests, DISABLED_RenderTestsSynthWeight250) {
     CRLog::info("==================================");
     CRLog::info("Starting RenderTestsSynthWeight250");
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
-    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "250"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "250"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/02-roboto-synth-weight-250.bmp.gz", "output.bmp"));
@@ -564,24 +528,22 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight250) {
     CRLog::info("==================================");
 }
 
-TEST_F(TextRenderTests, RenderTestsRealWeight400) {
+TEST_F(TextRenderTests, DISABLED_RenderTestsRealWeight400) {
     CRLog::info("=================================");
     CRLog::info("Starting RenderTestsRealWeight400");
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
-    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "400"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "400"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/03-roboto-real-weight-400.bmp.gz", "output.bmp"));
@@ -590,24 +552,22 @@ TEST_F(TextRenderTests, RenderTestsRealWeight400) {
     CRLog::info("=================================");
 }
 
-TEST_F(TextRenderTests, RenderTestsSynthWeight650) {
+TEST_F(TextRenderTests, DISABLED_RenderTestsSynthWeight650) {
     CRLog::info("==================================");
     CRLog::info("Starting RenderTestsSynthWeight650");
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
-    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "650"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "650"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/04-roboto-synth-weight-650.bmp.gz", "output.bmp"));
@@ -616,24 +576,22 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight650) {
     CRLog::info("==================================");
 }
 
-TEST_F(TextRenderTests, RenderTestsSynthWeight900) {
+TEST_F(TextRenderTests, DISABLED_RenderTestsSynthWeight900) {
     CRLog::info("==================================");
     CRLog::info("Starting RenderTestsSynthWeight900");
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    EXPECT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
-    EXPECT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
-    EXPECT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "900"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
+    ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "900"));
 
     // open document
-    bool res = m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2");
-    EXPECT_TRUE(res); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2")); // load document
     LVDocImageRef image = m_view->getPageImage(0);
-    EXPECT_FALSE(image.isNull());
+    ASSERT_FALSE(image.isNull());
     LVDrawBuf* drawBuf = image->getDrawBuf();
-    res = crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf);
-    ASSERT_TRUE(res);
+    ASSERT_TRUE(crengine_ng::unittesting::saveToBMP("output.bmp", drawBuf));
 
     // compare output file with reference
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoBinFiles(RENDER_REFERENCE_DIR "font-synth-weight/05-roboto-synth-weight-900.bmp.gz", "output.bmp"));
