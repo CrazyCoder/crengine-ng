@@ -47,7 +47,7 @@ bool saveToBMP(const char* filename, LVDrawBuf* drawbuf) {
 
     // file header
     lUInt32 fileSize = 14 /*FILE_HEADER_SIZE*/ + 40 /*INFO_HEADER_SIZE*/ + (pitch * height);
-    LVStreamRef stream = LVOpenFileStream("output.bmp", LVOM_WRITE);
+    LVStreamRef stream = LVOpenFileStream(filename, LVOM_WRITE);
     *stream << (unsigned char)'B'; // 0
     *stream << (unsigned char)'M'; // 1
     lvByteOrderConv cnv;

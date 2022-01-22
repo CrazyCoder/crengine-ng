@@ -42,7 +42,7 @@ add_definitions(-DRENDER_REFERENCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/render-refe
 
 set(SRC_LIST
   savetobmp.cpp
-  compare-two-binfiles.cpp
+  calc-drawbuf-diff.cpp
   crengine-ng-environment.cpp
   blockwritecache_tests.cpp
   tinydom_tests.cpp
