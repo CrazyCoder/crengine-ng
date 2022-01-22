@@ -163,7 +163,7 @@ typedef LVRef<CRGUIAcceleratorTable> CRGUIAcceleratorTableRef;
  * \brief Container for list of named accelerator tables read from files
  *
  * File format:
- * there are two files: 
+ * there are two files:
  *   1) definition file which has key code and command id definitions
  *   2) keymap file which has several key->command tables
  *
@@ -173,7 +173,7 @@ typedef LVRef<CRGUIAcceleratorTable> CRGUIAcceleratorTableRef;
  *   identifier=value
  *   where identifier is alphanumeric identifier to name value
  *   value is either decimal number, hex number with 0x prefix, or character in ''
- * example: 
+ * example:
  *
  * # this is sample definition file
  * XK_Return=0xFF01
@@ -429,7 +429,7 @@ public:
         return lvRect(0, 0, getWidth(), getHeight());
     }
     /// return pointer to screen canvas
-    virtual LVRef<LVDrawBuf> getCanvas() = 0;
+    virtual LVDrawBufRef getCanvas() = 0;
     /// draw image on screen canvas
     virtual void draw(LVDrawBuf* img, int x = 0, int y = 0) = 0;
     /// transfers contents of buffer to device, if full==true, redraws whole screen, otherwise only changed area
@@ -848,8 +848,8 @@ protected:
     int _width;
     int _height;
     lvRect _updateRect;
-    LVRef<LVDrawBuf> _canvas;
-    LVRef<LVDrawBuf> _front;
+    LVDrawBufRef _canvas;
+    LVDrawBufRef _front;
     int _fullUpdateInterval;
     int _fullUpdateCounter;
     /// override in ancessor to transfer image to device
@@ -888,9 +888,9 @@ public:
         if (_width != dx || _height != dy) {
             _width = dx;
             _height = dy;
-            _canvas = LVRef<LVDrawBuf>(createCanvas(dx, dy));
+            _canvas = LVDrawBufRef(createCanvas(dx, dy));
             if (!_front.isNull())
-                _front = LVRef<LVDrawBuf>(createCanvas(dx, dy));
+                _front = LVDrawBufRef(createCanvas(dx, dy));
             return true;
         }
         return false;
@@ -905,7 +905,7 @@ public:
         return _height;
     }
     /// return pointer to screen canvas
-    virtual LVRef<LVDrawBuf> getCanvas() {
+    virtual LVDrawBufRef getCanvas() {
         return _canvas;
     }
     /// draw image on screen canvas
@@ -926,9 +926,9 @@ public:
             , _fullUpdateInterval(1)
             , _fullUpdateCounter(1) {
         if (width && height) {
-            _canvas = LVRef<LVDrawBuf>(createCanvas(width, height));
+            _canvas = LVDrawBufRef(createCanvas(width, height));
             if (doublebuffer)
-                _front = LVRef<LVDrawBuf>(createCanvas(width, height));
+                _front = LVDrawBufRef(createCanvas(width, height));
         }
     }
     virtual ~CRGUIScreenBase() {

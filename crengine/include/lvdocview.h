@@ -62,7 +62,7 @@ typedef enum
 class LVDocImageHolder
 {
 private:
-    LVRef<LVDrawBuf> _drawbuf;
+    LVDrawBufRef _drawbuf;
     LVMutex& _mutex;
     LVDocImageHolder& operator=(LVDocImageHolder&) {
         // no assignment
@@ -72,10 +72,10 @@ public:
     LVDrawBuf* getDrawBuf() {
         return _drawbuf.get();
     }
-    LVRef<LVDrawBuf> getDrawBufRef() {
+    LVDrawBufRef getDrawBufRef() {
         return _drawbuf;
     }
-    LVDocImageHolder(LVRef<LVDrawBuf> drawbuf, LVMutex& mutex)
+    LVDocImageHolder(LVDrawBufRef drawbuf, LVMutex& mutex)
             : _drawbuf(drawbuf)
             , _mutex(mutex) {
     }
@@ -95,7 +95,7 @@ private:
     class Item
     {
     public:
-        LVRef<LVDrawBuf> _drawbuf;
+        LVDrawBufRef _drawbuf;
         LVRef<LVThread> _thread;
         int _offset;
         int _page;
@@ -110,7 +110,7 @@ public:
         return _mutex;
     }
     /// set page to cache
-    void set(int offset, int page, LVRef<LVDrawBuf> drawbuf, LVRef<LVThread> thread) {
+    void set(int offset, int page, LVDrawBufRef drawbuf, LVRef<LVThread> thread) {
         LVLock lock(_mutex);
         _last = (_last + 1) & 1;
         _items[_last]._ready = false;
@@ -121,7 +121,7 @@ public:
         _items[_last]._valid = true;
     }
     /// return page image, wait until ready
-    LVRef<LVDrawBuf> getWithoutLock(int offset, int page) {
+    LVDrawBufRef getWithoutLock(int offset, int page) {
         for (int i = 0; i < 2; i++) {
             if (_items[i]._valid &&
                 ((_items[i]._offset == offset && offset != -1) || (_items[i]._page == page && page != -1))) {
@@ -134,12 +134,12 @@ public:
                 return _items[i]._drawbuf;
             }
         }
-        return LVRef<LVDrawBuf>();
+        return LVDrawBufRef();
     }
     /// return page image, wait until ready
     LVDocImageRef get(int offset, int page) {
         _mutex.lock();
-        LVRef<LVDrawBuf> buf = getWithoutLock(offset, page);
+        LVDrawBufRef buf = getWithoutLock(offset, page);
         if (!buf.isNull())
             return LVDocImageRef(new LVDocImageHolder(getWithoutLock(offset, page), _mutex));
         return LVDocImageRef(NULL);

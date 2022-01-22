@@ -748,9 +748,9 @@ class LVDrawThread: public LVThread
     LVDocView* _view;
     int _offset;
     int _page;
-    LVRef<LVDrawBuf> _drawbuf;
+    LVDrawBufRef _drawbuf;
 public:
-    LVDrawThread(LVDocView* view, int offset, int page, LVRef<LVDrawBuf> drawbuf)
+    LVDrawThread(LVDocView* view, int offset, int page, LVDrawBufRef drawbuf)
             : _view(view)
             , _offset(offset)
             , _page(page)
@@ -822,7 +822,7 @@ void LVDocView::cachePageImage(int delta) {
             buf = new LVGrayDrawBuf(m_dx, m_dy, m_bitsPerPixel);
         }
     }
-    LVRef<LVDrawBuf> drawbuf(buf);
+    LVDrawBufRef drawbuf(buf);
     LVRef<LVThread> thread(new LVDrawThread(this, offset, p, drawbuf));
     m_imageCache.set(offset, p, drawbuf, thread);
     //CRLog::trace("cachePageImage: caching page [%d] is finished", offset);

@@ -256,4 +256,6 @@ public:
     }
 };
 
+typedef LVRef<LVDrawBuf> LVDrawBufRef;
+
 #endif
