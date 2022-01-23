@@ -8633,10 +8633,10 @@ ldomXPointer ldomDocument::createXPointer(lvPoint pt, int direction, bool strict
                         } else if (!find_first && tmpword->src_text_index > word->src_text_index) {
                             word = tmpword;
                         } else if (tmpword->src_text_index == word->src_text_index) {
-                            // (Same src_text_fragment_t, same src->t.offset, skip in when comparing)
-                            if (find_first && tmpword->t.start < word->t.start) {
+                            // (Same src_text_fragment_t, same src->u.t.offset, skip in when comparing)
+                            if (find_first && tmpword->u.t.start < word->u.t.start) {
                                 word = tmpword;
-                            } else if (!find_first && tmpword->t.start > word->t.start) {
+                            } else if (!find_first && tmpword->u.t.start > word->u.t.start) {
                                 word = tmpword;
                             }
                         }
@@ -8662,9 +8662,9 @@ ldomXPointer ldomDocument::createXPointer(lvPoint pt, int direction, bool strict
             }
             // It is a word
             if (find_first) // return xpointer to logical start of word
-                return ldomXPointer(node, src->t.offset + word->t.start);
+                return ldomXPointer(node, src->u.t.offset + word->u.t.start);
             else // return xpointer to logical end of word
-                return ldomXPointer(node, src->t.offset + word->t.start + word->t.len);
+                return ldomXPointer(node, src->u.t.offset + word->u.t.start + word->u.t.len);
         }
 
         // Found line, searching for word (words are in visual order)
@@ -8684,7 +8684,7 @@ ldomXPointer ldomDocument::createXPointer(lvPoint pt, int direction, bool strict
                 (w == wc - 1)) {
                 const src_text_fragment_t* src = txtform->GetSrcInfo(word->src_text_index);
                 // CRLog::debug(" word found [%d]: x=%d..%d, start=%d, len=%d  %08X",
-                //      w, word->x, word->x + word->width, word->t.start, word->t.len, src->object);
+                //      w, word->x, word->x + word->width, word->u.t.start, word->u.t.len, src->object);
 
                 ldomNode* node = (ldomNode*)src->object;
                 if (!node) // Ignore crengine added text (spacing, list item bullets...)
@@ -8711,7 +8711,7 @@ ldomXPointer ldomDocument::createXPointer(lvPoint pt, int direction, bool strict
                 }
 
                 // Found word, searching for letters
-                LVFont* font = (LVFont*)src->t.font;
+                LVFont* font = (LVFont*)src->u.t.font;
                 lUInt16 width[512];
                 lUInt8 flg[512];
 
@@ -8737,33 +8737,33 @@ ldomXPointer ldomDocument::createXPointer(lvPoint pt, int direction, bool strict
                 }
 
                 lUInt32 hints = WORD_FLAGS_TO_FNT_FLAGS(word->flags);
-                if (str.empty() && word->t.len > 0) {
+                if (str.empty() && word->u.t.len > 0) {
                     // Don't know that the fuck up, but it happens
-                    for (int i = 0; i < word->t.len; i++)
+                    for (int i = 0; i < word->u.t.len; i++)
                         width[i] = 0;
                 } else {
-                    font->measureText(str.c_str() + word->t.start, word->t.len, width, flg, word->width + 50, '?',
+                    font->measureText(str.c_str() + word->u.t.start, word->u.t.len, width, flg, word->width + 50, '?',
                                       src->lang_cfg, src->letter_spacing + word->added_letter_spacing, false, hints);
                 }
 
                 bool word_is_rtl = word->flags & LTEXT_WORD_DIRECTION_IS_RTL;
                 if (word_is_rtl) {
-                    for (int i = word->t.len - 1; i >= 0; i--) {
+                    for (int i = word->u.t.len - 1; i >= 0; i--) {
                         int xx = (i > 0) ? (width[i - 1] + width[i]) / 2 : width[i] / 2;
                         xx = word->width - xx;
                         if (x < word->x + xx) {
-                            return ldomXPointer(node, src->t.offset + word->t.start + i);
+                            return ldomXPointer(node, src->u.t.offset + word->u.t.start + i);
                         }
                     }
-                    return ldomXPointer(node, src->t.offset + word->t.start);
+                    return ldomXPointer(node, src->u.t.offset + word->u.t.start);
                 } else {
-                    for (int i = 0; i < word->t.len; i++) {
+                    for (int i = 0; i < word->u.t.len; i++) {
                         int xx = (i > 0) ? (width[i - 1] + width[i]) / 2 : width[i] / 2;
                         if (x < word->x + xx) {
-                            return ldomXPointer(node, src->t.offset + word->t.start + i);
+                            return ldomXPointer(node, src->u.t.offset + word->u.t.start + i);
                         }
                     }
-                    return ldomXPointer(node, src->t.offset + word->t.start + word->t.len);
+                    return ldomXPointer(node, src->u.t.offset + word->u.t.start + word->u.t.len);
                 }
             }
         }
@@ -8923,12 +8923,12 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
             bool isObject = (src->flags & LTEXT_SRC_IS_OBJECT) != 0;
             if (src->object == node) {
                 srcIndex = i;
-                srcLen = isObject ? 0 : src->t.len;
+                srcLen = isObject ? 0 : src->u.t.len;
                 break;
             }
             lastIndex = i;
-            lastLen = isObject ? 0 : src->t.len;
-            lastOffset = isObject ? 0 : src->t.offset;
+            lastLen = isObject ? 0 : src->u.t.len;
+            lastOffset = isObject ? 0 : src->u.t.offset;
             ldomXPointerEx xp2((ldomNode*)src->object, lastOffset);
             if (xp2.compare(xp) > 0) {
                 srcIndex = i;
@@ -8973,7 +8973,7 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                             (nearestForwardSrcIndex == -1 ||
                              word->src_text_index < nearestForwardSrcIndex ||
                              (word->src_text_index == nearestForwardSrcIndex &&
-                              word->t.start < nearestForwardSrcOffset))) {
+                              word->u.t.start < nearestForwardSrcOffset))) {
                             // Found some word from a forward src that is nearest than previously found one:
                             // get its start as a possible best result.
                             bestBidiRect.top = rc.top + frmline->y;
@@ -8995,7 +8995,7 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                             if (word->flags & (LTEXT_WORD_IS_OBJECT | LTEXT_WORD_IS_INLINE_BOX))
                                 nearestForwardSrcOffset = 0;
                             else
-                                nearestForwardSrcOffset = word->t.start;
+                                nearestForwardSrcOffset = word->u.t.start;
                         } else if (word->src_text_index == srcIndex) {
                             // Found word in that exact source text node
                             if (word->flags & (LTEXT_WORD_IS_OBJECT | LTEXT_WORD_IS_INLINE_BOX)) {
@@ -9012,9 +9012,9 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                             // Target is in this text node. We may not find it part
                             // of a word, so look at all words and keep the nearest
                             // (forward if possible) in case we don't find an exact one
-                            if (word->t.start > offset) { // later word in logical order
+                            if (word->u.t.start > offset) { // later word in logical order
                                 if (nearestForwardSrcIndex != word->src_text_index ||
-                                    word->t.start <= nearestForwardSrcOffset) {
+                                    word->u.t.start <= nearestForwardSrcOffset) {
                                     bestBidiRect.top = rc.top + frmline->y;
                                     bestBidiRect.bottom = bestBidiRect.top + frmline->height;
                                     if (word_is_rtl) { // right edge of next logical word, as it is drawn on the left
@@ -9026,14 +9026,14 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                                     }
                                     hasBestBidiRect = true;
                                     nearestForwardSrcIndex = word->src_text_index;
-                                    nearestForwardSrcOffset = word->t.start;
+                                    nearestForwardSrcOffset = word->u.t.start;
                                 }
-                            } else if (word->t.start + word->t.len <= offset) { // past word in logical order
+                            } else if (word->u.t.start + word->u.t.len <= offset) { // past word in logical order
                                 // Only if/while we haven't yet found one with the right src index and
                                 // a forward offset
                                 if (nearestForwardSrcIndex != word->src_text_index ||
-                                    (nearestForwardSrcOffset < word->t.start &&
-                                     word->t.start + word->t.len > nearestForwardSrcOffset)) {
+                                    (nearestForwardSrcOffset < word->u.t.start &&
+                                     word->u.t.start + word->u.t.len > nearestForwardSrcOffset)) {
                                     bestBidiRect.top = rc.top + frmline->y;
                                     bestBidiRect.bottom = bestBidiRect.top + frmline->height;
                                     if (word_is_rtl) { // left edge of previous logical word, as it is drawn on the right
@@ -9045,15 +9045,15 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                                     }
                                     hasBestBidiRect = true;
                                     nearestForwardSrcIndex = word->src_text_index;
-                                    nearestForwardSrcOffset = word->t.start + word->t.len;
+                                    nearestForwardSrcOffset = word->u.t.start + word->u.t.len;
                                 }
                             } else { // exact word found
                                 // Measure word
-                                LVFont* font = (LVFont*)txtform->GetSrcInfo(srcIndex)->t.font;
+                                LVFont* font = (LVFont*)txtform->GetSrcInfo(srcIndex)->u.t.font;
                                 lUInt16 w[512];
                                 lUInt8 flg[512];
                                 lString32 str = node->getText();
-                                if (offset == word->t.start && str.empty()) {
+                                if (offset == word->u.t.start && str.empty()) {
                                     rect.left = word->x + rc.left + frmline->x;
                                     rect.top = rc.top + frmline->y;
                                     rect.right = rect.left + 1;
@@ -9081,8 +9081,8 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                                 }
                                 lUInt32 hints = WORD_FLAGS_TO_FNT_FLAGS(word->flags);
                                 font->measureText(
-                                        str.c_str() + word->t.start,
-                                        word->t.len,
+                                        str.c_str() + word->u.t.start,
+                                        word->u.t.len,
                                         w,
                                         flg,
                                         word->width + 50,
@@ -9094,7 +9094,7 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                                 rect.top = rc.top + frmline->y;
                                 rect.bottom = rect.top + frmline->height;
                                 // chx is the width of previous chars in the word
-                                int chx = (offset > word->t.start) ? w[offset - word->t.start - 1] : 0;
+                                int chx = (offset > word->u.t.start) ? w[offset - word->u.t.start - 1] : 0;
                                 if (word_is_rtl) {
                                     rect.right = word->x + word->width - chx + rc.left + frmline->x;
                                     rect.left = rect.right - 1;
@@ -9103,7 +9103,7 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                                     rect.right = rect.left + 1;
                                 }
                                 if (extended) { // get width of char at offset
-                                    if (offset == word->t.start && word->t.len == 1) {
+                                    if (offset == word->u.t.start && word->u.t.len == 1) {
                                         // With CJK chars, the measured width seems
                                         // less correct than the one measured while
                                         // making words. So use the calculated word
@@ -9113,9 +9113,9 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                                         else
                                             rect.right = rect.left + word->width;
                                     } else {
-                                        int chw = w[offset - word->t.start] - chx;
+                                        int chw = w[offset - word->u.t.start] - chx;
                                         bool hyphen_added = false;
-                                        if (offset == word->t.start + word->t.len - 1 && (word->flags & LTEXT_WORD_CAN_HYPH_BREAK_LINE_AFTER)) {
+                                        if (offset == word->u.t.start + word->u.t.len - 1 && (word->flags & LTEXT_WORD_CAN_HYPH_BREAK_LINE_AFTER)) {
                                             // if offset is the end of word, and this word has
                                             // been hyphenated, includes the hyphen width
                                             chw += font->getHyphenWidth();
@@ -9187,8 +9187,8 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                 // Generic code when visual order = logical order
                 if (word->src_text_index >= srcIndex || lastWord) {
                     // found word from same src line
-                    if (word->flags & (LTEXT_WORD_IS_OBJECT | LTEXT_WORD_IS_INLINE_BOX) || word->src_text_index > srcIndex || (!extended && offset <= word->t.start) || (extended && offset < word->t.start)
-                        // if extended, and offset = word->t.start, we want to
+                    if (word->flags & (LTEXT_WORD_IS_OBJECT | LTEXT_WORD_IS_INLINE_BOX) || word->src_text_index > srcIndex || (!extended && offset <= word->u.t.start) || (extended && offset < word->u.t.start)
+                        // if extended, and offset = word->u.t.start, we want to
                         // measure the first char, which is done in the next else
                     ) {
                         // before this word
@@ -9206,23 +9206,23 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                         rect.bottom = rect.top + frmline->height;
                         return true;
                     } else if ((word->src_text_index == srcIndex) &&
-                               ((offset < word->t.start + word->t.len) ||
-                                (offset == srcLen && offset == word->t.start + word->t.len))) {
+                               ((offset < word->u.t.start + word->u.t.len) ||
+                                (offset == srcLen && offset == word->u.t.start + word->u.t.len))) {
                         // pointer inside this word
-                        LVFont* font = (LVFont*)txtform->GetSrcInfo(srcIndex)->t.font;
+                        LVFont* font = (LVFont*)txtform->GetSrcInfo(srcIndex)->u.t.font;
                         lUInt16 w[512];
                         lUInt8 flg[512];
                         lString32 str = node->getText();
-                        // With "|| (extended && offset < word->t.start)" added to the first if
-                        // above, we may now be here with: offset = word->t.start = 0
+                        // With "|| (extended && offset < word->u.t.start)" added to the first if
+                        // above, we may now be here with: offset = word->u.t.start = 0
                         // and a node->getText() returning THE lString32::empty_str:
                         // font->measureText() would segfault on it because its just a dummy
                         // pointer. Not really sure why that happens.
                         // It happens when node is the <a> in:
                         //     <div><span> <a id="someId"/>Anciens </span> <b>...
-                        // and offset=0, word->t.start=0, word->t.len=8 .
+                        // and offset=0, word->u.t.start=0, word->u.t.len=8 .
                         // We can just do as in the first 'if'.
-                        if (offset == word->t.start && str.empty()) {
+                        if (offset == word->u.t.start && str.empty()) {
                             rect.left = word->x + rc.left + frmline->x;
                             rect.top = rc.top + frmline->y;
                             rect.right = rect.left + 1;
@@ -9250,8 +9250,8 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                         }
                         lUInt32 hints = WORD_FLAGS_TO_FNT_FLAGS(word->flags);
                         font->measureText(
-                                str.c_str() + word->t.start,
-                                word->t.len,
+                                str.c_str() + word->u.t.start,
+                                word->u.t.len,
                                 w,
                                 flg,
                                 word->width + 50,
@@ -9261,21 +9261,21 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
                                 false,
                                 hints);
                         // chx is the width of previous chars in the word
-                        int chx = (offset > word->t.start) ? w[offset - word->t.start - 1] : 0;
+                        int chx = (offset > word->u.t.start) ? w[offset - word->u.t.start - 1] : 0;
                         rect.left = word->x + chx + rc.left + frmline->x;
                         //rect.top = word->y + rc.top + frmline->y + frmline->baseline;
                         rect.top = rc.top + frmline->y;
                         if (extended) { // get width of char at offset
-                            if (offset == word->t.start && word->t.len == 1) {
+                            if (offset == word->u.t.start && word->u.t.len == 1) {
                                 // With CJK chars, the measured width seems
                                 // less correct than the one measured while
                                 // making words. So use the calculated word
                                 // width for one-char-long words instead
                                 rect.right = rect.left + word->width;
                             } else {
-                                int chw = w[offset - word->t.start] - chx;
+                                int chw = w[offset - word->u.t.start] - chx;
                                 bool hyphen_added = false;
-                                if (offset == word->t.start + word->t.len - 1 && (word->flags & LTEXT_WORD_CAN_HYPH_BREAK_LINE_AFTER)) {
+                                if (offset == word->u.t.start + word->u.t.len - 1 && (word->flags & LTEXT_WORD_CAN_HYPH_BREAK_LINE_AFTER)) {
                                     // if offset is the end of word, and this word has
                                     // been hyphenated, includes the hyphen width
                                     chw += font->getHyphenWidth();

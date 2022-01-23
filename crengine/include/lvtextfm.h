@@ -128,7 +128,7 @@ typedef struct
             lInt16 height;    /**< \brief height of image or inline-block box */
             lUInt16 baseline; /**< \brief baseline of inline-block box */
         } o;
-    };
+    } u;
 } src_text_fragment_t;
 
 int getLTextExtraProperty(src_text_fragment_t* srcline, ltext_extra_t extra_property);
@@ -157,7 +157,7 @@ typedef struct
             lUInt16 height;   /**< \brief height of image or inline-block box */
             lUInt16 baseline; /**< \brief baseline of inline-block box */
         } o;
-    };
+    } u;
     lInt16 added_letter_spacing; /* letter-spacing (to reduce spacing when justified) to add when drawing this word */
     lInt16 distinct_glyphs;      /* nb of glyphs in this word that can have letter-spacing added to */
     lInt16 _top_to_baseline;     /* temporary storage slots when delaying y computation, */
