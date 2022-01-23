@@ -18,7 +18,7 @@
 
 #pragma pack(push, 1)
 
-typedef struct
+typedef struct ZipLocalFileHdr
 {
     lUInt32 Mark;       // 0
     lUInt8 UnpVer;      // 4
