@@ -33,6 +33,17 @@ This library can use other libraries:
 ## Installation
 1. Install dependencies (via package manager or compile from sources)
 
+   To install these libraries for Ubuntu you can use the following command:
+```sh
+   $ sudo apt install zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libunibreak-dev libutf8proc-dev libzstd-dev
+```
+   You may also need to install the main packages necessary for development:
+```sh
+   $ sudo apt install build-essential git cmake curl pkg-config
+```
+
+   Some distributions do not contain the required versions of certain libraries, in which case you can build these libraries yourself from sources. The procedure for installing such libraries from sources is outside the scope of this document.
+
 2. Build using cmake.
    cmake options:
    * CRE_BUILD_SHARED - Building crengine-ng as a shared library; default ON
@@ -68,8 +79,8 @@ This library can use other libraries:
    * WITH_UTF8PROC - Use utf8proc for string comparison, etc; default AUTO; variants: AUTO, ON, OFF
    * USE_FONTCONFIG - Use FontConfig to enumerate available fonts; default ON
 
-   For example:
-```
+   For example, we are already in the top source directory, then:
+```sh
 $ mkdir ../crengine-ng-build
 $ cd ../crengine-ng-build
 $ cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release -DCRE_BUILD_SHARED=ON -DCRE_BUILD_STATIC=OFF ../crengine-ng
