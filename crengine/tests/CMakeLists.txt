@@ -19,6 +19,8 @@ FetchContent_Declare(
   URL_HASH MD5=3b43a5cb33196ec25e44d5fcb40219e1
 )
 
+set(BUILD_GMOCK OFF CACHE BOOL "Builds the googlemock subproject" FORCE)
+set(INSTALL_GTEST OFF CACHE BOOL "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" FORCE)
 FetchContent_MakeAvailable(googletest)
 # add_subdirectory() for googletest sources
 # is called automatically as cmake is also used
@@ -49,8 +51,6 @@ set(SRC_LIST
   textrender_tests.cpp
   wtf8_tests.cpp
 )
-
-#file(COPY "${CMAKE_SOURCE_DIR}/crengine/data/css/fb2.css" DESTINATION ${CMAKE_CURRENT_BINARY_DIR} USE_SOURCE_PERMISSIONS)
 
 set(CRE_NG)
 if (CRE_BUILD_STATIC)
