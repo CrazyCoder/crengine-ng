@@ -1,5 +1,5 @@
 project(crengine-ng)
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
@@ -62,6 +62,10 @@ option(USE_FONTCONFIG "Use FontConfig to enumerate available fonts" ON)
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
 option(BUILD_LITE  "Remove most features" OFF)
 option(ENABLE_UNITTESTING "Enable unit testing using googletest" OFF)
+
+if(ENABLE_UNITTESTING)
+  enable_testing()
+endif()
 
 # check option consistency
 if (NOT WITH_FREETYPE)

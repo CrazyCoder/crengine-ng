@@ -1,6 +1,4 @@
 
-cmake_minimum_required(VERSION 3.14)
-
 # Add googletest sources
 include(FetchContent)
 FetchContent_Declare(
@@ -66,3 +64,6 @@ endif(WIN32)
 
 add_executable(unittests ${SRC_LIST})
 target_link_libraries(unittests ${CRE_NG} gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(unittests)
