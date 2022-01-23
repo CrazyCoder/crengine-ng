@@ -125,7 +125,7 @@ const char* funcs_name[FUNCS_COUNT] = {
   * @param t2 pointer to the second time value to subtract from the first.
   * @return Difference between t1 and t2 in us.
   */
-int64_t timevalcmp(const struct timeval* t1, const struct timeval* t2);
+int64_t my_timevalcmp(const struct timeval* t1, const struct timeval* t2);
 
 void calc_rgb_diff(struct rgb_triplet* diff, uint32_t color1, uint32_t color2);
 int rgb_diff_to_weight(const struct rgb_triplet* rgb);
@@ -282,7 +282,7 @@ int main() {
                 value ^= dst_res; // so that when optimizing the compiler does not remove the function call
             }
             gettimeofday(&end_time, NULL);
-            int64_t elapsed = timevalcmp(&end_time, &start_time);
+            int64_t elapsed = my_timevalcmp(&end_time, &start_time);
             printf(" done, elapsed=%d ms (value=%d)\n", (int)(elapsed / 1000), value);
         }
         free(test_inp_data);
@@ -294,7 +294,7 @@ int main() {
     return 0;
 }
 
-int64_t timevalcmp(const struct timeval* t1, const struct timeval* t2) {
+int64_t my_timevalcmp(const struct timeval* t1, const struct timeval* t2) {
     if (!t1 || !t2)
         return 0;
     // check for overflow exclusion

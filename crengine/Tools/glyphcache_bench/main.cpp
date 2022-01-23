@@ -261,7 +261,7 @@ lChar32 lookup_seq[] = {
     1090,
 };
 
-int64_t timevalcmp(const struct timeval* t1, const struct timeval* t2);
+int64_t my_timevalcmp(const struct timeval* t1, const struct timeval* t2);
 
 int main(int /*argc*/, char* /*argv*/[]) {
     const int glyphCodes_tofill_sz = sizeof(glyphCodes_tofill) / sizeof(lChar32);
@@ -324,7 +324,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
         }
     }
     gettimeofday(&ts2, NULL);
-    elapsed = timevalcmp(&ts2, &ts1);
+    elapsed = my_timevalcmp(&ts2, &ts1);
     printf("%" PRId64 " us\n", elapsed);
     printf("t = %" PRIu64 "\n", tmp);
 
@@ -338,7 +338,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
         }
     }
     gettimeofday(&ts2, NULL);
-    elapsed = timevalcmp(&ts2, &ts1);
+    elapsed = my_timevalcmp(&ts2, &ts1);
     printf("%" PRId64 " us\n", elapsed);
     printf("t = %" PRIu64 "\n", tmp);
 
@@ -352,7 +352,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
         }
     }
     gettimeofday(&ts2, NULL);
-    elapsed = timevalcmp(&ts2, &ts1);
+    elapsed = my_timevalcmp(&ts2, &ts1);
     printf("%" PRId64 " us\n", elapsed);
     printf("t = %" PRIu64 "\n", tmp);
 
@@ -363,7 +363,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
     return 0;
 }
 
-int64_t timevalcmp(const struct timeval* t1, const struct timeval* t2) {
+int64_t my_timevalcmp(const struct timeval* t1, const struct timeval* t2) {
     if (!t1 || !t2)
         return 0;
     // check for overflow exclusion
