@@ -105,7 +105,7 @@ bool saveToBMP(const char* filename, LVDrawBuf* drawbuf) {
             const lUInt8* line = drawbuf->GetScanLine(y);
             memcpy(data, line, lineSz);
             ret = stream->Write(data, pitch, &dw);
-            if (ret != LVERR_OK && dw != pitch)
+            if (ret != LVERR_OK || dw != pitch)
                 break;
         }
         free(data);
