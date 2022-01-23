@@ -1,6 +1,6 @@
 
-if(NOT UNIX)
-	message(FATAL_ERROR "This program availavle only for Unix/Linux!")
+if(NOT UNIX OR MACOS)
+  message(FATAL_ERROR "This program available only for Unix/Linux!")
 endif()
 
 find_package(X11 REQUIRED)

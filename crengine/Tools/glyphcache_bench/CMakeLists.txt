@@ -38,6 +38,7 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(glyphcache_bench ${SRC_LIST} ${crengine_part_SRC_LIST})
+target_include_directories(glyphcache_bench PRIVATE ${UTF8PROC_INCLUDE_DIRS})
 target_link_libraries(glyphcache_bench ${ZLIB_LIBRARIES} ${UTF8PROC_LIBRARIES})
 
 configure_file(valgrind_check.sh.cmake ${CMAKE_CURRENT_BINARY_DIR}/valgrind_check.sh)

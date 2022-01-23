@@ -35,4 +35,5 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(mkpattern ${SRC_LIST} ${crengine_part_SRC_LIST})
+target_include_directories(mkpattern PRIVATE ${UTF8PROC_INCLUDE_DIRS})
 target_link_libraries(mkpattern ${ZLIB_LIBRARIES} ${UTF8PROC_LIBRARIES})
