@@ -33,9 +33,6 @@
 #include <crtimerutil.h>
 #include <lvstorageobject.h>
 
-#define LVOM_MASK      7
-#define LVOM_FLAG_SYNC 0x10
-
 class LVStreamBuffer;
 
 typedef LVFastRef<LVStreamBuffer> LVStreamBufferRef;

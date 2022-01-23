@@ -89,6 +89,8 @@ enum lvopen_mode_t
     LVOM_APPEND,    ///< append (readwrite) mode, use for r/w mmap
     LVOM_READWRITE  ///< readwrite mode
 };
+#define LVOM_MASK      7
+#define LVOM_FLAG_SYNC 0x10 /// flag, use to sync data after each write operation
 
 /// point
 class lvPoint

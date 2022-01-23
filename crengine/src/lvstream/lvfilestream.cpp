@@ -388,7 +388,7 @@ lverror_t LVFileStream::Close() {
 
 LVFileStream* LVFileStream::CreateFileStream(lString32 fname, lvopen_mode_t mode) {
     LVFileStream* f = new LVFileStream;
-    if (f->OpenFile(fname, mode) == LVERR_OK) {
+    if (f->OpenFile(fname, (int)mode) == LVERR_OK) {
         return f;
     } else {
         delete f;
@@ -397,8 +397,8 @@ LVFileStream* LVFileStream::CreateFileStream(lString32 fname, lvopen_mode_t mode
 }
 
 lverror_t LVFileStream::OpenFile(lString32 fname, int mode) {
-    mode = mode & LVOM_MASK;
 #if defined(_WIN32)
+    mode = mode & LVOM_MASK;
     lUInt32 m = 0;
     lUInt32 s = 0;
     lUInt32 c = 0;
@@ -460,6 +460,7 @@ lverror_t LVFileStream::OpenFile(lString32 fname, int mode) {
         Seek(0, LVSEEK_END, NULL);
 #else
     bool use_sync = (mode & LVOM_FLAG_SYNC) != 0;
+    mode = mode & LVOM_MASK;
     m_fd = -1;
 
     int flags = (mode == LVOM_READ) ? O_RDONLY : O_RDWR | O_CREAT | (use_sync ? O_SYNC : 0) | (mode == LVOM_WRITE ? O_TRUNC : 0);
