@@ -76,7 +76,7 @@ LVDrawBufRef calcDrawBufDiff(LVDrawBufRef buf1, LVDrawBufRef buf2) {
     return ref;
 }
 
-bool validateDrawBuf(LVDrawBufRef buf, lUInt8 maxColorDiff, lUInt32 maxToleranceCount, lUInt32 maxErrorsCount) {
+bool validateDrawBufDiff(LVDrawBufRef buf, lUInt8 maxColorDiff, lUInt32 maxToleranceCount, lUInt32 maxErrorsCount) {
     if (buf.isNull())
         return false;
     if (buf->GetWidth() == 0 || buf->GetHeight() == 0)

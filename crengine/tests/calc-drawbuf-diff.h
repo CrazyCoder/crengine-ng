@@ -42,14 +42,14 @@ namespace unittesting
 LVDrawBufRef calcDrawBufDiff(LVDrawBufRef buf1, LVDrawBufRef buf2);
 
 /**
- * @brief Validate drawbuf as a mostly black image.
+ * @brief Validate drawbuf, obtained using the calcDrawBufDiff() function, as a mostly black image.
  * @param buf Source drawbuf, allowed only 16/32 color.
  * @param maxColorDiff the value of the maximum allowable deviation of one color component
  * @param maxToleranceCount The maximum allowed number of dots with a color deviation allowed.
  * @param maxErrorsCount The maximum allowed number of points with non-permissible color deviation.
  * @return true if this drawbuf is basically a black image, false otherwise.
  */
-bool validateDrawBuf(LVDrawBufRef buf, lUInt8 maxColorDiff, lUInt32 maxToleranceCount, lUInt32 maxErrorsCount);
+bool validateDrawBufDiff(LVDrawBufRef buf, lUInt8 maxColorDiff, lUInt32 maxToleranceCount, lUInt32 maxErrorsCount);
 
 } // namespace unittesting
 

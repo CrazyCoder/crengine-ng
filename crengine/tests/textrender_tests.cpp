@@ -36,8 +36,6 @@
 #include <lvstreamutils.h>
 #include <lvimg.h>
 
-#include "lvtinydom_cachefile.h"
-#include "lvtinydom_private.h"
 #include "savetobmp.h"
 #include "calc-drawbuf-diff.h"
 
@@ -45,10 +43,6 @@
 
 #ifndef TESTS_DATADIR
 #error Please define TESTS_DATADIR, which points to the directory with the data files for the tests
-#endif
-
-#ifndef TESTS_TMPDIR
-#define TESTS_TMPDIR "/tmp/"
 #endif
 
 #ifndef RENDER_REFERENCE_DIR
@@ -160,7 +154,7 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingNone) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,aa-none.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,aa-none.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "antialiasing/01-hinting-no,shaping-simple,aa-none.png");
@@ -173,7 +167,7 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingNone) {
     //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,aa-none-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsAntialiasingNone");
     CRLog::info("====================================");
@@ -195,7 +189,7 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingGray) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,aa-gray.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,aa-gray.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "antialiasing/02-hinting-no,shaping-simple,aa-gray.png");
@@ -208,7 +202,7 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingGray) {
     //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,aa-gray-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsAntialiasingGray");
     CRLog::info("====================================");
@@ -230,7 +224,7 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingRGB) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-hinting-no,shaping-simple,aa-rgb.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("03-hinting-no,shaping-simple,aa-rgb.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf1 = s_loadRefImage(RENDER_REFERENCE_DIR "antialiasing/03-hinting-no,shaping-simple,aa-rgb-ct.png");
@@ -251,8 +245,8 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingRGB) {
     //crengine_ng::unittesting::saveToBMP("03-hinting-no,shaping-simple,aa-rgb-diff.bmp", diffBuf1.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf1, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT) ||
-                crengine_ng::unittesting::validateDrawBuf(diffBuf2, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf1, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT) ||
+                crengine_ng::unittesting::validateDrawBufDiff(diffBuf2, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsAntialiasingRGB");
     CRLog::info("===================================");
@@ -274,7 +268,7 @@ TEST_F(TextRenderTests, RenderTestsLigaturesOff) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,ligatures-off.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,ligatures-off.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "ligatures/01-hinting-no,shaping-simple,ligatures-off.png");
@@ -287,7 +281,7 @@ TEST_F(TextRenderTests, RenderTestsLigaturesOff) {
     //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,ligatures-off-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsLigaturesOff");
     CRLog::info("================================");
@@ -309,7 +303,7 @@ TEST_F(TextRenderTests, RenderTestsLigaturesOn) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-full,ligatures-on.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-full,ligatures-on.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "ligatures/02-hinting-no,shaping-full,ligatures-on.png");
@@ -322,7 +316,7 @@ TEST_F(TextRenderTests, RenderTestsLigaturesOn) {
     //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-full,ligatures-on-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsLigaturesOn");
     CRLog::info("===============================");
@@ -346,7 +340,7 @@ TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOff) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,kerning-off.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,kerning-off.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "kerning/01-hinting-no,shaping-simple,kerning-off.png");
@@ -359,7 +353,7 @@ TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOff) {
     //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,kerning-off-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsShapingSimpleKerningOff");
     CRLog::info("===========================================");
@@ -383,7 +377,7 @@ TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOn) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,kerning-on.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,kerning-on.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "kerning/02-hinting-no,shaping-simple,kerning-on.png");
@@ -396,7 +390,7 @@ TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOn) {
     //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,kerning-on-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsShapingSimpleKerningOn");
     CRLog::info("==========================================");
@@ -420,7 +414,7 @@ TEST_F(TextRenderTests, RenderTestsShapingLightKerningOff) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-hinting-no,shaping-light,kerning-off.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("03-hinting-no,shaping-light,kerning-off.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "kerning/03-hinting-no,shaping-light,kerning-off.png");
@@ -433,7 +427,7 @@ TEST_F(TextRenderTests, RenderTestsShapingLightKerningOff) {
     //crengine_ng::unittesting::saveToBMP("03-hinting-no,shaping-light,kerning-off-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsShapingLightKerningOff");
     CRLog::info("==========================================");
@@ -457,7 +451,7 @@ TEST_F(TextRenderTests, RenderTestsShapingLightKerningOn) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("04-hinting-no,shaping-light,kerning-on.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("04-hinting-no,shaping-light,kerning-on.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "kerning/04-hinting-no,shaping-light,kerning-on.png");
@@ -470,7 +464,7 @@ TEST_F(TextRenderTests, RenderTestsShapingLightKerningOn) {
     //crengine_ng::unittesting::saveToBMP("04-hinting-no,shaping-light,kerning-on-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsShapingLightKerningOn");
     CRLog::info("=========================================");
@@ -496,7 +490,7 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOff) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("05-hinting-no,shaping-full,kerning-off.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("05-hinting-no,shaping-full,kerning-off.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "kerning/05-hinting-no,shaping-full,kerning-off.png");
@@ -509,7 +503,7 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOff) {
     //crengine_ng::unittesting::saveToBMP("05-hinting-no,shaping-full,kerning-off-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsShapingFullKerningOff");
     CRLog::info("=========================================");
@@ -533,7 +527,7 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOn) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("06-hinting-no,shaping-full,kerning-on.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("06-hinting-no,shaping-full,kerning-on.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "kerning/06-hinting-no,shaping-full,kerning-on.png");
@@ -546,7 +540,7 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOn) {
     //crengine_ng::unittesting::saveToBMP("06-hinting-no,shaping-full,kerning-on-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsShapingFullKerningOn");
     CRLog::info("========================================");
@@ -570,7 +564,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_0_7) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-aa-gray,gamma-0_7.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("01-aa-gray,gamma-0_7.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-gamma/01-aa-gray,gamma-0_7.png");
@@ -583,7 +577,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_0_7) {
     //crengine_ng::unittesting::saveToBMP("01-aa-gray,gamma-0_7-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsAAGrayTextGamma_0_7");
     CRLog::info("=======================================");
@@ -605,7 +599,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_0) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-aa-gray,gamma-1_0.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("02-aa-gray,gamma-1_0.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-gamma/02-aa-gray,gamma-1_0.png");
@@ -618,7 +612,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_0) {
     //crengine_ng::unittesting::saveToBMP("02-aa-gray,gamma-1_0-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsAAGrayTextGamma_1_0");
     CRLog::info("=======================================");
@@ -640,7 +634,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_7) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-aa-gray,gamma-1_7.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("03-aa-gray,gamma-1_7.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-gamma/03-aa-gray,gamma-1_7.png");
@@ -653,7 +647,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_7) {
     //crengine_ng::unittesting::saveToBMP("03-aa-gray,gamma-1_7-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsAAGrayTextGamma_1_7");
     CRLog::info("=======================================");
@@ -674,7 +668,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight100) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-roboto-synth-weight-100.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("01-roboto-synth-weight-100.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/01-roboto-synth-weight-100.png");
@@ -687,7 +681,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight100) {
     //crengine_ng::unittesting::saveToBMP("01-roboto-synth-weight-100-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsSynthWeight100");
     CRLog::info("==================================");
@@ -708,7 +702,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight250) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-roboto-synth-weight-250.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("02-roboto-synth-weight-250.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/02-roboto-synth-weight-250.png");
@@ -721,7 +715,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight250) {
     //crengine_ng::unittesting::saveToBMP("02-roboto-synth-weight-250-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsSynthWeight250");
     CRLog::info("==================================");
@@ -742,7 +736,7 @@ TEST_F(TextRenderTests, RenderTestsRealWeight400) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-roboto-real-weight-400.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("03-roboto-real-weight-400.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/03-roboto-real-weight-400.png");
@@ -755,7 +749,7 @@ TEST_F(TextRenderTests, RenderTestsRealWeight400) {
     //crengine_ng::unittesting::saveToBMP("03-roboto-real-weight-400-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsRealWeight400");
     CRLog::info("=================================");
@@ -776,7 +770,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight650) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("04-roboto-synth-weight-650.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("04-roboto-synth-weight-650.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/04-roboto-synth-weight-650.png");
@@ -789,7 +783,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight650) {
     //crengine_ng::unittesting::saveToBMP("04-roboto-synth-weight-650-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsSynthWeight650");
     CRLog::info("==================================");
@@ -810,7 +804,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight900) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("05-roboto-synth-weight-900.bmp", image->getDrawBuf());
+    //crengine_ng::unittesting::saveToBMP("05-roboto-synth-weight-900.bmp", image->getDrawBufRef());
 
     // open reference image
     LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/05-roboto-synth-weight-900.png");
@@ -823,7 +817,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight900) {
     //crengine_ng::unittesting::saveToBMP("05-roboto-synth-weight-900-diff.bmp", diffBuf.get());
 
     // Validate diff drawbuf
-    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBuf(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsSynthWeight900");
     CRLog::info("==================================");
