@@ -24,7 +24,7 @@
 #ifndef _SAVETOBMP_H
 #define _SAVETOBMP_H
 
-class LVDrawBuf;
+#include <lvdrawbuf.h>
 
 namespace crengine_ng
 {
@@ -32,7 +32,7 @@ namespace crengine_ng
 namespace unittesting
 {
 
-bool saveToBMP(const char* filename, LVDrawBuf* drawbuf);
+bool saveToBMP(const char* filename, LVDrawBufRef drawbuf);
 
 } // namespace unittesting
 
