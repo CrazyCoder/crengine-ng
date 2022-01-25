@@ -33,10 +33,6 @@
 #include <lvgraydrawbuf.h>
 #endif
 
-#ifdef CR_WX_SUPPORT
-#include <wx/wx.h>
-#endif
-
 class CRGUIWindowManager;
 
 #define KEY_FLAG_LONG_PRESS 1
@@ -934,77 +930,6 @@ public:
     virtual ~CRGUIScreenBase() {
     }
 };
-
-#ifdef CR_WX_SUPPORT
-/// WXWidget support: draw to wxImage
-class CRWxScreen: public CRGUIScreenBase
-{
-protected:
-    wxBitmap _wxbitmap;
-    virtual void update(const lvRect& rc, bool full) {
-        wxImage img;
-        int dyy = _canvas->GetHeight();
-        int dxx = _canvas->GetWidth();
-        int dx = dxx;
-        int dy = dyy;
-        img.Create(dx, dy, true);
-        unsigned char* bits = img.GetData();
-        for (int y = 0; y < dy && y < dyy; y++) {
-            int bpp = _canvas->GetBitsPerPixel();
-            if (bpp == 32) {
-                const lUInt32* src = (const lUInt32*)_canvas->GetScanLine(y);
-                unsigned char* dst = bits + y * dx * 3;
-                for (int x = 0; x < dx && x < dxx; x++) {
-                    lUInt32 c = *src++;
-                    *dst++ = (c >> 16) & 255;
-                    *dst++ = (c >> 8) & 255;
-                    *dst++ = (c >> 0) & 255;
-                }
-            } else if (bpp == 2) {
-                //
-                static const unsigned char palette[4][3] = {
-                    { 0xff, 0xff, 0xff },
-                    { 0xaa, 0xaa, 0xaa },
-                    { 0x55, 0x55, 0x55 },
-                    { 0x00, 0x00, 0x00 },
-                };
-                const lUInt8* src = (const lUInt8*)_canvas->GetScanLine(y);
-                unsigned char* dst = bits + y * dx * 3;
-                for (int x = 0; x < dx && x < dxx; x++) {
-                    lUInt32 c = ((src[x >> 2] >> ((3 - (x & 3)) << 1))) & 3;
-                    *dst++ = palette[c][0];
-                    *dst++ = palette[c][1];
-                    *dst++ = palette[c][2];
-                }
-            } else if (bpp == 1) {
-                //
-                static const unsigned char palette[2][3] = {
-                    { 0xff, 0xff, 0xff },
-                    { 0x00, 0x00, 0x00 },
-                };
-                const lUInt8* src = (const lUInt8*)_canvas->GetScanLine(y);
-                unsigned char* dst = bits + y * dx * 3;
-                for (int x = 0; x < dx && x < dxx; x++) {
-                    lUInt32 c = ((src[x >> 3] >> ((7 - (x & 7))))) & 1;
-                    *dst++ = palette[c][0];
-                    *dst++ = palette[c][1];
-                    *dst++ = palette[c][2];
-                }
-            }
-        }
-
-        // copy to bitmap
-        wxBitmap bmp(img);
-        _wxbitmap = bmp;
-    }
-public:
-    CRWxScreen(int width, int height)
-            : CRGUIScreenBase(width, height, true) { }
-    wxBitmap getWxBitmap() {
-        return _wxbitmap;
-    }
-};
-#endif
 
 /// Window to show LVDocView contents
 class CRDocViewWindow: public CRGUIWindowBase
