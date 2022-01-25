@@ -39,15 +39,18 @@ add_definitions(-DHYPH_DIR=\"${CMAKE_SOURCE_DIR}/crengine/data/hyph/\")
 add_definitions(-DCSS_DIR=\"${CMAKE_SOURCE_DIR}/crengine/data/css/\")
 add_definitions(-DFONTS_DIR=\"${FONTS_DIR}/\")
 add_definitions(-DRENDER_REFERENCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/render-references/\")
+add_definitions(-DDOCPARSE_REFERENCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/docparse-references/\")
 
 set(SRC_LIST
   savetobmp.cpp
   calc-drawbuf-diff.cpp
+  compare-two-textfiles.cpp
   crengine-ng-environment.cpp
   blockwritecache_tests.cpp
   tinydom_tests.cpp
   textrender_tests.cpp
   wtf8_tests.cpp
+  docparse_tests.cpp
 )
 
 set(CRE_NG)
