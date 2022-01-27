@@ -368,3 +368,26 @@ TEST_F(DocParseTests, DISABLED_ParseSimpleDOC) {
     CRLog::info("Finished ParseSimpleDOCDoc");
     CRLog::info("==========================");
 }
+
+TEST_F(DocParseTests, ParseSimpleFB3) {
+    CRLog::info("=======================");
+    CRLog::info("Starting ParseSimpleFB3");
+    ASSERT_TRUE(m_initOK);
+
+    // open document & render into drawbuf
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-fb3.fb3")); // load document
+    ASSERT_TRUE(setCSS("docx.css"));
+
+    // render document
+    m_view->requestRender();
+    m_view->checkRender();
+
+    // Save dump
+    ASSERT_TRUE(dumpXML("doc-dump.xml"));
+
+    // compare with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoTextFiles("doc-dump.xml", DOCPARSE_REFERENCE_DIR "simple-fb3_dump.xml.gz"));
+
+    CRLog::info("Finished ParseSimpleFB3");
+    CRLog::info("=======================");
+}
