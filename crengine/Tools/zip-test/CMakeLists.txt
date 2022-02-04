@@ -26,7 +26,8 @@ set(crengine_part_SRC_LIST
     ../../src/lvserialbuf.cpp
 )
 
-#add_definitions(-DBUILD_LITE=1)
+add_definitions(-D_LARGEFILE64_SOURCE=1 -D_FILE_OFFSET_BITS=64)
+add_definitions(-DLVLONG_FILE_SUPPORT=1)
 
 if(UNIX)
     add_definitions(-DLINUX -D_LINUX)

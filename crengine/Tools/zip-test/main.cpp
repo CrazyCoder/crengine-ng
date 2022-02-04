@@ -7,13 +7,19 @@
 
 #include <stdio.h>
 
+#define TEST_ZIP64_EXTRACT 0
+
 int main(int argc, char* argv[]) {
     const char* fname;
+#if TEST_ZIP64_EXTRACT == 1
     const char* inner_fname = 0;
+#endif
     if (argc > 1) {
         fname = argv[1];
+#if TEST_ZIP64_EXTRACT == 1
         if (argc > 2)
             inner_fname = argv[2];
+#endif
     } else {
         printf("You must specify path to archive!\n");
         return 1;
@@ -45,7 +51,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-#if 0
+#if TEST_ZIP64_EXTRACT == 1
     if (!arc.isNull()) {
         if (NULL != inner_fname) {
             printf("Open file inside archive...\n");
@@ -64,7 +70,7 @@ int main(int argc, char* argv[]) {
                             printf("Read error!\n");
                             break;
                         }
-                        if (0 == ReadSize) {
+                        if (ReadSize < 4096) {
                             break;
                         }
                         if (out_stream->Write(buff, ReadSize, &WriteSize) != LVERR_OK) {
@@ -72,17 +78,19 @@ int main(int argc, char* argv[]) {
                             break;
                         }
                     }
+                    printf("  done.\n");
                 } else {
                     printf("Failed top open output file!\n");
                 }
             } else {
                 printf("  failed\n");
             }
+            fflush(stdout);
         } else {
             printf("Inner filename must be specified from command line!\n");
         }
     }
-#endif
+#endif // TEST_ZIP64_EXTRACT == 1
 
 #if 1
     printf("Archive contents:\n");

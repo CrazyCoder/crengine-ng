@@ -84,19 +84,18 @@ int LVZipArc::ReadContents() {
     char ReadBuf[1024];
     lUInt32 NextPosition;
     lvoffset_t NextOffset;
-    lvpos_t CurPos;
+    lvoffset_t CurPos;
     lvsize_t ReadSize;
     bool found = false;
     bool found64 = false;
     bool require64 = false;
     bool zip64 = false;
     lUInt64 NextPosition64 = 0;
-    CurPos = 0;
     NextPosition = 0;
     if (fileSize < sizeof(ReadBuf) - 18)
-        CurPos = -(lvpos_t)fileSize;
+        CurPos = (lvoffset_t)(-fileSize);
     else
-        CurPos = -(lvpos_t)sizeof(ReadBuf) + 18;
+        CurPos = (lvoffset_t)(-sizeof(ReadBuf) + 18);
     // Find End of central directory record (EOCD)
     for (int bufNo = 0; bufNo < 64; bufNo++) {
         if (m_stream->Seek(CurPos, LVSEEK_END, NULL) != LVERR_OK)
@@ -133,12 +132,12 @@ int LVZipArc::ReadContents() {
                 break;
             }
         }
-        if (CurPos <= -fileSize)
-            break;
         if (fileSize < sizeof(ReadBuf) - 4)
-            CurPos = -fileSize;
+            CurPos = (lvoffset_t)(-fileSize);
         else
-            CurPos -= (lvpos_t)sizeof(ReadBuf) - 4;
+            CurPos -= (lvoffset_t)sizeof(ReadBuf) - 4;
+        if (CurPos <= (lvoffset_t)(-fileSize))
+            break;
     }
     zip64 = found64 || require64;
 
