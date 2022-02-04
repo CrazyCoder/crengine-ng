@@ -14,7 +14,10 @@
 
 #include <lvxmlparsercallback.h>
 #include <lvstring32collection.h>
-#include <crmathml.h> // TODO: Move this header to source (private) dir
+
+#if MATHML_SUPPORT == 1
+#include "../mathml.h"
+#endif
 
 class ldomElementWriter;
 class ldomDocument;

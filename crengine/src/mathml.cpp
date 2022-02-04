@@ -113,7 +113,7 @@ Current limitations:
 
 #if MATHML_SUPPORT == 1
 
-#include <crmathml.h>
+#include "mathml.h"
 
 #include <lvtypes.h>
 #include <lvstring.h>

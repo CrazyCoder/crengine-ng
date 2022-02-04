@@ -15,10 +15,6 @@
 #include <lvrend.h>
 #include <crlog.h>
 
-#if MATHML_SUPPORT == 1
-#include <crmathml.h>
-#endif
-
 #include "lvtinydom_private.h"
 #include "lxmlattribute.h"
 #include "ldomtextnode.h"
@@ -29,6 +25,10 @@
 #include "nodeimageproxy.h"
 #include "renderrectaccessor.h"
 #include "../textlang.h"
+
+#if MATHML_SUPPORT == 1
+#include "../mathml.h"
+#endif
 
 // define to store new text nodes as persistent text, instead of mutable
 #define USE_PERSISTENT_TEXT 1

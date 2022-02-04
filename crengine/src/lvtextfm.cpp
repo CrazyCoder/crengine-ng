@@ -31,7 +31,7 @@
 #include <string.h>
 
 #if MATHML_SUPPORT == 1
-#include <crmathml.h>
+#include "mathml.h"
 #endif
 
 #if USE_HARFBUZZ == 1

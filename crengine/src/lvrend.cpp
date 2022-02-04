@@ -2275,7 +2275,7 @@ public:
 };
 
 #if MATHML_SUPPORT == 1
-#include <crmathml.h>
+#include "mathml.h"
 // Add implementation for MathML additional methods to CCRTable, and a few functions used below
 #include "mathml_table_ext.h"
 #endif

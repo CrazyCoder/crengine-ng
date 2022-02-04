@@ -61,7 +61,7 @@ set(CRENGINE_NG_SOURCES
     src/odtfmt.cpp
     src/odxutil.cpp
     src/crconcurrent.cpp
-    src/crmathml.cpp
+    src/mathml.cpp
     src/lvimg/lvcacheableobject.cpp
     src/lvimg/lvimagesource.cpp
     src/lvimg/crninepatchdecoder.cpp
