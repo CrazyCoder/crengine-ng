@@ -22,11 +22,11 @@
 
 #include <crlog.h>
 #include <lvdocview.h>
-#include <lvtinydom.h>
+#include <ldomdocument.h>
+#include <ldomdoccache.h>
 #include <lvstreamutils.h>
 
-#include "lvtinydom_cachefile.h"
-#include "lvtinydom_private.h"
+#include "../src/lvtinydom/cachefile.h"
 
 #include "gtest/gtest.h"
 

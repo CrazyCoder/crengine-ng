@@ -15,7 +15,11 @@
 #define ODTFMT_H
 
 #include <crsetup.h>
-#include <lvtinydom.h>
+#include <lvcontainer.h>
+
+class ldomDocument;
+class LVDocViewCallback;
+class CacheLoadingCallback;
 
 bool DetectOpenDocumentFormat(LVStreamRef stream);
 bool ImportOpenDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback);

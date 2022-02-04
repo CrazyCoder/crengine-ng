@@ -141,6 +141,9 @@
 #include <lvtypes.h>
 #include <lvstring.h>
 #include <lvdocview.h>
+#include <lvdocviewcallback.h>
+#include <ldomdocument.h>
+#include <ldomdoccache.h>
 #include <lvdrawbuf.h>
 #include <lvcontaineriteminfo.h>
 #include <lvstreamutils.h>

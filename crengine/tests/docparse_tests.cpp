@@ -22,7 +22,7 @@
 
 #include <crlog.h>
 #include <lvdocview.h>
-#include <lvtinydom.h>
+#include <ldomdocument.h>
 #include <lvrend.h>
 #include <lvstreamutils.h>
 

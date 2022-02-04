@@ -1,12 +1,22 @@
 #include "epubfmt.h"
 
 #include <lvstreamutils.h>
+#include <lvdocprops.h>
+#include <lvimg.h>
+#include <lvptrvec.h>
+#include <ldomxpointer.h>
+#include <lvtocitem.h>
+#include <ldomdocument.h>
+#include <lvtinydomutils.h>
+#include <lvdocviewcallback.h>
 #include <crlog.h>
 
 #include "streamproxy.h"
 #include "lvxml/lvxmlparser.h"
 #include "lvxml/lvhtmlparser.h"
 #include "lvxml/lvxmlutils.h"
+#include "lvtinydom/ldomdocumentwriter.h"
+#include "lvtinydom/ldomdocumentfragmentwriter.h"
 
 class EpubItem
 {

@@ -27,7 +27,8 @@
 #include <crlog.h>
 #include <lvfntman.h>
 #include <lvdrawbuf.h>
-#include <lvtinydom.h>
+#include <ldomxpointer.h>
+#include <lvimg.h>
 
 // Vertical alignment flags
 #define SKIN_VALIGN_MASK   0x0003

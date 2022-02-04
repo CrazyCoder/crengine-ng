@@ -20,6 +20,10 @@
 #include <crtrace.h>
 #include <lvcontaineriteminfo.h>
 #include <lvstreamutils.h>
+#include <ldomnodecallback.h>
+#include <ldomdocument.h>
+#include <lvdocviewcallback.h>
+#include <lvtinydomutils.h>
 
 #include "textlang.h"
 #include "lvdrawbuf/lvdrawstatesaver.h"
@@ -27,6 +31,9 @@
 #include "lvxml/lvhtmlparser.h"
 #include "lvxml/lvtextbookmarkparser.h"
 #include "lvxml/lvtextrobustparser.h"
+#include "lvtinydom/renderrectaccessor.h"
+#include "lvtinydom/ldomdocumentwriterfilter.h"
+#include "lvtinydom/cachefile.h"
 
 #include "rtfimp.h"
 #include "wolutil.h"

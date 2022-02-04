@@ -1535,4 +1535,12 @@ bool splitIntegerList(lString32 s, lString32 delim, int& value1, int& value2);
 void free_ls_storage();
 #endif
 
+/**
+ * @brief Checking if all characters in string is space (including <CR>, <LF>, <TAB>)
+ * @param text pointer to unicode string
+ * @param len string length
+ * @return true if all chars in the given string are spaces, false - otherwise.
+ */
+bool IsEmptySpace(const lChar32* text, int len);
+
 #endif // __LV_STRING_H_INCLUDED__

@@ -14,12 +14,17 @@
 *******************************************************/
 
 #include <lvstsheet.h>
-#include <lvtinydom.h>
+#include <ldomnode.h>
+#include <lxmldocbase.h>
 #include <fb2def.h>
 #include <lvstreamutils.h>
 #include <lvrend.h> // for -cr-only-if:
+#include <lvdocprops.h>
+#include <lvserialbuf.h>
+#include <crbookformats.h>
 
 #include "lvxml/lvxmlutils.h"
+#include "lvtinydom/renderrectaccessor.h"
 #include "textlang.h"
 
 // define to dump all tokens

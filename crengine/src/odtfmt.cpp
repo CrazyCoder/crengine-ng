@@ -12,7 +12,10 @@
 
 #include "odtfmt.h"
 
-#include <lvtinydom.h>
+#include <ldomdocument.h>
+#include <lvdocviewcallback.h>
+#include <lvtinydomutils.h>
+#include <lvdocprops.h>
 #include <fb2def.h>
 #include <lvstreamutils.h>
 #include <crlog.h>
@@ -20,6 +23,7 @@
 #include "lvopc.h"
 #include "lvxml/lvxmlparser.h"
 #include "lvxml/lvxmlutils.h"
+#include "lvtinydom/ldomdocumentwriter.h"
 #include "odxutil.h"
 
 // If you add new element - update odt_elements_mapping table below

@@ -1,6 +1,9 @@
 #ifndef __CRMATHML_H_INCLUDED__
 #define __CRMATHML_H_INCLUDED__
 
+#include <cssdef.h>
+#include <lvstyles.h>
+
 class ldomDocumentWriter;
 
 enum MathMLParserStepType
@@ -45,4 +48,4 @@ void ensureMathMLInnerMOsHorizontalStretch(ldomNode* node);
 
 void ensureMathMLMOInMTDStretch(ldomNode* node);
 
-#endif
+#endif // __CRMATHML_H_INCLUDED__

@@ -13,11 +13,12 @@
 
 #include <lvmemman.h>
 #include <lvref.h>
-#include <lvtinydom.h>
 #include <lvstreamutils.h>
 #include <crlog.h>
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef _LINUX
 #ifndef _XOPEN_SOURCE

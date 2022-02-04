@@ -5,6 +5,9 @@
 
 #include <lvstreamutils.h>
 #include <crtxtenc.h>
+#include <lvdocprops.h>
+#include <ldomdocument.h>
+#include <lvdocviewcallback.h>
 #include <crlog.h>
 
 #include "chmfmt.h"
@@ -12,6 +15,8 @@
 #include "lvstream/lvnamedcontainer.h"
 #include "lvxml/lvxmlutils.h"
 #include "lvxml/lvhtmlparser.h"
+#include "lvtinydom/ldomdocumentwriterfilter.h"
+#include "lvtinydom/ldomdocumentfragmentwriter.h"
 
 #include <chm_lib.h>
 

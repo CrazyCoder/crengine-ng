@@ -14,7 +14,10 @@
 #ifndef ODXUTIL_H
 #define ODXUTIL_H
 
-#include <lvtinydom.h>
+#include <cssdef.h>
+#include <lvhashtable.h>
+
+#include "lvtinydom/ldomdocumentwriter.h"
 
 // build FB2 DOM, comment out to build HTML DOM
 #define DOCX_FB2_DOM_STRUCTURE 1
@@ -282,6 +285,8 @@ public:
     }
     lString32 getCss();
 };
+
+class ldomDocument;
 
 class odx_ImportContext
 {

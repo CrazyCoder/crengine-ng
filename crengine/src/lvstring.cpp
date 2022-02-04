@@ -5447,3 +5447,10 @@ lString32 removeSoftHyphens(lString32 s) {
     }
     return s;
 }
+
+bool IsEmptySpace(const lChar32* text, int len) {
+    for (int i = 0; i < len; i++)
+        if (text[i] != ' ' && text[i] != '\r' && text[i] != '\n' && text[i] != '\t')
+            return false;
+    return true;
+}

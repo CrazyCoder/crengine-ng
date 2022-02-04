@@ -13,7 +13,8 @@
 #include "rtfimp.h"
 
 #include <crtxtenc.h>
-#include <lvtinydom.h>
+#include <lvxmlparsercallback.h>
+#include <lvtinydom_common.h>
 #include <lvstreamutils.h>
 
 #include "lvxml/lvxmlutils.h"

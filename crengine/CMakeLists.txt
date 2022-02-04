@@ -14,7 +14,6 @@ set(CRENGINE_NG_SOURCES
     src/lvmemman.cpp
     src/lvstyles.cpp
     src/crtxtenc.cpp
-    src/lvtinydom.cpp
     src/lvstsheet.cpp
     src/txtselector.cpp
     src/textlang.cpp
@@ -100,6 +99,36 @@ set(CRENGINE_NG_SOURCES
     src/lvdrawbuf/lvinkmeasurementdrawbuf.cpp
     src/lvdrawbuf/lvimagescaleddrawcallback.cpp
     src/lvdrawbuf/lvdrawbuf_utils.cpp
+    src/lvtinydom/lvtinydomutils.cpp
+    src/lvtinydom/ldomdatastoragemanager.cpp
+    src/lvtinydom/ldomtextstoragechunk.cpp
+    src/lvtinydom/cachefile.cpp
+    src/lvtinydom/cachefileheader.cpp
+    src/lvtinydom/lvtinynodecollection.cpp
+    src/lvtinydom/ldomblobcache.cpp
+    src/lvtinydom/ldomnode.cpp
+    src/lvtinydom/lvbase64nodestream.cpp
+    src/lvtinydom/nodeimageproxy.cpp
+    src/lvtinydom/renderrectaccessor.cpp
+    src/lvtinydom/lxmldocbase.cpp
+    src/lvtinydom/ldomxpointer.cpp
+    src/lvtinydom/ldomxpointerex.cpp
+    src/lvtinydom/writenodeex.cpp
+    src/lvtinydom/lvtocitem.cpp
+    src/lvtinydom/lvpagemap.cpp
+    src/lvtinydom/ldomxrange.cpp
+    src/lvtinydom/ldomxrangelist.cpp
+    src/lvtinydom/ldommarkedrange.cpp
+    src/lvtinydom/ldommarkedrangelist.cpp
+    src/lvtinydom/ldomdocument.cpp
+    src/lvtinydom/lvimportstylesheetparser.cpp
+    src/lvtinydom/ldomdoccache.cpp
+    src/lvtinydom/ldomdoccacheimpl.cpp
+    src/lvtinydom/ldomelementwriter.cpp
+    src/lvtinydom/ldomdocumentwriter.cpp
+    src/lvtinydom/ldomdocumentwriterfilter.cpp
+    src/lvtinydom/ldomdocumentfragmentwriter.cpp
+    src/lvtinydom/ldomwordexlist.cpp
 )
 
 if(USE_LOCALE_DATA)

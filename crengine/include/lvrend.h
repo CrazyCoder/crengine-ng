@@ -14,7 +14,8 @@
 #ifndef __LV_REND_H_INCLUDED__
 #define __LV_REND_H_INCLUDED__
 
-#include <lvtinydom.h>
+#include <lvpagesplitter.h>
+#include <lvstyles.h>
 
 // Current direction, from dir="ltr" or dir="rtl" element attribute
 // Should map directly to the RENDER_RECT_FLAG_DIRECTION_* below
@@ -62,6 +63,9 @@
 
 class FlowState;
 class TextLangCfg;
+class LFormattedText;
+class RenderRectAccessor;
+class ldomMarkedRangeList;
 
 // Footprint of block floats (from FlowState) on a final block,
 // to be passed to lvtextfm LFormattedText::Format().

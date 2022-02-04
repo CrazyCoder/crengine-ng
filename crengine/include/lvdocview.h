@@ -15,12 +15,18 @@
 
 #include <crsetup.h>
 #include <crskin.h>
-#include <lvtinydom.h>
+#include <ldomxrangelist.h>
+#include <ldommarkedrangelist.h>
+#include <lvtocitem.h>
+#include <ldomwordexlist.h>
+#include <ldomnavigationhistory.h>
 #include <lvpagesplitter.h>
 #include <lvdrawbuf.h>
 #include <lvcolordrawbuf.h>
 #include <crhist.h>
 #include <lvthread.h>
+#include <lvcacheloadingcallback.h>
+#include <lvdocprops.h>
 #include <lvdocviewcmd.h>
 #include <lvdocviewprops.h>
 
@@ -176,6 +182,9 @@ public:
     }
 };
 #endif
+
+class LVDocView;
+class LVPageMap;
 
 class LVPageWordSelector
 {

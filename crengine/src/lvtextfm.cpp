@@ -15,14 +15,24 @@
 #include <lvfnt.h>
 #include <lvdrawbuf.h>
 #include <fb2def.h>
-#include <lvtinydom.h>
+#include <ldomnode.h>
+#include <ldomxpointer.h>
+#include <ldomxrange.h>
+#include <ldomdocument.h>
+#include <ldommarkedrangelist.h>
 #include <lvrend.h>
+#include <lvimg.h>
 
 #include "textlang.h"
+#include "lvtinydom/renderrectaccessor.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#if MATHML_SUPPORT == 1
+#include <crmathml.h>
+#endif
 
 #if USE_HARFBUZZ == 1
 #include <hb.h>

@@ -1,6 +1,9 @@
 #include "pdbfmt.h"
 
+#include <ldomdocument.h>
+#include <lvdocviewcallback.h>
 #include <lvstreamutils.h>
+#include <lvdocprops.h>
 #include <lvbyteorder.h>
 #include <crtxtenc.h>
 #include <crlog.h>
@@ -10,6 +13,7 @@
 #include "lvxml/lvxmlutils.h"
 #include "lvxml/lvhtmlparser.h"
 #include "lvxml/lvtextparser.h"
+#include "lvtinydom/ldomdocumentwriterfilter.h"
 
 #include <ctype.h>
 

@@ -14,6 +14,7 @@
 
 #include <lvptrvec.h>
 #include <lvstring.h>
+#include <ldomxpointer.h>
 
 #include <time.h>
 

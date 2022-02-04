@@ -1,8 +1,11 @@
 #include <crsetup.h>
 #include <lvstring.h>
 #include <lvstreamutils.h>
-#include <lvtinydom.h>
+#include <lvtinydom_common.h>
+#include <ldomdocument.h>
 #include <crlog.h>
+
+#include "lvtinydom/ldomdocumentwriter.h"
 
 //#ifndef USE_ANTIWORD
 //#define USE_ANTIWORD 1

@@ -13,11 +13,15 @@
 
 #include <lvrend.h>
 #include <lvtextfm.h>
-#include <lvtinydom.h>
+#include <lvimg.h>
 #include <fb2def.h>
+#include <ldomnode.h>
+#include <ldomdocument.h>
+#include <ldommarkedrangelist.h>
 #include <crlog.h>
 
 #include "lvdrawbuf/lvinkmeasurementdrawbuf.h"
+#include "lvtinydom/renderrectaccessor.h"
 #include "textlang.h"
 
 #include <stdlib.h>
@@ -2271,6 +2275,7 @@ public:
 };
 
 #if MATHML_SUPPORT == 1
+#include <crmathml.h>
 // Add implementation for MathML additional methods to CCRTable, and a few functions used below
 #include "mathml_table_ext.h"
 #endif

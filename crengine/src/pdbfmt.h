@@ -2,7 +2,12 @@
 #define PDBFMT_H
 
 #include <crsetup.h>
-#include <lvtinydom.h>
+#include <lvcontainer.h>
+#include <crbookformats.h>
+
+class ldomDocument;
+class LVDocViewCallback;
+class CacheLoadingCallback;
 
 // creates PDB decoder stream for stream
 //LVStreamRef LVOpenPDBStream( LVStreamRef srcstream, int &format );

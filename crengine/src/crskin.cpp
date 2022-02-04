@@ -13,8 +13,10 @@
 
 #include <crskin.h>
 #include <lvstsheet.h>
-#include <crtrace.h>
 #include <lvstreamutils.h>
+#include <lvtinydomutils.h>
+#include <ldomdocument.h>
+#include <crtrace.h>
 
 #include "lvdrawbuf/lvdrawstatesaver.h"
 

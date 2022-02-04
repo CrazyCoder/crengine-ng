@@ -15,9 +15,13 @@
 #define FB3FMT_H
 
 #include <crsetup.h>
-#include <lvtinydom.h>
+#include <lvcontainer.h>
 
 #include "lvopc.h"
+
+class ldomDocument;
+class LVDocViewCallback;
+class CacheLoadingCallback;
 
 bool DetectFb3Format(LVStreamRef stream);
 bool ImportFb3Document(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback);

@@ -15,7 +15,7 @@
 #ifndef TXTSELECTOR_H
 #define TXTSELECTOR_H
 
-#include <lvtinydom.h>
+#include <ldomxrange.h>
 
 // TEXT SELECTION TOOL
 

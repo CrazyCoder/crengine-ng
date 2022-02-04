@@ -12,7 +12,8 @@
 
 *******************************************************/
 
-#include <lvtinydom.h>
+#include <lvfont.h>
+#include <ldomnode.h>
 #include <lvstreamutils.h>
 #include <crlog.h>
 

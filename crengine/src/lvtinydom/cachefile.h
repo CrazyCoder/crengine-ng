@@ -1,44 +1,27 @@
 /**
- *  crengine-ng
+ * CoolReader Engine
  *
- *  \file lvtinydom_cachefile.h
- *  \brief crengine-ng unit test module.
- *  Private class CacheFile from lvtinydom.cpp
+ * (c) Vadim Lopatin, 2000-2011
+ * (c) Other CoolReader authors (See AUTHORS file)
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This source code is distributed under the terms of
+ * GNU General Public License version 2
+ * See LICENSE file for details
  */
 
-#ifndef LVTINYDOM_CACHEFILE_H
-#define LVTINYDOM_CACHEFILE_H
+#ifndef __CACHEFILE_H_INCLUDED__
+#define __CACHEFILE_H_INCLUDED__
 
-#include <lvtypes.h>
+#include <lvstring.h>
 #include <lvstream.h>
-#include <crtimerutil.h>
-#include <lvtinydom.h>
+#include <lvptrvec.h>
+#include <lvhashtable.h>
+#include <lvserialbuf.h>
 
-// extracted from lvtinydom.cpp
-// When the methods of the CacheFile class change in lvtinydom.cpp,
-// please remember to update this class too
-//  or
-// TODO: extract full class CacheFile from file lvtinydom.cpp
-// into separate one.
+#include "cachefileitem.h"
+#include "cachefileheader.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-class CacheFileItem;
+struct CacheFileItem;
 
 #if (USE_ZSTD == 1)
 struct zstd_comp_res_t;
@@ -48,6 +31,31 @@ struct zstd_decomp_res_t;
 #if (USE_ZLIB == 1)
 struct zlib_res_t;
 #endif
+
+#define CACHE_FILE_WRITE_BLOCK_PADDING 1
+
+enum CacheFileBlockType
+{
+    CBT_FREE = 0,
+    CBT_INDEX = 1,
+    CBT_TEXT_DATA,
+    CBT_ELEM_DATA,
+    CBT_RECT_DATA, //4
+    CBT_ELEM_STYLE_DATA,
+    CBT_MAPS_DATA,
+    CBT_PAGE_DATA, //7
+    CBT_PROP_DATA,
+    CBT_NODE_INDEX,
+    CBT_ELEM_NODE,
+    CBT_TEXT_NODE,
+    CBT_REND_PARAMS, //12
+    CBT_TOC_DATA,
+    CBT_PAGEMAP_DATA,
+    CBT_STYLE_DATA,
+    CBT_BLOB_INDEX, //16
+    CBT_BLOB_DATA,
+    CBT_FONT_DATA //18
+};
 
 class CacheFile
 {
@@ -107,7 +115,9 @@ class CacheFile
 #endif
 public:
     // return current file size
-    int getSize();
+    int getSize() {
+        return _size;
+    }
     // create uninitialized cache file, call open or create to initialize
     CacheFile(lUInt32 domVersion, CacheCompressionType compType);
     // free resources
@@ -131,9 +141,13 @@ public:
     /// reads content of serial buffer
     bool read(lUInt16 type, lUInt16 index, SerialBuf& buf);
     /// writes content of serial buffer
-    bool write(lUInt16 type, SerialBuf& buf, bool compress);
+    bool write(lUInt16 type, SerialBuf& buf, bool compress) {
+        return write(type, 0, buf, compress);
+    }
     /// reads content of serial buffer
-    bool read(lUInt16 type, SerialBuf& buf);
+    bool read(lUInt16 type, SerialBuf& buf) {
+        return read(type, 0, buf);
+    }
     /// reads block as a stream
     LVStreamRef readStream(lUInt16 type, lUInt16 index);
 
@@ -152,14 +166,21 @@ public:
     bool setDOMVersion(lUInt32 domVersion);
     // flushes index
     bool flush(bool clearDirtyFlag, CRTimerUtil& maxTime);
-    int roundSector(int n);
-    void setAutoSyncSize(int sz);
-    void setCachePath(const lString32 cachePath);
-    const lString32 getCachePath();
+    int roundSector(int n) {
+        return (n + (_sectorSize - 1)) & ~(_sectorSize - 1);
+    }
+    void setAutoSyncSize(int sz) {
+        _stream->setAutoSyncSize(sz);
+    }
+    void setCachePath(const lString32 cachePath) {
+        _cachePath = cachePath;
+    }
+    const lString32 getCachePath() {
+        return _cachePath;
+    }
 };
 
-#ifdef __cplusplus
-}
-#endif
+/// pass true to enable CRC check for
+void enableCacheFileContentsValidation(bool enable);
 
-#endif // LVTINYDOM_CACHEFILE_H
+#endif // __CACHEFILE_H_INCLUDED__

@@ -12,7 +12,9 @@
 
 #include "lvopc.h"
 
-#include <lvtinydom.h>
+#include <ldomdocument.h>
+#include <lvtinydomutils.h>
+#include <lvdocprops.h>
 #include <lvstreamutils.h>
 #include <crlog.h>
 

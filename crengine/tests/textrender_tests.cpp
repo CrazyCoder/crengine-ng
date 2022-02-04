@@ -32,7 +32,6 @@
 
 #include <crlog.h>
 #include <lvdocview.h>
-#include <lvtinydom.h>
 #include <lvstreamutils.h>
 #include <lvimg.h>
 

@@ -12,12 +12,16 @@
 
 #include "fb3fmt.h"
 
-#include <lvtinydom.h>
+#include <ldomdocument.h>
+#include <lvdocviewcallback.h>
+#include <lvtinydomutils.h>
+#include <lvdocprops.h>
 #include <fb2def.h>
 #include <lvstreamutils.h>
 #include <crlog.h>
 
 #include "lvxml/lvxmlparser.h"
+#include "lvtinydom/ldomdocumentwriter.h"
 
 static const lChar32* const fb3_BodyContentType = U"application/fb3-body+xml";
 static const lChar32* const fb3_DescriptionContentType = U"application/fb3-description+xml";

@@ -5,7 +5,11 @@
 
 #if USE_CHM == 1
 
-#include <lvtinydom.h>
+#include <lvcontainer.h>
+
+class ldomDocument;
+class LVDocViewCallback;
+class CacheLoadingCallback;
 
 bool DetectCHMFormat(LVStreamRef stream);
 bool ImportCHMDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback);

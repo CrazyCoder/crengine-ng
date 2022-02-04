@@ -11,7 +11,7 @@
 */
 
 #include <lvpagesplitter.h>
-#include <lvtinydom.h>
+#include <lvdocviewcallback.h>
 #include <crlog.h>
 #include <lvserialbuf.h>
 

@@ -52,7 +52,6 @@ inline T* cr_realloc(T* ptr, size_t newSize) {
 }
 
 #if (LDOM_USE_OWN_MEM_MAN == 1)
-#include <stdlib.h>
 
 #define THROW_MEM_MAN_EXCEPTION crFatalError(-1, "Memory manager fatal error");
 

@@ -9,9 +9,10 @@
     See LICENSE file for details
 */
 
-#include <lvtinydom.h>
 #include <crhist.h>
+#include <lvxmlparsercallback.h>
 #include <lvstreamutils.h>
+#include <ldomdocument.h>
 #include <crlog.h>
 
 #include "lvxml/lvxmlparser.h"

@@ -4,7 +4,7 @@
 #include "textlang.h"
 
 #include <crhyphman.h>
-#include <lvtinydom.h>
+#include <ldomnode.h>
 #include <fb2def.h>
 #include <crlog.h>
 

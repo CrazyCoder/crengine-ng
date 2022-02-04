@@ -14,7 +14,8 @@
 #include <lstridmap.h>
 #include <lvmemman.h>
 #include <dtddef.h>
-#include <lvtinydom.h>
+#include <lvserialbuf.h>
+#include <lxmldocbase.h>
 
 LDOMNameIdMapItem::LDOMNameIdMapItem(lUInt16 _id, const lString32& _value, const css_elem_def_props_t* _data)
         : id(_id)

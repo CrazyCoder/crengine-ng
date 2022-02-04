@@ -10,10 +10,15 @@
     See LICENSE file for details.
 */
 
+#include "odxutil.h"
+
+#include <ldomnode.h>
+#include <ldomdocument.h>
 #include <fb2def.h>
+#include <lvdocprops.h>
 #include <crlog.h>
 
-#include "odxutil.h"
+#include "lvtinydom/ldomdocumentwriter.h"
 
 ldomNode* docXMLreader::OnTagOpen(const lChar32* nsname, const lChar32* tagname) {
     if (m_state == xml_doc_in_start && !lStr_cmp(tagname, "?xml"))
