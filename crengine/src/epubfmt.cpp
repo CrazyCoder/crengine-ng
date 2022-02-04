@@ -1050,7 +1050,6 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
             }
         }
 
-#if BUILD_LITE != 1
         // If there is a cache file, it contains the fully built DOM document
         // made from the multiple html fragments in the epub, and also
         // m_doc_props which has been serialized.
@@ -1071,7 +1070,6 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
             }
             CRLog::debug("Not loaded from cache, parsing epub content");
         }
-#endif
 
         CRLog::info("Authors: %s Title: %s", LCSTR(authors), LCSTR(title));
         bool hasSeriesMeta = false;

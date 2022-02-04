@@ -147,7 +147,6 @@ private:
     int _itemCount;
     int _docIndex;
 protected:
-#if BUILD_LITE != 1
     /// final block cache
     CVRendBlockCache _renderedBlockCache;
     CacheFile* _cacheFile;
@@ -170,7 +169,6 @@ protected:
 
     int calcFinalBlocks();
     void dropStyles();
-#endif
     bool _hangingPunctuationEnabled;
     lUInt32 _renderBlockRenderingFlags;
     lUInt32 _DOMVersionRequested;
@@ -196,7 +194,6 @@ protected:
     /// uniquie id of file format parsing option (usually 0, but 1 for preformatted text files)
     int getPersistenceFlags();
 
-#if BUILD_LITE != 1
     bool saveStylesData();
     bool loadStylesData();
     bool updateLoadedStyles(bool enabled);
@@ -220,13 +217,11 @@ protected:
     void setNodeFont(lUInt32 dataIndex, font_ref_t& v);
     void clearNodeStyle(lUInt32 dataIndex);
     virtual void resetNodeNumberingProps() { }
-#endif
 
     /// creates empty collection
     tinyNodeCollection();
     tinyNodeCollection(tinyNodeCollection& v);
 public:
-#if BUILD_LITE != 1
     int getSpaceWidthScalePercent() {
         return _spaceWidthScalePercent;
     }
@@ -285,7 +280,6 @@ public:
     bool swapToCacheIfNecessary();
 
     bool createCacheFile();
-#endif
 
     bool getHangingPunctiationEnabled() const {
         return _hangingPunctuationEnabled;
@@ -336,7 +330,6 @@ public:
         _docProps = props;
     }
 
-#if BUILD_LITE != 1
     /// set cache file stale flag
     void setCacheFileStale(bool stale) {
         _cacheFileStale = stale;
@@ -361,7 +354,6 @@ public:
     }
     /// get cache file full path
     lString32 getCacheFilePath();
-#endif
 
     /// minimize memory consumption
     void compact();
@@ -379,10 +371,8 @@ public:
     /// recycle ldomNode on node removing
     void recycleTinyNode(lUInt32 index);
 
-#if BUILD_LITE != 1
     /// put all object into persistent storage
     virtual void persist(CRTimerUtil& maxTime);
-#endif
 
     /// destroys collection
     virtual ~tinyNodeCollection();

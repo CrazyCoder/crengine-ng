@@ -21,8 +21,6 @@
 #include "../lvxml/lvfileformatparser.h"
 #include "../lvxml/lvxmlutils.h"
 
-#if BUILD_LITE != 1
-
 static bool hasInvisibleParent(ldomNode* node) {
     for (; node && !node->isRoot(); node = node->getParentNode()) {
         css_style_ref_t style = node->getStyle();
@@ -31,8 +29,6 @@ static bool hasInvisibleParent(ldomNode* node) {
     }
     return false;
 }
-
-#endif
 
 /////////////////////////////////////////////////////////////////
 /// ldomDocumentWriter
@@ -199,7 +195,6 @@ ldomNode* ldomDocumentWriter::OnTagOpen(const lChar32* nsname, const lChar32* ta
 ldomDocumentWriter::~ldomDocumentWriter() {
     while (_currNode)
         _currNode = pop(_currNode, _currNode->getElement()->getNodeId());
-#if BUILD_LITE != 1
     if (_document->isDefStyleSet()) {
         if (_popStyleOnFinish)
             // pop any added styles to the original stylesheet so we get
@@ -230,8 +225,6 @@ ldomDocumentWriter::~ldomDocumentWriter() {
         }
         _document->_parsing = false; // done parsing
     }
-
-#endif
 }
 
 void ldomDocumentWriter::OnTagClose(const lChar32*, const lChar32* tagname, bool self_closing_tag) {
@@ -315,14 +308,12 @@ void ldomDocumentWriter::OnTagClose(const lChar32*, const lChar32* tagname, bool
     // on re-renderings.
     if (id == el_stylesheet && _currNode && _currNode->getElement()->getNodeId() == el_FictionBook) {
         //CRLog::trace("</stylesheet> found");
-#if BUILD_LITE != 1
         if (!_popStyleOnFinish && _document->getDocFlag(DOC_FLAG_ENABLE_INTERNAL_STYLES)) {
             //CRLog::trace("saving current stylesheet before applying of document stylesheet");
             _document->getStyleSheet()->push();
             _popStyleOnFinish = true;
             _document->applyDocumentStyleSheet();
         }
-#endif
     }
 
     //logfile << " !c!\n";
@@ -367,11 +358,7 @@ void ldomDocumentWriter::OnText(const lChar32* text, int len, lUInt32 flags) {
 }
 
 bool ldomDocumentWriter::OnBlob(lString32 name, const lUInt8* data, int size) {
-#if BUILD_LITE != 1
     return _document->addBlob(name, data, size);
-#else
-    return false;
-#endif
 }
 
 void ldomDocumentWriter::OnDocProperty(const char* name, lString8 value) {
@@ -397,12 +384,10 @@ ldomDocumentWriter::ldomDocumentWriter(ldomDocument* document, bool headerOnly)
     IS_FIRST_BODY = true;
     _document->_parsing = true;
 
-#if BUILD_LITE != 1
     if (_document->isDefStyleSet()) {
         _document->getRootNode()->initNodeStyle();
         _document->getRootNode()->setRendMethod(erm_block);
     }
-#endif
 
     //CRLog::trace("ldomDocumentWriter() headerOnly=%s", _headerOnly?"true":"false");
 }

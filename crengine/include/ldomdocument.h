@@ -40,7 +40,6 @@ class ldomDocument: public lxmlDocBase
 private:
     LVTocItem m_toc;
     LVPageMap m_pagemap;
-#if BUILD_LITE != 1
     font_ref_t _def_font; // default font
     css_style_ref_t _def_style;
     lUInt32 _last_docflags;
@@ -53,7 +52,6 @@ private:
     lUInt32 _warnings_seen_bitmap;
     ldomXRangeList _selections;
     lUInt32 _doc_rendering_hash;
-#endif
 
     lString32 _docStylesheetFileName;
 
@@ -63,7 +61,6 @@ private:
 
     LVEmbeddedFontList _fontList;
 
-#if BUILD_LITE != 1
     /// load document cache file content
     bool loadCacheFileContent(CacheLoadingCallback* formatCallback, LVDocViewCallback* progressCallback = NULL);
 
@@ -71,18 +68,14 @@ private:
     bool saveChanges();
     /// saves changes to cache file, limited by time interval (can be called again to continue after TIMEOUT)
     virtual ContinuousOperationResult saveChanges(CRTimerUtil& maxTime, LVDocViewCallback* progressCallback = NULL);
-#endif
 
     /// create XPointer from a non-normalized string made by toStringV1()
     ldomXPointer createXPointerV1(ldomNode* baseNode, const lString32& xPointerStr);
     /// create XPointer from a normalized string made by toStringV2()
     ldomXPointer createXPointerV2(ldomNode* baseNode, const lString32& xPointerStr);
 protected:
-#if BUILD_LITE != 1
     void applyDocumentStyleSheet();
-#endif
 public:
-#if BUILD_LITE != 1
     lUInt32 getDocumentRenderingHash() const {
         return _doc_rendering_hash;
     }
@@ -95,9 +88,7 @@ public:
     ListNumberingPropsRef getNodeNumberingProps(lUInt32 nodeDataIndex);
     void setNodeNumberingProps(lUInt32 nodeDataIndex, ListNumberingPropsRef v);
     void resetNodeNumberingProps();
-#endif
 
-#if BUILD_LITE != 1
     /// returns object image stream
     LVStreamRef getObjectImageStream(lString32 refName);
     /// returns object image source
@@ -115,7 +106,6 @@ public:
     void registerEmbeddedFonts();
     /// unregister embedded document fonts in font manager, if any exist in document
     void unregisterEmbeddedFonts();
-#endif
 
     /// returns pointer to TOC root node
     LVTocItem* getToc() {
@@ -134,7 +124,6 @@ public:
         return &m_pagemap;
     }
 
-#if BUILD_LITE != 1
     bool isTocFromCacheValid() {
         return _toc_from_cache_valid;
     }
@@ -143,9 +132,7 @@ public:
     void updateRenderContext();
     /// check document formatting parameters before render - whether we need to reformat; returns false if render is necessary
     bool checkRenderContext();
-#endif
 
-#if BUILD_LITE != 1
     /// try opening from cache file, find by source file name (w/o path) and crc32
     virtual bool openFromCache(CacheLoadingCallback* formatCallback, LVDocViewCallback* progressCallback = NULL);
     /// saves recent changes to mapped file
@@ -157,7 +144,6 @@ public:
         CRTimerUtil infinite;
         return updateMap(infinite, progressCallback) != CR_ERROR; // NOLINT: Call to virtual function during destruction
     }
-#endif
 
     LVContainerRef getContainer() {
         return _container;
@@ -166,11 +152,9 @@ public:
         _container = cont;
     }
 
-#if BUILD_LITE != 1
     void clearRendBlockCache() {
         _renderedBlockCache.clear();
     }
-#endif
     void clear();
     lString32 getDocStylesheetFileName() {
         return _docStylesheetFileName;
@@ -183,7 +167,6 @@ public:
     /// creates empty document which is ready to be copy target of doc partial contents
     ldomDocument(ldomDocument& doc);
 
-#if BUILD_LITE != 1
     /// return selections collection
     ldomXRangeList& getSelections() {
         return _selections;
@@ -199,12 +182,10 @@ public:
     int getPageWidth() {
         return _page_width;
     }
-#endif
     /// saves document contents as XML to stream with specified encoding
     bool saveToStream(LVStreamRef stream, const char* codepage, bool treeLayout = false);
     /// print a warning message (only once if warning_id provided, between 1 and 32)
     void printWarning(const char* msg, int warning_id = 0);
-#if BUILD_LITE != 1
     /// get default font reference
     font_ref_t getDefaultFont() {
         return _def_font;
@@ -216,10 +197,8 @@ public:
 
     bool parseStyleSheet(lString32 codeBase, lString32 css);
     bool parseStyleSheet(lString32 cssFile);
-#endif
     /// destructor
     virtual ~ldomDocument();
-#if BUILD_LITE != 1
     bool isRendered() {
         return _rendered;
     }
@@ -233,7 +212,6 @@ public:
     /// set global rendering properties
     virtual bool setRenderProps(int width, int dy, bool showCover, int y0, font_ref_t def_font,
                                 int def_interline_space, CRPropRef props);
-#endif
     /// create xpointer from pointer string
     ldomXPointer createXPointer(const lString32& xPointerStr);
     /// create xpointer from pointer string
@@ -246,7 +224,6 @@ public:
     /// create xpointer from relative pointer string
     ldomXPointer createXPointer(ldomNode* baseNode, const lString32& xPointerStr);
 
-#if BUILD_LITE != 1
     /// create xpointer from doc point
     ldomXPointer createXPointer(lvPoint pt, int direction = PT_DIR_EXACT, bool strictBounds = false, ldomNode* from_node = NULL);
     /// get rendered block cache object
@@ -255,7 +232,6 @@ public:
     }
 
     bool findText(lString32 pattern, bool caseInsensitive, bool reverse, int minY, int maxY, LVArray<ldomWord>& words, int maxCount, int maxHeight, int maxHeightCheckStartY = -1);
-#endif
 };
 
 #endif // __LDOMDOCUMENT_H_INCLUDED__

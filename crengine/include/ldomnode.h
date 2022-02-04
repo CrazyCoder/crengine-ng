@@ -81,11 +81,9 @@ private:
     {
         NT_TEXT = 0,   // mutable text node
         NT_ELEMENT = 1 // mutable element node
-#if BUILD_LITE != 1
         ,
         NT_PTEXT = 2,   // immutable (persistent) text node
         NT_PELEMENT = 3 // immutable (persistent) element node
-#endif
     };
 
     /// 0: packed 32bit data field
@@ -96,11 +94,9 @@ private:
     {                            // [8] 8 bytes (16 bytes on x64)
         ldomTextNode* _text_ptr; // NT_TEXT: mutable text node pointer
         tinyElement* _elem_ptr;  // NT_ELEMENT: mutable element pointer
-#if BUILD_LITE != 1
-        lUInt32 _pelem_addr; // NT_PELEMENT: element storage address: chunk+offset
-        lUInt32 _ptext_addr; // NT_PTEXT: persistent text storage address: chunk+offset
-#endif
-        lUInt32 _nextFreeIndex; // NULL for removed items
+        lUInt32 _pelem_addr;     // NT_PELEMENT: element storage address: chunk+offset
+        lUInt32 _ptext_addr;     // NT_PTEXT: persistent text storage address: chunk+offset
+        lUInt32 _nextFreeIndex;  // NULL for removed items
     } _data;
 
     /// sets document for node
@@ -141,7 +137,6 @@ private:
     /// returns true if element has inline content (non empty text, images, <BR>)
     bool hasNonEmptyInlineContent(bool ignoreFloats = false);
 public:
-#if BUILD_LITE != 1
     // Generic version of autoboxChildren() without any specific inline/block checking,
     // accepting any element id (from the enum el_*, like el_div, el_tabularBox) as
     // the wrapping element.
@@ -162,7 +157,6 @@ public:
     void initNodeRendMethodRecursive();
     /// init render method for the whole subtree
     void initNodeStyleRecursive(LVDocViewCallback* progressCallback);
-#endif
 
     /// remove node, clear resources
     void destroy();
@@ -322,19 +316,16 @@ public:
     /// returns last text child element
     ldomNode* getLastTextChild();
 
-#if BUILD_LITE != 1
     /// find node by coordinates of point in formatted document
     ldomNode* elementFromPoint(lvPoint pt, int direction, bool strict_bounds_checking = false);
     /// find final node by coordinates of point in formatted document
     ldomNode* finalBlockFromPoint(lvPoint pt);
-#endif
 
     // rich interface stubs for supporting Element operations
     /// returns rendering method
     lvdom_element_render_method getRendMethod();
     /// sets rendering method
     void setRendMethod(lvdom_element_render_method);
-#if BUILD_LITE != 1
     /// returns element style record
     css_style_ref_t getStyle() const;
     /// returns element font
@@ -343,7 +334,6 @@ public:
     void setFont(font_ref_t);
     /// sets element style record
     void setStyle(css_style_ref_t&);
-#endif
     /// returns first child node
     ldomNode* getFirstChild() const;
     /// returns last child node
@@ -374,7 +364,6 @@ public:
 
     /// creates stream to read base64 encoded data from element
     LVStreamRef createBase64Stream();
-#if BUILD_LITE != 1
     /// returns object image source
     LVImageSourceRef getObjectImageSource();
     /// returns object image ref name
@@ -388,7 +377,6 @@ public:
                          BlockFloatFootprint* float_footprint = NULL);
     /// formats final block again after change, returns true if size of block is changed
     bool refreshFinalBlock();
-#endif
     /// replace node with r/o persistent implementation
     ldomNode* persist();
     /// replace node with r/w implementation

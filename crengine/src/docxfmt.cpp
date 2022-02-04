@@ -1627,14 +1627,12 @@ bool ImportDocXDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback
 
     package.readCoreProperties(doc->getProps());
 
-#if BUILD_LITE != 1
     if (doc->openFromCache(formatCallback)) {
         if (progressCallback) {
             progressCallback->OnLoadFileEnd();
         }
         return true;
     }
-#endif
 
     parseNumbering(&importContext);
 

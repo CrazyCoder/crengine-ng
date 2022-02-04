@@ -48,7 +48,6 @@ public:
     }
     /// called for each found node in range
     virtual bool onElement(ldomXPointerEx* ptr) {
-#if BUILD_LITE != 1
         ldomNode* elem = (ldomNode*)ptr->getNode();
         // Allow tweaking that with hints
         css_style_ref_t style = elem->getStyle();
@@ -83,10 +82,6 @@ public:
         // Otherwise, it's a block like node, and we want a \n before the next text
         newBlock = true;
         return true;
-#else
-        newBlock = true;
-        return true;
-#endif
     }
     /// get collected text
     lString32 getText() {

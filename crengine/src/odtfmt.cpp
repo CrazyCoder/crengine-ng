@@ -492,14 +492,12 @@ bool ImportOpenDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback
         CRLog::error("Couldn't parse document meta data");
     }
 
-#if BUILD_LITE != 1
     if (doc->openFromCache(formatCallback)) {
         if (progressCallback) {
             progressCallback->OnLoadFileEnd();
         }
         return true;
     }
-#endif
 
     ldomDocumentWriter writer(doc);
     docXMLreader docReader(&writer);

@@ -109,14 +109,12 @@ bool ImportFb3Document(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback*
         CRLog::error("Couldn't parse description doc");
     }
 
-#if BUILD_LITE != 1
     if (doc->openFromCache(formatCallback)) {
         if (progressCallback) {
             progressCallback->OnLoadFileEnd();
         }
         return true;
     }
-#endif
 
     LVStreamRef bookStream = context.openBook();
     if (bookStream.isNull()) {

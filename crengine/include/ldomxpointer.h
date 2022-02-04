@@ -125,12 +125,10 @@ public:
     inline ldomNode* getNode() const {
         return _data->getNode();
     }
-#if BUILD_LITE != 1
     /// return parent final node, if found
     ldomNode* getFinalNode() const;
     /// return true is this node is a final node
     bool isFinalNode() const;
-#endif
     /// returns offset within node
     inline int getOffset() const {
         return _data->getOffset();
@@ -202,7 +200,6 @@ public:
     bool operator!=(const ldomXPointer& v) const {
         return *_data != *v._data;
     }
-    //#if BUILD_LITE!=1
     /// returns caret rectangle for pointer inside formatted document
     bool getRect(lvRect& rect, bool extended = false, bool adjusted = false) const;
     /// returns glyph rectangle for pointer inside formatted document considering paddings and borders
@@ -212,7 +209,6 @@ public:
     }
     /// returns coordinates of pointer inside formatted document
     lvPoint toPoint(bool extended = false) const;
-    //#endif
     /// converts to string
     lString32 toString(XPointerMode mode = XPATH_USE_NAMES);
     lString32 toStringV1();          // Using names, old, with boxing elements (non-normalized)

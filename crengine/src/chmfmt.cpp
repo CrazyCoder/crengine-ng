@@ -1186,14 +1186,12 @@ bool ImportCHMDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback*
     }
     doc->setContainer(cont);
 
-#if BUILD_LITE != 1
     if (doc->openFromCache(formatCallback)) {
         if (progressCallback) {
             progressCallback->OnLoadFileEnd();
         }
         return true;
     }
-#endif
 
     CHMSystem* chm = CHMSystem::open(cont);
     if (!chm)

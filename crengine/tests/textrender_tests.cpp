@@ -28,7 +28,7 @@
 
 #include <crsetup.h>
 
-#if USE_FREETYPE == 1 && BUILD_LITE != 1
+#if USE_FREETYPE == 1
 
 #include <crlog.h>
 #include <lvdocview.h>
@@ -822,4 +822,4 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight900) {
     CRLog::info("==================================");
 }
 
-#endif // USE_FREETYPE == 1 && BUILD_LITE != 1
+#endif // USE_FREETYPE == 1

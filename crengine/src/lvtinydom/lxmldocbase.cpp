@@ -30,14 +30,9 @@ lxmlDocBase::lxmlDocBase(int /*dataBufSize*/)
         , _urlImageMap(1024)
         , _idAttrId(0)
         , _nameAttrId(0)
-#if BUILD_LITE != 1
-//,_keepData(false)
-//,_mapped(false)
-#endif
-#if BUILD_LITE != 1
-        , _pagesData(8192)
-#endif
-{
+        //,_keepData(false)
+        //,_mapped(false)
+        , _pagesData(8192) {
     // create and add one data buffer
     _stylesheet.setDocument(this);
 }
@@ -56,11 +51,8 @@ lxmlDocBase::lxmlDocBase(lxmlDocBase& doc)
         , _idNodeMap(doc._idNodeMap)
         , _urlImageMap(1024)
         , _idAttrId(doc._idAttrId) // Id for "id" attribute name
-//,   _docFlags(doc._docFlags)
-#if BUILD_LITE != 1
-        , _pagesData(8192)
-#endif
-{
+                                   //,   _docFlags(doc._docFlags)
+        , _pagesData(8192) {
 }
 
 /// Destructor
@@ -240,8 +232,6 @@ lString32Collection lxmlDocBase::getUnknownEntities() {
     unknown_entities.add(_nsNameTable.getUnknownItems(UNKNOWN_NAMESPACE_TYPE_ID));
     return unknown_entities;
 }
-
-#if BUILD_LITE != 1
 
 static const char* id_map_list_magic = "MAPS";
 static const char* elem_id_map_magic = "ELEM";
@@ -435,7 +425,6 @@ bool lxmlDocBase::DocFileHeader::deserialize(SerialBuf& hdrbuf) {
     }
     return true;
 }
-#endif // BUILD_LITE != 1
 
 void lxmlDocBase::setStyleSheet(const char* css, bool replace) {
     lString8 s(css);

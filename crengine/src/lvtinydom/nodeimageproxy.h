@@ -12,8 +12,6 @@
 #ifndef __NODEIMAGEPROXY_H_INCLUDED__
 #define __NODEIMAGEPROXY_H_INCLUDED__
 
-#if BUILD_LITE != 1
-
 #include <lvimagesource.h>
 #include <lvstring.h>
 
@@ -50,7 +48,5 @@ public:
     }
     virtual bool Decode(LVImageDecoderCallback* callback);
 };
-
-#endif
 
 #endif // __NODEIMAGEPROXY_H_INCLUDED__

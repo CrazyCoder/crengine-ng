@@ -54,12 +54,10 @@ public:
     /// Destructor
     virtual ~lxmlDocBase();
 
-#if BUILD_LITE != 1
     /// serialize to byte array (pointer will be incremented by number of bytes written)
     void serializeMaps(SerialBuf& buf);
     /// deserialize from byte array (pointer will be incremented by number of bytes read)
     bool deserializeMaps(SerialBuf& buf);
-#endif
 
     //======================================================================
     // Name <-> Id maps functions
@@ -180,9 +178,7 @@ public:
 
     /// garbage collector
     virtual void gc() {
-#if BUILD_LITE != 1
         fontMan->gc();
-#endif
     }
 
     inline LVStyleSheet* getStyleSheet() {
@@ -191,12 +187,10 @@ public:
     /// sets style sheet, clears old content of css if arg replace is true
     void setStyleSheet(const char* css, bool replace);
 
-#if BUILD_LITE != 1
     /// apply document's stylesheet to element node
     inline void applyStyle(ldomNode* element, css_style_rec_t* pstyle) {
         _stylesheet.apply(element, pstyle);
     }
-#endif
 
     void onAttributeSet(lUInt16 attrId, lUInt32 valueId, ldomNode* node);
 
@@ -221,22 +215,17 @@ public:
     void setCodeBase(const lString32& codeBase);
 
 #ifdef _DEBUG
-#if BUILD_LITE != 1
     ///debug method, for DOM tree consistency check, returns false if failed
     bool checkConsistency(bool requirePersistent);
-#endif
 #endif
 
     /// create formatted text object with options set
     LFormattedText* createFormattedText();
 
-#if BUILD_LITE != 1
     void setHightlightOptions(text_highlight_options_t& options) {
         _highlightOptions = options;
     }
-#endif
 protected:
-#if BUILD_LITE != 1
     struct DocFileHeader
     {
         lUInt32 render_dx;
@@ -258,7 +247,6 @@ protected:
     };
     DocFileHeader _hdr;
     text_highlight_options_t _highlightOptions;
-#endif
 
     LDOMNameIdMap _elementNameTable; // Element Name<->Id map
     LDOMNameIdMap _attrNameTable;    // Attribute Name<->Id map
@@ -272,9 +260,7 @@ protected:
     lUInt16 _idAttrId;                                     // Id for "id" attribute name
     lUInt16 _nameAttrId;                                   // Id for "name" attribute name
 
-#if BUILD_LITE != 1
     SerialBuf _pagesData;
-#endif
 };
 
 #endif // __LXMLDOCBASE_H_INCLUDED__

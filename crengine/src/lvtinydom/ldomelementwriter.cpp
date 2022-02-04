@@ -115,14 +115,10 @@ static lString32 getSectionHeader(ldomNode* section) {
 static bool isBlockNode(ldomNode* node) {
     if (!node->isElement())
         return false;
-#if BUILD_LITE != 1
     if (node->getStyle()->display <= css_d_inline || node->getStyle()->display == css_d_none) {
         return false;
     }
     return true;
-#else
-    return true;
-#endif
 }
 
 void ldomElementWriter::updateTocItem() {
@@ -143,7 +139,6 @@ void ldomElementWriter::updateTocItem() {
 
 void ldomElementWriter::onBodyEnter() {
     _bodyEnterCalled = true;
-#if BUILD_LITE != 1
     //CRLog::trace("onBodyEnter() for node %04x %s", _element->getDataIndex(), LCSTR(_element->getNodeName()));
     if (_document->isDefStyleSet() && _element) {
         _element->initNodeStyle();
@@ -194,14 +189,12 @@ void ldomElementWriter::onBodyEnter() {
             _parent->updateTocItem();
         }
     }
-#endif
 }
 
 void ldomElementWriter::onBodyExit() {
     if (_isSection)
         updateTocItem();
 
-#if BUILD_LITE != 1
     if (!_document->isDefStyleSet())
         return;
     if (!_bodyEnterCalled) {
@@ -235,7 +228,6 @@ void ldomElementWriter::onBodyExit() {
 
     if (_stylesheetIsSet)
         _document->getStyleSheet()->pop();
-#endif
 }
 
 void ldomElementWriter::onText(const lChar32* text, int len, lUInt32, bool insert_before_last_child) {
@@ -255,7 +247,6 @@ void ldomElementWriter::onText(const lChar32* text, int len, lUInt32, bool inser
 
 void ldomElementWriter::addAttribute(lUInt16 nsid, lUInt16 id, const lChar32* value) {
     getElement()->setAttributeValue(nsid, id, value);
-#if BUILD_LITE != 1
     /* This is now done by ldomDocumentFragmentWriter::OnTagOpen() directly,
      * as we need to do it too for <DocFragment><stylesheet> tag, and not
      * only for <DocFragment StyleSheet="path_to_css_1st_file"> attribute.
@@ -263,7 +254,6 @@ void ldomElementWriter::addAttribute(lUInt16 nsid, lUInt16 id, const lChar32* va
         _stylesheetIsSet = _element->applyNodeStylesheet();
     }
     */
-#endif
 }
 
 ldomElementWriter::~ldomElementWriter() {

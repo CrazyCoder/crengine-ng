@@ -34,20 +34,16 @@ class ldomTextStorageChunk
     void setunpacked(const lUInt8* buf, int bufsize);
     /// pack data, and remove unpacked
     void compact();
-#if BUILD_LITE != 1
     /// pack data, and remove unpacked, put packed data to cache file
     bool swapToCache(bool removeFromMemory);
     /// read packed data from cache
     bool restoreFromCache();
-#endif
     /// unpacks chunk, if packed; checks storage space, compact if necessary
     void ensureUnpacked();
-#if BUILD_LITE != 1
     /// free data item
     void freeNode(int offset);
     /// saves data to cache file, if unsaved
     bool save();
-#endif
 public:
     /// call to invalidate chunk if content is modified
     void modified();

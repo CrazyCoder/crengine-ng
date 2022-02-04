@@ -35,7 +35,6 @@ lString32 LVPageMapItem::getPath() {
 
 /// returns Y position
 int LVPageMapItem::getDocY(bool refresh) {
-#if BUILD_LITE != 1
     if (_doc_y < 0 || refresh)
         _doc_y = getXPointer().toPoint().y;
     if (_doc_y < 0 && !_position.isNull()) {
@@ -56,9 +55,6 @@ int LVPageMapItem::getDocY(bool refresh) {
         }
     }
     return _doc_y;
-#else
-    return 0;
-#endif
 }
 
 /// serialize to byte array (pointer will be incremented by number of bytes written)

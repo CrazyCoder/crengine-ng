@@ -35,7 +35,6 @@
 /// saves all unsaved chunks to cache file
 bool ldomDataStorageManager::save(CRTimerUtil& maxTime) {
     bool res = true;
-#if BUILD_LITE != 1
     if (!_cache)
         return true;
     for (int i = 0; i < _chunks.length(); i++) {
@@ -66,13 +65,11 @@ bool ldomDataStorageManager::save(CRTimerUtil& maxTime) {
     if (!res) {
         CRLog::error("ldomDataStorageManager::save() - Cannot write chunk index");
     }
-#endif
     return res;
 }
 
 /// load chunk index from cache file
 bool ldomDataStorageManager::load() {
-#if BUILD_LITE != 1
     if (!_cache)
         return false;
     //load chunk index
@@ -98,9 +95,6 @@ bool ldomDataStorageManager::load() {
         _chunks.add(new ldomTextStorageChunk(this, (lUInt16)i, compsize, uncompsize));
     }
     return true;
-#else
-    return false;
-#endif
 }
 
 /// get chunk pointer and update usage data
@@ -207,7 +201,6 @@ void ldomDataStorageManager::setRendRectData(lUInt32 elemDataIndex, const lvdomE
     chunk->setRaw(offsetIndex * sizeof(lvdomElementFormatRec), sizeof(lvdomElementFormatRec), (const lUInt8*)src);
 }
 
-#if BUILD_LITE != 1
 lUInt32 ldomDataStorageManager::allocText(lUInt32 dataIndex, lUInt32 parentIndex, const lString8& text) {
     if (!_activeChunk) {
         _activeChunk = new ldomTextStorageChunk(this, _chunks.length());
@@ -286,10 +279,8 @@ lUInt32 ldomDataStorageManager::getParent(lUInt32 addr) {
     ldomTextStorageChunk* chunk = getChunk(addr);
     return chunk->getElem(addr & 0xFFFF)->parentIndex;
 }
-#endif
 
 void ldomDataStorageManager::compact(lUInt32 reservedSpace, const ldomTextStorageChunk* excludedChunk) {
-#if BUILD_LITE != 1
     if (_uncompressedSize + reservedSpace > _maxUncompressedSize + _maxUncompressedSize / 10) { // allow +10% overflow
         if (!_maxSizeReachedWarned) {
             // Log once to stdout that we reached maxUncompressedSize, so we can know
@@ -320,7 +311,6 @@ void ldomDataStorageManager::compact(lUInt32 reservedSpace, const ldomTextStorag
             }
         }
     }
-#endif
 }
 
 // max 512K of uncompressed data (~8 chunks)

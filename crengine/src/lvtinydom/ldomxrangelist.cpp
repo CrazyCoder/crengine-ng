@@ -120,8 +120,6 @@ void ldomXRangeList::split(ldomXRange* r) {
     }
 }
 
-#if BUILD_LITE != 1
-
 /// fill marked ranges list
 // Transform a list of ldomXRange (start and end xpointers) into a list
 // of ldomMarkedRange (start and end point coordinates) for native
@@ -204,5 +202,3 @@ void ldomXRangeList::splitText(ldomMarkedTextList& dst, ldomNode* textNodeToSpli
     }
     */
 }
-
-#endif

@@ -140,8 +140,6 @@ static ldomNode* getNodeByIndex(ldomNode* parent, int index, T predicat, int& co
     return NULL;
 }
 
-#if BUILD_LITE != 1
-
 static void dumpRendMethods(ldomNode* node, lString32 prefix) {
     lString32 name = prefix;
     if (node->isText())
@@ -154,13 +152,10 @@ static void dumpRendMethods(ldomNode* node, lString32 prefix) {
     }
 }
 
-#endif
-
 ldomDocument::ldomDocument()
         : lxmlDocBase(DEF_DOC_DATA_BUFFER_SIZE)
         , m_toc(this)
         , m_pagemap(this)
-#if BUILD_LITE != 1
         , _last_docflags(0)
         , _page_height(0)
         , _page_width(0)
@@ -170,7 +165,6 @@ ldomDocument::ldomDocument()
         , _toc_from_cache_valid(false)
         , _warnings_seen_bitmap(0)
         , _doc_rendering_hash(0)
-#endif
         , lists(100) {
     _docIndex = ldomNode::registerDocument(this);
     ldomNode* node = allocTinyElement(NULL, 0, 0);
@@ -185,13 +179,11 @@ ldomDocument::ldomDocument(ldomDocument& doc)
         : lxmlDocBase(doc)
         , m_toc(this)
         , m_pagemap(this)
-#if BUILD_LITE != 1
         , _def_font(doc._def_font) // default font
         , _def_style(doc._def_style)
         , _last_docflags(doc._last_docflags)
         , _page_height(doc._page_height)
         , _page_width(doc._page_width)
-#endif
         , _container(doc._container)
         , lists(100) {
     _docIndex = ldomNode::registerDocument(this);
@@ -308,14 +300,10 @@ void ldomDocument::printWarning(const char* msg, int warning_id) {
 }
 
 ldomDocument::~ldomDocument() {
-#if BUILD_LITE != 1
     updateMap(); // NOLINT: Call to virtual function during destruction
-#endif
     fontMan->UnregisterDocumentFonts(_docIndex);
     ldomNode::unregisterDocument(this);
 }
-
-#if BUILD_LITE != 1
 
 /// renders (formats) document in memory
 bool ldomDocument::setRenderProps(int width, int dy, bool /*showCover*/, int /*y0*/, font_ref_t def_font, int def_interline_space, CRPropRef props) {
@@ -612,8 +600,6 @@ bool ldomDocument::render(LVRendPageList* pages, LVDocViewCallback* callback, in
     }
 }
 
-#endif // BUILD_LITE != 1
-
 /// create xpointer from pointer string
 ldomXPointer ldomDocument::createXPointer(const lString32& xPointerStr) {
     if (xPointerStr[0] == '#') {
@@ -643,8 +629,6 @@ lString32 ldomDocument::textFromXPath(const lString32& xPointerStr) {
         return lString32::empty_str;
     return node->getText();
 }
-
-#if BUILD_LITE != 1
 
 /// create xpointer from doc point
 ldomXPointer ldomDocument::createXPointer(lvPoint pt, int direction, bool strictBounds, ldomNode* fromNode) {
@@ -946,8 +930,6 @@ ldomXPointer ldomDocument::createXPointer(lvPoint pt, int direction, bool strict
     return ptr;
 }
 
-#endif
-
 /// create XPointer from relative pointer non-normalized string made by toStringV1()
 ldomXPointer ldomDocument::createXPointerV1(ldomNode* baseNode, const lString32& xPointerStr) {
     //CRLog::trace( "ldomDocument::createXPointer(%s)", UnicodeToUtf8(xPointerStr).c_str() );
@@ -1127,14 +1109,10 @@ ldomXPointer ldomDocument::createXPointerV2(ldomNode* baseNode, const lString32&
     return ldomXPointer(currNode, -1); // XPath: index==-1
 }
 
-#if BUILD_LITE != 1
 int ldomDocument::getFullHeight() {
     RenderRectAccessor rd(this->getRootNode());
     return rd.getHeight() + rd.getY();
 }
-#endif // BUILD_LITE != 1
-
-#if BUILD_LITE != 1
 
 bool ldomDocument::findText(lString32 pattern, bool caseInsensitive, bool reverse, int minY, int maxY, LVArray<ldomWord>& words, int maxCount, int maxHeight, int maxHeightCheckStartY) {
     if (minY < 0)
@@ -1206,21 +1184,16 @@ bool ldomDocument::findText(lString32 pattern, bool caseInsensitive, bool revers
     return range.findText(pattern, caseInsensitive, reverse, words, maxCount, maxHeight, maxHeightCheckStartY);
 }
 
-#endif // BUILD_LITE != 1
-
 void ldomDocument::clear() {
-#if BUILD_LITE != 1
     clearRendBlockCache();
     _rendered = false;
     _urlImageMap.clear();
     _fontList.clear();
     fontMan->UnregisterDocumentFonts(_docIndex);
-#endif
     //TODO: implement clear
     //_elemStorage->
 }
 
-#if BUILD_LITE != 1
 bool ldomDocument::openFromCache(CacheLoadingCallback* formatCallback, LVDocViewCallback* progressCallback) {
     setCacheFileStale(true);
     if (!openCacheFile()) {
@@ -1773,10 +1746,6 @@ ContinuousOperationResult ldomDocument::updateMap(CRTimerUtil& maxTime, LVDocVie
     return res;
 }
 
-#endif
-
-#if BUILD_LITE != 1
-
 /// save document formatting parameters after render
 void ldomDocument::updateRenderContext() {
     int dx = _page_width;
@@ -2008,8 +1977,6 @@ ListNumberingPropsRef ldomDocument::getNodeNumberingProps(lUInt32 nodeDataIndex)
 void ldomDocument::setNodeNumberingProps(lUInt32 nodeDataIndex, ListNumberingPropsRef v) {
     lists.set(nodeDataIndex, v);
 }
-
-#endif
 
 static inline void makeTocFromCrHintsOrHeadings(ldomNode* node, bool ensure_cr_hints) {
     int level;

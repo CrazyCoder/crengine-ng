@@ -158,7 +158,6 @@ TEST_F(TinyDOMTests, basicTinyDomUnitTests) {
     EXPECT_TRUE(el1->getLastTextChild() == text1);  // lastTextNode
     EXPECT_TRUE(el21->getLastTextChild() == NULL);  // lastTextNode NULL
 
-#if BUILD_LITE != 1
     CRLog::info("* style cache");
     {
         css_style_ref_t style1;
@@ -353,7 +352,6 @@ TEST_F(TinyDOMTests, basicTinyDomUnitTests) {
     CRLog::info("* compacting");
     doc->compact();
     doc->dumpStatistics();
-#endif
 
     delete doc;
 
@@ -364,7 +362,6 @@ TEST_F(TinyDOMTests, basicTinyDomUnitTests) {
 #define TEST_FILE_NAME TESTS_TMPDIR "test-cache-file.dat"
 
 TEST_F(TinyDOMTests, testCacheFileClass) {
-#if BUILD_LITE != 1
     CRLog::info("===========================");
     CRLog::info("Starting testCacheFileClass");
     lUInt8 data1[] = { 'T', 'e', 's', 't', 'd', 'a', 't', 'a', 1, 2, 3, 4, 5, 6, 7 };
@@ -437,13 +434,11 @@ TEST_F(TinyDOMTests, testCacheFileClass) {
 
     CRLog::info("Finished testCacheFileClass");
     CRLog::info("===========================");
-#endif
 }
 
 #define TEST_FN_TO_OPEN TESTS_DATADIR "example.fb2.zip"
 
 TEST_F(TinyDOMTests, testDocumentCaching) {
-#if BUILD_LITE != 1
     CRLog::info("============================");
     CRLog::info("Starting testDocumentCaching");
     ASSERT_TRUE(m_initOK);
@@ -479,5 +474,4 @@ TEST_F(TinyDOMTests, testDocumentCaching) {
     EXPECT_TRUE(ldomDocCache::clear()); // cache cleared
     CRLog::info("Finished testDocumentCaching");
     CRLog::info("============================");
-#endif
 }

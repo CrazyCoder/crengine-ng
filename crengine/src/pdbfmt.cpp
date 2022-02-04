@@ -1248,14 +1248,12 @@ bool ImportPDBDocument(LVStreamRef& stream, ldomDocument* doc, LVDocViewCallback
     container->setStream(stream);
     doc->setContainer(LVContainerRef(container));
 
-#if BUILD_LITE != 1
     if (doc->openFromCache(formatCallback)) {
         if (progressCallback) {
             progressCallback->OnLoadFileEnd();
         }
         return true;
     }
-#endif
     doc->getProps()->set(pdb->getDocProps());
 
     switch (contentFormat) {

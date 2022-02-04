@@ -14,7 +14,6 @@
 
 #include <lvstyles.h>
 
-#if BUILD_LITE != 1
 class RenderRectAccessor: public lvdomElementFormatRec
 {
     ldomNode* _node;
@@ -71,6 +70,5 @@ public:
     RenderRectAccessor(ldomNode* node);
     ~RenderRectAccessor();
 };
-#endif
 
 #endif // __RENDERRECTACCESSOR_H_INCLUDED__

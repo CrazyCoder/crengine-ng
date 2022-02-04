@@ -11,8 +11,6 @@
 
 #include "lvimportstylesheetparser.h"
 
-#if BUILD_LITE != 1
-
 #include <ldomdocument.h>
 #include <lvstreamutils.h>
 #include <lvstsheet.h>
@@ -63,5 +61,3 @@ bool LVImportStylesheetParser::Parse(lString32 codeBase, lString32 css) {
     _nestingLevel -= 1;
     return (_document->getStyleSheet()->parse(s, false, codeBase) || ret);
 }
-
-#endif // BUILD_LITE != 1

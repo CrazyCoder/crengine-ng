@@ -53,7 +53,6 @@ public:
     lUInt32 getUncompressedSize() {
         return _uncompressedSize;
     }
-#if BUILD_LITE != 1
     /// allocates new text node, return its address inside storage
     lUInt32 allocText(lUInt32 dataIndex, lUInt32 parentIndex, const lString8& text);
     /// allocates storage for new element, returns address address inside storage
@@ -76,7 +75,6 @@ public:
     bool hasChunks() {
         return _chunks.length() > 0;
     }
-#endif
 
     /// get or allocate space for rect data item
     void getRendRectData(lUInt32 elemDataIndex, lvdomElementFormatRec* dst);

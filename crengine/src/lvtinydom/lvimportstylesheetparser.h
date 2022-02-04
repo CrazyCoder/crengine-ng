@@ -12,10 +12,6 @@
 #ifndef __LVIMPORTSTYLESHEETPARSER_H_INCLUDED__
 #define __LVIMPORTSTYLESHEETPARSER_H_INCLUDED__
 
-#include <crengine-ng-config.h>
-
-#if BUILD_LITE != 1
-
 #include <lvstring32collection.h>
 
 class ldomDocument;
@@ -37,7 +33,5 @@ private:
     lString32Collection _inProgress;
     int _nestingLevel;
 };
-
-#endif // BUILD_LITE != 1
 
 #endif // __LVIMPORTSTYLESHEETPARSER_H_INCLUDED__

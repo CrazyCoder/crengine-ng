@@ -35,8 +35,6 @@ static bool notNull(ldomNode* node) {
     return (NULL != node);
 }
 
-#if BUILD_LITE != 1
-
 /// return parent final node, if found
 ldomNode* ldomXPointer::getFinalNode() const {
     ldomNode* node = getNode();
@@ -58,8 +56,6 @@ bool ldomXPointer::isFinalNode() const {
         return true;
     return false;
 }
-
-#endif // BUILD_LITE != 1
 
 /// get pointer for relative path
 ldomXPointer ldomXPointer::relative(lString32 relativePath) {

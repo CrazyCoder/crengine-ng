@@ -11,8 +11,6 @@
 
 #include "renderrectaccessor.h"
 
-#if BUILD_LITE != 1
-
 #include <ldomnode.h>
 
 //#define DEBUG_RENDER_RECT_ACCESS
@@ -532,5 +530,3 @@ void RenderRectAccessor::setInvolvedFloatIds(int float_count, lUInt32* float_ids
         _extra5 = float_ids[4];
     _modified = true;
 }
-
-#endif // BUILD_LITE != 1

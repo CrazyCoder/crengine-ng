@@ -92,8 +92,6 @@ bool ldomXRange::checkIntersection(ldomXRange& v) {
     return true;
 }
 
-#if BUILD_LITE != 1
-
 static bool findText(const lString32& str, int& pos, int& endpos, const lString32& pattern) {
     int len = pattern.length();
     if (pos < 0 || pos + len > (int)str.length())
@@ -570,8 +568,6 @@ bool ldomXRange::getWordRange(ldomXRange& range, ldomXPointer& p) {
     range = r;
     return true;
 }
-
-#endif // BUILD_LITE != 1
 
 /// returns nearest common element for start and end points
 ldomNode* ldomXRange::getNearestCommonParent() {

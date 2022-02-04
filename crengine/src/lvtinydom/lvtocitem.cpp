@@ -43,11 +43,7 @@ lString32 LVTocItem::getPath() {
 
 /// returns Y position
 int LVTocItem::getY() {
-#if BUILD_LITE != 1
     return getXPointer().toPoint().y;
-#else
-    return 0;
-#endif
 }
 
 /// serialize to byte array (pointer will be incremented by number of bytes written)

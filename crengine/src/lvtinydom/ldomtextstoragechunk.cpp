@@ -58,20 +58,17 @@ ldomTextStorageChunk::ldomTextStorageChunk(ldomDataStorageManager* manager, lUIn
         , _saved(false) {
 }
 
-#if BUILD_LITE != 1
 /// saves data to cache file, if unsaved
 bool ldomTextStorageChunk::save() {
     if (!_saved)
         return swapToCache(false);
     return true;
 }
-#endif
 
 ldomTextStorageChunk::~ldomTextStorageChunk() {
     setunpacked(NULL, 0);
 }
 
-#if BUILD_LITE != 1
 /// pack data, and remove unpacked, put packed data to cache file
 bool ldomTextStorageChunk::swapToCache(bool removeFromMemory) {
     if (!_manager->_cache)
@@ -111,7 +108,6 @@ bool ldomTextStorageChunk::restoreFromCache() {
 #endif
     return true;
 }
-#endif
 
 /// get raw data bytes
 void ldomTextStorageChunk::getRaw(int offset, int size, lUInt8* buf) {
@@ -139,7 +135,6 @@ int ldomTextStorageChunk::space() {
     return _bufsize - _bufpos;
 }
 
-#if BUILD_LITE != 1
 /// returns free space in buffer
 int ldomTextStorageChunk::addText(lUInt32 dataIndex, lUInt32 parentIndex, const lString8& text) {
     lUInt32 itemsize = (sizeof(TextDataStorageItem) + text.length() - 2 + 15) & 0xFFFFFFF0;
@@ -228,7 +223,6 @@ ElementDataStorageItem* ldomTextStorageChunk::getElem(int offset) {
     CRLog::error("Offset %d is out of bounds (%d) for storage chunk %c%d, chunkCount=%d", offset, this->_bufpos, this->_type, this->_index, _manager->_chunks.length());
     return NULL;
 }
-#endif
 
 /// call to invalidate chunk if content is modified
 void ldomTextStorageChunk::modified() {
@@ -238,7 +232,6 @@ void ldomTextStorageChunk::modified() {
     _saved = false;
 }
 
-#if BUILD_LITE != 1
 /// free data item
 void ldomTextStorageChunk::freeNode(int offset) {
     offset <<= 4;
@@ -261,7 +254,6 @@ lString8 ldomTextStorageChunk::getText(int offset) {
     }
     return lString8::empty_str;
 }
-#endif
 
 void ldomTextStorageChunk::setunpacked(const lUInt8* buf, int bufsize) {
     if (_buf) {
@@ -281,7 +273,6 @@ void ldomTextStorageChunk::setunpacked(const lUInt8* buf, int bufsize) {
 
 /// unpacks chunk, if packed; checks storage space, compact if necessary
 void ldomTextStorageChunk::ensureUnpacked() {
-#if BUILD_LITE != 1
     if (!_buf) {
         if (_saved) {
             if (!restoreFromCache()) {
@@ -299,5 +290,4 @@ void ldomTextStorageChunk::ensureUnpacked() {
     } else {
         // compact
     }
-#endif
 }

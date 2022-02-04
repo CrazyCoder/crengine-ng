@@ -160,11 +160,7 @@ void tinyNodeCollection::dumpStatistics() {
                 _rectStorage->getUncompressedSize(),
                 _styleStorage->getUncompressedSize(),
                 _styles.length(), _fonts.length(),
-#if BUILD_LITE != 1
                 ((ldomDocument*)this)->_renderedBlockCache.length(),
-#else
-                0,
-#endif
                 _itemCount, _itemCount * 16 / 1024,
                 _tinyElementCount, _tinyElementCount * (sizeof(tinyElement) + 8 * 4) / 1024);
 }
@@ -175,9 +171,7 @@ lString32 tinyNodeCollection::getStatistics() {
     s << "Styles: " << fmt::decimal(_styles.length()) << ", " << fmt::decimal(_styleStorage->getUncompressedSize() / 1024) << " KB\n";
     s << "Font instances: " << fmt::decimal(_fonts.length()) << "\n";
     s << "Rects: " << fmt::decimal(_rectStorage->getUncompressedSize() / 1024) << " KB\n";
-#if BUILD_LITE != 1
     s << "Cached rendered blocks: " << fmt::decimal(((ldomDocument*)this)->_renderedBlockCache.length()) << "\n";
-#endif
     s << "Total nodes: " << fmt::decimal(_itemCount) << ", " << fmt::decimal(_itemCount * 16 / 1024) << " KB\n";
     s << "Mutable elements: " << fmt::decimal(_tinyElementCount) << ", " << fmt::decimal(_tinyElementCount * (sizeof(tinyElement) + 8 * 4) / 1024) << " KB";
     return s;
@@ -192,7 +186,6 @@ tinyNodeCollection::tinyNodeCollection()
         , _fonts(FONT_HASH_TABLE_SIZE)
         , _tinyElementCount(0)
         , _itemCount(0)
-#if BUILD_LITE != 1
         , _renderedBlockCache(256)
         , _cacheFile(NULL)
         , _cacheFileStale(true)
@@ -208,7 +201,6 @@ tinyNodeCollection::tinyNodeCollection()
         , _nodeDisplayStyleHash(NODE_DISPLAY_STYLE_HASH_UNINITIALIZED)
         , _nodeDisplayStyleHashInitial(NODE_DISPLAY_STYLE_HASH_UNINITIALIZED)
         , _nodeStylesInvalidIfLoading(false)
-#endif
         , _docProps(LVCreatePropsContainer())
         , _docFlags(DOC_FLAG_DEFAULTS)
         , _fontMap(113)
@@ -235,7 +227,6 @@ tinyNodeCollection::tinyNodeCollection(tinyNodeCollection& v)
         , _fonts(FONT_HASH_TABLE_SIZE)
         , _tinyElementCount(0)
         , _itemCount(0)
-#if BUILD_LITE != 1
         , _renderedBlockCache(256)
         , _cacheFile(NULL)
         , _cacheFileStale(true)
@@ -251,7 +242,6 @@ tinyNodeCollection::tinyNodeCollection(tinyNodeCollection& v)
         , _nodeDisplayStyleHash(NODE_DISPLAY_STYLE_HASH_UNINITIALIZED)
         , _nodeDisplayStyleHashInitial(NODE_DISPLAY_STYLE_HASH_UNINITIALIZED)
         , _nodeStylesInvalidIfLoading(false)
-#endif
         , _docProps(LVCreatePropsContainer())
         , _docFlags(v._docFlags)
         , _stylesheet(v._stylesheet)
@@ -318,7 +308,6 @@ bool tinyNodeCollection::setInterlineScaleFactor(int value) {
     return false;
 }
 
-#if BUILD_LITE != 1
 bool tinyNodeCollection::openCacheFile() {
     if (_cacheFile)
         return true;
@@ -642,7 +631,6 @@ bool tinyNodeCollection::loadNodeData() {
     _textCount = textcount;
     return true;
 }
-#endif // BUILD_LITE!=1
 
 /// get ldomNode instance pointer
 ldomNode* tinyNodeCollection::getTinyNode(lUInt32 index) {
@@ -733,10 +721,8 @@ void tinyNodeCollection::recycleTinyNode(lUInt32 index) {
 }
 
 tinyNodeCollection::~tinyNodeCollection() {
-#if BUILD_LITE != 1
     if (_cacheFile)
         delete _cacheFile;
-#endif
     // clear all elem parts
     for (int partindex = 0; partindex <= (_elemCount >> TNC_PART_SHIFT); partindex++) {
         ldomNode* part = _elemList[partindex];
@@ -767,7 +753,6 @@ tinyNodeCollection::~tinyNodeCollection() {
     // document unregistered in ldomDocument destructor
 }
 
-#if BUILD_LITE != 1
 /// put all objects into persistent storage
 void tinyNodeCollection::persist(CRTimerUtil& maxTime) {
     CRLog::info("lxmlDocBase::persist() invoked - converting all nodes to persistent objects");
@@ -804,7 +789,6 @@ void tinyNodeCollection::persist(CRTimerUtil& maxTime) {
     }
     //_cacheFile->flush(false); // intermediate flush
 }
-#endif
 
 void tinyNodeCollection::dropStyles() {
     _styles.clear(-1);
