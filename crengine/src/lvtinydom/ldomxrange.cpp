@@ -19,6 +19,8 @@
 #include "ldomwordscollector.h"
 #include "ldomtextcollector.h"
 
+#include <stdio.h>
+
 static const ldomXPointerEx& _max(const ldomXPointerEx& v1, const ldomXPointerEx& v2) {
     int c = v1.compare(v2);
     if (c >= 0)

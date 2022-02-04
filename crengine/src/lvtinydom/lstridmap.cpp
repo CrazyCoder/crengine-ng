@@ -2,7 +2,7 @@
 
    CoolReader Engine DOM Tree
 
-   LDOMNodeIdMap.cpp:  Name to Id map
+   lstridmap.cpp:  Name to Id map
 
    (c) Vadim Lopatin, 2000-2006
    This source code is distributed under the terms of
@@ -11,7 +11,8 @@
 
 *******************************************************/
 
-#include <lstridmap.h>
+#include "lstridmap.h"
+
 #include <lvmemman.h>
 #include <dtddef.h>
 #include <lvserialbuf.h>

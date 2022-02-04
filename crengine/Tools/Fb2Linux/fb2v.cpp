@@ -21,6 +21,7 @@
 #include <X11/keysym.h> // Every Xlib program must include this
 #include <assert.h>     // I include this to test return values the lazy way
 #include <unistd.h>     // So we got the profile for 10 seconds
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

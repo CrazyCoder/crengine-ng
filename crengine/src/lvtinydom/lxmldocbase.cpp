@@ -14,14 +14,13 @@
 #include <lvdocprops.h>
 #include <crlog.h>
 
+#include "lstridmap.h"
+
 /////////////////////////////////////////////////////////////////
 /// lxmlDocument
 
 lxmlDocBase::lxmlDocBase(int /*dataBufSize*/)
         : tinyNodeCollection()
-        , _elementNameTable(MAX_ELEMENT_TYPE_ID)
-        , _attrNameTable(MAX_ATTRIBUTE_TYPE_ID)
-        , _nsNameTable(MAX_NAMESPACE_TYPE_ID)
         , _nextUnknownElementId(UNKNOWN_ELEMENT_TYPE_ID)
         , _nextUnknownAttrId(UNKNOWN_ATTRIBUTE_TYPE_ID)
         , _nextUnknownNsId(UNKNOWN_NAMESPACE_TYPE_ID)
@@ -33,6 +32,10 @@ lxmlDocBase::lxmlDocBase(int /*dataBufSize*/)
         //,_keepData(false)
         //,_mapped(false)
         , _pagesData(8192) {
+    _elementNameTable = new LDOMNameIdMap(MAX_ELEMENT_TYPE_ID);
+    _attrNameTable = new LDOMNameIdMap(MAX_ATTRIBUTE_TYPE_ID);
+    _nsNameTable = new LDOMNameIdMap(MAX_NAMESPACE_TYPE_ID);
+
     // create and add one data buffer
     _stylesheet.setDocument(this);
 }
@@ -40,9 +43,6 @@ lxmlDocBase::lxmlDocBase(int /*dataBufSize*/)
 /// Copy constructor - copies ID tables contents
 lxmlDocBase::lxmlDocBase(lxmlDocBase& doc)
         : tinyNodeCollection(doc)
-        , _elementNameTable(doc._elementNameTable)         // Element Name<->Id map
-        , _attrNameTable(doc._attrNameTable)               // Attribute Name<->Id map
-        , _nsNameTable(doc._nsNameTable)                   // Namespace Name<->Id map
         , _nextUnknownElementId(doc._nextUnknownElementId) // Next Id for unknown element
         , _nextUnknownAttrId(doc._nextUnknownAttrId)       // Next Id for unknown attribute
         , _nextUnknownNsId(doc._nextUnknownNsId)           // Next Id for unknown namespace
@@ -53,17 +53,23 @@ lxmlDocBase::lxmlDocBase(lxmlDocBase& doc)
         , _idAttrId(doc._idAttrId) // Id for "id" attribute name
                                    //,   _docFlags(doc._docFlags)
         , _pagesData(8192) {
+    _elementNameTable = new LDOMNameIdMap(MAX_ELEMENT_TYPE_ID);
+    _attrNameTable = new LDOMNameIdMap(MAX_ATTRIBUTE_TYPE_ID);
+    _nsNameTable = new LDOMNameIdMap(MAX_NAMESPACE_TYPE_ID);
 }
 
 /// Destructor
 lxmlDocBase::~lxmlDocBase() {
+    delete _nsNameTable;
+    delete _attrNameTable;
+    delete _elementNameTable;
 }
 
 void lxmlDocBase::onAttributeSet(lUInt16 attrId, lUInt32 valueId, ldomNode* node) {
     if (_idAttrId == 0)
-        _idAttrId = _attrNameTable.idByName("id");
+        _idAttrId = _attrNameTable->idByName("id");
     if (_nameAttrId == 0)
-        _nameAttrId = _attrNameTable.idByName("name");
+        _nameAttrId = _attrNameTable->idByName("name");
     if (attrId == _idAttrId) {
         _idNodeMap.set(valueId, node->getDataIndex());
     } else if (attrId == _nameAttrId) {
@@ -74,57 +80,65 @@ void lxmlDocBase::onAttributeSet(lUInt16 attrId, lUInt32 valueId, ldomNode* node
 }
 
 lUInt16 lxmlDocBase::getNsNameIndex(const lChar32* name) {
-    const LDOMNameIdMapItem* item = _nsNameTable.findItem(name);
+    const LDOMNameIdMapItem* item = _nsNameTable->findItem(name);
     if (item)
         return item->id;
-    _nsNameTable.AddItem(_nextUnknownNsId, lString32(name), NULL);
+    _nsNameTable->AddItem(_nextUnknownNsId, lString32(name), NULL);
     return _nextUnknownNsId++;
 }
 
 lUInt16 lxmlDocBase::getNsNameIndex(const lChar8* name) {
-    const LDOMNameIdMapItem* item = _nsNameTable.findItem(name);
+    const LDOMNameIdMapItem* item = _nsNameTable->findItem(name);
     if (item)
         return item->id;
-    _nsNameTable.AddItem(_nextUnknownNsId, lString32(name), NULL);
+    _nsNameTable->AddItem(_nextUnknownNsId, lString32(name), NULL);
     return _nextUnknownNsId++;
 }
 
+const lString32& lxmlDocBase::getAttrName(lUInt16 id) {
+    return _attrNameTable->nameById(id);
+}
+
 lUInt16 lxmlDocBase::getAttrNameIndex(const lChar32* name) {
-    const LDOMNameIdMapItem* item = _attrNameTable.findItem(name);
+    const LDOMNameIdMapItem* item = _attrNameTable->findItem(name);
     if (item)
         return item->id;
-    _attrNameTable.AddItem(_nextUnknownAttrId, lString32(name), NULL);
+    _attrNameTable->AddItem(_nextUnknownAttrId, lString32(name), NULL);
     return _nextUnknownAttrId++;
 }
 
 lUInt16 lxmlDocBase::getAttrNameIndex(const lChar8* name) {
-    const LDOMNameIdMapItem* item = _attrNameTable.findItem(name);
+    const LDOMNameIdMapItem* item = _attrNameTable->findItem(name);
     if (item)
         return item->id;
-    _attrNameTable.AddItem(_nextUnknownAttrId, lString32(name), NULL);
+    _attrNameTable->AddItem(_nextUnknownAttrId, lString32(name), NULL);
     return _nextUnknownAttrId++;
 }
 
+const lString32& lxmlDocBase::getElementName(lUInt16 id) {
+    return _elementNameTable->nameById(id);
+}
+
 lUInt16 lxmlDocBase::getElementNameIndex(const lChar32* name) {
-    const LDOMNameIdMapItem* item = _elementNameTable.findItem(name);
+    const LDOMNameIdMapItem* item = _elementNameTable->findItem(name);
     if (item)
         return item->id;
-    _elementNameTable.AddItem(_nextUnknownElementId, lString32(name), NULL);
+    _elementNameTable->AddItem(_nextUnknownElementId, lString32(name), NULL);
     return _nextUnknownElementId++;
 }
 
 lUInt16 lxmlDocBase::findElementNameIndex(const lChar8* name) {
-    const LDOMNameIdMapItem* item = _elementNameTable.findItem(name);
+    const LDOMNameIdMapItem* item = _elementNameTable->findItem(name);
     if (item)
         return item->id;
     return 0;
 }
 
 lUInt16 lxmlDocBase::getElementNameIndex(const lChar8* name) {
-    const LDOMNameIdMapItem* item = _elementNameTable.findItem(name);
+    const LDOMNameIdMapItem* item = _elementNameTable->findItem(name);
     if (item)
         return item->id;
-    _elementNameTable.AddItem(_nextUnknownElementId, lString32(name), NULL);
+    _elementNameTable->AddItem(_nextUnknownElementId, lString32(name), NULL);
     return _nextUnknownElementId++;
 }
 
@@ -140,6 +154,10 @@ LFormattedText* lxmlDocBase::createFormattedText() {
     return p;
 }
 
+ldomNode* lxmlDocBase::getNodeById(lUInt32 attrValueId) {
+    return getTinyNode(_idNodeMap.get(attrValueId));
+}
+
 /// returns main element (i.e. FictionBook for FB2)
 ldomNode* lxmlDocBase::getRootNode() {
     return getTinyNode(17);
@@ -153,11 +171,15 @@ void lxmlDocBase::setCodeBase(const lString32& codeBase) {
     getProps()->setStringDef(DOC_PROP_CODE_BASE, codeBase);
 }
 
+const css_elem_def_props_t* lxmlDocBase::getElementTypePtr(lUInt16 id) {
+    return _elementNameTable->dataById(id);
+}
+
 void lxmlDocBase::setNodeTypes(const elem_def_t* node_scheme) {
     if (!node_scheme)
         return;
     for (; node_scheme && node_scheme->id != 0; ++node_scheme) {
-        _elementNameTable.AddItem(
+        _elementNameTable->AddItem(
                 node_scheme->id,              // ID
                 lString32(node_scheme->name), // Name
                 &node_scheme->props);         // ptr
@@ -169,12 +191,12 @@ void lxmlDocBase::setAttributeTypes(const attr_def_t* attr_scheme) {
     if (!attr_scheme)
         return;
     for (; attr_scheme && attr_scheme->id != 0; ++attr_scheme) {
-        _attrNameTable.AddItem(
+        _attrNameTable->AddItem(
                 attr_scheme->id,              // ID
                 lString32(attr_scheme->name), // Name
                 NULL);
     }
-    _idAttrId = _attrNameTable.idByName("id");
+    _idAttrId = _attrNameTable->idByName("id");
 }
 
 // set namespace types from table
@@ -182,7 +204,7 @@ void lxmlDocBase::setNameSpaceTypes(const ns_def_t* ns_scheme) {
     if (!ns_scheme)
         return;
     for (; ns_scheme && ns_scheme->id != 0; ++ns_scheme) {
-        _nsNameTable.AddItem(
+        _nsNameTable->AddItem(
                 ns_scheme->id,              // ID
                 lString32(ns_scheme->name), // Name
                 NULL);
@@ -193,19 +215,19 @@ void lxmlDocBase::setNameSpaceTypes(const ns_def_t* ns_scheme) {
 void lxmlDocBase::setAllTypesFrom(lxmlDocBase* d) {
     // Simpler to just serialize and deserialize them all
     SerialBuf buf(0, true);
-    d->_elementNameTable.serialize(buf);
+    d->_elementNameTable->serialize(buf);
     buf << d->_nextUnknownElementId;
-    d->_attrNameTable.serialize(buf);
+    d->_attrNameTable->serialize(buf);
     buf << d->_nextUnknownAttrId;
-    d->_nsNameTable.serialize(buf);
+    d->_nsNameTable->serialize(buf);
     buf << d->_nextUnknownNsId;
 
     buf.setPos(0);
-    _elementNameTable.deserialize(buf);
+    _elementNameTable->deserialize(buf);
     buf >> _nextUnknownElementId;
-    _attrNameTable.deserialize(buf);
+    _attrNameTable->deserialize(buf);
     buf >> _nextUnknownAttrId;
-    _nsNameTable.deserialize(buf);
+    _nsNameTable->deserialize(buf);
     buf >> _nextUnknownNsId;
 }
 
@@ -214,22 +236,22 @@ void lxmlDocBase::dumpUnknownEntities(const char* fname) {
     if (!f)
         return;
     fprintf(f, "Unknown elements:\n");
-    _elementNameTable.dumpUnknownItems(f, UNKNOWN_ELEMENT_TYPE_ID);
+    _elementNameTable->dumpUnknownItems(f, UNKNOWN_ELEMENT_TYPE_ID);
     fprintf(f, "-------------------------------\n");
     fprintf(f, "Unknown attributes:\n");
-    _attrNameTable.dumpUnknownItems(f, UNKNOWN_ATTRIBUTE_TYPE_ID);
+    _attrNameTable->dumpUnknownItems(f, UNKNOWN_ATTRIBUTE_TYPE_ID);
     fprintf(f, "-------------------------------\n");
     fprintf(f, "Unknown namespaces:\n");
-    _nsNameTable.dumpUnknownItems(f, UNKNOWN_NAMESPACE_TYPE_ID);
+    _nsNameTable->dumpUnknownItems(f, UNKNOWN_NAMESPACE_TYPE_ID);
     fprintf(f, "-------------------------------\n");
     fclose(f);
 }
 
 lString32Collection lxmlDocBase::getUnknownEntities() {
     lString32Collection unknown_entities;
-    unknown_entities.add(_elementNameTable.getUnknownItems(UNKNOWN_ELEMENT_TYPE_ID));
-    unknown_entities.add(_attrNameTable.getUnknownItems(UNKNOWN_ATTRIBUTE_TYPE_ID));
-    unknown_entities.add(_nsNameTable.getUnknownItems(UNKNOWN_NAMESPACE_TYPE_ID));
+    unknown_entities.add(_elementNameTable->getUnknownItems(UNKNOWN_ELEMENT_TYPE_ID));
+    unknown_entities.add(_attrNameTable->getUnknownItems(UNKNOWN_ATTRIBUTE_TYPE_ID));
+    unknown_entities.add(_nsNameTable->getUnknownItems(UNKNOWN_NAMESPACE_TYPE_ID));
     return unknown_entities;
 }
 
@@ -263,13 +285,13 @@ void lxmlDocBase::serializeMaps(SerialBuf& buf) {
     int pos = buf.pos();
     buf.putMagic(id_map_list_magic);
     buf.putMagic(elem_id_map_magic);
-    _elementNameTable.serialize(buf);
+    _elementNameTable->serialize(buf);
     buf << _nextUnknownElementId; // Next Id for unknown element
     buf.putMagic(attr_id_map_magic);
-    _attrNameTable.serialize(buf);
+    _attrNameTable->serialize(buf);
     buf << _nextUnknownAttrId; // Next Id for unknown attribute
     buf.putMagic(ns_id_map_magic);
-    _nsNameTable.serialize(buf);
+    _nsNameTable->serialize(buf);
     buf << _nextUnknownNsId; // Next Id for unknown namespace
     buf.putMagic(attr_value_map_magic);
     _attrValueTable.serialize(buf);
@@ -315,7 +337,7 @@ bool lxmlDocBase::deserializeMaps(SerialBuf& buf) {
     int pos = buf.pos();
     buf.checkMagic(id_map_list_magic);
     buf.checkMagic(elem_id_map_magic);
-    _elementNameTable.deserialize(buf);
+    _elementNameTable->deserialize(buf);
     buf >> _nextUnknownElementId; // Next Id for unknown element
 
     if (buf.error()) {
@@ -324,7 +346,7 @@ bool lxmlDocBase::deserializeMaps(SerialBuf& buf) {
     }
 
     buf.checkMagic(attr_id_map_magic);
-    _attrNameTable.deserialize(buf);
+    _attrNameTable->deserialize(buf);
     buf >> _nextUnknownAttrId; // Next Id for unknown attribute
 
     if (buf.error()) {
@@ -333,7 +355,7 @@ bool lxmlDocBase::deserializeMaps(SerialBuf& buf) {
     }
 
     buf.checkMagic(ns_id_map_magic);
-    _nsNameTable.deserialize(buf);
+    _nsNameTable->deserialize(buf);
     buf >> _nextUnknownNsId; // Next Id for unknown namespace
 
     if (buf.error()) {
@@ -382,6 +404,10 @@ bool lxmlDocBase::deserializeMaps(SerialBuf& buf) {
     buf.checkCRC(buf.pos() - pos);
 
     return !buf.error();
+}
+
+const lString32& lxmlDocBase::getNsName(lUInt16 id) {
+    return _nsNameTable->nameById(id);
 }
 
 static const char* doc_file_magic = "CR3\n";

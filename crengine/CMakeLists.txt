@@ -8,7 +8,6 @@ set(CRENGINE_NG_SOURCES
     src/lvserialbuf.cpp
     src/crlog.cpp
     src/crprops.cpp
-    src/lstridmap.cpp
     src/rtfimp.cpp
     src/cri18n.cpp
     src/lvmemman.cpp
@@ -129,6 +128,7 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom/ldomdocumentwriterfilter.cpp
     src/lvtinydom/ldomdocumentfragmentwriter.cpp
     src/lvtinydom/ldomwordexlist.cpp
+    src/lvtinydom/lstridmap.cpp
 )
 
 if(USE_LOCALE_DATA)

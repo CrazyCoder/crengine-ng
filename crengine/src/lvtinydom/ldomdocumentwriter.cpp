@@ -21,6 +21,8 @@
 #include "../lvxml/lvfileformatparser.h"
 #include "../lvxml/lvxmlutils.h"
 
+#include <stdio.h>
+
 static bool hasInvisibleParent(ldomNode* node) {
     for (; node && !node->isRoot(); node = node->getParentNode()) {
         css_style_ref_t style = node->getStyle();

@@ -15,7 +15,6 @@
 #include <lvtinynodecollection.h>
 #include <lvserialbuf.h>
 #include <lvstring32hashedcollection.h>
-#include <lstridmap.h>
 #include <dtddef.h>
 
 // default: 512K
@@ -30,6 +29,8 @@
 #define UNKNOWN_ELEMENT_TYPE_ID   (MAX_ELEMENT_TYPE_ID >> 1)
 #define UNKNOWN_ATTRIBUTE_TYPE_ID (MAX_ATTRIBUTE_TYPE_ID >> 1)
 #define UNKNOWN_NAMESPACE_TYPE_ID (MAX_NAMESPACE_TYPE_ID >> 1)
+
+class LDOMNameIdMap;
 
 /// Base class for XML DOM documents
 /**
@@ -67,9 +68,7 @@ public:
         \param id is numeric value of namespace
         \return string value of namespace
     */
-    inline const lString32& getNsName(lUInt16 id) {
-        return _nsNameTable.nameById(id);
-    }
+    const lString32& getNsName(lUInt16 id);
 
     /// Get namespace id by name
     /**
@@ -90,9 +89,7 @@ public:
         \param id is numeric value of attribute
         \return string value of attribute
     */
-    inline const lString32& getAttrName(lUInt16 id) {
-        return _attrNameTable.nameById(id);
-    }
+    const lString32& getAttrName(lUInt16 id);
 
     /// Get attribute id by name
     /**
@@ -128,9 +125,7 @@ public:
         \param id is numeric value of element name
         \return string value of element name
     */
-    inline const lString32& getElementName(lUInt16 id) {
-        return _elementNameTable.nameById(id);
-    }
+    const lString32& getElementName(lUInt16 id);
 
     /// Get element id by name
     /**
@@ -159,9 +154,7 @@ public:
         \return pointer to elem_def_t structure containing type properties
         \sa elem_def_t
     */
-    inline const css_elem_def_props_t* getElementTypePtr(lUInt16 id) {
-        return _elementNameTable.dataById(id);
-    }
+    const css_elem_def_props_t* getElementTypePtr(lUInt16 id);
 
     // set node types from table
     void setNodeTypes(const elem_def_t* node_scheme);
@@ -195,9 +188,7 @@ public:
     void onAttributeSet(lUInt16 attrId, lUInt32 valueId, ldomNode* node);
 
     /// get element by id attribute value code
-    inline ldomNode* getNodeById(lUInt32 attrValueId) {
-        return getTinyNode(_idNodeMap.get(attrValueId));
-    }
+    ldomNode* getNodeById(lUInt32 attrValueId);
 
     /// get element by id attribute value
     inline ldomNode* getElementById(const lChar32* id) {
@@ -248,12 +239,12 @@ protected:
     DocFileHeader _hdr;
     text_highlight_options_t _highlightOptions;
 
-    LDOMNameIdMap _elementNameTable; // Element Name<->Id map
-    LDOMNameIdMap _attrNameTable;    // Attribute Name<->Id map
-    LDOMNameIdMap _nsNameTable;      // Namespace Name<->Id map
-    lUInt16 _nextUnknownElementId;   // Next Id for unknown element
-    lUInt16 _nextUnknownAttrId;      // Next Id for unknown attribute
-    lUInt16 _nextUnknownNsId;        // Next Id for unknown namespace
+    LDOMNameIdMap* _elementNameTable; // Element Name<->Id map
+    LDOMNameIdMap* _attrNameTable;    // Attribute Name<->Id map
+    LDOMNameIdMap* _nsNameTable;      // Namespace Name<->Id map
+    lUInt16 _nextUnknownElementId;    // Next Id for unknown element
+    lUInt16 _nextUnknownAttrId;       // Next Id for unknown attribute
+    lUInt16 _nextUnknownNsId;         // Next Id for unknown namespace
     lString32HashedCollection _attrValueTable;
     LVHashTable<lUInt32, lInt32> _idNodeMap;               // id to data index map
     LVHashTable<lString32, LVImageSourceRef> _urlImageMap; // url to image source map

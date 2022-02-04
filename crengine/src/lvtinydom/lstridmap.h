@@ -121,4 +121,4 @@ public:
     lString32 getUnknownItems(int start_id);
 };
 
-#endif
+#endif // __LSTR_ID_MAP_H__INCLUDED__

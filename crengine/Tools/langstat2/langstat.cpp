@@ -3,6 +3,7 @@
 
 #include <crengine.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #define DEST_FILE "cp_stats.cpp"
