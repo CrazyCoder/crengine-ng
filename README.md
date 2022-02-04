@@ -14,7 +14,7 @@ Supported platforms: Windows, Linux, MacOS.
 This project is in the experimental phase, the main goals are:
  * Main goal is the same as CoolReader's crengine - support & development fast and portable library which allows to create e-book readers for different platform including handheld devices.
  * Some minor improvements are possible.
- * Refactoring legacy code to make it easier to work on codebase. At the moment, the codebase in CoolReader is very cumbersome, poorly structured, poorly documented, there are huge source files (for example, there are 15 thousand SLOC in the lvtinydom.cpp file), which are very difficult to work with.
+ * Refactoring legacy code to make it easier to work on codebase. At the moment, the codebase in CoolReader is very cumbersome, poorly structured, poorly documented, there are huge source files, which are very difficult to work with.
  * Bugfixes.
  * Support for modern compilers.
 
