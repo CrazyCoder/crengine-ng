@@ -20,9 +20,9 @@ class ldomDocument;
 class ldomTextNode;
 class tinyElement;
 class LVDocViewCallback;
-class lxmlAttribute;
 class RenderRectAccessor;
 
+struct lxmlAttribute;
 struct css_elem_def_props_t;
 
 // To be used for 'direction' in ldomNode->elementFromPoint(lvPoint pt, int direction)
