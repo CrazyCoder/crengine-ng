@@ -144,48 +144,20 @@ Current limitations:
 // KOReader) as the last fallback, as it happens to be a good math font
 // that works quite well.
 static lString8 MATHML_DEFAULT_FONTS = lString8(
-        "\""
-        "Latin Modern Math"
-        "\", "
-        "\""
-        "STIX Two Math"
-        "\", "
-        "\""
-        "XITS Math"
-        "\", "
-        "\""
-        "Libertinus Math"
-        "\", "
-        "\""
-        "TeX Gyre Termes Math"
-        "\", "
-        "\""
-        "TeX Gyre Bonum Math"
-        "\", "
-        "\""
-        "TeX Gyre Schola Math"
-        "\", "
-        "\""
-        "TeX Gyre Pagella Math"
-        "\", "
-        "\""
-        "DejaVu Math TeX Gyre"
-        "\", "
-        "\""
-        "Asana Math"
-        "\", "
-        "\""
-        "Cambria Math"
-        "\", "
-        "\""
-        "Lucida Bright Math"
-        "\", "
-        "\""
-        "Minion Math"
-        "\", "
-        "\""
-        "FreeSerif"
-        "\"");
+        "\"Latin Modern Math\", "
+        "\"STIX Two Math\", "
+        "\"XITS Math\", "
+        "\"Libertinus Math\", "
+        "\"TeX Gyre Termes Math\", "
+        "\"TeX Gyre Bonum Math\", "
+        "\"TeX Gyre Schola Math\", "
+        "\"TeX Gyre Pagella Math\", "
+        "\"DejaVu Math TeX Gyre\", "
+        "\"Asana Math\", "
+        "\"Cambria Math\", "
+        "\"Lucida Bright Math\", "
+        "\"Minion Math\", "
+        "\"FreeSerif\"");
 // ("STIX Math" not included, as the one I tested with has really huge
 // spacing and looks really bad.)
 
@@ -206,6 +178,14 @@ static const char* MATHML_CSS =
 // Allow parsing it at run-time when developping:
 // Uncomment to parse mathml_css_h.css at run-time
 // #define MATHML_CSS_DEVEL
+
+#ifdef MATHML_CSS_DEVEL
+
+#include <stdio.h>
+#include <lvstreamutils.h>
+#include "lvxml/lvxmlutils.h"
+
+#endif
 
 static bool loadMathMLStylesheet(ldomNode* node) {
     // We need a document to parse a stylesheet, to get elements and attributes IDs from.
