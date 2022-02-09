@@ -376,7 +376,7 @@ TEST_F(DocParseTests, ParseSimpleFB3) {
 
     // open document & render into drawbuf
     ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-fb3.fb3")); // load document
-    ASSERT_TRUE(setCSS("docx.css"));
+    ASSERT_TRUE(setCSS("fb3.css"));
 
     // render document
     m_view->requestRender();
