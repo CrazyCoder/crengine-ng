@@ -371,3 +371,29 @@ TEST_F(DocParseTests, ParseSimpleFB3) {
     CRLog::info("Finished ParseSimpleFB3");
     CRLog::info("=======================");
 }
+
+TEST_F(DocParseTests, ParseMathMLinHTML) {
+    CRLog::info("=======================");
+    CRLog::info("Starting ParseMathMLinHTML");
+    ASSERT_TRUE(m_initOK);
+
+    ASSERT_TRUE(setProperty(PROP_REQUESTED_DOM_VERSION, 20200824));
+    ASSERT_TRUE(setProperty(PROP_RENDER_BLOCK_RENDERING_FLAGS, BLOCK_RENDERING_FLAGS_WEB));
+
+    // open document & render into drawbuf
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "mathml-test.html")); // load document
+    ASSERT_TRUE(setCSS("htm.css"));
+
+    // render document
+    m_view->requestRender();
+    m_view->checkRender();
+
+    // Save dump
+    ASSERT_TRUE(dumpXML("doc-dump.xml"));
+
+    // compare with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoTextFiles("doc-dump.xml", DOCPARSE_REFERENCE_DIR "mathml-test_dump.xml.gz"));
+
+    CRLog::info("Finished ParseMathMLinHTML");
+    CRLog::info("=======================");
+}
