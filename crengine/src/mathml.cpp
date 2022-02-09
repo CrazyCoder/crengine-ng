@@ -960,7 +960,6 @@ static const mathml_operator_dict_entry mathml_operators[] = {
     { NULL, 0, 0, 0, 0 },
 };
 
-#ifdef MATHML_CSS_DEVEL
 static bool getOperatorProperties(const lChar32* op, const mathml_operator_dict_entry*& infix,
                                   const mathml_operator_dict_entry*& prefix, const mathml_operator_dict_entry*& postfix) {
     int nb = sizeof(mathml_operators) / sizeof((mathml_operators)[0]) - 1; // ignore last NULL
@@ -1004,7 +1003,6 @@ static bool getOperatorProperties(const lChar32* op, const mathml_operator_dict_
     }
     return found;
 }
-#endif
 
 // ====================================================================
 // MathML DOM building helper
@@ -2128,9 +2126,11 @@ static void fixupMathML(ldomNode* node, bool is_in_script) {
     const mathml_operator_dict_entry* infix = NULL;
     const mathml_operator_dict_entry* prefix = NULL;
     const mathml_operator_dict_entry* postfix = NULL;
-#ifdef MATHML_CSS_DEVEL
     bool found = getOperatorProperties((const lChar32*)text.c_str(), infix, prefix, postfix);
+#ifdef MATHML_CSS_DEVEL
     printf("%s %d %d %d %d\n", UnicodeToLocal(text).c_str(), found, infix, prefix, postfix);
+#else
+    CR_UNUSED(found);
 #endif
 
     // The "form" (prefix/infix/postfix) to be used depends on various things:
