@@ -1038,14 +1038,14 @@ bool MathMLHelper::handleMathMLtag(ldomDocumentWriter* writer, int step, lUInt16
         // property math-shift:normal, and unset it for math-shift:compact. The
         // only effect of MS is using OpenType Math superscriptShiftUp when normal,
         // and superscriptShiftUpCramped when compact.
-        bool is_MD;     // math-style
-        bool is_MS;     // math-shift
-        int add_MN = 0; // math-depth: number to add to nearest upper
+        bool is_MD = false; // math-style
+        bool is_MS = false; // math-shift
+        int add_MN = 0;     // math-depth: number to add to nearest upper
         if (curNodeId == el_math) {
             lString32 at_display = curNode->getAttributeValueLC(attr_display);
             is_MD = at_display == U"block"; // defaults to false if absent
             is_MS = true;                   // <math> starts with math-shift: normal
-        } else {
+        } else if (parentNode != NULL) {
             lString32 at_displaystyle = curNode->getAttributeValueLC(attr_displaystyle);
             if (at_displaystyle == U"true")
                 is_MD = true;
@@ -1273,7 +1273,7 @@ bool MathMLHelper::handleMathMLtag(ldomDocumentWriter* writer, int step, lUInt16
         // Additional completion done below when handling this <mrow> element
         return true;
     }
-    if (step == MATHML_STEP_NODE_CLOSING && tag_id == el_mfenced && curNodeId == el_mrow && parentNodeId == el_mfenced) {
+    if (step == MATHML_STEP_NODE_CLOSING && tag_id == el_mfenced && curNodeId == el_mrow && parentNode != NULL && parentNodeId == el_mfenced) {
         writer->OnTagClose(NULL, U"mrow");
         lString32 closing = U")";
         if (parentNode->hasAttribute(attr_close)) {
@@ -1287,7 +1287,7 @@ bool MathMLHelper::handleMathMLtag(ldomDocumentWriter* writer, int step, lUInt16
     }
     // ------------------------------------------
     // <mrow> anything </mrow>, children of <mfenced> added just above
-    if (step == MATHML_STEP_BEFORE_NEW_CHILD && parentNodeId == el_mfenced && curNodeId == el_mrow) {
+    if (step == MATHML_STEP_BEFORE_NEW_CHILD && curNodeId == el_mrow && parentNode != NULL && parentNodeId == el_mfenced) {
         int child_count = curNode->getChildCount();
         if (child_count == 0) {
             // No separator to add before first child
@@ -1497,6 +1497,9 @@ void setMathMLElementNodeStyle(ldomNode* node, css_style_rec_t* style) {
     lUInt16 parentNodeId = parentNode ? parentNode->getNodeId() : el_NULL;
     ldomNode* gParentNode = parentNode ? parentNode->getParentNode() : NULL;
     lUInt16 gParentNodeId = gParentNode ? gParentNode->getNodeId() : el_NULL;
+
+    if (NULL == parentNode)
+        return;
 
     // Our CSS stylesheet does not enforce a font-family, as we don't want to
     // override a font set by the publisher or the user.
@@ -2676,6 +2679,8 @@ void ensureMathMLVerticalStretch(ldomNode* node, lUInt32 line_y, lUInt16 line_ba
             ldomNode* finalNode = tmp;
             while (finalNode && finalNode->getRendMethod() != erm_final)
                 finalNode = finalNode->getParentNode();
+            if (finalNode == NULL)
+                break;
             RenderRectAccessor finalfmt(finalNode);
 
             // erm_final are tricky: content is laid out from getInnerY() (which

@@ -337,7 +337,7 @@ void writeNodeEx(LVStream* stream, ldomNode* node, lString32Collection& cssFiles
                             doIndentOneLevelLessAfterNewLineAfterEndTag = true;
                         // But if previous sibling node is a floating or boxing inline node
                         // that have done what we just did, cancel some of what we did
-                        if (node->getNodeIndex() > 0) {
+                        if (parent != NULL && node->getNodeIndex() > 0) {
                             ldomNode* prevsibling = parent->getChildNode(node->getNodeIndex() - 1);
                             if (prevsibling->isFloatingBox() || prevsibling->isBoxingInlineBox()) {
                                 doNewlineBeforeIndentBeforeStartTag = false;
@@ -356,7 +356,7 @@ void writeNodeEx(LVStream* stream, ldomNode* node, lString32Collection& cssFiles
                         doIndentOneLevelLessAfterNewLineAfterEndTag = true;
                     else if (containsEnd)
                         doIndentOneLevelLessAfterNewLineAfterEndTag = true;
-                    if (node->getNodeIndex() > 0) {
+                    if (parent != NULL && node->getNodeIndex() > 0) {
                         ldomNode* prevsibling = parent->getChildNode(node->getNodeIndex() - 1);
                         if (prevsibling->isFloatingBox() || prevsibling->isBoxingInlineBox()) {
                             doNewlineBeforeIndentBeforeStartTag = false;

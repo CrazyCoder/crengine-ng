@@ -140,7 +140,7 @@ void ldomDocumentWriter::OnTagBody() {
     }
 
 #if MATHML_SUPPORT == 1
-    if (_currNode->_insideMathML) {
+    if (_currNode && _currNode->_insideMathML) {
         // At this point, the style for this node has been applied.
         // Check if the <math> element (or any of its parent) is display:none,
         // in which case we don't need to spend time handling MathML that
