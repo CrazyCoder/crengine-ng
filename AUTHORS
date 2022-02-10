@@ -1,16 +1,21 @@
+  crengine-ng authors:
+Aleksey Chernov <valexlin@gmail.com>
+
+  CoolReader/crengine authors:
 Vadim Lopatin <coolreader.org@gmail.com>
 Aleksey Chernov <valexlin@gmail.com>
 Konstantin Potapov <pkbo@users.sourceforge.net>
 
-Alan (http://alreader.kms.ru/) - hyphenation support code
-
- From KOReader project:
+  KOReader/crengine authors:
 poire-z <poire-z@users.noreply.github.com>
 roshavagarga <roshavagarga@users.noreply.github.com>
 zwim <martin.zwicknagl@kirchbichl.net>
 NiLuJe <ninuje@gmail.com>
 
- Other contributors:
+  Special thanks for hyphenation support code:
+Alan (Author of the program AlReader)
+
+  Other contributors:
 ourairquality <info@ourairquality.org>
 EXL <exlmotodev@gmail.com>
 Jellby <jellby@yahoo.com>
@@ -31,3 +36,6 @@ Alexander Kerner <lunohod@openinkpot.org>
 clach04 <clach04@gmail.com>
 
 This list of authors is obtained using a script crengine/Tools/getauthors/getauthos.sh
+The first item in the git log is Wed Mar 14 11:31:43 2007 +0000,
+but the project started around 2000, so the statistics
+we can get with this script are by definition incomplete.
