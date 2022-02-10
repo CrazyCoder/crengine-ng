@@ -1,0 +1,169 @@
+2022-02-10  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.0 released.
+	==========================
+
+	Tag sources with `0.9.0'.
+
+	  Main changes:
+	* Refactoring
+	* Added unit testing functionality
+	* Integrated gitlab CI including unit testing
+	* Win32 support improved
+	* MacOS support fixed
+	* The deprecated BUILD_LITE option has been removed as it is not used or planned to be used
+	* By default, a limited set of font sizes is disabled. Font sizes are only limited by minimum and maximum. The USE_LIMITED_FONT_SIZES_SET option has been completely removed
+	* Other fixes
+
+	See below for other changes.
+
+2022-02-09  Aleksey Chernov  <valexlin@gmail.com>
+
+	clang-analyzer: potential segfaults fixed.
+	mathml.cpp: fixupMathML() fixed that is broken in 659e098dccd26fe3b6456d61b714e9da649fe536
+
+2022-02-06  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added version info to shared library file (Win32 only).
+
+2022-02-05  Aleksey Chernov  <valexlin@gmail.com>
+
+	ZIP64 minor fixes: when finding 'End of central directory record' don't try to lseek outside of file size.
+
+2022-02-04  Aleksey Chernov  <valexlin@gmail.com>
+
+	The deprecated BUILD_LITE option has been removed as it is not used or planned to be used.
+
+2022-01-23  Aleksey Chernov  <valexlin@gmail.com>
+
+	cmake project fixed: compile options for clang tuned, errors fixed.
+
+	Conflict fixed with BSD systems (including macOS) when using function timevalcmp().
+
+	crengine/src/lvstream/ziphdr.h: Warning fixed: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here.
+
+	Sanitizer's fixes: crengine/src/lvstream/lvfilestream.cpp:391:28: runtime error: load of value 20, which is not a valid value for type 'lvopen_mode_t'
+
+	crengine/include/lvtextfm.h: clang warning fixed: anonymous types declared in an anonymous union are an extension.
+
+	Enable cmake testing (ctest) using existing unit tests (using GoogleTest).
+
+2022-01-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	By default, a limited set of font sizes is disabled. Font sizes are only limited by minimum and maximum. The USE_LIMITED_FONT_SIZES_SET option has been completely removed.
+
+	LVDocView::swapToCache(): return operation result.
+
+	Fixed delete directory function on Unix-like platforms.
+
+	InitFontManager(): added a new argument to enable/disable registration of system fonts. This is may be usefull for unit testing.
+
+2022-01-12  Aleksey Chernov  <valexlin@gmail.com>
+
+	lvtinydom: fixed cache cleaning function.
+
+	Removed obsolete testing code.
+
+	SIGSEGV fixed in textlang.cpp
+
+2022-01-11  Aleksey Chernov  <valexlin@gmail.com>
+
+	class lvByteOrderConv is extracted from lvtypes.h into a separate file lvbyteorder.h.
+
+2022-01-05  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added a separate function to free an aligned image buffer in qimagescale. This fixes a crash in Win32.
+
+	Fixed installation procedure for Win32.
+
+	Restored Win32 font functionality, normally used only when FreeType is not available in Win32.
+
+2021-12-30  Aleksey Chernov  <valexlin@gmail.com>
+
+	CMakeLists.txt: tune compile options.
+
+2021-12-29  Aleksey Chernov  <valexlin@gmail.com>
+
+	thirdparty/qimagescale/qimagescale.cpp: fixed compiler warnings.
+
+	thirdparty/chmlib/src/chm_lib.c: fixed compiler warnings.
+
+	crengine/src/lvtextfm.cpp: fixed compiler warnings.
+
+	crengine/src/wordfmt.cpp: fixed compiler warnings.
+
+	crengine/src/lvstring.cpp: fixed compiler warnings.
+
+	crengine/src/lvrend.cpp: fixed compiler warnings.
+
+	crengine/src/epubfmt.cpp: fixed compiler warnings.
+
+	crengine/src/crmathml.cpp: fixed compiler warnings.
+
+	CRFileLogger: date and time format: print date and time in milliseconds (instead of decimilliseconds), fixed compiler warnings.
+
+	crengine/src/textlang.cpp: fixed compiler warnings.
+
+	crengine/src/crhyphman.cpp: fixed compiler warnings.
+
+	crengine/src/crtxtenc.cpp: fixed compiler warnings.
+
+2021-12-28  Aleksey Chernov  <valexlin@gmail.com>
+
+	crengine/src/lvstsheet.cpp: fixed compiler warnings.
+
+	crengine/src/lvtinydom.cpp: fixed compiler warnings.
+
+	crengine/src/lvxml/lvxmlutils.cpp: fixed compiler warnings.
+
+	LVDrawBuf classes: added missing modifier 'const'.
+
+	Compiler warning fixed in src/lvfont/*.*
+
+2021-12-26  Aleksey Chernov  <valexlin@gmail.com>
+
+	Tune compile options in cmake project file.
+
+	Reformat sources using clang-format.
+
+	Fixed compile issue in release build configuration: added missing '#include' statement after header section optimization.
+
+2021-12-25  Aleksey Chernov  <valexlin@gmail.com>
+
+	Reformat header section (tier 2).
+
+	Renaming some header files (adding a prefix) to eliminate potential conflicts with other libraries.
+
+	Copy-paste issue fixed in lvByteOrderConv (typenames in lvtypes.h).
+
+	Reformat header section.
+
+	Unsupported clang options removed.
+
+	Simplifing lstringXX_chunk_t structures.
+
+2021-12-22  Aleksey Chernov  <valexlin@gmail.com>
+
+	More accurate data files installation procedure.
+
+	Restored ability to build under/for MacOS.
+
+2021-12-20  Aleksey Chernov  <valexlin@gmail.com>
+
+	Removed the thirdparty 'unrar' library because it is incompatible with the base license of that library, GPLv2.
+
+2021-12-19  Aleksey Chernov  <valexlin@gmail.com>
+
+	crengine-ng.pc added.
+
+	crengine/Tools: link error fixed when only static libraries used.
+
+	Link error fixed with antiword built-in.
+
+	cmake thirdparty building: replace 'STATIC' with 'OBJECT' to include thirdparty libs into resulting static library.
+
+	Rename 'thirdparty_unman' back to 'thirdparty'.
+
+	Update CMakeLists.txt & Cº to build only engine.
+
+	Hyphenation dictionaries moved from 'cr3gui/data/hyph' to 'crengine/data/hyph'; css from '<coolreader>/cr3qt/data' to 'crengine/data/css'.
