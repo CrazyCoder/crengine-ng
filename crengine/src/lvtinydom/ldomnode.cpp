@@ -4175,7 +4175,9 @@ LVImageSourceRef ldomNode::getObjectImageSource() {
 }
 
 /// returns the sum of this node and its parents' top and bottom margins, borders and paddings
-int ldomNode::getSurroundingAddedHeight() {
+/// (provide account_height_below_strut_baseline=true for images, as they align on the baseline,
+/// so their container would be larger because of the strut)
+int ldomNode::getSurroundingAddedHeight(bool account_height_below_strut_baseline) {
     int h = 0;
     ldomNode* n = this;
     while (true) {
@@ -4196,6 +4198,48 @@ int ldomNode::getSurroundingAddedHeight() {
             h += lengthToPx(n, style->padding[3], base_width); // bottom padding
             h += measureBorder(n, 0);                          // top border
             h += measureBorder(n, 2);                          // bottom border
+            if (account_height_below_strut_baseline && rm == erm_final) {
+                if (n == this && (getNodeId() == el_img || getNodeId() == el_image)) {
+                    // We're usually called on an image by lvtextfm.cpp, where lvrend.cpp,
+                    // for erm_final images, provides a strut of (0,0): so, ignore
+                    // any computation from the font associated to this image.
+                } else {
+                    // Get line height as in renderFinalBlock()
+                    int em = n->getFont()->getSize();
+                    int fh = n->getFont()->getHeight();
+                    int fb = n->getFont()->getBaseline();
+                    int line_h;
+                    if (gRenderDPI) {
+                        if (style->line_height.type == css_val_unspecified &&
+                            style->line_height.value == css_generic_normal) {
+                            line_h = fh; // line-height: normal
+                        } else {
+                            line_h = lengthToPx(n, style->line_height, em, em, true);
+                        }
+                    } else { // legacy (former code used font height for everything)
+                        switch (style->line_height.type) {
+                            case css_val_percent:
+                            case css_val_em:
+                                line_h = lengthToPx(n, style->line_height, fh, fh);
+                                break;
+                            default: // Use font height (as line_h=16 in former code)
+                                line_h = fh;
+                                break;
+                        }
+                    }
+                    if (line_h < 0) {                       // shouldn't happen
+                        line_h = n->getFont()->getHeight(); // line-height: normal
+                    }
+                    int f_half_leading = (line_h - fh) / 2;
+                    int baseline_to_bottom = line_h - fb - f_half_leading;
+                    // Account the height below the strut baseline (but not
+                    // if negative, ie. when a small line-height has pushed
+                    // the baseline below the line box)
+                    if (baseline_to_bottom > 0) {
+                        h += baseline_to_bottom;
+                    }
+                }
+            }
         }
         if (!parent || parent->isNull())
             break;
