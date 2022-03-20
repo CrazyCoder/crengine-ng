@@ -40,6 +40,15 @@
 #include <stdio.h>
 #endif
 
+#ifdef ANDROID
+
+#define _32(x) lString32(x)
+
+#else
+
+#include <cri18n.h>
+
+#endif
 
 int HyphMan::_LeftHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
 int HyphMan::_RightHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
@@ -355,13 +364,13 @@ bool HyphDictionaryList::activate(lString32 id) {
 
 void HyphDictionaryList::addDefault() {
     if (!find(lString32(HYPH_DICT_ID_NONE))) {
-        _list.add(new HyphDictionary(HDT_NONE, cs32("[No Hyphenation]"), lString32(HYPH_DICT_ID_NONE), lString32(HYPH_DICT_ID_NONE)));
+        _list.add(new HyphDictionary(HDT_NONE, _32("[No Hyphenation]"), lString32(HYPH_DICT_ID_NONE), lString32(HYPH_DICT_ID_NONE)));
     }
     if (!find(lString32(HYPH_DICT_ID_ALGORITHM))) {
-        _list.add(new HyphDictionary(HDT_ALGORITHM, cs32("[Algorithmic Hyphenation]"), lString32(HYPH_DICT_ID_ALGORITHM), lString32(HYPH_DICT_ID_ALGORITHM)));
+        _list.add(new HyphDictionary(HDT_ALGORITHM, _32("[Algorithmic Hyphenation]"), lString32(HYPH_DICT_ID_ALGORITHM), lString32(HYPH_DICT_ID_ALGORITHM)));
     }
     if (!find(lString32(HYPH_DICT_ID_SOFTHYPHENS))) {
-        _list.add(new HyphDictionary(HDT_SOFTHYPHENS, cs32("[Soft-hyphens Hyphenation]"), lString32(HYPH_DICT_ID_SOFTHYPHENS), lString32(HYPH_DICT_ID_SOFTHYPHENS)));
+        _list.add(new HyphDictionary(HDT_SOFTHYPHENS, _32("[Soft-hyphens Hyphenation]"), lString32(HYPH_DICT_ID_SOFTHYPHENS), lString32(HYPH_DICT_ID_SOFTHYPHENS)));
     }
 }
 

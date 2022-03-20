@@ -9,6 +9,7 @@ set(CRENGINE_NG_SOURCES
     src/crlog.cpp
     src/crprops.cpp
     src/rtfimp.cpp
+    src/cri18n.cpp
     src/lvmemman.cpp
     src/lvstyles.cpp
     src/crtxtenc.cpp
@@ -41,6 +42,7 @@ set(CRENGINE_NG_SOURCES
     src/lvxml/fb2coverpageparsercallback.cpp
     src/lvxml/lvxmlutils.cpp
     src/crhyphman.cpp
+    src/crgui.cpp
     src/crskin.cpp
     src/lvdocview.cpp
     src/lvpagesplitter.cpp
