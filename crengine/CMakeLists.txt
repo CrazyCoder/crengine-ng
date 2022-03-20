@@ -42,7 +42,6 @@ set(CRENGINE_NG_SOURCES
     src/lvxml/fb2coverpageparsercallback.cpp
     src/lvxml/lvxmlutils.cpp
     src/crhyphman.cpp
-    src/crgui.cpp
     src/crskin.cpp
     src/lvdocview.cpp
     src/lvpagesplitter.cpp
@@ -135,6 +134,11 @@ if(USE_LOCALE_DATA)
   list(APPEND CRENGINE_NG_SOURCES
       src/locale_data/fc-lang-data.c
       src/locale_data/crlocaledata.cpp)
+endif()
+
+if(NOT ANDROID)
+    list(APPEND CRENGINE_NG_SOURCES
+        src/crgui.cpp)
 endif()
 
 set(PKG_CONFIG_REQUIRED_PRIVATE)
