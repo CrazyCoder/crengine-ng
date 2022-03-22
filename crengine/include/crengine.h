@@ -147,6 +147,7 @@
 #include <lvdrawbuf.h>
 #include <lvcontaineriteminfo.h>
 #include <lvstreamutils.h>
+#include <lvtinydomutils.h>
 #include <crprops.h>
 
 #endif //CRENGINE_H_INCLUDED
