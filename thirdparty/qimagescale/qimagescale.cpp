@@ -42,7 +42,7 @@
 #include "qdrawhelper_p.h"
 
 #include <stdlib.h>
-#include <iostream>
+#include <stdio.h>
 
 #ifndef FBINK_QIS_NO_SIMD
 #if defined(__ARM_NEON__)
@@ -767,14 +767,14 @@ unsigned char* qSmoothScaleImage(const unsigned char* src, int sw, int sh, bool 
 #if defined(__ANDROID__) && __ANDROID_API__ < 17
     buffer = (unsigned char*) malloc(dw * dh * 4);
     if (buffer == nullptr) {
-        std::cerr << "qSmoothScaleImage: out of memory, returning null!" << std::endl;
+        fprintf(stderr, "qSmoothScaleImage: out of memory, returning null!\n");
         qimageFreeScaleInfo(scaleinfo);
         return nullptr;
     }
 #elif defined(__MINGW32__)
     buffer = (unsigned char*) _aligned_malloc(dw * dh * 4, 16);
     if (buffer == nullptr) {
-        std::cerr << "qSmoothScaleImage: out of memory, returning null!" << std::endl;
+        fprintf(stderr, "qSmoothScaleImage: out of memory, returning null!\n");
         qimageFreeScaleInfo(scaleinfo);
         return nullptr;
     }
@@ -782,7 +782,7 @@ unsigned char* qSmoothScaleImage(const unsigned char* src, int sw, int sh, bool 
     void *ptr;
     // NOTE: Output format is always RGBA! So make enough room for 4 bytes per pixel ;).
     if (posix_memalign(&ptr, 16, dw * dh * 4) != 0) {
-        std::cerr << "qSmoothScaleImage: out of memory, returning null!" << std::endl;
+        fprintf(stderr, "qSmoothScaleImage: out of memory, returning null!\n");
         qimageFreeScaleInfo(scaleinfo);
         return nullptr;
     } else {
