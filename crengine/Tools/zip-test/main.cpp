@@ -5,6 +5,8 @@
 #include <lvcontaineriteminfo.h>
 #include <crlog.h>
 
+#include "../../src/lvstream/lvcommoncontaineriteminfo.h"
+
 #include <stdio.h>
 
 #define TEST_ZIP64_EXTRACT 0
@@ -41,6 +43,11 @@ int main(int argc, char* argv[]) {
                     continue;
                 list.add(item->GetName());
                 list.add(lString32::itoa((lUInt64)item->GetSize()));
+                const LVCommonContainerItemInfo* cont_info = dynamic_cast<const LVCommonContainerItemInfo*>(item);
+                if (NULL != cont_info)
+                    list.add(lString32::itoa((lUInt64)cont_info->GetSrcSize()));
+                else
+                    list.add("-1");
             }
         } else {
             printf("Failed to open archive!\n");
@@ -94,12 +101,15 @@ int main(int argc, char* argv[]) {
 
 #if 1
     printf("Archive contents:\n");
-    for (int i = 0; i < list.length() / 2; i++) {
-        lString32 name = list[i * 2];
+    for (int i = 0; i < list.length() / 3; i++) {
+        lString32 name = list[i * 3];
         lInt64 size;
-        if (!list[i * 2 + 1].atoi(size))
+        lInt64 pack_size;
+        if (!list[i * 3 + 1].atoi(size))
             size = 0;
-        printf("  %s: %lld\n", LCSTR(name), size);
+        if (!list[i * 3 + 2].atoi(pack_size))
+            pack_size = 0;
+        printf("  %s: size=%lld, pack_size=%lld\n", LCSTR(name), size, pack_size);
     }
 #endif
     return 0;
