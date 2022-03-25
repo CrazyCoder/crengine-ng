@@ -16,6 +16,9 @@
 #include <lvtypes.h>
 #include <lvbyteorder.h>
 
+#define ZIPHDR_MAX_NM 4096 // maximum length of the name entry
+#define ZIPHDR_MAX_XT 1024 // maximum length of the extra data
+
 #pragma pack(push, 1)
 
 typedef struct ZipLocalFileHdr

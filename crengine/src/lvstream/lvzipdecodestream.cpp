@@ -312,21 +312,28 @@ LVStream* LVZipDecodeStream::Create(LVStreamRef stream, lvpos_t pos, lString32 n
         extraLastPos += 8;
     }
     bool zip64 = extraLastPos > 0;
+    // Skip name entry
     if (stream->Seek(hdr.getNameLen(), LVSEEK_CUR, NULL) != LVERR_OK) {
         return NULL;
     }
     // read extra data
-    const lvsize_t max_EXTRA = 128;
-    if (hdr.getAddLen() > max_EXTRA) {
-        CRLog::error("ZIP entry extra length is too big: %d", (int)hdr.getAddLen());
-        return NULL;
+    if (hdr.getAddLen() > ZIPHDR_MAX_XT) {
+        CRLog::error("ZIP entry extra data is too long: %u, trunc to %u",
+                     (unsigned int)hdr.getAddLen(), (unsigned int)ZIPHDR_MAX_XT);
     }
-    lvsize_t extraSizeToRead = (hdr.getAddLen() < max_EXTRA) ? hdr.getAddLen() : max_EXTRA;
-    lUInt8 extra[max_EXTRA];
+    lvsize_t extraSizeToRead = (hdr.getAddLen() < ZIPHDR_MAX_XT) ? hdr.getAddLen() : ZIPHDR_MAX_XT;
+    lvoffset_t XT_skipped_sz = (hdr.getAddLen() > ZIPHDR_MAX_XT) ? (lvoffset_t)(hdr.getAddLen() - ZIPHDR_MAX_XT) : 0;
+    lUInt8 extra[ZIPHDR_MAX_XT];
     lverror_t err = stream->Read(extra, extraSizeToRead, &ReadSize);
     if (err != LVERR_OK || ReadSize != extraSizeToRead) {
         CRLog::error("error while reading zip header extra data");
         return NULL;
+    }
+    if (XT_skipped_sz > 0) {
+        if (stream->Seek(XT_skipped_sz, LVSEEK_CUR, NULL) != LVERR_OK) {
+            CRLog::error("error while skipping the long zip entry extra data");
+            return NULL;
+        }
     }
     // Find Zip64 extension if required
     lvsize_t offs = 0;
