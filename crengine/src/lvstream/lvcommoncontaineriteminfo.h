@@ -48,13 +48,13 @@ public:
     virtual bool IsContainer() const {
         return m_is_container;
     }
-    lvpos_t GetSrcPos() {
+    lvpos_t GetSrcPos() const {
         return m_srcpos;
     }
-    lvsize_t GetSrcSize() {
+    lvsize_t GetSrcSize() const {
         return m_srcsize;
     }
-    lUInt32 GetSrcFlags() {
+    lUInt32 GetSrcFlags() const {
         return m_srcflags;
     }
     void SetSrc(lvpos_t pos, lvsize_t size, lUInt32 flags) {
