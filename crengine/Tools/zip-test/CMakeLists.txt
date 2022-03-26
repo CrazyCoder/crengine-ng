@@ -29,14 +29,14 @@ set(crengine_part_SRC_LIST
 add_definitions(-D_LARGEFILE64_SOURCE=1 -D_FILE_OFFSET_BITS=64)
 add_definitions(-DLVLONG_FILE_SUPPORT=1)
 
-if(UNIX)
-    add_definitions(-DLINUX -D_LINUX)
-endif(UNIX)
-
-if(WIN32)
-    add_definitions(-DWIN32 -D_CONSOLE)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
-endif(WIN32)
+if(MACOS)
+  add_definitions(-DMACOS=1 -DLINUX=1 -D_LINUX=1 -DCR_EMULATE_GETTEXT=1)
+elseif(WIN32)
+  add_definitions(-DWIN32=1 -D_WIN32=1 -DCR_EMULATE_GETTEXT=1 -DNOMINMAX=1 -D_CRT_SECURE_NO_WARNINGS -D_CONSOLE)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
+else()
+  add_definitions(-DLINUX=1 -D_LINUX=1)
+endif()
 
 add_executable(zip-test ${SRC_LIST} ${crengine_part_SRC_LIST})
 target_include_directories(zip-test PRIVATE ${UTF8PROC_INCLUDE_DIRS})
