@@ -85,7 +85,7 @@ bool LVFileStream::Eof() {
     return feof(m_file) != 0;
 }
 
-LVFileStream* LVFileStream::CreateFileStream(lString32 fname, lvopen_mode_t mode) {
+LVFileStream* LVFileStream::CreateFileStream(lString32 fname, int mode) {
     LVFileStream* f = new LVFileStream;
     if (f->OpenFile(fname, mode) == LVERR_OK) {
         return f;
@@ -386,9 +386,9 @@ lverror_t LVFileStream::Close() {
     return LVERR_OK;
 }
 
-LVFileStream* LVFileStream::CreateFileStream(lString32 fname, lvopen_mode_t mode) {
+LVFileStream* LVFileStream::CreateFileStream(lString32 fname, int mode) {
     LVFileStream* f = new LVFileStream;
-    if (f->OpenFile(fname, (int)mode) == LVERR_OK) {
+    if (f->OpenFile(fname, mode) == LVERR_OK) {
         return f;
     } else {
         delete f;

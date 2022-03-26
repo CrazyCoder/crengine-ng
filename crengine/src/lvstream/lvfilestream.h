@@ -81,7 +81,7 @@ public:
     virtual lverror_t Write(const void* buf, lvsize_t count, lvsize_t* nBytesWritten);
     virtual lverror_t Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t* pNewPos);
     lverror_t Close();
-    static LVFileStream* CreateFileStream(lString32 fname, lvopen_mode_t mode);
+    static LVFileStream* CreateFileStream(lString32 fname, int mode);
     lverror_t OpenFile(lString32 fname, int mode);
     LVFileStream();
     virtual ~LVFileStream();

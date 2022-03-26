@@ -106,7 +106,7 @@ LVStreamRef LVOpenFileStream(const lChar32* pathname, int mode) {
     }
 #endif
 
-    LVFileStream* stream = LVFileStream::CreateFileStream(fn, (lvopen_mode_t)mode);
+    LVFileStream* stream = LVFileStream::CreateFileStream(fn, mode);
     if (stream != NULL) {
         return LVStreamRef(stream);
     }
