@@ -186,8 +186,9 @@ lvsize_t LVPumpStream(LVStreamRef out, LVStreamRef in) {
 
 lvsize_t LVPumpStream(LVStream* out, LVStream* in) {
     char buf[5000];
-    lvsize_t totalBytesRead = 0;
+    lvsize_t totalBytesWrite = 0;
     lvsize_t bytesRead = 0;
+    lvsize_t bytesWrite = 0;
     in->SetPos(0);
     lvsize_t bytesToRead = in->GetSize();
     while (bytesToRead > 0) {
@@ -199,11 +200,15 @@ lvsize_t LVPumpStream(LVStream* out, LVStream* in) {
             break;
         if (!bytesRead)
             break;
-        out->Write(buf, bytesRead, NULL);
-        totalBytesRead += bytesRead;
+        bytesWrite = 0;
+        if (out->Write(buf, bytesRead, &bytesWrite) != LVERR_OK)
+            break;
         bytesToRead -= bytesRead;
+        totalBytesWrite += bytesWrite;
+        if (bytesWrite != bytesRead)
+            break;
     }
-    return totalBytesRead;
+    return totalBytesWrite;
 }
 
 bool LVDirectoryIsEmpty(const lString8& path) {
