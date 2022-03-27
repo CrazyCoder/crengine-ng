@@ -26,6 +26,12 @@ FetchContent_MakeAvailable(googletest)
 FetchContent_Populate(freefont)
 FetchContent_Populate(robotofont)
 
+find_program(ZIP_PROG NAMES zip)
+if(NOT EXISTS "${ZIP_PROG}")
+  message(FATAL_ERROR "zip program NOT found!")
+endif()
+add_definitions(-DZIP_PROG=\"${ZIP_PROG}\")
+
 set(FONTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/fonts)
 file(MAKE_DIRECTORY ${FONTS_DIR})
 file(GLOB FREEFONT_OTF_FILES ${freefont_SOURCE_DIR}/*.otf)
@@ -45,12 +51,15 @@ set(SRC_LIST
   savetobmp.cpp
   calc-drawbuf-diff.cpp
   compare-two-textfiles.cpp
+  compare-two-binfiles.cpp
+  make-rand-file.cpp
   crengine-ng-environment.cpp
   blockwritecache_tests.cpp
   tinydom_tests.cpp
   textrender_tests.cpp
   wtf8_tests.cpp
   docparse_tests.cpp
+  zip-use_tests.cpp
 )
 
 set(CRE_NG)

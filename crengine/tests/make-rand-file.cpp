@@ -1,0 +1,121 @@
+/**
+ *  crengine-ng
+ *  Copyright (c) 2022 Aleksey Chernov
+ *
+ *  \file make_rand_file.cpp
+ *  \brief crengine-ng unit test module.
+ *  Create file with random contents.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "make-rand-file.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+static void fill_rand_string(char* str, unsigned int size);
+
+namespace crengine_ng
+{
+
+namespace unittesting
+{
+
+#ifdef _WIN32
+#define STR_ENLD_SZ 2
+#else
+#define STR_ENLD_SZ 1
+#endif
+
+#define TEXT_LINE_SZ 80
+
+bool makeRandomFile(const char* fname, bool text_mode, uint64_t size) {
+    const char* mode = text_mode ? "w" : "wb";
+    FILE* f = fopen(fname, mode);
+    if (!f) {
+        fprintf(stderr, "Can't create file \"%s\"!\n", fname);
+        return false;
+    }
+    srand(time(0));
+    int ret;
+    bool res = true; // successfull by default
+    if (text_mode) {
+        char line[TEXT_LINE_SZ + 1];
+        uint64_t lines_count = size / (TEXT_LINE_SZ + STR_ENLD_SZ);
+        int last_line_sz = (int)(size - lines_count * (TEXT_LINE_SZ + STR_ENLD_SZ));
+        for (uint64_t i = 0; i < lines_count; i++) {
+            fill_rand_string(line, TEXT_LINE_SZ);
+            ret = fprintf(f, "%s\n", line);
+            if (ret < 0) {
+                fprintf(stderr, "Write error!\n");
+                res = false;
+                break;
+            }
+        }
+        if (last_line_sz > 0) {
+            fill_rand_string(line, last_line_sz);
+            ret = fprintf(f, "%s", line);
+            if (ret < 0) {
+                fprintf(stderr, "Write error!\n");
+                res = false;
+            }
+        }
+    } else {
+        uint64_t count = 0;
+        unsigned char d;
+        while (count < size) {
+            d = (unsigned char)(255 * ((int64_t)rand()) / RAND_MAX);
+            ret = fwrite(&d, 1, 1, f);
+            if (0 == ret) {
+                fprintf(stderr, "Write error!\n");
+                res = false;
+                break;
+            }
+            count++;
+        }
+    }
+    fclose(f);
+    return res;
+}
+
+} // namespace unittesting
+
+} // namespace crengine_ng
+
+static void fill_rand_string(char* str, unsigned int size) {
+    unsigned int i = 0;
+    int c;
+    while (i < size) {
+        c = (int)(62 * ((int64_t)rand()) / RAND_MAX);
+        // c in range [0..62]
+        if (c == 0)
+            // space
+            c = ' ';
+        else if (c >= 1 && c <= 10)
+            // '0'..'9'
+            c = '0' + (c - 1);
+        else if (c >= 11 && c <= 36)
+            // 'A'..'Z'
+            c = 'A' + (c - 11);
+        else // 37..62
+            // 'a'..'z'
+            c = 'a' + (c - 37);
+        str[i] = (char)c;
+        i++;
+    }
+    str[i] = 0;
+}

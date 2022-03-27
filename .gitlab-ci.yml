@@ -28,7 +28,7 @@ unittests-ubuntu:
     - export DEBIAN_FRONTEND=noninteractive
     - apt update
     - apt-get install -y tzdata
-    - apt install -qq -y build-essential cmake curl pkg-config zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libzstd-dev libutf8proc-dev
+    - apt install -qq -y build-essential zip cmake curl pkg-config zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libzstd-dev libutf8proc-dev
   script:
     - mkdir $BUILD_WORKDIR
     - cd $BUILD_WORKDIR
