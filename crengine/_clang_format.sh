@@ -47,8 +47,19 @@ then
     die "You can only run this script in <top_srcdir>/crengine!"
 fi
 
-for dir in ${dirs}
-do
-    #find ${dir} -depth -maxdepth 5 -type f -regextype posix-egrep -iregex ${regex_pat} -exec bash -c 'do_file "$0"' '{}' \;
-    find ${dir} -depth -maxdepth 5 -type f -regextype posix-egrep -iregex ${regex_pat} -exec bash -c 'do_file_with_exc "$0"' '{}' \;
-done
+uname_s=`uname -s`
+is_darwin=no
+test "x${uname_s}" = "xDarwin" && is_darwin="yes"
+
+if [ "x${is_darwin}" = "xyes" ]
+then
+    for dir in ${dirs}
+    do
+        find -E ${dir} -depth -maxdepth 5 -type f -iregex ${regex_pat} -exec bash -c 'do_file_with_exc "$0"' '{}' \;
+    done
+else
+    for dir in ${dirs}
+    do
+        find ${dir} -depth -maxdepth 5 -type f -regextype posix-egrep -iregex ${regex_pat} -exec bash -c 'do_file_with_exc "$0"' '{}' \;
+    done
+fi
