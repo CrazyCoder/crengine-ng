@@ -60,6 +60,7 @@ This library can use other libraries:
    * USE_GIF - Allow GIF support via embedded decoder; default ON
    * BUILD_TOOLS - Build some debug tools & utils; default OFF
    * ENABLE_UNITTESTING - Enable building unit tests using googletest; default OFF
+   * ENABLE_LTO - Enable Link Time Optimization; default OFF
 
    To use bundled third party:
 

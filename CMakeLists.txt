@@ -61,6 +61,7 @@ option(USE_FONTCONFIG "Use FontConfig to enumerate available fonts" ON)
 # other
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
 option(ENABLE_UNITTESTING "Enable unit testing using googletest" OFF)
+option(ENABLE_LTO "Enable Link Time Optimization" OFF)
 
 if(ENABLE_UNITTESTING)
   enable_testing()
@@ -134,6 +135,12 @@ if(ADD_DEBUG_EXTRA_OPTS)
   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_EXTRA_FLAGS}")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_EXTRA_FLAGS}")
 endif(ADD_DEBUG_EXTRA_OPTS)
+
+if(ENABLE_LTO)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")
+  list(APPEND PRIVATE_LINK_LIBRARIES "-flto")
+endif()
 
 # Document buffer cache / compression settings
 if (NOT DEFINED DOC_DATA_COMPRESSION_LEVEL)
