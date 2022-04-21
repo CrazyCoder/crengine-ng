@@ -964,6 +964,9 @@ public:
     void setMinFontSize(int size);
     void setMaxFontSize(int size);
 
+    /// retrieves the average height of a line of text
+    int getAvgTextLineHeight() const;
+
     /// get drawing buffer
     //LVDrawBuf * GetDrawBuf() { return &m_drawbuf; }
     /// draw document into buffer

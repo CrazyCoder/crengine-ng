@@ -3645,6 +3645,17 @@ void LVDocView::setMaxFontSize(int size) {
     m_max_font_size = size;
 }
 
+int LVDocView::getAvgTextLineHeight() const {
+    if (!m_font.isNull()) {
+        // get font baseline
+        int height = m_font->getBaseline();
+        // apply interline spacing
+        height = m_def_interline_space * height / 100;
+        return height;
+    }
+    return 0;
+}
+
 void LVDocView::ZoomFont(int delta) {
     if (m_font.isNull())
         return;
