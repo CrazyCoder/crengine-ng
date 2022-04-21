@@ -59,6 +59,7 @@ set(SRC_LIST
   textrender_tests.cpp
   wtf8_tests.cpp
   docparse_tests.cpp
+  docview_funcs_tests.cpp
   zip-use_tests.cpp
 )
 
