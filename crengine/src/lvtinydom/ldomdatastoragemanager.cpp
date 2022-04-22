@@ -83,6 +83,7 @@ bool ldomDataStorageManager::load() {
     if (n > 10000)
         return false; // invalid
     _recentChunk = NULL;
+    _activeChunk = NULL;
     _chunks.clear();
     lUInt32 compsize = 0;
     lUInt32 uncompsize = 0;
