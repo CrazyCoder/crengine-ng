@@ -61,6 +61,7 @@ set(SRC_LIST
   docparse_tests.cpp
   docview_funcs_tests.cpp
   zip-use_tests.cpp
+  localenames_tests.cpp
 )
 
 set(CRE_NG)
