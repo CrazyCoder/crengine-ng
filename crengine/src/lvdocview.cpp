@@ -3174,8 +3174,10 @@ bool LVDocView::goLink(lString32 link, bool savePos) {
                     m_doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
             if (arcname.empty()) {
                 container = LVOpenDirectory(dir.c_str());
-                if (container.isNull())
+                if (container.isNull()) {
+                    CRLog::error("Go to link: cannot open archive directory \"%s\"", LCSTR(dir));
                     return false;
+                }
             } else {
                 filename = newPathName;
                 dir.clear();
@@ -3961,14 +3963,14 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
         arcsize = (int)stream->GetSize();
         m_container = LVOpenArchieve(stream);
         if (m_container.isNull()) {
-            CRLog::error("Cannot read archive contents from %s", LCSTR(
-                                                                         arcPathName));
+            CRLog::error("Cannot read archive contents from %s",
+                         LCSTR(arcPathName));
             return false;
         }
         stream = m_container->OpenStream(arcItemPathName.c_str(), LVOM_READ);
         if (stream.isNull()) {
-            CRLog::error("Cannot open archive file item stream %s", LCSTR(
-                                                                            filename32));
+            CRLog::error("Cannot open archive file item stream %s",
+                         LCSTR(filename32));
             return false;
         }
 
@@ -4032,13 +4034,17 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     lString32 fn(fname + last_slash + 1);
 #endif
 
-    m_doc_props->setString(DOC_PROP_FILE_PATH, dir);
     m_container = LVOpenDirectory(dir.c_str());
-    if (m_container.isNull())
+    if (m_container.isNull()) {
+        CRLog::error("Cannot open directory \"%s\"", LCSTR(dir));
         return false;
+    }
     LVStreamRef stream = m_container->OpenStream(fn.c_str(), LVOM_READ);
-    if (!stream)
+    if (!stream) {
+        CRLog::error("Cannot open file \"%s\"", LCSTR(fn));
         return false;
+    }
+    m_doc_props->setString(DOC_PROP_FILE_PATH, dir);
     m_doc_props->setString(DOC_PROP_FILE_NAME, fn);
     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                        (int)stream->GetSize()));
@@ -4263,8 +4269,8 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
     setRenderProps(0, 0); // to allow apply styles and rend method while loading
 
     if (m_callback) {
-        m_callback->OnLoadFileStart(m_doc_props->getStringDef(
-                DOC_PROP_FILE_NAME, ""));
+        m_callback->OnLoadFileStart(
+                m_doc_props->getStringDef(DOC_PROP_FILE_NAME, ""));
     }
     LVLock lock(getMutex());
 
