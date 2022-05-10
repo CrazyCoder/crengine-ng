@@ -22,7 +22,9 @@
 
 #include "make-rand-file.h"
 
-#include <stdio.h>
+#include <lvstreamutils.h>
+#include <crlog.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -36,41 +38,48 @@ namespace unittesting
 {
 
 #ifdef _WIN32
-#define STR_ENLD_SZ 2
+#define EOL_CHARS_SZ 2
+#define EOL_CHARS    "\r\n"
 #else
-#define STR_ENLD_SZ 1
+#define EOL_CHARS_SZ 1
+#define EOL_CHARS    "\n"
 #endif
 
 #define TEXT_LINE_SZ 80
 
 bool makeRandomFile(const char* fname, bool text_mode, uint64_t size) {
-    const char* mode = text_mode ? "w" : "wb";
-    FILE* f = fopen(fname, mode);
-    if (!f) {
-        fprintf(stderr, "Can't create file \"%s\"!\n", fname);
+    LVStreamRef stream = LVOpenFileStream(fname, LVOM_WRITE);
+    if (stream.isNull()) {
+        CRLog::error("Can't create file \"%s\"!", fname);
         return false;
     }
     srand(time(0));
-    int ret;
+    lverror_t ret;
     bool res = true; // successfull by default
+    lvsize_t dw = 0;
     if (text_mode) {
         char line[TEXT_LINE_SZ + 1];
-        uint64_t lines_count = size / (TEXT_LINE_SZ + STR_ENLD_SZ);
-        int last_line_sz = (int)(size - lines_count * (TEXT_LINE_SZ + STR_ENLD_SZ));
+        char eolchars[EOL_CHARS_SZ + 1];
+        strncpy(eolchars, EOL_CHARS, EOL_CHARS_SZ);
+        eolchars[EOL_CHARS_SZ] = 0;
+        uint64_t lines_count = size / (TEXT_LINE_SZ + EOL_CHARS_SZ);
+        int last_line_sz = (int)(size - lines_count * (TEXT_LINE_SZ + EOL_CHARS_SZ));
         for (uint64_t i = 0; i < lines_count; i++) {
             fill_rand_string(line, TEXT_LINE_SZ);
-            ret = fprintf(f, "%s\n", line);
-            if (ret < 0) {
-                fprintf(stderr, "Write error!\n");
+            ret = stream->Write(line, TEXT_LINE_SZ, &dw);
+            if (LVERR_OK == ret)
+                ret = stream->Write(eolchars, EOL_CHARS_SZ, &dw);
+            if (LVERR_OK != ret) {
+                CRLog::error("Write error!");
                 res = false;
                 break;
             }
         }
         if (last_line_sz > 0) {
             fill_rand_string(line, last_line_sz);
-            ret = fprintf(f, "%s", line);
-            if (ret < 0) {
-                fprintf(stderr, "Write error!\n");
+            ret = stream->Write(line, last_line_sz, &dw);
+            if (LVERR_OK != ret) {
+                CRLog::error("Write error!");
                 res = false;
             }
         }
@@ -79,16 +88,16 @@ bool makeRandomFile(const char* fname, bool text_mode, uint64_t size) {
         unsigned char d;
         while (count < size) {
             d = (unsigned char)(255 * ((int64_t)rand()) / RAND_MAX);
-            ret = fwrite(&d, 1, 1, f);
-            if (0 == ret) {
-                fprintf(stderr, "Write error!\n");
+            ret = stream->Write(&d, 1, &dw);
+            if (LVERR_OK != ret) {
+                CRLog::error("Write error!");
                 res = false;
                 break;
             }
             count++;
         }
     }
-    fclose(f);
+    stream.Clear();
     return res;
 }
 

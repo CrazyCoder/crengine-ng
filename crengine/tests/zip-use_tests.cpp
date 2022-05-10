@@ -163,7 +163,42 @@ private:
     bool execute_process(const char* prog_exe, const char** args) {
         bool res = false;
 #ifdef _WIN32
-        // TODO: Implement using WINAPI CreateProcess() function
+        lString8 commandLine;
+        const char** ptr = args;
+        commandLine = commandLine.append(*ptr);
+        ptr++;
+        while (*ptr) {
+            commandLine = commandLine.append(" ");
+            commandLine = commandLine.append(*ptr);
+            ptr++;
+        }
+        lString16 commandLine16 = UnicodeToUtf16(Utf8ToUnicode(commandLine));
+        STARTUPINFOW startup_info;
+        PROCESS_INFORMATION proc_info;
+        memset(&startup_info, 0, sizeof(startup_info));
+        startup_info.cb = sizeof(startup_info);
+        startup_info.dwFlags = STARTF_USESTDHANDLES;
+        memset(&proc_info, 0, sizeof(proc_info));
+        SECURITY_ATTRIBUTES sa;
+        sa.nLength = sizeof(sa);
+        sa.lpSecurityDescriptor = NULL;
+        sa.bInheritHandle = TRUE;
+        HANDLE nul_handle = CreateFile("NUL", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, &sa, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        startup_info.hStdInput = NULL;
+        startup_info.hStdError = nul_handle;
+        startup_info.hStdOutput = nul_handle;
+        LPWSTR cmdLine = (LPWSTR)commandLine16.c_str();
+        BOOL ret = CreateProcessW(NULL, cmdLine, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &startup_info, &proc_info);
+        if (0 != ret) {
+            DWORD ret2 = WaitForSingleObject(proc_info.hProcess, INFINITE);
+            CloseHandle(proc_info.hProcess);
+            CloseHandle(proc_info.hThread);
+            res = WAIT_OBJECT_0 == ret2;
+        } else {
+            DWORD err = GetLastError();
+            CRLog::error("execute_process() failed: error=%d", err);
+        }
+        CloseHandle(nul_handle);
 #else
         int pid = fork();
         if (0 == pid) {
