@@ -8,6 +8,10 @@
 variables:
   DEPLOY_PATH: /tmp/crengine-ng-image/
   BUILD_WORKDIR: /tmp/crengine-ng-build/
+  BUILD_WORKDIR_LIBUNIBREAK: /tmp/crengine-ng-build/unibreak
+  LIBUNIBREAK_PKGURL: https://github.com/adah1972/libunibreak/releases/download/libunibreak_5_0/libunibreak-5.0.tar.gz
+  LIBUNIBREAK_PKG: libunibreak-5.0.tar.gz
+  LIBUNIBREAK_SRCDIR: libunibreak-5.0
 
 default:
   image: ubuntu:20.04
@@ -20,19 +24,28 @@ sast:
 include:
 - template: Security/SAST.gitlab-ci.yml
 
-# TODO: install & use libunibreak as static lib (4.0)
-# TODO: use cache...
 unittests-ubuntu:
   stage: test
   before_script:
+    # install required tools & libraries
     - export DEBIAN_FRONTEND=noninteractive
     - apt update
     - apt-get install -y tzdata
     - apt install -qq -y build-essential zip cmake curl pkg-config zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libzstd-dev libutf8proc-dev
   script:
-    - mkdir $BUILD_WORKDIR
+    - mkdir -p $BUILD_WORKDIR
+    # build libunibreak (in Ubuntu very old version)
+    - mkdir -p $BUILD_WORKDIR_LIBUNIBREAK
+    - cd $BUILD_WORKDIR_LIBUNIBREAK
+    - curl -L $LIBUNIBREAK_PKGURL -O
+    - tar -xzf $LIBUNIBREAK_PKG
+    - cd $LIBUNIBREAK_SRCDIR
+    - ./configure --prefix=$DEPLOY_PATH --enable-static --disable-shared
+    - make -j2
+    - make install
+    # build crengine-ng
     - cd $BUILD_WORKDIR
-    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DEPLOY_PATH -DCRE_BUILD_SHARED=OFF -DCRE_BUILD_STATIC=ON -DWITH_LIBPNG=ON -DWITH_LIBJPEG=ON -DWITH_FREETYPE=ON -DWITH_HARFBUZZ=ON -DWITH_LIBUNIBREAK=OFF -DWITH_FRIBIDI=ON -DWITH_ZSTD=ON -DWITH_UTF8PROC=ON -DENABLE_UNITTESTING=ON $CI_PROJECT_DIR
+    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DEPLOY_PATH -DCRE_BUILD_SHARED=OFF -DCRE_BUILD_STATIC=ON -DWITH_LIBPNG=ON -DWITH_LIBJPEG=ON -DWITH_FREETYPE=ON -DWITH_HARFBUZZ=ON -DWITH_LIBUNIBREAK=ON -DWITH_FRIBIDI=ON -DWITH_ZSTD=ON -DWITH_UTF8PROC=ON -DENABLE_UNITTESTING=ON $CI_PROJECT_DIR
     - cmake --build .
     - ./crengine/tests/unittests --gtest_output="xml:$CI_PROJECT_DIR/report.xml"
     #- ctest --output-junit $CI_PROJECT_DIR/report.xml
