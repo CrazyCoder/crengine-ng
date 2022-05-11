@@ -14,7 +14,7 @@ variables:
   LIBUNIBREAK_SRCDIR: libunibreak-5.0
 
 default:
-  image: ubuntu:20.04
+  image: ubuntu:22.04
 
 stages:
   - test
@@ -30,7 +30,6 @@ unittests-ubuntu:
     # install required tools & libraries
     - export DEBIAN_FRONTEND=noninteractive
     - apt update
-    - apt-get install -y tzdata
     - apt install -qq -y build-essential zip cmake curl pkg-config zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libzstd-dev libutf8proc-dev
   script:
     - mkdir -p $BUILD_WORKDIR
