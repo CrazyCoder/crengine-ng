@@ -250,9 +250,9 @@ TEST_F(ZipUsageTests, ListContents) {
     CRLog::info("=====================");
 }
 
-TEST_F(ZipUsageTests, ReadCirillicEntries) {
+TEST_F(ZipUsageTests, ReadCyrillicEntries) {
     CRLog::info("============================");
-    CRLog::info("Starting ReadCirillicEntries");
+    CRLog::info("Starting ReadCyrillicEntries");
     ASSERT_TRUE(m_initOK);
 
     // This is the same as 'ListContents', but there are entries in the archive with names in Cyrillic.
@@ -268,7 +268,7 @@ TEST_F(ZipUsageTests, ReadCirillicEntries) {
         EXPECT_EQ(s_rand2_files_size[i], item->GetSize());
     }
 
-    CRLog::info("Finished ReadCirillicEntries");
+    CRLog::info("Finished ReadCyrillicEntries");
     CRLog::info("============================");
 }
 
