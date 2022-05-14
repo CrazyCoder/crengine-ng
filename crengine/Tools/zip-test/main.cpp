@@ -5,8 +5,6 @@
 #include <lvcontaineriteminfo.h>
 #include <crlog.h>
 
-#include "../../src/lvstream/lvcommoncontaineriteminfo.h"
-
 #include <stdio.h>
 
 #define TEST_ZIP64_EXTRACT 0
@@ -43,11 +41,7 @@ int main(int argc, char* argv[]) {
                     continue;
                 list.add(item->GetName());
                 list.add(lString32::itoa((lUInt64)item->GetSize()));
-                const LVCommonContainerItemInfo* cont_info = dynamic_cast<const LVCommonContainerItemInfo*>(item);
-                if (NULL != cont_info)
-                    list.add(lString32::itoa((lUInt64)cont_info->GetSrcSize()));
-                else
-                    list.add("-1");
+                list.add(lString32::itoa((lUInt64)item->GetPackSize()));
             }
         } else {
             printf("Failed to open archive!\n");

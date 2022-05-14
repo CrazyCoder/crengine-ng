@@ -187,8 +187,7 @@ private:
         startup_info.hStdInput = NULL;
         startup_info.hStdError = nul_handle;
         startup_info.hStdOutput = nul_handle;
-        LPWSTR cmdLine = (LPWSTR)commandLine16.c_str();
-        BOOL ret = CreateProcessW(NULL, cmdLine, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &startup_info, &proc_info);
+        BOOL ret = CreateProcessW(NULL, (LPWSTR)commandLine16.c_str(), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &startup_info, &proc_info);
         if (0 != ret) {
             DWORD ret2 = WaitForSingleObject(proc_info.hProcess, INFINITE);
             CloseHandle(proc_info.hProcess);
@@ -244,6 +243,8 @@ TEST_F(ZipUsageTests, ListContents) {
         const LVContainerItemInfo* item = arc->GetObjectInfo(i);
         EXPECT_STREQ(s_rand1_files_name[i], UnicodeToUtf8(item->GetName()).c_str());
         EXPECT_EQ(s_rand1_files_size[i], item->GetSize());
+        if (item->GetSize() > 0)
+            EXPECT_GT(item->GetPackSize(), 0);
     }
 
     CRLog::info("Finished ListContents");
@@ -266,6 +267,8 @@ TEST_F(ZipUsageTests, ReadCyrillicEntries) {
         const LVContainerItemInfo* item = arc->GetObjectInfo(i);
         EXPECT_STREQ(s_rand2_files_name[i], UnicodeToUtf8(item->GetName()).c_str());
         EXPECT_EQ(s_rand2_files_size[i], item->GetSize());
+        if (item->GetSize() > 0)
+            EXPECT_GT(item->GetPackSize(), 0);
     }
 
     CRLog::info("Finished ReadCyrillicEntries");
@@ -289,6 +292,8 @@ TEST_F(ZipUsageTests, ListContentsInTruncArc) {
         const LVContainerItemInfo* item = arc->GetObjectInfo(i);
         EXPECT_STREQ(s_rand1_files_name[i], UnicodeToUtf8(item->GetName()).c_str());
         EXPECT_EQ(s_rand1_files_size[i], item->GetSize());
+        if (item->GetSize() > 0)
+            EXPECT_GT(item->GetPackSize(), 0);
     }
 
     CRLog::info("Finished ListContentsInTruncArc");
@@ -356,4 +361,32 @@ TEST_F(ZipUsageTests, ExtractInTruncArc) {
 
     CRLog::info("Finished ExtractInTruncArc");
     CRLog::info("==========================");
+}
+
+TEST_F(ZipUsageTests, PackSize) {
+    CRLog::info("=================");
+    CRLog::info("Starting PackSize");
+    ASSERT_TRUE(m_initOK);
+
+    LVStreamRef stream = LVOpenFileStream(s_archive1_name, LVOM_READ);
+    ASSERT_TRUE(!stream.isNull());
+    LVContainerRef arc = LVOpenArchieve(stream);
+    ASSERT_TRUE(!arc.isNull());
+    EXPECT_EQ(arc->GetObjectCount(), s_rand1_files_count);
+    lvsize_t total_unpack_size = 0;
+    lvsize_t total_pack_size = 0;
+    for (int i = 0; i < arc->GetObjectCount(); i++) {
+        const LVContainerItemInfo* item = arc->GetObjectInfo(i);
+        total_unpack_size += item->GetSize();
+        total_pack_size += item->GetPackSize();
+        EXPECT_STREQ(s_rand1_files_name[i], UnicodeToUtf8(item->GetName()).c_str());
+        EXPECT_EQ(s_rand1_files_size[i], item->GetSize());
+        if (item->GetSize() > 0)
+            EXPECT_GT(item->GetPackSize(), 0);
+    }
+    EXPECT_GT(total_pack_size, 0);
+    EXPECT_LT(total_pack_size, total_unpack_size);
+
+    CRLog::info("Finished PackSize");
+    CRLog::info("=================");
 }

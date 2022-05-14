@@ -3,6 +3,8 @@
     CoolReader Engine
 
     (c) Vadim Lopatin, 2000-2006
+    (c) Aleksey Chernov, 2022
+
     This source code is distributed under the terms of
     GNU General Public License.
     See LICENSE file for details.
@@ -21,12 +23,42 @@
 
 #include <lvtypes.h>
 
+/**
+ * @brief The LVContainerItemInfo class
+ *
+ * Abstract storage class of container element information.
+ */
 class LVContainerItemInfo
 {
 public:
+    /**
+     * @brief Get item size
+     * @return item size
+     *
+     * For an item in an archive container, this is the unpacked size.
+     */
     virtual lvsize_t GetSize() const = 0;
+    /**
+     * @brief Get compressed item size if applicable (for archives).
+     * @return compressed item size
+     *
+     * For an item in an archive container, this is the packed size; for other types of containers, it is undefined.
+     */
+    virtual lvsize_t GetPackSize() const = 0;
+    /**
+     * @brief Get item name
+     * @return item name
+     */
     virtual const lChar32* GetName() const = 0;
+    /**
+     * @brief Get item's flags.
+     * @return Optional item flags. See implementation for details.
+     */
     virtual lUInt32 GetFlags() const = 0;
+    /**
+     * @brief Get the status of an element's container.
+     * @return true if this element is a child container; otherwise, false.
+     */
     virtual bool IsContainer() const = 0;
     LVContainerItemInfo() { }
     virtual ~LVContainerItemInfo() { }

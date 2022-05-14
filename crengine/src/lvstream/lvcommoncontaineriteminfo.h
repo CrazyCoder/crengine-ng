@@ -3,6 +3,8 @@
     CoolReader Engine
 
     (c) Vadim Lopatin, 2000-2006
+    (c) Aleksey Chernov, 2022
+
     This source code is distributed under the terms of
     GNU General Public License.
     See LICENSE file for details.
@@ -38,6 +40,9 @@ protected:
 public:
     virtual lvsize_t GetSize() const {
         return m_size;
+    }
+    virtual lvsize_t GetPackSize() const {
+        return m_srcsize;
     }
     virtual const lChar32* GetName() const {
         return m_name.empty() ? NULL : m_name.c_str();
