@@ -24,6 +24,17 @@ sast:
 include:
 - template: Security/SAST.gitlab-ci.yml
 
+style-check-diff:
+  stage: test
+  allow_failure: true
+  before_script:
+    # install required tools
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt update
+    - apt install -qq -y git clang-format
+  script:
+    - .ci/run-style-check-diff.sh
+
 unittests-ubuntu:
   stage: test
   before_script:
