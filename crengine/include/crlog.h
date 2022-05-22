@@ -69,9 +69,9 @@ public:
     static void setStderrLogger();
 protected:
     CRLog();
-    virtual void log(const char* level, const char* msg, va_list args) = 0;
-    log_level curr_level;
-    static CRLog* CRLOG;
+    virtual void log(log_level level, const char* msg, va_list args) = 0;
+    log_level m_currLevel;
+    static CRLog* m_logger;
 };
 
 #endif // __CR_LOG_H_INCLUDED__

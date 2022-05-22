@@ -28,89 +28,92 @@ extern "C" {
 
 class CRFileLogger;
 
-CRLog* CRLog::CRLOG = NULL;
+CRLog* CRLog::m_logger = NULL;
+
 void CRLog::setLogger(CRLog* logger) {
-    if (CRLOG != NULL) {
-        delete CRLOG;
+    if (m_logger != NULL) {
+        delete m_logger;
     }
-    CRLOG = logger;
+    m_logger = logger;
 }
 
 void CRLog::setLogLevel(CRLog::log_level level) {
-    if (!CRLOG)
+    if (!m_logger)
         return;
-    warn("Changing log level from %d to %d", (int)CRLOG->curr_level, (int)level);
-    CRLOG->curr_level = level;
+    if (level < LL_FATAL || level > LL_TRACE)
+        level = LL_DEBUG;
+    warn("Changing log level from %d to %d", (int)m_logger->m_currLevel, (int)level);
+    m_logger->m_currLevel = level;
 }
 
 CRLog::log_level CRLog::getLogLevel() {
-    if (!CRLOG)
+    if (!m_logger)
         return LL_INFO;
-    return CRLOG->curr_level;
+    return m_logger->m_currLevel;
 }
 
 bool CRLog::isLogLevelEnabled(CRLog::log_level level) {
-    if (!CRLOG)
+    if (!m_logger)
         return false;
-    return (CRLOG->curr_level >= level);
+    return (m_logger->m_currLevel >= level);
 }
 
 void CRLog::fatal(const char* msg, ...) {
-    if (!CRLOG)
+    if (!m_logger)
         return;
     va_list args;
     va_start(args, msg);
-    CRLOG->log("FATAL", msg, args);
+    m_logger->log(LL_FATAL, msg, args);
     va_end(args);
 }
 
 void CRLog::error(const char* msg, ...) {
-    if (!CRLOG || CRLOG->curr_level < LL_ERROR)
+    if (!m_logger || m_logger->m_currLevel < LL_ERROR)
         return;
     va_list args;
     va_start(args, msg);
-    CRLOG->log("ERROR", msg, args);
+    m_logger->log(LL_ERROR, msg, args);
     va_end(args);
 }
 
 void CRLog::warn(const char* msg, ...) {
-    if (!CRLOG || CRLOG->curr_level < LL_WARN)
+    if (!m_logger || m_logger->m_currLevel < LL_WARN)
         return;
     va_list args;
     va_start(args, msg);
-    CRLOG->log("WARN", msg, args);
+    m_logger->log(LL_WARN, msg, args);
     va_end(args);
 }
 
 void CRLog::info(const char* msg, ...) {
-    if (!CRLOG || CRLOG->curr_level < LL_INFO)
+    if (!m_logger || m_logger->m_currLevel < LL_INFO)
         return;
     va_list args;
     va_start(args, msg);
-    CRLOG->log("INFO", msg, args);
+    m_logger->log(LL_INFO, msg, args);
     va_end(args);
 }
 
 void CRLog::debug(const char* msg, ...) {
-    if (!CRLOG || CRLOG->curr_level < LL_DEBUG)
+    if (!m_logger || m_logger->m_currLevel < LL_DEBUG)
         return;
     va_list args;
     va_start(args, msg);
-    CRLOG->log("DEBUG", msg, args);
+    m_logger->log(LL_DEBUG, msg, args);
     va_end(args);
 }
 
 void CRLog::trace(const char* msg, ...) {
-    if (!CRLOG || CRLOG->curr_level < LL_TRACE)
+    if (!m_logger || m_logger->m_currLevel < LL_TRACE)
         return;
     va_list args;
     va_start(args, msg);
-    CRLOG->log("TRACE", msg, args);
+    m_logger->log(LL_TRACE, msg, args);
     va_end(args);
 }
 
 CRLog::CRLog()
-        : curr_level(LL_INFO) {
+        : m_currLevel(LL_INFO) {
 }
 
 CRLog::~CRLog() {
@@ -161,13 +164,23 @@ static lUInt64 GetCurrentTimeMillis() {
 }
 #endif
 
+// The order in this array must be the same as in enum log_level
+static const char* s_log_level_names[] = {
+    "FATAL",
+    "ERROR",
+    "WARN",
+    "INFO",
+    "DEBUG",
+    "TRACE",
+};
+
 class CRFileLogger: public CRLog
 {
 protected:
     FILE* f;
     bool autoClose;
     bool autoFlush;
-    virtual void log(const char* level, const char* msg, va_list args) {
+    virtual void log(log_level level, const char* msg, va_list args) {
         if (!f)
             return;
 #ifdef LINUX
@@ -189,10 +202,14 @@ protected:
 #endif
 #endif // LINUX
         struct tm* bt = localtime(&t);
+        int idx = (int)level - (int)LL_FATAL;
+        if (idx > (int)LL_TRACE)
+            idx = (int)LL_DEBUG;
+        const char* level_str = s_log_level_names[idx];
 #if LOG_HEAP_USAGE
-        fprintf(f, "%04d/%02d/%02d %02d:%02d:%02d.%03d [%d] %s ", bt->tm_year + 1900, bt->tm_mon + 1, bt->tm_mday, bt->tm_hour, bt->tm_min, bt->tm_sec, ms, memusage, level);
+        fprintf(f, "%04d/%02d/%02d %02d:%02d:%02d.%03d [%d] %s ", bt->tm_year + 1900, bt->tm_mon + 1, bt->tm_mday, bt->tm_hour, bt->tm_min, bt->tm_sec, ms, memusage, level_str);
 #else
-        fprintf(f, "%04d/%02d/%02d %02d:%02d:%02d.%03d %s ", bt->tm_year + 1900, bt->tm_mon + 1, bt->tm_mday, bt->tm_hour, bt->tm_min, bt->tm_sec, ms, level);
+        fprintf(f, "%04d/%02d/%02d %02d:%02d:%02d.%03d %s ", bt->tm_year + 1900, bt->tm_mon + 1, bt->tm_mday, bt->tm_hour, bt->tm_min, bt->tm_sec, ms, level_str);
 #endif
         vfprintf(f, msg, args);
         fprintf(f, "\n");
@@ -211,16 +228,8 @@ public:
             , autoClose(true)
             , autoFlush(_autoFlush) {
         static unsigned char utf8sign[] = { 0xEF, 0xBB, 0xBF };
-        static const char* log_level_names[] = {
-            "FATAL",
-            "ERROR",
-            "WARN",
-            "INFO",
-            "DEBUG",
-            "TRACE",
-        };
         fwrite(utf8sign, 3, 1, f);
-        info("Started logging. Level=%s", log_level_names[getLogLevel()]);
+        info("Started logging. Level=%s", s_log_level_names[getLogLevel()]);
     }
     virtual ~CRFileLogger() {
         if (f && autoClose) {
