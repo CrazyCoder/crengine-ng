@@ -47,7 +47,7 @@ unittests-ubuntu:
     # build libunibreak (in Ubuntu very old version)
     - mkdir -p $BUILD_WORKDIR_LIBUNIBREAK
     - cd $BUILD_WORKDIR_LIBUNIBREAK
-    - curl -L $LIBUNIBREAK_PKGURL -O
+    - curl -f -L $LIBUNIBREAK_PKGURL -o $LIBUNIBREAK_PKG
     - tar -xzf $LIBUNIBREAK_PKG
     - cd $LIBUNIBREAK_SRCDIR
     - ./configure --prefix=$DEPLOY_PATH --enable-static --disable-shared
