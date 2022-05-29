@@ -19,16 +19,16 @@ This project is in the experimental phase, the main goals are:
  * Support for modern compilers.
 
 ## External dependencies
-This library can use other libraries:
- * FreeType - font rendering
- * HarfBuzz - text shaping, font kerning, ligatures
- * ZLib - compressing library (cache compression, zip-archives support)
- * ZSTD - compressing library (cache compression)
- * libpng - PNG image format support
- * libjpeg - JPEG image format support
- * FriBiDi - RTL writing support
- * libunibreak - line breaking and word breaking algorithms
- * utf8proc - for unicode string comparision
+This library can use other libraries (links to licenses point to official websites whenever possible):
+ * FreeType - font rendering (any of your choice [GPLv2](https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/docs/GPLv2.TXT) or [FTL](https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/docs/FTL.TXT))
+ * HarfBuzz - text shaping, font kerning, ligatures ([Old MIT](https://github.com/harfbuzz/harfbuzz/blob/main/COPYING))
+ * ZLib - compressing library (cache compression, zip-archives support) ([ZLib](https://www.zlib.net/zlib_license.html))
+ * ZSTD - compressing library (cache compression) ([BSD](https://github.com/facebook/zstd/blob/dev/LICENSE) and [GPLv2](https://github.com/facebook/zstd/blob/dev/COPYING))
+ * libpng - PNG image format support ([libpng](http://www.libpng.org/pub/png/src/libpng-LICENSE.txt))
+ * libjpeg - JPEG image format support ([libjpeg](https://jpegclub.org/reference/libjpeg-license/))
+ * FriBiDi - RTL writing support ([LGPL-2.1](https://github.com/fribidi/fribidi/blob/master/COPYING))
+ * libunibreak - line breaking and word breaking algorithms ([Zlib](https://github.com/adah1972/libunibreak/blob/master/LICENCE))
+ * utf8proc - for unicode string comparision ([utf8proc (MIT-like) + Unicode data license](https://github.com/JuliaStrings/utf8proc/blob/master/LICENSE.md))
 
 ## Installation
 1. Install dependencies (via package manager or compile from sources)
@@ -96,10 +96,10 @@ This list of authors is obtained from git history using the script crengine/Tool
 The first significant item in the git log is 'Mon Nov 9 16:33:34 2009 +0300', but the project started around 2000, so this list can be incomplete.
 
 ## License
-This project is released under the [GNU General Public License Version 2](https://opensource.org/licenses/GPL-2.0). See LICENSE file.
+This project is released under the [GNU General Public License Version 2](https://www.gnu.org/licenses/gpl-2.0.html). See LICENSE file.
 
 The "thirdparty" directory contains some patched libraries with their own licenses (compatible with GPLv2):
- * chmlib - [LGPL-2.1](https://opensource.org/licenses/LGPL-2.1)
- * antiword - [GPL-2.0](https://opensource.org/licenses/GPL-2.0)
- * nanosvg - [ZLib](https://opensource.org/licenses/Zlib)
+ * chmlib - [LGPL-2.1](https://www.gnu.org/licenses/lgpl-2.1.html)
+ * antiword - [GPL-2.0](https://www.gnu.org/licenses/gpl-2.0.html)
+ * nanosvg - [ZLib](https://directory.fsf.org/wiki/License:Zlib)
  * qimagescale - [imlib2](https://directory.fsf.org/wiki/License:Imlib2)
