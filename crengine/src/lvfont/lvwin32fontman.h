@@ -57,6 +57,12 @@ public:
     /// set antialiasing mode
     virtual void SetAntialiasMode(font_antialiasing_t mode);
 
+    /// returns current gamma level
+    virtual float GetGamma();
+
+    /// sets current gamma level
+    virtual void SetGamma(double gamma);
+
     virtual void getFaceList(lString32Collection& list) {
         _cache.getFaceList(list);
     }

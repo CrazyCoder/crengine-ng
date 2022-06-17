@@ -73,6 +73,12 @@ public:
     /// set antialiasing mode
     virtual void SetAntialiasMode(font_antialiasing_t mode);
 
+    /// returns current gamma level
+    virtual float GetGamma();
+
+    /// sets current gamma level
+    virtual void SetGamma(double gamma);
+
     /// sets current gamma level
     virtual void SetHintingMode(hinting_mode_t mode);
 

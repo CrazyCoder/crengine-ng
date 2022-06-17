@@ -5,7 +5,6 @@ if(UNIX)
   endif(NOT MACOS)
 endif(UNIX)
 
-add_subdirectory(GammaGen)
 add_subdirectory(HyphConv)
 add_subdirectory(langstat)
 add_subdirectory(langstat2)

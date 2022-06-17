@@ -28,6 +28,8 @@
 #include <fontconfig/fontconfig.h>
 #endif
 
+#include "lvgammacorrection.h"
+
 #if USE_LOCALE_DATA == 1
 #include <crlocaledata.h>
 #include "../locale_data/fc-lang-data.h"
@@ -390,6 +392,25 @@ void LVFreeTypeFontManager::SetAntialiasMode(font_antialiasing_t mode) {
         LVFontRef font = fonts->get(i)->getFont();
         font->SetAntialiasMode(_antialiasMode);
         font->setBitmapMode(isBitmapModeForSize(font->getHeight()));
+    }
+}
+
+float LVFreeTypeFontManager::GetGamma() {
+    return LVFontManager::GetGamma();
+}
+
+void LVFreeTypeFontManager::SetGamma(double gamma) {
+    FONT_MAN_GUARD
+    int index = LVGammaCorrection::getIndex(gamma);
+    if (_gammaIndex != index) {
+        CRLog::debug("Gamma correction index is changed from %d to %d", _gammaIndex, index);
+        _gammaIndex = index;
+        gc();
+        clearGlyphCache();
+        LVPtrVector<LVFontCacheItem>* fonts = _cache.getInstances();
+        for (int i = 0; i < fonts->length(); i++) {
+            fonts->get(i)->getFont()->setGammaIndex(_gammaIndex);
+        }
     }
 }
 
@@ -977,6 +998,7 @@ LVFontRef LVFreeTypeFontManager::GetFont(int size, int weight, bool italic, css_
         font->setKerning(GetKerning());
         font->setShapingMode(GetShapingMode());
         font->setFaceName(item->getDef()->getTypeFace());
+        font->setGammaIndex(_gammaIndex);
         newDef.setSize(size);
         //item->setFont( ref );
         //_cache.update( def, ref );
