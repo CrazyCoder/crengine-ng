@@ -58,6 +58,7 @@ print $out1fh <<EOF;
 /***************************************************************************
  *   coolreader-ng, gamma correction tables                                *
  *   Copyright © 2022 by coolreader-ng authors                             *
+ *   Copyright © Vadim Lopatin, 2011                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -125,6 +126,7 @@ print $out2fh <<EOF;
 /***************************************************************************
  *   coolreader-ng, gamma correction tables                                *
  *   Copyright © 2022 by coolreader-ng authors                             *
+ *   Copyright © Vadim Lopatin, 2011                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
