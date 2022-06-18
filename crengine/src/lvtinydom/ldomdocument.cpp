@@ -294,7 +294,7 @@ void ldomDocument::printWarning(const char* msg, int warning_id) {
         warning_bit = 1 << (warning_id - 1);
     }
     if (!(warning_bit & _warnings_seen_bitmap)) {
-        printf("CRE WARNING: %s\n", msg);
+        CRLog::warn("CRE WARNING: %s\n", msg);
         _warnings_seen_bitmap |= warning_bit;
     }
 }
@@ -469,7 +469,7 @@ bool ldomDocument::render(LVRendPageList* pages, LVDocViewCallback* callback, in
             // For knowing/debugging cases when node styles set up during loading
             // is invalid (should happen now only when EPUB has embedded fonts
             // or some pseudoclass like :last-child has been met).
-            printf("CRE: styles re-init needed after load, re-rendering\n");
+            CRLog::warn("CRE: styles re-init needed after load, re-rendering\n");
         }
         CRLog::info("rendering context is changed - full render required...");
         // Clear LFormattedTextRef cache
@@ -1797,27 +1797,27 @@ bool ldomDocument::checkRenderContext() {
         CRLog::info("checkRenderContext: Style hash doesn't match %x!=%x", styleHash, _hdr.render_style_hash);
         res = false;
         if (_just_rendered_from_cache)
-            printf("CRE WARNING: cached rendering is invalid (style hash mismatch): doing full rendering\n");
+            CRLog::warn("CRE WARNING: cached rendering is invalid (style hash mismatch): doing full rendering\n");
     } else if (stylesheetHash != _hdr.stylesheet_hash) {
         CRLog::info("checkRenderContext: Stylesheet hash doesn't match %x!=%x", stylesheetHash, _hdr.stylesheet_hash);
         res = false;
         if (_just_rendered_from_cache)
-            printf("CRE WARNING: cached rendering is invalid (stylesheet hash mismatch): doing full rendering\n");
+            CRLog::warn("CRE WARNING: cached rendering is invalid (stylesheet hash mismatch): doing full rendering\n");
     } else if (_docFlags != _hdr.render_docflags) {
         CRLog::info("checkRenderContext: Doc flags don't match %x!=%x", _docFlags, _hdr.render_docflags);
         res = false;
         if (_just_rendered_from_cache)
-            printf("CRE WARNING: cached rendering is invalid (doc flags mismatch): doing full rendering\n");
+            CRLog::warn("CRE WARNING: cached rendering is invalid (doc flags mismatch): doing full rendering\n");
     } else if (dx != (int)_hdr.render_dx) {
         CRLog::info("checkRenderContext: Width doesn't match %x!=%x", dx, (int)_hdr.render_dx);
         res = false;
         if (_just_rendered_from_cache)
-            printf("CRE WARNING: cached rendering is invalid (page width mismatch): doing full rendering\n");
+            CRLog::warn("CRE WARNING: cached rendering is invalid (page width mismatch): doing full rendering\n");
     } else if (dy != (int)_hdr.render_dy) {
         CRLog::info("checkRenderContext: Page height doesn't match %x!=%x", dy, (int)_hdr.render_dy);
         res = false;
         if (_just_rendered_from_cache)
-            printf("CRE WARNING: cached rendering is invalid (page height mismatch): doing full rendering\n");
+            CRLog::warn("CRE WARNING: cached rendering is invalid (page height mismatch): doing full rendering\n");
     }
     // no need to check for _nodeDisplayStyleHash != _hdr.node_displaystyle_hash:
     // this is implicitely done by styleHash != _hdr.render_style_hash (whose _nodeDisplayStyleHash is a subset)

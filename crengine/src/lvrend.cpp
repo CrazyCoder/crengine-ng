@@ -2034,8 +2034,8 @@ public:
                 context.AddLine(cur_y, cur_y + borderspacing_v_bottom, bottom_line_flags | RN_SPLIT_BEFORE_AVOID);
                 last_y = cur_y + borderspacing_v_bottom;
                 if (last_y != table_y0 + table_h + row->height + borderspacing_v_bottom) {
-                    printf("CRE WARNING: single column table row height error %d =! %d\n",
-                           last_y, table_y0 + table_h + row->height + borderspacing_v_bottom);
+                    CRLog::warn("CRE WARNING: single column table row height error %d =! %d\n",
+                                last_y, table_y0 + table_h + row->height + borderspacing_v_bottom);
                 }
             }
             table_h += row->height;
@@ -2318,7 +2318,7 @@ LVFontRef getFont(ldomNode* node, css_style_rec_t* style, int documentId) {
         style->font_size.type == css_val_ch || style->font_size.type == css_val_percent) {
         // font_size.type can't be em/ex/ch/%, it should have been converted to px
         // or screen_px while in setNodeStyle().
-        printf("CRE WARNING: getFont: %d of unit %d\n", style->font_size.value >> 8, style->font_size.type);
+        CRLog::warn("CRE WARNING: getFont: %d of unit %d\n", style->font_size.value >> 8, style->font_size.type);
         sz = style->font_size.value >> 8; // set some value anyway
     } else {
         // We still need to convert other absolute units to px.
@@ -3175,7 +3175,7 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
         if (line_h < 0) {
             // Shouldn't happen, but in case we're called with line_h=-1 and we
             // didn't compute a valid line_h:
-            printf("CRE WARNING: line_h still < 0: using 'normal'\n");
+            CRLog::warn("CRE WARNING: line_h still < 0: using 'normal'\n");
             line_h = enode->getFont()->getHeight(); // line-height: normal
         }
         // having line_h=0 is ugly, but it's allowed and it works
@@ -4538,7 +4538,7 @@ int renderBlockElementLegacy(LVRendPageContext& context, ldomNode* enode, int x,
                 // we set this element rendering method to erm_killed, and
                 // DrawDocument will then render a small figure...
                 if (enode->getRendMethod() >= erm_table) {
-                    printf("CRE WARNING: no width to draw %s\n", UnicodeToLocal(ldomXPointer(enode, 0).toString()).c_str());
+                    CRLog::warn("CRE WARNING: no width to draw %s\n", UnicodeToLocal(ldomXPointer(enode, 0).toString()).c_str());
                     enode->setRendMethod(erm_killed);
                     fmt.setHeight(15); // not squared, so it does not look
                     fmt.setWidth(10);  // like a list square bullet
@@ -7495,7 +7495,7 @@ void renderBlockElementEnhanced(FlowState* flow, ldomNode* enode, int x, int con
         if (m >= erm_table && !(is_floatbox_child || is_inline_box_child)) {
             // (Avoid this with float or inline tables, that have been measured
             // and can have a 0-width when they have no content.)
-            printf("CRE WARNING: no width to draw %s\n", UnicodeToLocal(ldomXPointer(enode, 0).toString()).c_str());
+            CRLog::warn("CRE WARNING: no width to draw %s\n", UnicodeToLocal(ldomXPointer(enode, 0).toString()).c_str());
             enode->setRendMethod(erm_killed);
             fmt.setHeight(15); // not squared, so it does not look
             fmt.setWidth(10);  // like a list square bullet
@@ -7586,8 +7586,8 @@ void renderBlockElementEnhanced(FlowState* flow, ldomNode* enode, int x, int con
         case erm_inline: // For inlineBox elements only
         {
             if (m == erm_inline && nodeElementId != el_inlineBox) {
-                printf("CRE WARNING: node discarded (unexpected erm_inline for elem %s)\n",
-                       UnicodeToLocal(ldomXPointer(enode, 0).toString()).c_str());
+                CRLog::warn("CRE WARNING: node discarded (unexpected erm_inline for elem %s)\n",
+                            UnicodeToLocal(ldomXPointer(enode, 0).toString()).c_str());
                 // (add %s and enode->getText8().c_str() to see text content)
                 // Might be too early after introducing inline-block support to crash:
                 // let's just output this warning and ignore the node content.
