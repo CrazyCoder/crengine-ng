@@ -51,6 +51,7 @@ protected:
             m_props = LVCreatePropsContainer();
             m_props->setInt(PROP_REQUESTED_DOM_VERSION, 20200824);
             m_props->setInt(PROP_RENDER_BLOCK_RENDERING_FLAGS, BLOCK_RENDERING_FLAGS_WEB);
+            m_props->setString(PROP_FONT_FACE, "FreeSerif");
             CRPropRef unknown = m_view->propsApply(m_props);
             m_initOK = unknown->getCount() == 0;
             m_view->Resize(640, 360);
@@ -62,16 +63,6 @@ protected:
             delete m_view;
             m_view = 0;
         }
-    }
-
-    bool setCSS(const char* cssfile) {
-        lString8 csscont;
-        lString8 fname = cs8(CSS_DIR);
-        fname += cssfile;
-        bool res = LVLoadStylesheetFile(Utf8ToUnicode(fname), csscont);
-        if (res)
-            m_view->setStyleSheet(csscont);
-        return res;
     }
 
     bool setProperty(const char* propName, const char* value) {
