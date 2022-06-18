@@ -22,11 +22,9 @@
 #include "../textlang.h"
 #include "../lvdrawbuf/lvdrawbuf_utils.h"
 #include "lvfontglyphcache.h"
-#include "gammatbl.h"
+#include "lvgammacorrection.h"
 
 #include <assert.h>
-
-extern int gammaIndex; // lvfntman.cpp
 
 void LVBaseWin32Font::SetAntialiasMode(font_antialiasing_t mode) {
     _aa_mode = mode;
@@ -483,6 +481,11 @@ glyph_t* LVWin32Font::GetGlyphRec(lChar32 ch) {
     return p;
 }
 
+void LVWin32Font::setGammaIndex(int index) {
+    _gammaIndex = index;
+    clearCache();
+}
+
 /** \brief get glyph info
     \param glyph is pointer to glyph_info_t struct to place retrieved info
     \return true if glyh was found 
@@ -591,7 +594,7 @@ lUInt16 LVWin32Font::measureText(
     return nchars;
 }
 
-static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lChar32 ch, glyph_t* g) {
+static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lChar32 ch, glyph_t* g, int gammaIndex) {
     FONT_LOCAL_GLYPH_CACHE_GUARD
     unsigned int w = g->gi.blackBoxX;
     unsigned int h = g->gi.blackBoxY;
@@ -610,8 +613,8 @@ static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lChar32
                 break;
             case BMP_PIXEL_FORMAT_GRAY:
                 // correct gamma
-                if (gammaIndex != GAMMA_NO_CORRECTION_INDEX)
-                    cr_correct_gamma_buf(item->bmp, bmp_sz, gammaIndex);
+                if (gammaIndex != LVGammaCorrection::NoCorrectionIndex)
+                    LVGammaCorrection::gammaCorrection(item->bmp, bmp_sz, gammaIndex);
                 break;
             case BMP_PIXEL_FORMAT_RGB:
             case BMP_PIXEL_FORMAT_BGR:
@@ -637,7 +640,7 @@ LVFontGlyphCacheItem* LVWin32Font::getGlyph(lUInt32 ch, lChar32 def_char, lUInt3
         if (_hfont != NULL) {
             glyph_t* p = GetGlyphRec(ch);
             if (p) {
-                item = newItem(&_glyph_cache, ch, p);
+                item = newItem(&_glyph_cache, ch, p, _gammaIndex);
                 if (item)
                     _glyph_cache.put(item);
             }

@@ -25,7 +25,7 @@
 #include "lvfontdef.h"
 #include "lvfontcache.h"
 #include "../textlang.h"
-#include "gammatbl.h"
+#include "lvgammacorrection.h"
 
 #if USE_LOCALE_DATA == 1
 // fc-lang database
@@ -66,8 +66,6 @@
 // Define to add more debug messages
 //#define DEBUG_DRAW_TEXT
 //#define DEBUG_MEASURE_TEXT
-
-extern int gammaIndex; // lvfntman.cpp
 
 // next two functions from lvfreetypefontman.cpp
 extern lString8 familyName(FT_Face face);
@@ -255,7 +253,7 @@ bool isHBScriptCursive(hb_script_t script) {
 }
 #endif
 
-static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lChar32 ch, FT_GlyphSlot slot, font_antialiasing_t aa_mode) // , bool drawMonochrome
+static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lChar32 ch, FT_GlyphSlot slot, font_antialiasing_t aa_mode, int gammaIndex) // , bool drawMonochrome
 {
     FONT_LOCAL_GLYPH_CACHE_GUARD
     FT_Bitmap* bitmap = &slot->bitmap;
@@ -284,8 +282,8 @@ static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lChar32
             case BMP_PIXEL_FORMAT_RGB_V:
             case BMP_PIXEL_FORMAT_BGR_V:
                 // correct gamma
-                if (gammaIndex != GAMMA_NO_CORRECTION_INDEX)
-                    cr_correct_gamma_buf(item->bmp, bmp_sz, gammaIndex);
+                if (gammaIndex != LVGammaCorrection::NoCorrectionIndex)
+                    LVGammaCorrection::gammaCorrection(item->bmp, bmp_sz, gammaIndex);
                 break;
             case BMP_PIXEL_FORMAT_BGRA:
                 // TODO: implement this
@@ -307,7 +305,7 @@ static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lChar32
 
 #if USE_HARFBUZZ == 1
 
-static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lUInt32 index, FT_GlyphSlot slot, font_antialiasing_t aa_mode) {
+static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lUInt32 index, FT_GlyphSlot slot, font_antialiasing_t aa_mode, int gammaIndex) {
     FONT_LOCAL_GLYPH_CACHE_GUARD
     FT_Bitmap* bitmap = &slot->bitmap;
     unsigned int w = (FT_PIXEL_MODE_LCD == bitmap->pixel_mode) ? bitmap->width / 3 : bitmap->width;
@@ -335,8 +333,8 @@ static LVFontGlyphCacheItem* newItem(LVFontLocalGlyphCache* local_cache, lUInt32
             case BMP_PIXEL_FORMAT_RGB_V:
             case BMP_PIXEL_FORMAT_BGR_V:
                 // correct gamma
-                if (gammaIndex != GAMMA_NO_CORRECTION_INDEX)
-                    cr_correct_gamma_buf(item->bmp, bmp_sz, gammaIndex);
+                if (gammaIndex != LVGammaCorrection::NoCorrectionIndex)
+                    LVGammaCorrection::gammaCorrection(item->bmp, bmp_sz, gammaIndex);
                 break;
             case BMP_PIXEL_FORMAT_BGRA:
                 // TODO: implement this
@@ -641,6 +639,11 @@ void LVFreeTypeFace::setShapingMode(shaping_mode_t shapingMode) {
     // in cache may be found some ligatures, so clear it
     clearCache();
 #endif
+}
+
+void LVFreeTypeFace::setGammaIndex(int index) {
+    _gammaIndex = index;
+    clearCache();
 }
 
 void LVFreeTypeFace::setBitmapMode(bool drawBitmap) {
@@ -2310,7 +2313,7 @@ LVFontGlyphCacheItem* LVFreeTypeFace::getGlyph(lUInt32 ch, lChar32 def_char, lUI
             // Downscale fixed-size color glyph & update metrics
             downScaleColorGlyphBitmap(_slot, _scale_mul, _scale_div, false);
         }
-        item = newItem(&_glyph_cache, (lChar32)ch, _slot, _aa_mode); //, _drawMonochrome
+        item = newItem(&_glyph_cache, (lChar32)ch, _slot, _aa_mode, _gammaIndex); //, _drawMonochrome
         if (item) {
             if (_synth_weight_strength != 0) {
                 // Assume zero advance means it's a diacritic:
@@ -2384,7 +2387,7 @@ LVFontGlyphCacheItem* LVFreeTypeFace::getGlyphByIndex(lUInt32 index) {
             // Downscale fixed-size color glyph & update metrics
             downScaleColorGlyphBitmap(_slot, _scale_mul, _scale_div, false);
         }
-        item = newItem(&_glyph_cache2, index, _slot, _aa_mode);
+        item = newItem(&_glyph_cache2, index, _slot, _aa_mode, _gammaIndex);
         if (item)
             _glyph_cache2.put(item);
     }

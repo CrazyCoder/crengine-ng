@@ -79,6 +79,8 @@ set(CRENGINE_NG_SOURCES
     src/lvfont/lvfont.cpp
     src/lvfont/lvfntman.cpp
     src/lvfont/lvfnt.cpp
+    src/lvfont/lvgammacorrection.cpp
+    src/lvfont/lvgammatbl.c
     src/lvfont/lvembeddedfont.cpp
     src/lvfont/lvbasefont.cpp
     src/lvfont/lvbitmapfont.cpp

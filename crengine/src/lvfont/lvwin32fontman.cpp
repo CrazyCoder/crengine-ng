@@ -18,6 +18,7 @@
 
 #include "lvwin32font.h"
 #include "lvfontboldtransform.h"
+#include "lvgammacorrection.h"
 
 #include <crlog.h>
 
@@ -140,6 +141,7 @@ LVFontRef LVWin32FontManager::GetFont(int size, int weight, bool bitalic, css_fo
         font->setFeatures(0);
         font->setKerning(GetKerning());
         font->setShapingMode(GetShapingMode());
+        font->setGammaIndex(_gammaIndex);
         //font->setFaceName(item->getDef()->getTypeFace());
         newDef.setSize(size);
         _cache.addInstance(&newDef, ref);
@@ -221,6 +223,26 @@ void LVWin32FontManager::SetAntialiasMode(font_antialiasing_t mode) {
     for (int i = 0; i < fonts->length(); i++) {
         LVFontRef font = fonts->get(i)->getFont();
         font->SetAntialiasMode(_antialiasMode);
+    }
+}
+
+float LVWin32FontManager::GetGamma() {
+    return LVFontManager::GetGamma();
+}
+
+void LVWin32FontManager::SetGamma(double gamma) {
+    FONT_MAN_GUARD
+    int index = LVGammaCorrection::getIndex(gamma);
+    if (_gammaIndex != index) {
+        CRLog::debug("Gamma correction index is changed from %d to %d", _gammaIndex, index);
+        _gammaIndex = index;
+        gc();
+        clearGlyphCache();
+        LVPtrVector<LVFontCacheItem>* fonts = _cache.getInstances();
+        for (int i = 0; i < fonts->length(); i++) {
+            LVFontRef font = fonts->get(i)->getFont();
+            font->setGammaIndex(_gammaIndex);
+        }
     }
 }
 

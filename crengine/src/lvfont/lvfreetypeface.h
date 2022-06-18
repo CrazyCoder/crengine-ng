@@ -133,6 +133,7 @@ protected:
     font_antialiasing_t _aa_mode;
     hinting_mode_t _hintingMode;
     shaping_mode_t _shapingMode;
+    int _gammaIndex;
     bool _fallbackFontIsSet;
     LVFontRef _fallbackFont;
     /**
@@ -228,6 +229,14 @@ public:
     virtual shaping_mode_t getShapingMode() const {
         return _shapingMode;
     }
+
+    /// get gamma correction index
+    virtual int getGammaIndex() const {
+        return _gammaIndex;
+    }
+
+    /// set gamma correction index
+    virtual void setGammaIndex(int index);
 
     /// get bitmap mode (true=bitmap, false=antialiased)
     virtual bool getBitmapMode() {

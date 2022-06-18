@@ -30,6 +30,7 @@ protected:
     font_antialiasing_t _antialiasMode;
     shaping_mode_t _shapingMode;
     hinting_mode_t _hintingMode;
+    int _gammaIndex;
 public:
     /// garbage collector frees unused fonts
     virtual void gc() = 0;
@@ -131,20 +132,32 @@ public:
     virtual shaping_mode_t GetShapingMode() {
         return _shapingMode;
     }
+
     /// set shaping mode
     virtual void SetShapingMode(shaping_mode_t mode) {
         _shapingMode = mode;
         gc();
         clearGlyphCache();
     }
+
+    /// returns current gamma level
+    virtual float GetGamma();
+
+    /// sets current gamma level
+    virtual void SetGamma(double gamma);
+
+    /// returns current hinting mode
+    virtual hinting_mode_t GetHintingMode() {
+        return HINTING_MODE_AUTOHINT;
+    }
+
+    /// sets current hinting mode
+    virtual void SetHintingMode(hinting_mode_t /*mode*/) { }
+
     /// constructor
-    LVFontManager()
-            : _allowKerning(false)
-            , _antialiasMode(font_aa_all)
-            , _shapingMode(SHAPING_MODE_FREETYPE)
-            , _hintingMode(HINTING_MODE_AUTOHINT) { }
+    LVFontManager();
     /// destructor
-    virtual ~LVFontManager() { }
+    virtual ~LVFontManager();
     /// returns available typefaces
     virtual void getFaceList(lString32Collection&) { }
     /// returns available font files
@@ -155,22 +168,6 @@ public:
     }
     /// returns first found face from passed list, or return face for font found by family only
     virtual lString8 findFontFace(lString8 commaSeparatedFaceList, css_font_family_t fallbackByFamily);
-    /// fills array with list of available gamma levels
-    virtual void GetGammaLevels(LVArray<double> dst);
-    /// returns current gamma level index
-    virtual int GetGammaIndex();
-    /// sets current gamma level index
-    virtual void SetGammaIndex(int gammaIndex);
-    /// returns current gamma level
-    virtual double GetGamma();
-    /// sets current gamma level
-    virtual void SetGamma(double gamma);
-    /// sets current hinting mode
-    virtual void SetHintingMode(hinting_mode_t /*mode*/) { }
-    /// returns current hinting mode
-    virtual hinting_mode_t GetHintingMode() {
-        return HINTING_MODE_AUTOHINT;
-    }
     ///
     virtual bool SetAlias(lString8 alias, lString8 facename, int id, bool italic, bool bold) {
         CR_UNUSED5(alias, facename, id, italic, bold);

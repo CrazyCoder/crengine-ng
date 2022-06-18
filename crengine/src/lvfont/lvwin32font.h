@@ -316,12 +316,21 @@ private:
     lChar32 _unknown_glyph_index;
     GlyphCache _cache;
     int _hyphen_width;
+    int _gammaIndex;
     LVFontLocalGlyphCache _glyph_cache;
 
     static int GetGlyphIndex(HDC hdc, wchar_t code);
 
     glyph_t* GetGlyphRec(lChar32 ch);
 public:
+    /// get gamma correction index
+    virtual int getGammaIndex() const {
+        return _gammaIndex;
+    }
+
+    /// set gamma correction index
+    virtual void setGammaIndex(int index);
+
     /** \brief get glyph info
         \param glyph is pointer to glyph_info_t struct to place retrieved info
         \return true if glyh was found

@@ -422,6 +422,14 @@ public:
         return HINTING_MODE_AUTOHINT;
     }
 
+    /// get gamma correction index
+    virtual int getGammaIndex() const {
+        return 0;
+    }
+
+    /// set gamma correction index
+    virtual void setGammaIndex(int index) { }
+
     /// clear cache
     virtual void clearCache() { }
 
