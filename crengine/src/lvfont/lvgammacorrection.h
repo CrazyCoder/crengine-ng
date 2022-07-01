@@ -28,7 +28,7 @@ public:
     /**
      * @brief Gamma table index where no gamma correction is required, i.e. gamma = 1.0
      */
-    static int NoCorrectionIndex;
+    static const int NoCorrectionIndex;
 
     /**
      * @brief Returns the nearest index in the gamma table

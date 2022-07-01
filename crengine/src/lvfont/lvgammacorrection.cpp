@@ -22,17 +22,19 @@
 #include "lvgammacorrection.h"
 #include "lvgammatbl.h"
 
-int LVGammaCorrection::NoCorrectionIndex = GAMMA_NO_CORRECTION_INDEX;
+const int LVGammaCorrection::NoCorrectionIndex = GAMMA_NO_CORRECTION_INDEX;
+
+static inline float my_fabs(float value) {
+    if (value < 0.0f)
+        return -value;
+    return value;
+}
 
 int LVGammaCorrection::getIndex(float gamma) {
     int index = 0;
-    float min = lvgammatbl_data[0].gamma - gamma;
-    if (min < 0)
-        min = -min;
+    float min = my_fabs(lvgammatbl_data[0].gamma - gamma);
     for (int i = 1; i < GAMMA_LEVELS; i++) {
-        float diff = lvgammatbl_data[i].gamma - gamma;
-        if (diff < 0)
-            diff = -diff;
+        float diff = my_fabs(lvgammatbl_data[i].gamma - gamma);
         if (diff < min) {
             min = diff;
             index = i;
