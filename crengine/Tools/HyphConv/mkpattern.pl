@@ -77,8 +77,8 @@ sub makeConversion($$$) {
     foreach (<$infh>) {
         my_chomp;
         if ($state == 0) {
-            if (m/^%.*$/) {
-                print $outfh ("$_\n");
+            if (m/^% {0,1}(.*)$/) {
+                print $outfh ("$1\n");
                 next;
             }
             if (m/^\\patterns\{.*$/) {
