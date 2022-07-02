@@ -223,3 +223,40 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     CRLog::info("Finished SimpleHyphTest");
     CRLog::info("=======================");
 }
+
+TEST_F(HyphenationTests, GetHyphMethodTest) {
+    CRLog::info("==========================");
+    CRLog::info("Starting GetHyphMethodTest");
+
+    HyphMethod* methodNone = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_NONE));
+    HyphMethod* methodAlgo = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_ALGORITHM));
+    HyphMethod* methodSoftHyphens = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_SOFTHYPHENS));
+    HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"), 2, 3);
+
+    ASSERT_NE(methodNone, nullptr);
+    EXPECT_EQ(methodNone->getCount(), 0);
+    EXPECT_NE(methodNone, methodAlgo);
+    EXPECT_NE(methodNone, methodSoftHyphens);
+    EXPECT_NE(methodNone, methodDict_EN_US);
+
+    ASSERT_NE(methodAlgo, nullptr);
+    EXPECT_EQ(methodAlgo->getCount(), 0);
+    EXPECT_NE(methodAlgo, methodNone);
+    EXPECT_NE(methodAlgo, methodSoftHyphens);
+    EXPECT_NE(methodAlgo, methodDict_EN_US);
+
+    ASSERT_NE(methodSoftHyphens, nullptr);
+    EXPECT_EQ(methodSoftHyphens->getCount(), 0);
+    EXPECT_NE(methodSoftHyphens, methodNone);
+    EXPECT_NE(methodSoftHyphens, methodAlgo);
+    EXPECT_NE(methodSoftHyphens, methodDict_EN_US);
+
+    ASSERT_NE(methodDict_EN_US, nullptr);
+    EXPECT_GT(methodDict_EN_US->getCount(), 3000);
+    EXPECT_NE(methodDict_EN_US, methodNone);
+    EXPECT_NE(methodDict_EN_US, methodAlgo);
+    EXPECT_NE(methodDict_EN_US, methodSoftHyphens);
+
+    CRLog::info("Finished GetHyphMethodTest");
+    CRLog::info("==========================");
+}
