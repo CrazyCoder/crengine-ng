@@ -48,10 +48,10 @@ static bool langStartsWith(const lString32 lang_tag, const char* prefix) {
 #define LANG_STARTS_WITH_EACH_1_END  false
 #define LANG_STARTS_WITH_EACH_2_END  false
 
+#if 1
+
 // (hyph_filename_prefix added because CoolReader may still have both
 // current "Italian.pattern" and old "Italian_hyphen_(Alan).pdb".)
-// (Romanian and Ukrainian have the prefix truncated because previous
-// pattern files, still in CoolReader, had these truncated names.)
 static struct
 {
     const char* lang_tag;
@@ -94,7 +94,7 @@ static struct
     { "pl", "Polish", "Polish.pattern", 2, 2 },
     { "pt-BR", "Portuguese_BR", "Portuguese_BR.pattern", 2, 3 },
     { "pt", "Portuguese", "Portuguese.pattern", 2, 3 },
-    { "ro", "Roman", "Romanian.pattern", 2, 2 }, // truncated prefix (see above)
+    { "ro", "Romanian", "Romanian.pattern", 2, 2 },
     { "rm", "Romansh", "Romansh.pattern", 2, 2 },
     { "ru-GB", "Russian_EnGB", "Russian_EnGB.pattern", 2, 2 },
     { "ru-US", "Russian_EnUS", "Russian_EnUS.pattern", 2, 2 },
@@ -105,7 +105,7 @@ static struct
     { "es", "Spanish", "Spanish.pattern", 2, 2 },
     { "sv", "Swedish", "Swedish.pattern", 2, 2 },
     { "tr", "Turkish", "Turkish.pattern", 2, 2 },
-    { "uk", "Ukrain", "Ukrainian.pattern", 2, 2 }, // truncated prefix (see above)
+    { "uk", "Ukrainian", "Ukrainian.pattern", 2, 2 },
     { "cy", "Welsh", "Welsh.pattern", 2, 3 },
     { "zu", "Zulu", "Zulu.pattern", 2, 1 }, // defaulting to 2,1, left hyphenmin might need tweaking
     // No-lang hyph methods, for legacy HyphMan methods: other lang properties will be from English
@@ -114,6 +114,8 @@ static struct
     { "en#@algorithm", "@algorithm", "@algorithm", 2, 2 },
     { NULL, NULL, NULL, 0, 0 }
 };
+
+#endif
 
 // Init global TextLangMan members
 lString32 TextLangMan::_main_lang = TEXTLANG_DEFAULT_MAIN_LANG_32;
