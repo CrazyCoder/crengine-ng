@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-uk.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Ukrainian" lang="uk"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern>2а1</pattern>
 <pattern>а3а</pattern>
 <pattern>а3е</pattern>

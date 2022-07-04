@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-lv.tex
   Version: 0.3
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Latvian" lang="lv"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern>d4z</pattern>
   <pattern>d4ž</pattern>
   <pattern>a2i</pattern>

@@ -4,7 +4,9 @@
 
   https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sr-cyrl.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Serbian" lang="sr"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern>т2ј</pattern>
   <pattern>т2л</pattern>
   <pattern>т2љ</pattern>

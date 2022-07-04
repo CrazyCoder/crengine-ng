@@ -3,7 +3,9 @@
   Taken from: https://github.com/pok49/vortodivido/blob/master/eo.pattern
   Version: 2020-10-02
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Esperanto" lang="eo"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern>1ŝ2tejn</pattern>
 <pattern>1a2ĉ1aj </pattern>
 <pattern>1a2ĵ1aj </pattern>

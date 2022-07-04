@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sk.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Slovak" lang="sk"
+    lefthyphenmin="2" righthyphenmin="3">
 <pattern>a1</pattern>
 <pattern>á1</pattern>
 <pattern>ä1</pattern>

@@ -39,7 +39,9 @@
 * Corrected hyphenation: kraj-ob-raz, ni-gdy, ni-gdzie, skąd-inąd,
 * -szczy-z-na, wcześ-nie, współ-czes-ny, do-czes-ny, ów-czes-ny, in-ter-ak-cja.
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Polish" lang="pl"
+    lefthyphenmin="2" righthyphenmin="2">
 	<pattern> ć8</pattern>
 	<pattern> 4ć3ć8</pattern>
 	<pattern> ćł8</pattern>

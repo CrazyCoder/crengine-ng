@@ -5,7 +5,9 @@
 % If one should rename or delete this file, please update the relevant line
 % https://github.com/koreader/crengine/blob/9e2cb90edb580688e97f42c3a3397702dc2081bd/crengine/include/hyphman.h#L83
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="English (US)" lang="en"
+    lefthyphenmin="2" righthyphenmin="3">
 <pattern> ach4</pattern>
 <pattern> ad4der</pattern>
 <pattern> af1t</pattern>

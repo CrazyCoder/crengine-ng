@@ -3,7 +3,9 @@
 % 20180613
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-fi.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Finnish" lang="fi"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern>1ba</pattern>
 <pattern>1be</pattern>
 <pattern>1bi</pattern>

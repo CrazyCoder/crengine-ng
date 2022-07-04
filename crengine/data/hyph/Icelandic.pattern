@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-is.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Icelandic" lang="is"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern> að3</pattern>
 <pattern> aða4</pattern>
 <pattern> aðk2</pattern>

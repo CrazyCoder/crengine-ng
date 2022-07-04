@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ka.tex
   Version: 0.3
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Georgian" lang="ka"
+    lefthyphenmin="1" righthyphenmin="2">
   <pattern> ავ4რწყა</pattern>
   <pattern> აი2ა</pattern>
   <pattern> ერ2თხ</pattern>

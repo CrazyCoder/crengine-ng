@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-eu.tex
   Version: 0.1
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Basque" lang="eu"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern>1ba</pattern>
   <pattern>1be</pattern>
   <pattern>1bo</pattern>

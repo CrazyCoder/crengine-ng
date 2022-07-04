@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex
   Version: 21 October 2017
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Bulgarian" lang="bg"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern> антиа4</pattern>
   <pattern> антиб4</pattern>
   <pattern> антив4</pattern>

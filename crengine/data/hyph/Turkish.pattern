@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf8"?>
 <!--
-       hyphenations description for FBReader/CoolReader
+       hyphenations description for coolreader-ng
        from the original file:
 
 % hyph-tr.tex
@@ -38,7 +38,9 @@
 % - 2011-08-10 - add LPPL licence with permission of Pierre A. MacKay
 % 
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Turkish" lang="tr"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern>2a1</pattern>
   <pattern>2â1</pattern>
   <pattern>2e1</pattern>

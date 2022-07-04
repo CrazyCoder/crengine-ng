@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf8"?>
 <!--
-       hyphenations description for FBReader/CoolReader
+       hyphenations description for coolreader-ng
        from the original file:
 
 % This is the file hyph-gl.tex, version 2.4
@@ -22,7 +22,9 @@
 %
 % Note that there is no 'j' nor 'y' in Galician
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Galician" lang="gl"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern>3ï3a</pattern>
   <pattern>a1a</pattern>
   <pattern>e1e</pattern>

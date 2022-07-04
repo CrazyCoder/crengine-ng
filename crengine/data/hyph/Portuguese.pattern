@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-pt.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Portuguese" lang="pt"
+    lefthyphenmin="2" righthyphenmin="3">
 <pattern>1b2l</pattern>
 <pattern>1b2r</pattern>
 <pattern>1ba</pattern>

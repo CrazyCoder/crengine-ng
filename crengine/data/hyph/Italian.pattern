@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-it.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Italian" lang="it"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern> a3p2n</pattern>
 <pattern> anti1</pattern>
 <pattern> anti3m2n</pattern>

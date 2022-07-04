@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/LibreOffice/dictionaries/blob/master/zu_ZA/hyph_zu_ZA.dic
   Version: 2007
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Zulu" lang="zu"
+    lefthyphenmin="2" righthyphenmin="1">
   <pattern>a1</pattern>
   <pattern>e1</pattern>
   <pattern>i1</pattern>

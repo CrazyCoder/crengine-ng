@@ -112,7 +112,9 @@ preamble of de-1996_hyphenmin3-2021-03-21.pat
 \patterns{%
  end of preamble 
  -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="German" lang="de"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern> aa4l</pattern>
 <pattern> ab3a</pattern>
 <pattern> abar4</pattern>

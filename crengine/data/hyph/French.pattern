@@ -27,7 +27,9 @@
 % note : au-jour-d'hui and pru-d'homme won't work if min right length is > 1
 %
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="French" lang="fr"
+    lefthyphenmin="2" righthyphenmin="1">
 <pattern> a4</pattern>
 <pattern> â4</pattern>
 <pattern> á4</pattern>

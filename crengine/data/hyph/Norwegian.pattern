@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf8"?>
 <!--
-       hyphenations description for FBReader/CoolReader
+       hyphenations description for coolreader-ng
        from the original file:
 
 % Encoding: UTF-8
@@ -51,7 +51,9 @@
 %   nohyphbx.tex, is more extensive and is recommended.
 %
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Norwegian" lang="no"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern> a4</pattern>
   <pattern> aa4</pattern>
   <pattern> ab4ba</pattern>

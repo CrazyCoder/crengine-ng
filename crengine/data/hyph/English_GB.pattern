@@ -2,7 +2,9 @@
 <!--
 % 201800612
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="English (GB)" lang="en-GB"
+    lefthyphenmin="2" righthyphenmin="3">
 <pattern> ab4i</pattern>
 <pattern> ab3ol</pattern>
 <pattern> ace4</pattern>
