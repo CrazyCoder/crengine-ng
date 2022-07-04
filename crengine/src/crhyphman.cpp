@@ -635,13 +635,38 @@ public:
 class HyphPatternReader: public LVXMLParserCallback
 {
 protected:
-    bool insidePatternTag;
-    lString32Collection& data;
+    bool _insidePatternTag;
+    bool _descriptionTagProcessing;
+    lString32Collection& _dataRef;
+    lString32 _title;
+    lString32 _langTag;
+    int _left_hyphen_min;
+    int _right_hyphen_min;
 public:
     HyphPatternReader(lString32Collection& result)
-            : insidePatternTag(false)
-            , data(result) {
+            : _insidePatternTag(false)
+            , _descriptionTagProcessing(false)
+            , _dataRef(result)
+            , _left_hyphen_min(-1)
+            , _right_hyphen_min(-1) {
         result.clear();
+    }
+    const lString32& GetTitle() const {
+        return _title;
+    }
+    const lString32& GetLangTag() const {
+        return _langTag;
+    }
+    int GetLeftHyphenMin() const {
+        return _left_hyphen_min;
+    }
+    int GetRightHyphenMin() const {
+        return _right_hyphen_min;
+    }
+    bool isValid() const {
+        return !_title.empty() && !_langTag.empty() &&
+               _left_hyphen_min > 0 && _right_hyphen_min > 0 &&
+               _dataRef.length() > 0;
     }
     /// called on parsing end
     virtual void OnStop() { }
@@ -650,25 +675,48 @@ public:
     /// called on opening tag
     virtual ldomNode* OnTagOpen(const lChar32* nsname, const lChar32* tagname) {
         CR_UNUSED(nsname);
-        if (!lStr_cmp(tagname, "pattern")) {
-            insidePatternTag = true;
+        if (!lStr_cmp(tagname, "HyphenationDescription")) {
+            _descriptionTagProcessing = true;
+        } else if (!lStr_cmp(tagname, "pattern")) {
+            _insidePatternTag = true;
+            _descriptionTagProcessing = false;
+        } else {
+            _descriptionTagProcessing = false;
         }
         return NULL;
     }
     /// called on closing
     virtual void OnTagClose(const lChar32* nsname, const lChar32* tagname, bool self_closing_tag = false) {
         CR_UNUSED2(nsname, tagname);
-        insidePatternTag = false;
+        _descriptionTagProcessing = false;
+        _insidePatternTag = false;
     }
     /// called on element attribute
     virtual void OnAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue) {
-        CR_UNUSED3(nsname, attrname, attrvalue);
+        //CR_UNUSED3(nsname, attrname, attrvalue);
+        if (_descriptionTagProcessing) {
+            if (!lStr_cmp(attrname, "title")) {
+                _title = lString32(attrvalue);
+            } else if (!lStr_cmp(attrname, "lang")) {
+                _langTag = lString32(attrvalue);
+            } else if (!lStr_cmp(attrname, "lefthyphenmin")) {
+                lString32 val(attrvalue);
+                int left;
+                if (val.atoi(left))
+                    _left_hyphen_min = left;
+            } else if (!lStr_cmp(attrname, "righthyphenmin")) {
+                lString32 val(attrvalue);
+                int right;
+                if (val.atoi(right))
+                    _right_hyphen_min = right;
+            }
+        }
     }
     /// called on text
     virtual void OnText(const lChar32* text, int len, lUInt32 flags) {
         CR_UNUSED(flags);
-        if (insidePatternTag)
-            data.add(lString32(text, len));
+        if (_insidePatternTag)
+            _dataRef.add(lString32(text, len));
     }
     /// add named BLOB data to document
     virtual bool OnBlob(lString32 name, const lUInt8* data, int size) {
@@ -814,8 +862,14 @@ bool TexHyph::load(LVStreamRef stream) {
             return false;
         if (!parser.Parse())
             return false;
+        if (!reader.isValid()) {
+            CRLog::error("Invalid/incomplete hyphenation dictionary!");
+            return false;
+        }
         if (!data.length())
             return false;
+        _left_hyphen_min = reader.GetLeftHyphenMin();
+        _right_hyphen_min = reader.GetRightHyphenMin();
         for (int i = 0; i < (int)data.length(); i++) {
             data[i].lowercase();
             TexPattern* pattern = new TexPattern(data[i]);
@@ -839,8 +893,10 @@ bool TexHyph::load(LVStreamRef stream) {
 
 bool TexHyph::load(lString32 fileName) {
     LVStreamRef stream = LVOpenFileStream(fileName.c_str(), LVOM_READ);
-    if (stream.isNull())
+    if (stream.isNull()) {
+        CRLog::error("Failed to open hyphenation dictionary: %s\n", LCSTR(fileName));
         return false;
+    }
     return load(stream);
 }
 
