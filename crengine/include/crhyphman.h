@@ -45,10 +45,10 @@ protected:
     int _left_hyphen_min;
     int _right_hyphen_min;
 public:
-    HyphMethod(lString32 id, int leftHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN, int rightHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN)
+    HyphMethod(lString32 id)
             : _id(id)
-            , _left_hyphen_min(leftHyphenMin)
-            , _right_hyphen_min(rightHyphenMin) { }
+            , _left_hyphen_min(HYPHMETHOD_DEFAULT_HYPHEN_MIN)
+            , _right_hyphen_min(HYPHMETHOD_DEFAULT_HYPHEN_MIN) { }
     lString32 getId() {
         return _id;
     }
@@ -167,8 +167,8 @@ class HyphMan
     static HyphDictionaryList* _dictList;                            // available hyph dict files (+ none/algo/softhyphens)
     static LVHashTable<lString32, HyphMethod*> _loaded_hyph_methods; // methods with loaded dictionaries
     static HyphDataLoader* _dataLoader;
-    static int _LeftHyphenMin;
-    static int _RightHyphenMin;
+    static int _OverriddenLeftHyphenMin;
+    static int _OverriddenRightHyphenMin;
     static int _TrustSoftHyphens;
 public:
     static void uninit();
@@ -182,21 +182,36 @@ public:
         return _dictList->activate(id);
     }
     static HyphDictionary* getSelectedDictionary(); // was: { return _selectedDictionary; }
-    static int getLeftHyphenMin() {
-        return _LeftHyphenMin;
+    static int getOverriddenLeftHyphenMin() {
+        return _OverriddenLeftHyphenMin;
     }
-    static int getRightHyphenMin() {
-        return _RightHyphenMin;
+    static int getOverriddenRightHyphenMin() {
+        return _OverriddenRightHyphenMin;
     }
-    static bool setLeftHyphenMin(int left_hyphen_min);
-    static bool setRightHyphenMin(int right_hyphen_min);
+    /**
+     * @brief Overrides the minimum left hyphen indent.
+     * @param left_hyphen_min minimum left hyphen indent, may be from HYPH_MIN_HYPHEN_MIN (0) to HYPH_MAX_HYPHEN_MIN (10).
+     * @return true if overridden left hyphen minimum is set, false if that value has not changed.
+     *
+     * A value greater than 1 overrides the minimum left indent before the hyphen.
+     * A value of HYPH_MIN_HYPHEN_MIN (0) means no override, i.e. that the value defined in the hyphenation dictionary will be used.
+     */
+    static bool overrideLeftHyphenMin(int left_hyphen_min);
+    /**
+     * @brief Overrides the minimum right hyphen indent.
+     * @param left_hyphen_min minimum right hyphen indent, may be from HYPH_MIN_HYPHEN_MIN (0) to HYPH_MAX_HYPHEN_MIN (10).
+     * @return true if overridden right hyphen minimum is set, false if that value has not changed.
+     *
+     * A value greater than 1 overrides the minimum right indent before the hyphen.
+     * A value of HYPH_MIN_HYPHEN_MIN (0) means no override, i.e. that the value defined in the hyphenation dictionary will be used.
+     */
+    static bool overrideRightHyphenMin(int right_hyphen_min);
     static int getTrustSoftHyphens() {
         return _TrustSoftHyphens;
     }
     static bool setTrustSoftHyphens(int trust_soft_hyphen);
     static bool isEnabled();
-    static HyphMethod* getHyphMethodForDictionary(lString32 id, int leftHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN,
-                                                  int rightHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN);
+    static HyphMethod* getHyphMethodForDictionary(lString32 id);
 
     HyphMan();
     ~HyphMan();

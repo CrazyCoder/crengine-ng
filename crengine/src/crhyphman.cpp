@@ -50,8 +50,8 @@
 
 #endif
 
-int HyphMan::_LeftHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
-int HyphMan::_RightHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
+int HyphMan::_OverriddenLeftHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
+int HyphMan::_OverriddenRightHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
 int HyphMan::_TrustSoftHyphens = HYPH_DEFAULT_TRUST_SOFT_HYPHENS;
 LVHashTable<lString32, HyphMethod*> HyphMan::_loaded_hyph_methods(16);
 HyphDataLoader* HyphMan::_dataLoader = NULL;
@@ -77,7 +77,7 @@ public:
     bool match(const lChar32* str, char* mask);
     virtual bool hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* flags, lUInt16 hyphCharWidth, lUInt16 maxWidth, size_t flagSize);
     void addPattern(TexPattern* pattern);
-    TexHyph(lString32 id = HYPH_DICT_ID_DICTIONARY, int leftHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN, int rightHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN);
+    TexHyph(lString32 id = HYPH_DICT_ID_DICTIONARY);
     virtual ~TexHyph();
     bool load(LVStreamRef stream);
     bool load(lString32 fileName);
@@ -224,17 +224,17 @@ void HyphMan::setDataLoader(HyphDataLoader* loader) {
     _dataLoader = loader;
 }
 
-bool HyphMan::setLeftHyphenMin(int left_hyphen_min) {
+bool HyphMan::overrideLeftHyphenMin(int left_hyphen_min) {
     if (left_hyphen_min >= HYPH_MIN_HYPHEN_MIN && left_hyphen_min <= HYPH_MAX_HYPHEN_MIN) {
-        HyphMan::_LeftHyphenMin = left_hyphen_min;
+        HyphMan::_OverriddenLeftHyphenMin = left_hyphen_min;
         return true;
     }
     return false;
 }
 
-bool HyphMan::setRightHyphenMin(int right_hyphen_min) {
+bool HyphMan::overrideRightHyphenMin(int right_hyphen_min) {
     if (right_hyphen_min >= HYPH_MIN_HYPHEN_MIN && right_hyphen_min <= HYPH_MAX_HYPHEN_MIN) {
-        HyphMan::_RightHyphenMin = right_hyphen_min;
+        HyphMan::_OverriddenRightHyphenMin = right_hyphen_min;
         return true;
     }
     return false;
@@ -265,7 +265,7 @@ HyphDictionary* HyphMan::getSelectedDictionary() {
     return dict;
 }
 
-HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id, int leftHyphenMin, int rightHyphenMin) {
+HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id) {
     if (id.empty() || NULL == _dataLoader)
         return &NO_HYPH;
     HyphDictionary* p = _dictList->find(id);
@@ -287,7 +287,7 @@ HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id, int leftHyphenMin,
         CRLog::error("Cannot open hyphenation dictionary %s", UnicodeToUtf8(id).c_str());
         return &NO_HYPH;
     }
-    TexHyph* newmethod = new TexHyph(id, leftHyphenMin, rightHyphenMin);
+    TexHyph* newmethod = new TexHyph(id);
     if (!newmethod->load(stream)) {
         CRLog::error("Cannot open hyphenation dictionary %s", UnicodeToUtf8(id).c_str());
         delete newmethod;
@@ -725,8 +725,8 @@ public:
     }
 };
 
-TexHyph::TexHyph(lString32 id, int leftHyphenMin, int rightHyphenMin)
-        : HyphMethod(id, leftHyphenMin, rightHyphenMin) {
+TexHyph::TexHyph(lString32 id)
+        : HyphMethod(id) {
     memset(table, 0, sizeof(table));
     _hash = 123456;
     _pattern_count = 0;
@@ -851,7 +851,10 @@ bool TexHyph::load(LVStreamRef stream) {
                 p += sz + sz + 1;
             }
         }
-
+        // TODO: set correct per language left/right hypnenation minimum
+        //  or remove support of this hyphenation dictionary format.
+        _left_hyphen_min = HYPHMETHOD_DEFAULT_HYPHEN_MIN;
+        _right_hyphen_min = HYPHMETHOD_DEFAULT_HYPHEN_MIN;
         return patternCount > 0;
     } else {
         // tex xml format as for FBReader
@@ -1013,8 +1016,8 @@ bool TexHyph::hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* fl
 
     // Use HyphMan global left/right hyphen min, unless set to 0 (the default)
     // which means we should use the HyphMethod specific values.
-    int left_hyphen_min = HyphMan::_LeftHyphenMin ? HyphMan::_LeftHyphenMin : _left_hyphen_min;
-    int right_hyphen_min = HyphMan::_RightHyphenMin ? HyphMan::_RightHyphenMin : _right_hyphen_min;
+    int left_hyphen_min = HyphMan::_OverriddenLeftHyphenMin > 0 ? HyphMan::_OverriddenLeftHyphenMin : _left_hyphen_min;
+    int right_hyphen_min = HyphMan::_OverriddenRightHyphenMin > 0 ? HyphMan::_OverriddenRightHyphenMin : _right_hyphen_min;
 
     // Moves allowed hyphenation positions from 'mask' to the provided 'flags',
     // taking soft-hyphen shifts into account
@@ -1058,8 +1061,8 @@ bool AlgoHyph::hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* f
 
     // Use HyphMan global left/right hyphen min, unless set to 0 (the default)
     // which means we should use the HyphMethod specific values.
-    int left_hyphen_min = HyphMan::_LeftHyphenMin ? HyphMan::_LeftHyphenMin : _left_hyphen_min;
-    int right_hyphen_min = HyphMan::_RightHyphenMin ? HyphMan::_RightHyphenMin : _right_hyphen_min;
+    int left_hyphen_min = HyphMan::_OverriddenLeftHyphenMin ? HyphMan::_OverriddenLeftHyphenMin : _left_hyphen_min;
+    int right_hyphen_min = HyphMan::_OverriddenRightHyphenMin ? HyphMan::_OverriddenRightHyphenMin : _right_hyphen_min;
 
     lUInt16 chprops[WORD_LENGTH];
     if (len > WORD_LENGTH - 2)

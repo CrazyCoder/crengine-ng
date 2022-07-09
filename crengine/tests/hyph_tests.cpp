@@ -77,7 +77,7 @@ TEST_F(HyphenationTests, HyphTestEnglishUS) {
     CRLog::info("===========================");
     CRLog::info("Starting HyphTestEnglishUS");
 
-    HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"), 2, 3);
+    HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
     ASSERT_NE(method, nullptr);
     ASSERT_GT(method->getCount(), 0);
 
@@ -110,7 +110,7 @@ TEST_F(HyphenationTests, HyphTestEnglishGB) {
     CRLog::info("===========================");
     CRLog::info("Starting HyphTestEnglishGB");
 
-    HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_GB.pattern"), 2, 3);
+    HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_GB.pattern"));
     ASSERT_NE(method, nullptr);
     ASSERT_GT(method->getCount(), 0);
 
@@ -143,7 +143,7 @@ TEST_F(HyphenationTests, HyphTestRussian) {
     CRLog::info("===========================");
     CRLog::info("Starting HyphTestEnglishRU");
 
-    HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("Russian.pattern"), 2, 2);
+    HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("Russian.pattern"));
     ASSERT_NE(method, nullptr);
     ASSERT_GT(method->getCount(), 0);
 
@@ -191,7 +191,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     // Dictionary with one pattern 'n1v2'.
     dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph1"), cs32("id=testhyph1.pattern"), cs32(TESTS_DATADIR "test-hyph/testhyph1.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
-    method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph1.pattern"), 2, 3);
+    method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph1.pattern"));
     ASSERT_NE(method, nullptr);
     ASSERT_GT(method->getCount(), 0);
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-versations");
@@ -199,7 +199,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     // Dictionary with patterns 'n1v2', 'on2v2'.
     dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph2"), cs32("id=testhyph2.pattern"), cs32(TESTS_DATADIR "test-hyph/testhyph2.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
-    method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph2.pattern"), 2, 3);
+    method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph2.pattern"));
     ASSERT_NE(method, nullptr);
     ASSERT_GT(method->getCount(), 0);
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "conversations");
@@ -207,7 +207,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     // Dictionary with patterns 'n1v2', 'on2v2', con1v2.
     dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph3"), cs32("id=testhyph3.pattern"), cs32(TESTS_DATADIR "test-hyph/testhyph3.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
-    method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph3.pattern"), 2, 3);
+    method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph3.pattern"));
     ASSERT_NE(method, nullptr);
     ASSERT_GT(method->getCount(), 0);
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "conversations");
@@ -215,7 +215,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     // Dictionary with patterns 'n1v2', 'on2v2', con3v2.
     dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph4"), cs32("id=testhyph4.pattern"), cs32(TESTS_DATADIR "test-hyph/testhyph4.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
-    method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph4.pattern"), 2, 3);
+    method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph4.pattern"));
     ASSERT_NE(method, nullptr);
     ASSERT_GT(method->getCount(), 0);
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-versations");
@@ -231,7 +231,7 @@ TEST_F(HyphenationTests, GetHyphMethodTest) {
     HyphMethod* methodNone = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_NONE));
     HyphMethod* methodAlgo = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_ALGORITHM));
     HyphMethod* methodSoftHyphens = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_SOFTHYPHENS));
-    HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"), 2, 3);
+    HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
 
     ASSERT_NE(methodNone, nullptr);
     EXPECT_EQ(methodNone->getCount(), 0);
