@@ -260,3 +260,37 @@ TEST_F(HyphenationTests, GetHyphMethodTest) {
     CRLog::info("Finished GetHyphMethodTest");
     CRLog::info("==========================");
 }
+
+TEST_F(HyphenationTests, HyphTestOverrideHyphenMin) {
+    CRLog::info("==================================");
+    CRLog::info("Starting HyphTestOverrideHyphenMin");
+
+    HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
+    ASSERT_NE(method, nullptr);
+    ASSERT_GT(method->getCount(), 0);
+
+    // Override left & right hypnenmins
+    HyphMan::overrideLeftHyphenMin(1);
+    HyphMan::overrideRightHyphenMin(1);
+
+    EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-ver-sa-tion-s");
+    EXPECT_STREQ(doHyphenation(method, "moment").c_str(), "mo-men-t");
+    EXPECT_STREQ(doHyphenation(method, "shoulders").c_str(), "shoul-der-s");
+    EXPECT_STREQ(doHyphenation(method, "however").c_str(), "how-ev-er");
+    EXPECT_STREQ(doHyphenation(method, "history").c_str(), "his-to-ry");
+    EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-ur-al");
+
+    // Set no override for left & right hypnenmins
+    HyphMan::overrideLeftHyphenMin(0);
+    HyphMan::overrideRightHyphenMin(0);
+
+    EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-ver-sa-tions");
+    EXPECT_STREQ(doHyphenation(method, "moment").c_str(), "mo-ment");
+    EXPECT_STREQ(doHyphenation(method, "shoulders").c_str(), "shoul-ders");
+    EXPECT_STREQ(doHyphenation(method, "however").c_str(), "how-ever");
+    EXPECT_STREQ(doHyphenation(method, "history").c_str(), "his-tory");
+    EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-ural");
+
+    CRLog::info("Finished HyphTestOverrideHyphenMin");
+    CRLog::info("==================================");
+}
