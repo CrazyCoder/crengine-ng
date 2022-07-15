@@ -11,11 +11,7 @@
 #define PROP_FONT_FACE               "font.face.default"
 #define PROP_FONT_BASE_WEIGHT        "font.face.base.weight" // replaces PROP_FONT_WEIGHT_EMBOLDEN ("font.face.weight.embolden")
 #define PROP_BACKGROUND_COLOR        "background.color.default"
-#define PROP_BACKGROUND_IMAGE        "background.image.filename"
 #define PROP_TXT_OPTION_PREFORMATTED "crengine.file.txt.preformatted"
-#define PROP_LOG_FILENAME            "crengine.log.filename"
-#define PROP_LOG_LEVEL               "crengine.log.level"
-#define PROP_LOG_AUTOFLUSH           "crengine.log.autoflush"
 #define PROP_FONT_SIZE               "crengine.font.size"
 #define PROP_FALLBACK_FONT_FACES     "crengine.font.fallback.faces"
 #define PROP_STATUS_FONT_COLOR       "crengine.page.header.font.color"
@@ -30,26 +26,22 @@
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
 #define PROP_ROTATE_ANGLE "window.rotate.angle"
 #endif
-#define PROP_EMBEDDED_STYLES              "crengine.doc.embedded.styles.enabled"
-#define PROP_EMBEDDED_FONTS               "crengine.doc.embedded.fonts.enabled"
-#define PROP_NONLINEAR_PAGEBREAK          "crengine.doc.nonlinear.pagebreak.force"
-#define PROP_DISPLAY_INVERSE              "crengine.display.inverse"
-#define PROP_DISPLAY_FULL_UPDATE_INTERVAL "crengine.display.full.update.interval"
-#define PROP_DISPLAY_TURBO_UPDATE_MODE    "crengine.display.turbo.update"
-#define PROP_STATUS_LINE                  "window.status.line"
-#define PROP_BOOKMARK_ICONS               "crengine.bookmarks.icons"
-#define PROP_FOOTNOTES                    "crengine.footnotes"
-#define PROP_SHOW_TIME                    "window.status.clock"
-#define PROP_SHOW_TIME_12HOURS            "window.status.clock.12hours"
-#define PROP_SHOW_TITLE                   "window.status.title"
-#define PROP_STATUS_CHAPTER_MARKS         "crengine.page.header.chapter.marks"
-#define PROP_SHOW_BATTERY                 "window.status.battery"
-#define PROP_SHOW_POS_PERCENT             "window.status.pos.percent"
-#define PROP_SHOW_PAGE_COUNT              "window.status.pos.page.count"
-#define PROP_SHOW_PAGE_NUMBER             "window.status.pos.page.number"
-#define PROP_SHOW_BATTERY_PERCENT         "window.status.battery.percent"
-#define PROP_LANDSCAPE_PAGES              "window.landscape.pages"
-#define PROP_AUTOSAVE_BOOKMARKS           "crengine.autosave.bookmarks"
+#define PROP_EMBEDDED_STYLES      "crengine.doc.embedded.styles.enabled"
+#define PROP_EMBEDDED_FONTS       "crengine.doc.embedded.fonts.enabled"
+#define PROP_NONLINEAR_PAGEBREAK  "crengine.doc.nonlinear.pagebreak.force"
+#define PROP_DISPLAY_INVERSE      "crengine.display.inverse"
+#define PROP_STATUS_LINE          "window.status.line"
+#define PROP_FOOTNOTES            "crengine.footnotes"
+#define PROP_SHOW_TIME            "window.status.clock"
+#define PROP_SHOW_TIME_12HOURS    "window.status.clock.12hours"
+#define PROP_SHOW_TITLE           "window.status.title"
+#define PROP_STATUS_CHAPTER_MARKS "crengine.page.header.chapter.marks"
+#define PROP_SHOW_BATTERY         "window.status.battery"
+#define PROP_SHOW_POS_PERCENT     "window.status.pos.percent"
+#define PROP_SHOW_PAGE_COUNT      "window.status.pos.page.count"
+#define PROP_SHOW_PAGE_NUMBER     "window.status.pos.page.number"
+#define PROP_SHOW_BATTERY_PERCENT "window.status.battery.percent"
+#define PROP_LANDSCAPE_PAGES      "window.landscape.pages"
 
 // Obsolete hyph settings:
 #define PROP_HYPHENATION_DICT_VALUE_NONE      "@none"
@@ -75,8 +67,6 @@
 // Max allowed added letter spacing (% of font size)
 #define PROP_FORMAT_MAX_ADDED_LETTER_SPACING_PERCENT "crengine.style.max.added.letter.spacing.percent"
 
-#define PROP_FILE_PROPS_FONT_SIZE "cr3.file.props.font.size"
-
 // default is 96 (1 css px = 1 screen px)
 // use 0 for old crengine behaviour (no support for absolute units and 1css px = 1 screen px)
 #define PROP_RENDER_DPI                   "crengine.render.dpi"
@@ -87,7 +77,6 @@
 #define PROP_CACHE_VALIDATION_ENABLED            "crengine.cache.validation.enabled"
 #define PROP_MIN_FILE_SIZE_TO_CACHE              "crengine.cache.filesize.min"
 #define PROP_FORCED_MIN_FILE_SIZE_TO_CACHE       "crengine.cache.forced.filesize.min"
-#define PROP_PROGRESS_SHOW_FIRST_PAGE            "crengine.progress.show.first.page"
 #define PROP_HIGHLIGHT_COMMENT_BOOKMARKS         "crengine.highlight.bookmarks"
 #define PROP_HIGHLIGHT_SELECTION_COLOR           "crengine.highlight.selection.color"
 #define PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT    "crengine.highlight.bookmarks.color.comment"

@@ -6406,14 +6406,12 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
                      300000); // ~6M
     props->setIntDef(PROP_FORCED_MIN_FILE_SIZE_TO_CACHE,
                      DOCUMENT_CACHING_MIN_SIZE); // 32K
-    props->setIntDef(PROP_PROGRESS_SHOW_FIRST_PAGE, 1);
 
     props->limitValueList(PROP_FONT_ANTIALIASING, aa_props,
                           sizeof(aa_props) / sizeof(int), 2);
     props->setHexDef(PROP_FONT_COLOR, 0x000000);
     props->setHexDef(PROP_BACKGROUND_COLOR, 0xFFFFFF);
     props->setHexDef(PROP_STATUS_FONT_COLOR, 0xFF000000);
-    props->setIntDef(PROP_AUTOSAVE_BOOKMARKS, 1);
 
     lString8 defFontFace;
     static const char* goodFonts[] = { "DejaVu Sans", "FreeSans",
@@ -6456,7 +6454,6 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->setBoolDef(PROP_PAGE_VIEW_MODE, true);
     props->setBoolDef(PROP_FOOTNOTES, true);
     props->setBoolDef(PROP_DISPLAY_INVERSE, false);
-    props->setBoolDef(PROP_BOOKMARK_ICONS, false);
     props->setBoolDef(PROP_FONT_KERNING_ENABLED, false);
     props->setBoolDef(PROP_FLOATING_PUNCTUATION, true);
     props->limitValueMinMax(PROP_HIGHLIGHT_COMMENT_BOOKMARKS, 0, 2, (int)highlight_mode_underline);
@@ -6480,11 +6477,6 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->limitValueList(PROP_PAGE_MARGIN_BOTTOM, margin_options, sizeof(margin_options) / sizeof(int), 6);
     props->limitValueList(PROP_PAGE_MARGIN_LEFT, margin_options, sizeof(margin_options) / sizeof(int), 6);
     props->limitValueList(PROP_PAGE_MARGIN_RIGHT, margin_options, sizeof(margin_options) / sizeof(int), 6);
-
-    static int screen_updates_options[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 14 };
-    props->limitValueList(PROP_DISPLAY_FULL_UPDATE_INTERVAL, screen_updates_options, sizeof(screen_updates_options) / sizeof(int), 1);
-    props->setBoolDef(PROP_DISPLAY_TURBO_UPDATE_MODE, false);
-    props->limitValueMinMax(PROP_STATUS_FONT_SIZE, MIN_STATUS_FONT_SIZE, MAX_STATUS_FONT_SIZE, INFO_FONT_SIZE);
 
     props->setBoolDef(PROP_TEXTLANG_EMBEDDED_LANGS_ENABLED, false);
     props->setBoolDef(PROP_TEXTLANG_HYPHENATION_ENABLED, true);
@@ -6521,8 +6513,6 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->setIntDef(PROP_RENDER_SCALE_FONT_WITH_DPI, DEF_RENDER_SCALE_FONT_WITH_DPI); // no scale
     props->setIntDef(PROP_RENDER_BLOCK_RENDERING_FLAGS, BLOCK_RENDERING_FLAGS_DEFAULT);
 #endif
-
-    props->setIntDef(PROP_FILE_PROPS_FONT_SIZE, 22);
 
     for (int i = 0; def_style_macros[i * 2]; i++)
         props->setStringDef(def_style_macros[i * 2], def_style_macros[i * 2 + 1]);
