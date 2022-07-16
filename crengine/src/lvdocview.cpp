@@ -6662,8 +6662,6 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
                           m_props->getBoolDef(PROP_SHOW_POS_PERCENT, false),
                           m_props->getBoolDef(PROP_SHOW_PAGE_NUMBER, true),
                           m_props->getBoolDef(PROP_SHOW_PAGE_COUNT, true));
-            //} else if ( name==PROP_BOOKMARK_ICONS ) {
-            //    enableBookmarkIcons( value==U"1" );
         } else if (name == PROP_FONT_SIZE) {
             int fontSize = props->getIntDef(PROP_FONT_SIZE, m_min_font_size);
             setFontSize(fontSize); //cr_font_sizes
