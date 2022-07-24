@@ -165,6 +165,10 @@ static css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 /// minimum EM width of page (prevents show two pages for windows that not enougn wide)
 #define MIN_EM_PER_PAGE 20
 
+static inline int myabs(int n) {
+    return n < 0 ? -n : n;
+}
+
 LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
         : m_bitsPerPixel(bitsPerPixel)
         , m_dx(400)
@@ -1373,18 +1377,19 @@ int LVDocView::getPageHeaderHeight() const {
         return 0;
     // Page header layout
     //---------------------------------------------------------------------------------------
-    //                                                                                           margin/2
-    //   Author    Title                                                          9,78% [67%]    text
-    //                                |                     |                   |           |    text + navbar (top part)
+    //                                                                                      |    header margin
+    //   Author    Title                                                         9,78% [67%]|    text
+    //                                |                     |                   |           |    navbar (top part)
     //==== ========== ==========-------------------------------------------------------------    navbar
     //                                |                     |                   |           |    navbar (bottom part)
     //---------------------------------------------------------------------------------------
-    int h = getInfoFont()->getHeight();
+    // Slightly reduce the height of the text at the expense of part of ascender and descender
+    int textH = (9 * getInfoFont()->getHeight() + 5) / 10;
     int navbarh = scaleForRenderDPI(HEADER_NAVBAR_H);
     int bh = m_batteryIcons.length() > 0 ? m_batteryIcons[0]->GetHeight() : 0;
-    if (bh + 2 > h)
-        h = bh + 2;
-    return h + (navbarh + HEADER_MARGIN + 1) / 2;
+    if (bh + 2 > textH)
+        textH = bh + 2;
+    return textH + HEADER_MARGIN + navbarh + 1;
 }
 
 /// calculate page header rectangle
@@ -1400,12 +1405,10 @@ void LVDocView::getPageHeaderRectangle(int pageIndex, lvRect& headerRc) const {
             case PAGE_HEADER_POS_TOP:
                 // header/status at page header
                 headerRc.bottom = headerRc.top + h;
-                headerRc.top += HEADER_MARGIN;
                 break;
             case PAGE_HEADER_POS_BOTTOM:
                 // header/status at page footer
                 headerRc.top = headerRc.bottom - h;
-                headerRc.bottom -= HEADER_MARGIN;
                 break;
             default:
                 break;
@@ -1744,6 +1747,7 @@ bool LVDocView::setBatteryState(int newState, int newChargingConn, int newCharge
 /// set list of battery icons to display battery state
 void LVDocView::setBatteryIcons(const LVRefVec<LVImageSource>& icons) {
     m_batteryIcons = icons;
+    REQUEST_RENDER("battery icons")
 }
 
 lString32 fitTextWidthWithEllipsis(lString32 text, LVFontRef font, int maxwidth) {
@@ -1815,7 +1819,6 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     for (int x = info.left; x < info.right; x++) {
         lUInt32 cl = 0xFFFFFFFF;
         int sz = thinw;
-        int szx = thinw;
         int boundCategory = 0;
         while (enableMarks && sbound_index < sbounds.length()) {
             int sx = info.left + sbounds[sbound_index] * (info.width() - 1) / 10000;
@@ -1823,7 +1826,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
                 sbound_index++;
                 continue;
             }
-            if (sx == x) {
+            if (myabs(sx - x) < thinw) {
                 boundCategory = 1;
             }
             break;
@@ -1844,11 +1847,10 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
                 if (boundCategory != 0)
                     sz = markh;
                 cl = cl1;
-                szx = markw;
             }
         }
         if (cl != 0xFFFFFFFF && sz > 0) {
-            drawbuf->FillRect(x, gpos - sz / 2, x + szx, gpos + sz / 2 + 1, cl);
+            drawbuf->FillRect(x, gpos - sz / 2, x + 1, gpos + sz / 2 + 1, cl);
         }
     }
 
@@ -1856,12 +1858,17 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     drawbuf->SetTextColor(cl1);
     lString32 text;
     int texty = 0;
+    int text_top = 0;
+    // center vertically
+    //  texty = <text_bounding_rect_top> + (<text_bounding_rect_bottom> - <text_bounding_rect_top> - <text_height>)/2
     switch (m_pageHeaderPos) {
         case PAGE_HEADER_POS_TOP:
-            texty = info.top + (gpos - info.top - thinw - m_infoFont->getHeight()) / 2;
+            text_top = info.top + HEADER_MARGIN;
+            texty = text_top + (gpos - thinw - text_top - m_infoFont->getHeight() + 1) / 2;
             break;
         case PAGE_HEADER_POS_BOTTOM:
-            texty = gpos + thinw + 2 + (info.bottom - gpos - thinw - m_infoFont->getHeight()) / 2;
+            text_top = gpos + thinw;
+            texty = text_top + (info.bottom - HEADER_MARGIN - text_top - m_infoFont->getHeight() + 1) / 2;
             break;
         default:
             break;
@@ -1887,15 +1894,15 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
             if (!batteryPercentNormalFont) {
                 lvRect brc = info;
                 brc.right -= 2;
-                //brc.top += 1;
-                //brc.bottom -= 2;
                 switch (m_pageHeaderPos) {
                     default:
                     case PAGE_HEADER_POS_TOP:
-                        brc.bottom -= markh;
+                        brc.top += HEADER_MARGIN;
+                        brc.bottom = gpos - thinw;
                         break;
                     case PAGE_HEADER_POS_BOTTOM:
                         brc.top = gpos + thinw + 1;
+                        brc.bottom -= HEADER_MARGIN;
                         break;
                 }
                 int batteryIconWidth = 28;
@@ -5834,10 +5841,6 @@ bool LVDocView::goToPageShortcutBookmark(int number) {
     goToBookmark(p);
     updateBookMarksRanges();
     return true;
-}
-
-inline int myabs(int n) {
-    return n < 0 ? -n : n;
 }
 
 static int calcBookmarkMatch(lvPoint pt, lvRect& rc1, lvRect& rc2, int type) {

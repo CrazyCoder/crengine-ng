@@ -16,7 +16,7 @@
 #define CACHE_FILE_FORMAT_VERSION "3.12.80"
 
 /// increment following value to force re-formatting of old book after load
-#define FORMATTING_VERSION_ID 0x0027
+#define FORMATTING_VERSION_ID 0x0028
 
 #define COMPRESS_NODE_DATA         true
 #define COMPRESS_NODE_STORAGE_DATA true
