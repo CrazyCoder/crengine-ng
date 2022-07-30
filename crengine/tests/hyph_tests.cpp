@@ -19,6 +19,8 @@
 #include <lvfnt.h>
 #include <crlog.h>
 
+#include "../src/textlang.h"
+
 #include "gtest/gtest.h"
 
 #ifndef TESTS_DATADIR
@@ -263,9 +265,9 @@ TEST_F(HyphenationTests, GetHyphMethodTest) {
     CRLog::info("==========================");
 }
 
-TEST_F(HyphenationTests, HyphTestOverrideHyphenMin) {
-    CRLog::info("==================================");
-    CRLog::info("Starting HyphTestOverrideHyphenMin");
+TEST_F(HyphenationTests, HyphTestOverrideHyphenMinTest) {
+    CRLog::info("======================================");
+    CRLog::info("Starting HyphTestOverrideHyphenMinTest");
 
     HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
     ASSERT_NE(method, nullptr);
@@ -293,6 +295,159 @@ TEST_F(HyphenationTests, HyphTestOverrideHyphenMin) {
     EXPECT_STREQ(doHyphenation(method, "history").c_str(), "his-tory");
     EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-ural");
 
-    CRLog::info("Finished HyphTestOverrideHyphenMin");
-    CRLog::info("==================================");
+    CRLog::info("Finished HyphTestOverrideHyphenMinTest");
+    CRLog::info("======================================");
+}
+
+TEST_F(HyphenationTests, TextLangSetMainLangTest) {
+    CRLog::info("================================");
+    CRLog::info("Starting TextLangSetMainLangTest");
+
+    TextLangMan::setHyphenationEnabled(true);
+    TextLangMan::setHyphenationForceAlgorithmic(false);
+    TextLangMan::setHyphenationSoftHyphensOnly(false);
+    TextLangMan::setMainLang(U"en-GB");
+
+    HyphMethod* methodNone = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_NONE));
+    HyphMethod* methodAlgo = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_ALGORITHM));
+    HyphMethod* methodSoftHyphens = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_SOFTHYPHENS));
+    HyphMethod* methodDict_en_GB = HyphMan::getHyphMethodForDictionary(cs32("English_GB.pattern"));
+    ASSERT_NE(methodDict_en_GB, nullptr);
+    ASSERT_NE(methodDict_en_GB, methodNone);
+    ASSERT_NE(methodDict_en_GB, methodAlgo);
+    ASSERT_NE(methodDict_en_GB, methodSoftHyphens);
+    HyphMethod* methodDict_en_US = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
+    ASSERT_NE(methodDict_en_US, nullptr);
+    ASSERT_NE(methodDict_en_US, methodNone);
+    ASSERT_NE(methodDict_en_US, methodAlgo);
+    ASSERT_NE(methodDict_en_US, methodSoftHyphens);
+    HyphMethod* methodDict_RU = HyphMan::getHyphMethodForDictionary(cs32("Russian.pattern"));
+    ASSERT_NE(methodDict_RU, nullptr);
+    ASSERT_NE(methodDict_RU, methodNone);
+    ASSERT_NE(methodDict_RU, methodAlgo);
+    ASSERT_NE(methodDict_RU, methodSoftHyphens);
+    HyphMethod* methodDict_CS = HyphMan::getHyphMethodForDictionary(cs32("Czech.pattern"));
+    ASSERT_NE(methodDict_CS, nullptr);
+    ASSERT_NE(methodDict_CS, methodNone);
+    ASSERT_NE(methodDict_CS, methodAlgo);
+    ASSERT_NE(methodDict_CS, methodSoftHyphens);
+
+    // Without embedden language
+    TextLangMan::setEmbeddedLangsEnabled(false);
+
+    HyphMethod* mainHyphMethod = TextLangMan::getMainLangHyphMethod();
+    ASSERT_NE(mainHyphMethod, nullptr);
+
+    TextLangCfg* langCfgEN_US = TextLangMan::getTextLangCfg(U"en");
+    ASSERT_NE(langCfgEN_US, nullptr);
+    TextLangCfg* langCfgRU = TextLangMan::getTextLangCfg(U"ru");
+    ASSERT_NE(langCfgRU, nullptr);
+    TextLangCfg* langCfgCS = TextLangMan::getTextLangCfg(U"cs");
+    ASSERT_NE(langCfgCS, nullptr);
+    TextLangCfg* langCfgAB_CD = TextLangMan::getTextLangCfg(U"ab-cd");
+    ASSERT_NE(langCfgAB_CD, nullptr);
+
+    EXPECT_EQ(mainHyphMethod, methodDict_en_GB);
+    EXPECT_EQ(langCfgEN_US->getHyphMethod(), methodDict_en_GB);
+    EXPECT_EQ(langCfgRU->getHyphMethod(), methodDict_en_GB);
+    EXPECT_EQ(langCfgCS->getHyphMethod(), methodDict_en_GB);
+    // for unknown language also used main language
+    EXPECT_EQ(langCfgAB_CD->getHyphMethod(), methodDict_en_GB);
+
+    // With embedden language enabled
+    TextLangMan::setEmbeddedLangsEnabled(true);
+
+    mainHyphMethod = TextLangMan::getMainLangHyphMethod();
+    ASSERT_NE(mainHyphMethod, nullptr);
+
+    langCfgEN_US = TextLangMan::getTextLangCfg(U"en");
+    ASSERT_NE(langCfgEN_US, nullptr);
+    langCfgRU = TextLangMan::getTextLangCfg(U"ru");
+    ASSERT_NE(langCfgRU, nullptr);
+    langCfgCS = TextLangMan::getTextLangCfg(U"cs");
+    ASSERT_NE(langCfgCS, nullptr);
+    langCfgAB_CD = TextLangMan::getTextLangCfg(U"ab-cd");
+    ASSERT_NE(langCfgAB_CD, nullptr);
+
+    EXPECT_EQ(mainHyphMethod, methodDict_en_GB);
+    EXPECT_NE(langCfgEN_US->getHyphMethod(), methodDict_en_GB);
+    EXPECT_EQ(langCfgEN_US->getHyphMethod(), methodDict_en_US);
+    EXPECT_NE(langCfgRU->getHyphMethod(), methodDict_en_GB);
+    EXPECT_EQ(langCfgRU->getHyphMethod(), methodDict_RU);
+    EXPECT_NE(langCfgCS->getHyphMethod(), methodDict_en_GB);
+    EXPECT_EQ(langCfgCS->getHyphMethod(), methodDict_CS);
+    // for unknown language used en-US
+    EXPECT_NE(langCfgAB_CD->getHyphMethod(), methodDict_en_GB);
+    EXPECT_EQ(langCfgAB_CD->getHyphMethod(), methodDict_en_US);
+
+    CRLog::info("Finished TextLangSetMainLangTest");
+    CRLog::info("================================");
+}
+
+TEST_F(HyphenationTests, TextLangCfgENTest) {
+    CRLog::info("==========================");
+    CRLog::info("Starting TextLangCfgENTest");
+
+    TextLangMan::setHyphenationEnabled(true);
+    TextLangMan::setHyphenationForceAlgorithmic(false);
+    TextLangMan::setHyphenationSoftHyphensOnly(false);
+    TextLangMan::setEmbeddedLangsEnabled(true);
+
+    HyphMethod* methodNone = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_NONE));
+    HyphMethod* methodAlgo = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_ALGORITHM));
+    HyphMethod* methodSoftHyphens = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_SOFTHYPHENS));
+    HyphMethod* methodDict_en_US = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
+    ASSERT_NE(methodDict_en_US, nullptr);
+    ASSERT_NE(methodDict_en_US, methodNone);
+    ASSERT_NE(methodDict_en_US, methodAlgo);
+    ASSERT_NE(methodDict_en_US, methodSoftHyphens);
+
+    TextLangCfg* langCfg = TextLangMan::getTextLangCfg(U"en");
+
+    ASSERT_NE(langCfg, nullptr);
+    EXPECT_EQ(langCfg->getHyphMethod(), methodDict_en_US);
+
+    TextLangMan::setMainLang(U"en-GB");
+
+    // Regardless of the main language, we must use the specified one.
+    langCfg = TextLangMan::getTextLangCfg(U"en");
+    ASSERT_NE(langCfg, nullptr);
+    EXPECT_EQ(langCfg->getHyphMethod(), methodDict_en_US);
+
+    CRLog::info("Finished TextLangCfgENTest");
+    CRLog::info("==========================");
+}
+
+TEST_F(HyphenationTests, TextLangCfgRUTest) {
+    CRLog::info("==========================");
+    CRLog::info("Starting TextLangCfgRUTest");
+
+    TextLangMan::setHyphenationEnabled(true);
+    TextLangMan::setHyphenationForceAlgorithmic(false);
+    TextLangMan::setHyphenationSoftHyphensOnly(false);
+    TextLangMan::setEmbeddedLangsEnabled(true);
+
+    HyphMethod* methodNone = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_NONE));
+    HyphMethod* methodAlgo = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_ALGORITHM));
+    HyphMethod* methodSoftHyphens = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_SOFTHYPHENS));
+    HyphMethod* methodDict_RU = HyphMan::getHyphMethodForDictionary(cs32("Russian.pattern"));
+    ASSERT_NE(methodDict_RU, nullptr);
+    ASSERT_NE(methodDict_RU, methodNone);
+    ASSERT_NE(methodDict_RU, methodAlgo);
+    ASSERT_NE(methodDict_RU, methodSoftHyphens);
+
+    TextLangCfg* langCfg = TextLangMan::getTextLangCfg(U"ru");
+
+    ASSERT_NE(langCfg, nullptr);
+    EXPECT_EQ(langCfg->getHyphMethod(), methodDict_RU);
+
+    TextLangMan::setMainLang(U"en-GB");
+
+    // Regardless of the main language, we must use the specified one.
+    langCfg = TextLangMan::getTextLangCfg(U"ru");
+    ASSERT_NE(langCfg, nullptr);
+    EXPECT_EQ(langCfg->getHyphMethod(), methodDict_RU);
+
+    CRLog::info("Finished TextLangCfgRUTest");
+    CRLog::info("==========================");
 }
