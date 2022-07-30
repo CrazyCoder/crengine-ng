@@ -742,7 +742,7 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
     // Lowercase it for our tests
     lang_tag.lowercase(); // (used by LANG_STARTS_WITH() macros)
 
-    // Get hyph method/dictionary from _hyph_dict_table
+    // Get hyph method/dictionary from HyphMan::_dictList
     _hyph_method = TextLangMan::getHyphMethodForLang(lang_tag);
 
     // Cleanup if we got "en#@something" from legacy HyphMan methods
