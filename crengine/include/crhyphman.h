@@ -82,12 +82,14 @@ class HyphDictionary
     HyphDictType _type;
     lString32 _title;
     lString32 _id;
+    lString32 _langTag;
     lString32 _filename;
 public:
-    HyphDictionary(HyphDictType type, lString32 title, lString32 id, lString32 filename)
+    HyphDictionary(HyphDictType type, lString32 title, lString32 id, lString32 langTag, lString32 filename)
             : _type(type)
             , _title(title)
             , _id(id)
+            , _langTag(langTag)
             , _filename(filename) { }
     HyphDictType getType() const {
         return _type;
@@ -97,6 +99,9 @@ public:
     }
     lString32 getId() const {
         return _id;
+    }
+    lString32 getLangTag() const {
+        return _langTag;
     }
     lString32 getFilename() const {
         return _filename;

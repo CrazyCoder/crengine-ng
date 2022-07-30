@@ -188,8 +188,10 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     HyphDictionary* dict;
     HyphMethod* method;
 
+    // Add test dictionaries manually using `HyphMan::addDictionaryItem()`.
+
     // Dictionary with one pattern 'n1v2'.
-    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph1"), cs32("id=testhyph1.pattern"), cs32(TESTS_DATADIR "test-hyph/testhyph1.pattern"));
+    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph1"), cs32("id=testhyph1.pattern"), cs32("en"), cs32(TESTS_DATADIR "test-hyph/testhyph1.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph1.pattern"));
     ASSERT_NE(method, nullptr);
@@ -197,7 +199,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-versations");
 
     // Dictionary with patterns 'n1v2', 'on2v2'.
-    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph2"), cs32("id=testhyph2.pattern"), cs32(TESTS_DATADIR "test-hyph/testhyph2.pattern"));
+    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph2"), cs32("id=testhyph2.pattern"), cs32("en"), cs32(TESTS_DATADIR "test-hyph/testhyph2.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph2.pattern"));
     ASSERT_NE(method, nullptr);
@@ -205,7 +207,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "conversations");
 
     // Dictionary with patterns 'n1v2', 'on2v2', con1v2.
-    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph3"), cs32("id=testhyph3.pattern"), cs32(TESTS_DATADIR "test-hyph/testhyph3.pattern"));
+    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph3"), cs32("id=testhyph3.pattern"), cs32("en"), cs32(TESTS_DATADIR "test-hyph/testhyph3.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph3.pattern"));
     ASSERT_NE(method, nullptr);
@@ -213,7 +215,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "conversations");
 
     // Dictionary with patterns 'n1v2', 'on2v2', con3v2.
-    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph4"), cs32("id=testhyph4.pattern"), cs32(TESTS_DATADIR "test-hyph/testhyph4.pattern"));
+    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph4"), cs32("id=testhyph4.pattern"), cs32("en"), cs32(TESTS_DATADIR "test-hyph/testhyph4.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph4.pattern"));
     ASSERT_NE(method, nullptr);

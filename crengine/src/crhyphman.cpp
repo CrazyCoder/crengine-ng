@@ -90,6 +90,99 @@ public:
     virtual lUInt32 getSize();
 };
 
+class HyphPatternReader: public LVXMLParserCallback
+{
+protected:
+    bool _insidePatternTag;
+    bool _descriptionTagProcessing;
+    lString32Collection& _dataRef;
+    lString32 _title;
+    lString32 _langTag;
+    int _left_hyphen_min;
+    int _right_hyphen_min;
+public:
+    HyphPatternReader(lString32Collection& result)
+            : _insidePatternTag(false)
+            , _descriptionTagProcessing(false)
+            , _dataRef(result)
+            , _left_hyphen_min(-1)
+            , _right_hyphen_min(-1) {
+        result.clear();
+    }
+    const lString32& GetTitle() const {
+        return _title;
+    }
+    const lString32& GetLangTag() const {
+        return _langTag;
+    }
+    int GetLeftHyphenMin() const {
+        return _left_hyphen_min;
+    }
+    int GetRightHyphenMin() const {
+        return _right_hyphen_min;
+    }
+    bool isValid() const {
+        return !_title.empty() && !_langTag.empty() &&
+               _left_hyphen_min > 0 && _right_hyphen_min > 0 &&
+               _dataRef.length() > 0;
+    }
+    /// called on parsing end
+    virtual void OnStop() { }
+    /// called on opening tag end
+    virtual void OnTagBody() { }
+    /// called on opening tag
+    virtual ldomNode* OnTagOpen(const lChar32* nsname, const lChar32* tagname) {
+        CR_UNUSED(nsname);
+        if (!lStr_cmp(tagname, "HyphenationDescription")) {
+            _descriptionTagProcessing = true;
+        } else if (!lStr_cmp(tagname, "pattern")) {
+            _insidePatternTag = true;
+            _descriptionTagProcessing = false;
+        } else {
+            _descriptionTagProcessing = false;
+        }
+        return NULL;
+    }
+    /// called on closing
+    virtual void OnTagClose(const lChar32* nsname, const lChar32* tagname, bool self_closing_tag = false) {
+        CR_UNUSED2(nsname, tagname);
+        _descriptionTagProcessing = false;
+        _insidePatternTag = false;
+    }
+    /// called on element attribute
+    virtual void OnAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue) {
+        //CR_UNUSED3(nsname, attrname, attrvalue);
+        if (_descriptionTagProcessing) {
+            if (!lStr_cmp(attrname, "title")) {
+                _title = lString32(attrvalue);
+            } else if (!lStr_cmp(attrname, "lang")) {
+                _langTag = lString32(attrvalue);
+            } else if (!lStr_cmp(attrname, "lefthyphenmin")) {
+                lString32 val(attrvalue);
+                int left;
+                if (val.atoi(left))
+                    _left_hyphen_min = left;
+            } else if (!lStr_cmp(attrname, "righthyphenmin")) {
+                lString32 val(attrvalue);
+                int right;
+                if (val.atoi(right))
+                    _right_hyphen_min = right;
+            }
+        }
+    }
+    /// called on text
+    virtual void OnText(const lChar32* text, int len, lUInt32 flags) {
+        CR_UNUSED(flags);
+        if (_insidePatternTag)
+            _dataRef.add(lString32(text, len));
+    }
+    /// add named BLOB data to document
+    virtual bool OnBlob(lString32 name, const lUInt8* data, int size) {
+        CR_UNUSED3(name, data, size);
+        return false;
+    }
+};
+
 class AlgoHyph: public HyphMethod
 {
 public:
@@ -364,13 +457,13 @@ bool HyphDictionaryList::activate(lString32 id) {
 
 void HyphDictionaryList::addDefault() {
     if (!find(lString32(HYPH_DICT_ID_NONE))) {
-        _list.add(new HyphDictionary(HDT_NONE, _32("[No Hyphenation]"), lString32(HYPH_DICT_ID_NONE), lString32(HYPH_DICT_ID_NONE)));
+        _list.add(new HyphDictionary(HDT_NONE, _32("[No Hyphenation]"), cs32(HYPH_DICT_ID_NONE), cs32("-"), cs32(HYPH_DICT_ID_NONE)));
     }
     if (!find(lString32(HYPH_DICT_ID_ALGORITHM))) {
-        _list.add(new HyphDictionary(HDT_ALGORITHM, _32("[Algorithmic Hyphenation]"), lString32(HYPH_DICT_ID_ALGORITHM), lString32(HYPH_DICT_ID_ALGORITHM)));
+        _list.add(new HyphDictionary(HDT_ALGORITHM, _32("[Algorithmic Hyphenation]"), cs32(HYPH_DICT_ID_ALGORITHM), cs32("-"), cs32(HYPH_DICT_ID_ALGORITHM)));
     }
     if (!find(lString32(HYPH_DICT_ID_SOFTHYPHENS))) {
-        _list.add(new HyphDictionary(HDT_SOFTHYPHENS, _32("[Soft-hyphens Hyphenation]"), lString32(HYPH_DICT_ID_SOFTHYPHENS), lString32(HYPH_DICT_ID_SOFTHYPHENS)));
+        _list.add(new HyphDictionary(HDT_SOFTHYPHENS, _32("[Soft-hyphens Hyphenation]"), cs32(HYPH_DICT_ID_SOFTHYPHENS), cs32("-"), cs32(HYPH_DICT_ID_SOFTHYPHENS)));
     }
 }
 
@@ -384,8 +477,12 @@ HyphDictionary* HyphDictionaryList::find(const lString32& id) {
 
 static int HyphDictionary_comparator(const HyphDictionary** item1, const HyphDictionary** item2) {
     if (((*item1)->getType() == HDT_DICT_ALAN || (*item1)->getType() == HDT_DICT_TEX) &&
-        ((*item2)->getType() == HDT_DICT_ALAN || (*item2)->getType() == HDT_DICT_TEX))
-        return (*item1)->getTitle().compare((*item2)->getTitle());
+        ((*item2)->getType() == HDT_DICT_ALAN || (*item2)->getType() == HDT_DICT_TEX)) {
+        int res = (*item1)->getLangTag().compare((*item2)->getLangTag());
+        if (0 == res)
+            res = (*item1)->getTitle().compare((*item2)->getTitle());
+        return res;
+    }
     return (int)((*item1)->getType() - (*item2)->getType());
 }
 
@@ -415,27 +512,47 @@ bool HyphDictionaryList::open(lString32 hyphDirectory, bool clear) {
         for (int i = 0; i < len; i++) {
             const LVContainerItemInfo* item = container->GetObjectInfo(i);
             lString32 name = item->GetName();
-            lString32 suffix;
-            lString32 suffix2add;
             HyphDictType t = HDT_NONE;
-            if (name.endsWith("_hyphen_(Alan).pdb")) {
-                suffix = "_hyphen_(Alan).pdb";
-                suffix2add = " (Alan)";
-                t = HDT_DICT_ALAN;
-            } else if (name.endsWith(".pattern")) {
-                suffix = ".pattern";
-                t = HDT_DICT_TEX;
-            } else
-                continue;
-
             lString32 filename = hyphDirectory + name;
             lString32 id = name;
-            lString32 title = name;
-            if (title.endsWith(suffix))
-                title.erase(title.length() - suffix.length(), suffix.length());
-            if (!suffix2add.empty())
-                title.append(suffix2add);
-            _list.add(new HyphDictionary(t, title, id, filename));
+            lString32 title;
+            lString32 langTag;
+            if (name.endsWith("_hyphen_(Alan).pdb")) {
+                // TODO: these dictionary files are deprecated and don't contain the `lang tag`.
+                //  remove support for these dictionaries.
+                t = HDT_DICT_ALAN;
+                lString32 suffix = cs32("_hyphen_(Alan).pdb");
+                title = name;
+                if (title.endsWith(suffix))
+                    title.erase(title.length() - suffix.length(), suffix.length());
+                title.append(" (Alan)");
+                langTag = id.substr(0, 2);
+            } else if (name.endsWith(".pattern")) {
+                t = HDT_DICT_TEX;
+                LVStreamRef hyphStream = LVOpenFileStream(filename.c_str(), LVOM_READ);
+                if (hyphStream.isNull()) {
+                    CRLog::error("Failed to open hyphenation dictionary: %s\n", LCSTR(filename));
+                    continue;
+                }
+                lString32Collection data;
+                HyphPatternReader reader(data);
+                LVXMLParser parser(hyphStream, &reader);
+                if (parser.CheckFormat()) {
+                    if (parser.Parse()) {
+                        if (reader.isValid()) {
+                            if (data.length()) {
+                                title = reader.GetTitle();
+                                langTag = reader.GetLangTag();
+                            }
+                        } else {
+                            CRLog::error("Invalid/incomplete hyphenation dictionary in file \"%s\"!", LCSTR(name));
+                        }
+                    }
+                }
+            } else
+                continue;
+            if (!langTag.empty() && !title.empty())
+                _list.add(new HyphDictionary(t, title, id, langTag, filename));
             count++;
         }
         _list.sort(HyphDictionary_comparator);
@@ -629,99 +746,6 @@ public:
         for (int i = 0; i < sz; i++)
             word[i] = charMap[s[i]];
         memcpy(attr, s + sz, sz + 1);
-    }
-};
-
-class HyphPatternReader: public LVXMLParserCallback
-{
-protected:
-    bool _insidePatternTag;
-    bool _descriptionTagProcessing;
-    lString32Collection& _dataRef;
-    lString32 _title;
-    lString32 _langTag;
-    int _left_hyphen_min;
-    int _right_hyphen_min;
-public:
-    HyphPatternReader(lString32Collection& result)
-            : _insidePatternTag(false)
-            , _descriptionTagProcessing(false)
-            , _dataRef(result)
-            , _left_hyphen_min(-1)
-            , _right_hyphen_min(-1) {
-        result.clear();
-    }
-    const lString32& GetTitle() const {
-        return _title;
-    }
-    const lString32& GetLangTag() const {
-        return _langTag;
-    }
-    int GetLeftHyphenMin() const {
-        return _left_hyphen_min;
-    }
-    int GetRightHyphenMin() const {
-        return _right_hyphen_min;
-    }
-    bool isValid() const {
-        return !_title.empty() && !_langTag.empty() &&
-               _left_hyphen_min > 0 && _right_hyphen_min > 0 &&
-               _dataRef.length() > 0;
-    }
-    /// called on parsing end
-    virtual void OnStop() { }
-    /// called on opening tag end
-    virtual void OnTagBody() { }
-    /// called on opening tag
-    virtual ldomNode* OnTagOpen(const lChar32* nsname, const lChar32* tagname) {
-        CR_UNUSED(nsname);
-        if (!lStr_cmp(tagname, "HyphenationDescription")) {
-            _descriptionTagProcessing = true;
-        } else if (!lStr_cmp(tagname, "pattern")) {
-            _insidePatternTag = true;
-            _descriptionTagProcessing = false;
-        } else {
-            _descriptionTagProcessing = false;
-        }
-        return NULL;
-    }
-    /// called on closing
-    virtual void OnTagClose(const lChar32* nsname, const lChar32* tagname, bool self_closing_tag = false) {
-        CR_UNUSED2(nsname, tagname);
-        _descriptionTagProcessing = false;
-        _insidePatternTag = false;
-    }
-    /// called on element attribute
-    virtual void OnAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue) {
-        //CR_UNUSED3(nsname, attrname, attrvalue);
-        if (_descriptionTagProcessing) {
-            if (!lStr_cmp(attrname, "title")) {
-                _title = lString32(attrvalue);
-            } else if (!lStr_cmp(attrname, "lang")) {
-                _langTag = lString32(attrvalue);
-            } else if (!lStr_cmp(attrname, "lefthyphenmin")) {
-                lString32 val(attrvalue);
-                int left;
-                if (val.atoi(left))
-                    _left_hyphen_min = left;
-            } else if (!lStr_cmp(attrname, "righthyphenmin")) {
-                lString32 val(attrvalue);
-                int right;
-                if (val.atoi(right))
-                    _right_hyphen_min = right;
-            }
-        }
-    }
-    /// called on text
-    virtual void OnText(const lChar32* text, int len, lUInt32 flags) {
-        CR_UNUSED(flags);
-        if (_insidePatternTag)
-            _dataRef.add(lString32(text, len));
-    }
-    /// add named BLOB data to document
-    virtual bool OnBlob(lString32 name, const lUInt8* data, int size) {
-        CR_UNUSED3(name, data, size);
-        return false;
     }
 };
 
