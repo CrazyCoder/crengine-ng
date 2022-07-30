@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf8"?>
-<HyphenationDescription>
+<HyphenationDescription
+    title="English" lang="en"
+    lefthyphenmin="2" righthyphenmin="3">
   <pattern>n1v2</pattern>
   <pattern>on2v2</pattern>
   <pattern>con1v2</pattern>

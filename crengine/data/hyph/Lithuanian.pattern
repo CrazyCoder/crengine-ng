@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-lt.tex
   Version: 2018-12-11
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Lithuanian" lang="lt"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern> ap1</pattern>
   <pattern> api1</pattern>
   <pattern> ap3r</pattern>

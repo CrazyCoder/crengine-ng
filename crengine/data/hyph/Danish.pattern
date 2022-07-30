@@ -3,7 +3,9 @@
 % 20180613
 % taken and converted from https://donate.libreoffice.org/home/dl/src/6.0.4/all/libreoffice-dictionaries-6.0.4.2.tar.xz?idx=2
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Danish" lang="da"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern> ae3</pattern>
 <pattern> an3k</pattern>
 <pattern> an1s</pattern>

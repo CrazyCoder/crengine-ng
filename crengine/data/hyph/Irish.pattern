@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ga.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Irish" lang="ga"
+    lefthyphenmin="2" righthyphenmin="3">
 <pattern> ab4ai</pattern>
 <pattern> ab6ar</pattern>
 <pattern> ab5r</pattern>

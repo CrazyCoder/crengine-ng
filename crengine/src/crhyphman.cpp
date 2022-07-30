@@ -50,8 +50,8 @@
 
 #endif
 
-int HyphMan::_LeftHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
-int HyphMan::_RightHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
+int HyphMan::_OverriddenLeftHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
+int HyphMan::_OverriddenRightHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
 int HyphMan::_TrustSoftHyphens = HYPH_DEFAULT_TRUST_SOFT_HYPHENS;
 LVHashTable<lString32, HyphMethod*> HyphMan::_loaded_hyph_methods(16);
 HyphDataLoader* HyphMan::_dataLoader = NULL;
@@ -77,7 +77,7 @@ public:
     bool match(const lChar32* str, char* mask);
     virtual bool hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* flags, lUInt16 hyphCharWidth, lUInt16 maxWidth, size_t flagSize);
     void addPattern(TexPattern* pattern);
-    TexHyph(lString32 id = HYPH_DICT_ID_DICTIONARY, int leftHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN, int rightHyphenMin = HYPHMETHOD_DEFAULT_HYPHEN_MIN);
+    TexHyph(lString32 id = HYPH_DICT_ID_DICTIONARY);
     virtual ~TexHyph();
     bool load(LVStreamRef stream);
     bool load(lString32 fileName);
@@ -88,6 +88,99 @@ public:
         return _pattern_count;
     }
     virtual lUInt32 getSize();
+};
+
+class HyphPatternReader: public LVXMLParserCallback
+{
+protected:
+    bool _insidePatternTag;
+    bool _descriptionTagProcessing;
+    lString32Collection& _dataRef;
+    lString32 _title;
+    lString32 _langTag;
+    int _left_hyphen_min;
+    int _right_hyphen_min;
+public:
+    HyphPatternReader(lString32Collection& result)
+            : _insidePatternTag(false)
+            , _descriptionTagProcessing(false)
+            , _dataRef(result)
+            , _left_hyphen_min(-1)
+            , _right_hyphen_min(-1) {
+        result.clear();
+    }
+    const lString32& GetTitle() const {
+        return _title;
+    }
+    const lString32& GetLangTag() const {
+        return _langTag;
+    }
+    int GetLeftHyphenMin() const {
+        return _left_hyphen_min;
+    }
+    int GetRightHyphenMin() const {
+        return _right_hyphen_min;
+    }
+    bool isValid() const {
+        return !_title.empty() && !_langTag.empty() &&
+               _left_hyphen_min > 0 && _right_hyphen_min > 0 &&
+               _dataRef.length() > 0;
+    }
+    /// called on parsing end
+    virtual void OnStop() { }
+    /// called on opening tag end
+    virtual void OnTagBody() { }
+    /// called on opening tag
+    virtual ldomNode* OnTagOpen(const lChar32* nsname, const lChar32* tagname) {
+        CR_UNUSED(nsname);
+        if (!lStr_cmp(tagname, "HyphenationDescription")) {
+            _descriptionTagProcessing = true;
+        } else if (!lStr_cmp(tagname, "pattern")) {
+            _insidePatternTag = true;
+            _descriptionTagProcessing = false;
+        } else {
+            _descriptionTagProcessing = false;
+        }
+        return NULL;
+    }
+    /// called on closing
+    virtual void OnTagClose(const lChar32* nsname, const lChar32* tagname, bool self_closing_tag = false) {
+        CR_UNUSED2(nsname, tagname);
+        _descriptionTagProcessing = false;
+        _insidePatternTag = false;
+    }
+    /// called on element attribute
+    virtual void OnAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue) {
+        //CR_UNUSED3(nsname, attrname, attrvalue);
+        if (_descriptionTagProcessing) {
+            if (!lStr_cmp(attrname, "title")) {
+                _title = lString32(attrvalue);
+            } else if (!lStr_cmp(attrname, "lang")) {
+                _langTag = lString32(attrvalue);
+            } else if (!lStr_cmp(attrname, "lefthyphenmin")) {
+                lString32 val(attrvalue);
+                int left;
+                if (val.atoi(left))
+                    _left_hyphen_min = left;
+            } else if (!lStr_cmp(attrname, "righthyphenmin")) {
+                lString32 val(attrvalue);
+                int right;
+                if (val.atoi(right))
+                    _right_hyphen_min = right;
+            }
+        }
+    }
+    /// called on text
+    virtual void OnText(const lChar32* text, int len, lUInt32 flags) {
+        CR_UNUSED(flags);
+        if (_insidePatternTag)
+            _dataRef.add(lString32(text, len));
+    }
+    /// add named BLOB data to document
+    virtual bool OnBlob(lString32 name, const lUInt8* data, int size) {
+        CR_UNUSED3(name, data, size);
+        return false;
+    }
 };
 
 class AlgoHyph: public HyphMethod
@@ -224,17 +317,17 @@ void HyphMan::setDataLoader(HyphDataLoader* loader) {
     _dataLoader = loader;
 }
 
-bool HyphMan::setLeftHyphenMin(int left_hyphen_min) {
+bool HyphMan::overrideLeftHyphenMin(int left_hyphen_min) {
     if (left_hyphen_min >= HYPH_MIN_HYPHEN_MIN && left_hyphen_min <= HYPH_MAX_HYPHEN_MIN) {
-        HyphMan::_LeftHyphenMin = left_hyphen_min;
+        HyphMan::_OverriddenLeftHyphenMin = left_hyphen_min;
         return true;
     }
     return false;
 }
 
-bool HyphMan::setRightHyphenMin(int right_hyphen_min) {
+bool HyphMan::overrideRightHyphenMin(int right_hyphen_min) {
     if (right_hyphen_min >= HYPH_MIN_HYPHEN_MIN && right_hyphen_min <= HYPH_MAX_HYPHEN_MIN) {
-        HyphMan::_RightHyphenMin = right_hyphen_min;
+        HyphMan::_OverriddenRightHyphenMin = right_hyphen_min;
         return true;
     }
     return false;
@@ -265,7 +358,7 @@ HyphDictionary* HyphMan::getSelectedDictionary() {
     return dict;
 }
 
-HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id, int leftHyphenMin, int rightHyphenMin) {
+HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id) {
     if (id.empty() || NULL == _dataLoader)
         return &NO_HYPH;
     HyphDictionary* p = _dictList->find(id);
@@ -287,7 +380,7 @@ HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id, int leftHyphenMin,
         CRLog::error("Cannot open hyphenation dictionary %s", UnicodeToUtf8(id).c_str());
         return &NO_HYPH;
     }
-    TexHyph* newmethod = new TexHyph(id, leftHyphenMin, rightHyphenMin);
+    TexHyph* newmethod = new TexHyph(id);
     if (!newmethod->load(stream)) {
         CRLog::error("Cannot open hyphenation dictionary %s", UnicodeToUtf8(id).c_str());
         delete newmethod;
@@ -364,13 +457,13 @@ bool HyphDictionaryList::activate(lString32 id) {
 
 void HyphDictionaryList::addDefault() {
     if (!find(lString32(HYPH_DICT_ID_NONE))) {
-        _list.add(new HyphDictionary(HDT_NONE, _32("[No Hyphenation]"), lString32(HYPH_DICT_ID_NONE), lString32(HYPH_DICT_ID_NONE)));
+        _list.add(new HyphDictionary(HDT_NONE, _32("[No Hyphenation]"), cs32(HYPH_DICT_ID_NONE), cs32("-"), cs32(HYPH_DICT_ID_NONE)));
     }
     if (!find(lString32(HYPH_DICT_ID_ALGORITHM))) {
-        _list.add(new HyphDictionary(HDT_ALGORITHM, _32("[Algorithmic Hyphenation]"), lString32(HYPH_DICT_ID_ALGORITHM), lString32(HYPH_DICT_ID_ALGORITHM)));
+        _list.add(new HyphDictionary(HDT_ALGORITHM, _32("[Algorithmic Hyphenation]"), cs32(HYPH_DICT_ID_ALGORITHM), cs32("-"), cs32(HYPH_DICT_ID_ALGORITHM)));
     }
     if (!find(lString32(HYPH_DICT_ID_SOFTHYPHENS))) {
-        _list.add(new HyphDictionary(HDT_SOFTHYPHENS, _32("[Soft-hyphens Hyphenation]"), lString32(HYPH_DICT_ID_SOFTHYPHENS), lString32(HYPH_DICT_ID_SOFTHYPHENS)));
+        _list.add(new HyphDictionary(HDT_SOFTHYPHENS, _32("[Soft-hyphens Hyphenation]"), cs32(HYPH_DICT_ID_SOFTHYPHENS), cs32("-"), cs32(HYPH_DICT_ID_SOFTHYPHENS)));
     }
 }
 
@@ -384,8 +477,12 @@ HyphDictionary* HyphDictionaryList::find(const lString32& id) {
 
 static int HyphDictionary_comparator(const HyphDictionary** item1, const HyphDictionary** item2) {
     if (((*item1)->getType() == HDT_DICT_ALAN || (*item1)->getType() == HDT_DICT_TEX) &&
-        ((*item2)->getType() == HDT_DICT_ALAN || (*item2)->getType() == HDT_DICT_TEX))
-        return (*item1)->getTitle().compare((*item2)->getTitle());
+        ((*item2)->getType() == HDT_DICT_ALAN || (*item2)->getType() == HDT_DICT_TEX)) {
+        int res = (*item1)->getLangTag().compare((*item2)->getLangTag());
+        if (0 == res)
+            res = (*item1)->getTitle().compare((*item2)->getTitle());
+        return res;
+    }
     return (int)((*item1)->getType() - (*item2)->getType());
 }
 
@@ -415,27 +512,47 @@ bool HyphDictionaryList::open(lString32 hyphDirectory, bool clear) {
         for (int i = 0; i < len; i++) {
             const LVContainerItemInfo* item = container->GetObjectInfo(i);
             lString32 name = item->GetName();
-            lString32 suffix;
-            lString32 suffix2add;
             HyphDictType t = HDT_NONE;
-            if (name.endsWith("_hyphen_(Alan).pdb")) {
-                suffix = "_hyphen_(Alan).pdb";
-                suffix2add = " (Alan)";
-                t = HDT_DICT_ALAN;
-            } else if (name.endsWith(".pattern")) {
-                suffix = ".pattern";
-                t = HDT_DICT_TEX;
-            } else
-                continue;
-
             lString32 filename = hyphDirectory + name;
             lString32 id = name;
-            lString32 title = name;
-            if (title.endsWith(suffix))
-                title.erase(title.length() - suffix.length(), suffix.length());
-            if (!suffix2add.empty())
-                title.append(suffix2add);
-            _list.add(new HyphDictionary(t, title, id, filename));
+            lString32 title;
+            lString32 langTag;
+            if (name.endsWith("_hyphen_(Alan).pdb")) {
+                // TODO: these dictionary files are deprecated and don't contain the `lang tag`.
+                //  remove support for these dictionaries.
+                t = HDT_DICT_ALAN;
+                lString32 suffix = cs32("_hyphen_(Alan).pdb");
+                title = name;
+                if (title.endsWith(suffix))
+                    title.erase(title.length() - suffix.length(), suffix.length());
+                title.append(" (Alan)");
+                langTag = id.substr(0, 2);
+            } else if (name.endsWith(".pattern")) {
+                t = HDT_DICT_TEX;
+                LVStreamRef hyphStream = LVOpenFileStream(filename.c_str(), LVOM_READ);
+                if (hyphStream.isNull()) {
+                    CRLog::error("Failed to open hyphenation dictionary: %s\n", LCSTR(filename));
+                    continue;
+                }
+                lString32Collection data;
+                HyphPatternReader reader(data);
+                LVXMLParser parser(hyphStream, &reader);
+                if (parser.CheckFormat()) {
+                    if (parser.Parse()) {
+                        if (reader.isValid()) {
+                            if (data.length()) {
+                                title = reader.GetTitle();
+                                langTag = reader.GetLangTag();
+                            }
+                        } else {
+                            CRLog::error("Invalid/incomplete hyphenation dictionary in file \"%s\"!", LCSTR(name));
+                        }
+                    }
+                }
+            } else
+                continue;
+            if (!langTag.empty() && !title.empty())
+                _list.add(new HyphDictionary(t, title, id, langTag, filename));
             count++;
         }
         _list.sort(HyphDictionary_comparator);
@@ -632,53 +749,8 @@ public:
     }
 };
 
-class HyphPatternReader: public LVXMLParserCallback
-{
-protected:
-    bool insidePatternTag;
-    lString32Collection& data;
-public:
-    HyphPatternReader(lString32Collection& result)
-            : insidePatternTag(false)
-            , data(result) {
-        result.clear();
-    }
-    /// called on parsing end
-    virtual void OnStop() { }
-    /// called on opening tag end
-    virtual void OnTagBody() { }
-    /// called on opening tag
-    virtual ldomNode* OnTagOpen(const lChar32* nsname, const lChar32* tagname) {
-        CR_UNUSED(nsname);
-        if (!lStr_cmp(tagname, "pattern")) {
-            insidePatternTag = true;
-        }
-        return NULL;
-    }
-    /// called on closing
-    virtual void OnTagClose(const lChar32* nsname, const lChar32* tagname, bool self_closing_tag = false) {
-        CR_UNUSED2(nsname, tagname);
-        insidePatternTag = false;
-    }
-    /// called on element attribute
-    virtual void OnAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue) {
-        CR_UNUSED3(nsname, attrname, attrvalue);
-    }
-    /// called on text
-    virtual void OnText(const lChar32* text, int len, lUInt32 flags) {
-        CR_UNUSED(flags);
-        if (insidePatternTag)
-            data.add(lString32(text, len));
-    }
-    /// add named BLOB data to document
-    virtual bool OnBlob(lString32 name, const lUInt8* data, int size) {
-        CR_UNUSED3(name, data, size);
-        return false;
-    }
-};
-
-TexHyph::TexHyph(lString32 id, int leftHyphenMin, int rightHyphenMin)
-        : HyphMethod(id, leftHyphenMin, rightHyphenMin) {
+TexHyph::TexHyph(lString32 id)
+        : HyphMethod(id) {
     memset(table, 0, sizeof(table));
     _hash = 123456;
     _pattern_count = 0;
@@ -803,7 +875,10 @@ bool TexHyph::load(LVStreamRef stream) {
                 p += sz + sz + 1;
             }
         }
-
+        // TODO: set correct per language left/right hypnenation minimum
+        //  or remove support of this hyphenation dictionary format.
+        _left_hyphen_min = HYPHMETHOD_DEFAULT_HYPHEN_MIN;
+        _right_hyphen_min = HYPHMETHOD_DEFAULT_HYPHEN_MIN;
         return patternCount > 0;
     } else {
         // tex xml format as for FBReader
@@ -814,8 +889,14 @@ bool TexHyph::load(LVStreamRef stream) {
             return false;
         if (!parser.Parse())
             return false;
+        if (!reader.isValid()) {
+            CRLog::error("Invalid/incomplete hyphenation dictionary!");
+            return false;
+        }
         if (!data.length())
             return false;
+        _left_hyphen_min = reader.GetLeftHyphenMin();
+        _right_hyphen_min = reader.GetRightHyphenMin();
         for (int i = 0; i < (int)data.length(); i++) {
             data[i].lowercase();
             TexPattern* pattern = new TexPattern(data[i]);
@@ -839,8 +920,10 @@ bool TexHyph::load(LVStreamRef stream) {
 
 bool TexHyph::load(lString32 fileName) {
     LVStreamRef stream = LVOpenFileStream(fileName.c_str(), LVOM_READ);
-    if (stream.isNull())
+    if (stream.isNull()) {
+        CRLog::error("Failed to open hyphenation dictionary: %s\n", LCSTR(fileName));
         return false;
+    }
     return load(stream);
 }
 
@@ -957,8 +1040,8 @@ bool TexHyph::hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* fl
 
     // Use HyphMan global left/right hyphen min, unless set to 0 (the default)
     // which means we should use the HyphMethod specific values.
-    int left_hyphen_min = HyphMan::_LeftHyphenMin ? HyphMan::_LeftHyphenMin : _left_hyphen_min;
-    int right_hyphen_min = HyphMan::_RightHyphenMin ? HyphMan::_RightHyphenMin : _right_hyphen_min;
+    int left_hyphen_min = HyphMan::_OverriddenLeftHyphenMin > 0 ? HyphMan::_OverriddenLeftHyphenMin : _left_hyphen_min;
+    int right_hyphen_min = HyphMan::_OverriddenRightHyphenMin > 0 ? HyphMan::_OverriddenRightHyphenMin : _right_hyphen_min;
 
     // Moves allowed hyphenation positions from 'mask' to the provided 'flags',
     // taking soft-hyphen shifts into account
@@ -1002,8 +1085,8 @@ bool AlgoHyph::hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* f
 
     // Use HyphMan global left/right hyphen min, unless set to 0 (the default)
     // which means we should use the HyphMethod specific values.
-    int left_hyphen_min = HyphMan::_LeftHyphenMin ? HyphMan::_LeftHyphenMin : _left_hyphen_min;
-    int right_hyphen_min = HyphMan::_RightHyphenMin ? HyphMan::_RightHyphenMin : _right_hyphen_min;
+    int left_hyphen_min = HyphMan::_OverriddenLeftHyphenMin ? HyphMan::_OverriddenLeftHyphenMin : _left_hyphen_min;
+    int right_hyphen_min = HyphMan::_OverriddenRightHyphenMin ? HyphMan::_OverriddenRightHyphenMin : _right_hyphen_min;
 
     lUInt16 chprops[WORD_LENGTH];
     if (len > WORD_LENGTH - 2)

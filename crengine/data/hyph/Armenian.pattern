@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-hy.tex
   Version: May 2010
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Armenian" lang="hy"
+    lefthyphenmin="1" righthyphenmin="2">
   <pattern>և1ա</pattern>
   <pattern>և1ե</pattern>
   <pattern>և1է</pattern>

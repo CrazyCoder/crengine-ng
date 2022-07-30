@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-cy.tex
   Version: 1.0
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Welsh" lang="cy"
+    lefthyphenmin="2" righthyphenmin="3">
   <pattern> ac4t</pattern>
   <pattern> ad3ae</pattern>
   <pattern> add5as</pattern>

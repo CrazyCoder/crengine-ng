@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-mk.tex
   Version: 0.1
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Macedonian" lang="mk"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern> б2</pattern>
   <pattern> в2</pattern>
   <pattern> вр5зан </pattern>

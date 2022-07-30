@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-et.tex
   Version: 2004-04-13
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Estonian" lang="et"
+    lefthyphenmin="2" righthyphenmin="3">
   <pattern> aa4</pattern>
   <pattern> aasta5</pattern>
   <pattern> ahe4li</pattern>

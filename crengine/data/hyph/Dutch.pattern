@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf8"?>
 <!--
-       hyphenations description for FBReader/CoolReader
+       hyphenations description for coolreader-ng
        from the original file:
 
 % This file has been converted for the hyph-utf8 project from nehyph96.tex,
@@ -47,7 +47,9 @@
 % AUTHOR:  Piet Tutelaers P.T.H.Tutelaers@tue.nl
 %
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Dutch" lang="nl"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern> a4</pattern>
   <pattern> aan5</pattern>
   <pattern> aarts5</pattern>

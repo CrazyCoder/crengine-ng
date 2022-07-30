@@ -1175,8 +1175,8 @@ lUInt32 calcGlobalSettingsHash(int documentId, bool already_rendered) {
     // just be certain they are really not used in the first phase.)
     if (already_rendered) {
         hash = hash * 31 + TextLangMan::getHash();
-        hash = hash * 31 + HyphMan::getLeftHyphenMin();
-        hash = hash * 31 + HyphMan::getRightHyphenMin();
+        hash = hash * 31 + HyphMan::getOverriddenLeftHyphenMin();
+        hash = hash * 31 + HyphMan::getOverriddenRightHyphenMin();
         hash = hash * 31 + HyphMan::getTrustSoftHyphens();
     }
     return hash;

@@ -67,23 +67,64 @@ sub makeConversion($$$) {
     my ($srcFileName, $infh, $outfh) = @_;
     print $outfh ("<?xml version=\"1.0\" encoding=\"utf8\"?>\n" .
                   "<!--\n" .
-                  "       hyphenations description for FBReader/CoolReader\n" .
-                  "       from the original file: ${srcFileName}\n" .
+                  "    Hyphenations description for coolreader-ng\n" .
+                  "    from original file: ${srcFileName}\n" .
                   "\n");
     my $state = 0;
     my $count = 0;
     my $word;
     my $ch;
+    my $state0 = 0; # substate in state 0
+    my $comment_line = '';
+    my $indent = '';
+    my $title = 'Unknown';
+    my $langtag = 'unk';
+    my $left_hyphenmin = 2;
+    my $right_hyphenmin = 2;
     foreach (<$infh>) {
         my_chomp;
         if ($state == 0) {
             if (m/^% {0,1}(.*)$/) {
-                print $outfh ("$1\n");
+                $comment_line = $1;
+                print $outfh ("$comment_line\n");
+                next if (length($comment_line) == 0);
+                if ($comment_line =~ m/^( *)(.*)$/) {
+                    $indent = $1;
+                    $comment_line = $2;
+                } else {
+                    $indent = '';
+                }
+                if (length($indent) < 2) {
+                    $state0 = 0;
+                }
+                if ($state0 == 0 && $comment_line =~ m/language:$/) {
+                    $state0 = 1;
+                }
+                if ($state0 == 1 && $comment_line =~ m/name: *(.*)$/) {
+                    $title = $1;
+                }
+                if ($state0 == 1 && $comment_line =~ m/tag: *(.*)$/) {
+                    $langtag = $1;
+                }
+                if ($state0 == 0 && $comment_line =~ m/hyphenmins:$/) {
+                    $state0 = 2;
+                }
+                if ($state0 == 2 && $comment_line =~ m/typesetting:$/) {
+                    $state0 = 3;
+                }
+                if ($state0 == 3 && $comment_line =~ m/left: *(.*)$/) {
+                    $left_hyphenmin = $1;
+                }
+                if ($state0 == 3 && $comment_line =~ m/right: *(.*)$/) {
+                    $right_hyphenmin = $1;
+                }
                 next;
             }
             if (m/^\\patterns\{.*$/) {
-                print $outfh ("-->\n");
-                print $outfh ("<HyphenationDescription>\n");
+                print $outfh ("-->\n\n");
+                print $outfh ("<HyphenationDescription\n");
+                print $outfh ("    title=\"${title}\" lang=\"${langtag}\"\n");
+                print $outfh ("    lefthyphenmin=\"${left_hyphenmin}\" righthyphenmin=\"${right_hyphenmin}\">\n");
                 $state = 1;
                 next;
             }

@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sl.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Slovenian" lang="sl"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern> av5r</pattern>
 <pattern> di6spo</pattern>
 <pattern> ek3s</pattern>

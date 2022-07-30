@@ -108,8 +108,6 @@ public:
         return &_lang_cfg_list;
     }
 
-    static lString32 getLangTag(const lString32& title);
-
     TextLangMan();
     ~TextLangMan();
 };

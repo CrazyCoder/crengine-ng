@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-liturgic.tex
   Version: February 2019
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Latin Liturgical" lang="la-x-liturgic"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern> a3b3æq</pattern>
   <pattern> a2b1ali</pattern>
   <pattern> a2b1auu</pattern>

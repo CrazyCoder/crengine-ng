@@ -3,7 +3,9 @@
 % 20180613
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-cs.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Czech" lang="cs"
+    lefthyphenmin="2" righthyphenmin="3">
 <pattern> a2</pattern>
 <pattern> a4da</pattern>
 <pattern> a4de</pattern>

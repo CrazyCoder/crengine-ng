@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf8"?>
 <!--
-       hyphenations description for FBReader/CoolReader
+       hyphenations description for coolreader-ng
        from the original file:
 
 % This file is part of hyph-utf8 package and resulted from
@@ -127,7 +127,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Catalan" lang="ca"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern>1ba</pattern>
   <pattern>1be</pattern>
   <pattern>1bi</pattern>

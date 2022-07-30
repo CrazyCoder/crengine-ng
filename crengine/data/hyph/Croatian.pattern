@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-hr.tex
   Version: 2015
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Croatian" lang="hr"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern>a1a2</pattern>
   <pattern>a1e2</pattern>
   <pattern>a1i2</pattern>

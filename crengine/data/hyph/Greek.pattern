@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf8"?>
 <!--
-       hyphenations description for FBReader/CoolReader
+       hyphenations description for coolreader-ng
        from the original file:
 
 % ****************************************************************
@@ -44,7 +44,9 @@
 % \message{UTF-8 hyphenation patterns for Ancient Greek}
 %
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Greek" lang="el"
+    lefthyphenmin="1" righthyphenmin="1">
   <pattern>α1</pattern>
   <pattern>ε1</pattern>
   <pattern>η1</pattern>

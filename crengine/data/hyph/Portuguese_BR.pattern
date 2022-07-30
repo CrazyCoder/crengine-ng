@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/LibreOffice/dictionaries/blob/master/pt_BR/hyph_pt_BR.dic
   Version: 1.0.8
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Portuguese (BR)" lang="pt-BR"
+    lefthyphenmin="2" righthyphenmin="3">
   <pattern>a3a</pattern>
   <pattern>a3á</pattern>
   <pattern>a3ã</pattern>

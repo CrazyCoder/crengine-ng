@@ -72,11 +72,13 @@ static int isCorrectHyphFile(LVStream* stream) {
 }
 
 MyTexHyph::MyTexHyph(lString32 id, int leftHyphenMin, int rightHyphenMin)
-        : HyphMethod(id, leftHyphenMin, rightHyphenMin) {
+        : HyphMethod(id) {
     memset(table, 0, sizeof(table));
     _hash = 123456;
     _pattern_count = 0;
     largest_overflowed_word = 0;
+    _left_hyphen_min = leftHyphenMin;
+    _right_hyphen_min = rightHyphenMin;
 }
 
 MyTexHyph::~MyTexHyph() {

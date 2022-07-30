@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-sv.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Swedish" lang="sv"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern> a4b</pattern>
 <pattern> ab5i</pattern>
 <pattern> ab5ol</pattern>

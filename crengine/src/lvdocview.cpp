@@ -6849,13 +6849,13 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
         REQUEST_RENDER("propsApply textlang hyphenation_force_algorithmic")
     }
     int leftHyphenMin = m_props->getIntDef(PROP_HYPHENATION_LEFT_HYPHEN_MIN, HYPH_DEFAULT_HYPHEN_MIN);
-    if (HyphMan::getLeftHyphenMin() != leftHyphenMin) {
-        HyphMan::setLeftHyphenMin(leftHyphenMin);
+    if (HyphMan::getOverriddenLeftHyphenMin() != leftHyphenMin) {
+        HyphMan::overrideLeftHyphenMin(leftHyphenMin);
         REQUEST_RENDER("propsApply hyphenation left_hyphen_min")
     }
     int rightHyphenMin = m_props->getIntDef(PROP_HYPHENATION_RIGHT_HYPHEN_MIN, HYPH_DEFAULT_HYPHEN_MIN);
-    if (HyphMan::getRightHyphenMin() != rightHyphenMin) {
-        HyphMan::setRightHyphenMin(rightHyphenMin);
+    if (HyphMan::getOverriddenRightHyphenMin() != rightHyphenMin) {
+        HyphMan::overrideRightHyphenMin(rightHyphenMin);
         REQUEST_RENDER("propsApply hyphenation right_hyphen_min")
     }
     int trustSoftHyphens = m_props->getIntDef(PROP_HYPHENATION_TRUST_SOFT_HYPHENS, HYPH_DEFAULT_TRUST_SOFT_HYPHENS);

@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ru.tex
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Russian, English (US)" lang="ru,en-US"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern> аб1р</pattern>
 <pattern> аг1ро</pattern>
 <pattern> ади2</pattern>

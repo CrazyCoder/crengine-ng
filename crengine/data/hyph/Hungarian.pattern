@@ -3,7 +3,9 @@
 % 20180619
 % taken and converted from http://mirror.koddos.net/CTAN/language/hyph-utf8/tex/generic/hyph-utf8/patterns/txt/hyph-hu.pat.txt
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Hungarian" lang="hu"
+    lefthyphenmin="2" righthyphenmin="2">
 <pattern> a2</pattern>
 <pattern> adatát1a2</pattern>
 <pattern> ada2t1e2</pattern>

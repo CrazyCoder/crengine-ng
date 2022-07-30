@@ -3,7 +3,9 @@
   Taken and converted from: https://github.com/hyphenation/tex-hyphen/blob/master/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-classic.tex
   Version: July 2019
 -->
-<HyphenationDescription>
+<HyphenationDescription
+    title="Latin" lang="la"
+    lefthyphenmin="2" righthyphenmin="2">
   <pattern> ab1</pattern>
   <pattern> aba2</pattern>
   <pattern> ab3a4u</pattern>
