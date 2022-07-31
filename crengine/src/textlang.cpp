@@ -37,17 +37,6 @@ static bool langStartsWith(const lString32 lang_tag, const char* prefix) {
     return false;
 }
 
-// Some macros to expand: LANG_STARTS_WITH(("fr") ("es"))   (no comma!)
-// to langStartsWith(lang_tag, "fr") || langStartsWith(lang_tag, "es") || false
-// (from https://stackoverflow.com/questions/19680962/translate-sequence-in-macro-parameters-to-separate-macros )
-#define PRIMITIVE_SEQ_ITERATE(...)   __VA_ARGS__##_END
-#define SEQ_ITERATE(...)             PRIMITIVE_SEQ_ITERATE(__VA_ARGS__)
-#define LANG_STARTS_WITH(seq)        SEQ_ITERATE(LANG_STARTS_WITH_EACH_1 seq)
-#define LANG_STARTS_WITH_EACH_1(...) langStartsWith(lang_tag, __VA_ARGS__) || LANG_STARTS_WITH_EACH_2
-#define LANG_STARTS_WITH_EACH_2(...) langStartsWith(lang_tag, __VA_ARGS__) || LANG_STARTS_WITH_EACH_1
-#define LANG_STARTS_WITH_EACH_1_END  false
-#define LANG_STARTS_WITH_EACH_2_END  false
-
 // Init global TextLangMan members
 lString32 TextLangMan::_main_lang = TEXTLANG_DEFAULT_MAIN_LANG_32;
 bool TextLangMan::_embedded_langs_enabled = TEXTLANG_DEFAULT_EMBEDDED_LANGS_ENABLED;
@@ -740,7 +729,7 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
     // so let it deal the the provided one as-is.
     lString32 hb_lang_tag = lang_tag;
     // Lowercase it for our tests
-    lang_tag.lowercase(); // (used by LANG_STARTS_WITH() macros)
+    lang_tag.lowercase(); // used by langStartsWith()
 
     // Get hyph method/dictionary from HyphMan::_dictList
     _hyph_method = TextLangMan::getHyphMethodForLang(lang_tag);
@@ -776,7 +765,7 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
     _duplicate_real_hyphen_on_next_line = false;
 
     // getCssLbCharSub(), possibly called on each glyph, has some different behaviours with 'ja' and 'zh'
-    _is_ja_zh = LANG_STARTS_WITH(("ja")("zh"));
+    _is_ja_zh = langStartsWith(lang_tag, "ja") || langStartsWith(lang_tag, "zh");
 
 #if USE_HARFBUZZ == 1
     _hb_language = hb_language_from_string(UnicodeToLocal(hb_lang_tag).c_str(), -1);
@@ -817,12 +806,12 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
     bool has_em_dash_alphabetic = false; // U+2014 —, U+2E3A ⸺, U+2E3B ⸻
 
     // Note: these macros use 'lang_tag'.
-    if (LANG_STARTS_WITH(("en"))) {                    // English
+    if (langStartsWith(lang_tag, "en")) {              // English
         has_left_single_quotation_mark_opening = true; // no right..closing in linebreakdef.c
         has_left_double_quotation_mark_opening = true;
         has_right_double_quotation_mark_closing = true;
-    } else if (LANG_STARTS_WITH(("fr")("es"))) {       // French, Spanish
-        has_left_single_quotation_mark_opening = true; // no right..closing in linebreakdef.c
+    } else if (langStartsWith(lang_tag, "fr") || langStartsWith(lang_tag, "es")) { // French, Spanish
+        has_left_single_quotation_mark_opening = true;                             // no right..closing in linebreakdef.c
         has_left_double_quotation_mark_opening = true;
         has_right_double_quotation_mark_closing = true;
         has_left_single_angle_quotation_mark_opening = true;
@@ -830,7 +819,7 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
         has_left_double_angle_quotation_mark_opening = true;
         has_right_double_angle_quotation_mark_closing = true;
         has_em_dash_alphabetic = true;
-    } else if (LANG_STARTS_WITH(("de"))) { // German
+    } else if (langStartsWith(lang_tag, "de")) { // German
         has_left_single_quotation_mark_closing = true;
         has_right_single_quotation_mark_glue = true;
         has_left_double_quotation_mark_closing = true;
@@ -846,11 +835,11 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
         has_left_double_angle_quotation_mark_closing = true;
         has_right_double_angle_quotation_mark_opening = true;
         */
-    } else if (LANG_STARTS_WITH(("ru"))) { // Russian
+    } else if (langStartsWith(lang_tag, "ru")) { // Russian
         has_left_double_quotation_mark_closing = true;
         has_left_double_angle_quotation_mark_opening = true;
         has_right_double_angle_quotation_mark_closing = true;
-    } else if (LANG_STARTS_WITH(("zh"))) { // Chinese
+    } else if (langStartsWith(lang_tag, "zh")) { // Chinese
         has_left_single_quotation_mark_opening = true;
         has_right_single_quotation_mark_closing = true;
         has_left_double_quotation_mark_opening = true;
@@ -913,16 +902,16 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
     // Other line breaking and text layout tweaks
     _lb_char_sub_func = NULL;
 #if KO_LIBUNIBREAK_PATCH == 1
-    if (LANG_STARTS_WITH(("en"))) { // English
+    if (langStartsWith(lang_tag, "en")) { // English
         _lb_char_sub_func = &lb_char_sub_func_english;
     } else
 #endif
-            if (LANG_STARTS_WITH(("pl"))) { // Polish
+            if (langStartsWith(lang_tag, "pl")) { // Polish
         _lb_char_sub_func = &lb_char_sub_func_polish;
         _duplicate_real_hyphen_on_next_line = true;
-    } else if (LANG_STARTS_WITH(("cs")("sk"))) { // Czech, Slovak
+    } else if (langStartsWith(lang_tag, "cs") || langStartsWith(lang_tag, "sk")) { // Czech, Slovak
         _lb_char_sub_func = &lb_char_sub_func_czech_slovak;
-    } else if (LANG_STARTS_WITH(("pt")("sr"))) { // Portuguese, Serbian
+    } else if (langStartsWith(lang_tag, "pt") || langStartsWith(lang_tag, "sr")) { // Portuguese, Serbian
         _duplicate_real_hyphen_on_next_line = true;
     }
 #endif
@@ -1010,7 +999,7 @@ int TextLangCfg::getHangingPercent(bool right_hanging, bool& check_font, const l
     // ratio if the next/prev char is a space char.
     // This might not happen in other languages, so let's do that
     // prevention generically. If needed, make that dependant on
-    // a boolean member, set to true if LANG_STARTS_WITH(("fr")).
+    // a boolean member, set to true if langStartsWith(lang_tag, "fr")
     bool space_alongside = false;
     if (right_hanging) {
         if (pos > 0) {
