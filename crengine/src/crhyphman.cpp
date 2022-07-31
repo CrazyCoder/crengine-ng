@@ -457,13 +457,13 @@ bool HyphDictionaryList::activate(lString32 id) {
 
 void HyphDictionaryList::addDefault() {
     if (!find(lString32(HYPH_DICT_ID_NONE))) {
-        _list.add(new HyphDictionary(HDT_NONE, _32("[No Hyphenation]"), cs32(HYPH_DICT_ID_NONE), cs32("-"), cs32(HYPH_DICT_ID_NONE)));
+        _list.add(new HyphDictionary(HDT_NONE, _32("[No Hyphenation]"), cs32(HYPH_DICT_ID_NONE), cs32(HYPH_DICT_ID_NONE), cs32(HYPH_DICT_ID_NONE)));
     }
     if (!find(lString32(HYPH_DICT_ID_ALGORITHM))) {
-        _list.add(new HyphDictionary(HDT_ALGORITHM, _32("[Algorithmic Hyphenation]"), cs32(HYPH_DICT_ID_ALGORITHM), cs32("-"), cs32(HYPH_DICT_ID_ALGORITHM)));
+        _list.add(new HyphDictionary(HDT_ALGORITHM, _32("[Algorithmic Hyphenation]"), cs32(HYPH_DICT_ID_ALGORITHM), cs32(HYPH_DICT_ID_ALGORITHM), cs32(HYPH_DICT_ID_ALGORITHM)));
     }
     if (!find(lString32(HYPH_DICT_ID_SOFTHYPHENS))) {
-        _list.add(new HyphDictionary(HDT_SOFTHYPHENS, _32("[Soft-hyphens Hyphenation]"), cs32(HYPH_DICT_ID_SOFTHYPHENS), cs32("-"), cs32(HYPH_DICT_ID_SOFTHYPHENS)));
+        _list.add(new HyphDictionary(HDT_SOFTHYPHENS, _32("[Soft-hyphens Hyphenation]"), cs32(HYPH_DICT_ID_SOFTHYPHENS), cs32(HYPH_DICT_ID_SOFTHYPHENS), cs32(HYPH_DICT_ID_SOFTHYPHENS)));
     }
 }
 
