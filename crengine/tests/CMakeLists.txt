@@ -78,7 +78,7 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(unittests ${SRC_LIST})
-target_link_libraries(unittests ${CRE_NG} gtest_main)
+target_link_libraries(unittests ${CRE_NG} ${PRIVATE_LINK_LIBRARIES} gtest_main)
 if (CRE_BUILD_STATIC)
   target_include_directories(unittests PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 endif()

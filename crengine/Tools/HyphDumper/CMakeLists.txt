@@ -19,4 +19,7 @@ elseif(CRE_BUILD_SHARED)
 endif()
 
 add_executable(hyph_dumper ${SRC_LIST})
-target_link_libraries(hyph_dumper ${CRE_NG} ${CRENGINE_NG_LIBS})
+target_link_libraries(hyph_dumper ${CRE_NG} ${PRIVATE_LINK_LIBRARIES})
+if (CRE_BUILD_STATIC)
+  target_include_directories(hyph_dumper PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
+endif()
