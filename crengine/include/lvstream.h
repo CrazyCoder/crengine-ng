@@ -195,8 +195,20 @@ public:
     /// calculate crc32 code for stream, returns 0 for error or empty stream
     inline lUInt32 getcrc32() {
         lUInt32 res = 0;
-        getcrc32(res);
-        return res;
+        if (LVERR_OK == getcrc32(res))
+            return res;
+        return 0;
+    }
+
+    /// calculate sha256 hash for stream, if possible
+    virtual lverror_t getsha256(lString8& dst);
+
+    /// calculate sha256 hash for stream, returns empty string for error or empty stream
+    inline lString8 getsha256() {
+        lString8 hash;
+        if (LVERR_OK == getsha256(hash))
+            return hash;
+        return lString8::empty_str;
     }
 
     /// set write bytes limit to call flush(true) automatically after writing of each sz bytes

@@ -98,6 +98,16 @@ public:
         return _base->Write(buf, count, nBytesWritten);
     }
 
+    /// calculate crc32 code for stream, if possible
+    virtual lverror_t getcrc32(lUInt32& dst) {
+        return _base->getcrc32(dst);
+    }
+
+    /// calculate sha256 hash for stream, if possible
+    virtual lverror_t getsha256(lString8& dst) {
+        return _base->getsha256(dst);
+    }
+
     virtual bool Eof() {
         return _base->Eof();
     }

@@ -30,6 +30,7 @@
 #define DOC_PROP_FILE_FORMAT    "doc.file.format"
 #define DOC_PROP_FILE_FORMAT_ID "doc.file.format.id"
 #define DOC_PROP_FILE_CRC32     "doc.file.crc32"
+#define DOC_PROP_FILE_HASH      "doc.file.hash"
 #define DOC_PROP_CODE_BASE      "doc.file.code.base"
 #define DOC_PROP_COVER_FILE     "doc.cover.file"
 

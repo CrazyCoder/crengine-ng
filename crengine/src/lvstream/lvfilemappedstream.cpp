@@ -176,6 +176,7 @@ lverror_t LVFileMappedStream::Write(const void* buf, lvsize_t count, lvsize_t* n
     m_pos += count;
     if (nBytesWritten)
         *nBytesWritten = count;
+    clearCachedHash();
     return LVERR_OK;
 }
 

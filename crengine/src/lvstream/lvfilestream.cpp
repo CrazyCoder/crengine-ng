@@ -64,6 +64,7 @@ lverror_t LVFileStream::Read(void* buf, lvsize_t count, lvsize_t* nBytesRead) {
 }
 
 lverror_t LVFileStream::Write(const void* buf, lvsize_t count, lvsize_t* nBytesWritten) {
+    clearCachedHash();
     lvsize_t sz = fwrite(buf, 1, count, m_file);
     if (nBytesWritten)
         *nBytesWritten = sz;
@@ -255,6 +256,7 @@ lverror_t LVFileStream::SetSize(lvsize_t size) {
         return LVERR_FAIL;
     SetEndOfFile(m_hFile);
     Seek(oldpos, LVSEEK_SET, NULL);
+    clearCachedHash();
     return LVERR_OK;
 #else
     if (m_fd == -1)
@@ -265,6 +267,7 @@ lverror_t LVFileStream::SetSize(lvsize_t size) {
     if (!Seek(size, LVSEEK_SET, NULL))
         return LVERR_FAIL;
     Seek(oldpos, LVSEEK_SET, NULL);
+    clearCachedHash();
     return LVERR_OK;
 #endif
 }
@@ -275,6 +278,7 @@ lverror_t LVFileStream::Write(const void* buf, lvsize_t count, lvsize_t* nBytesW
         return LVERR_FAIL;
     //
     lUInt32 dwBytesWritten = 0;
+    clearCachedHash();
     if (WriteFile(m_hFile, buf, (lUInt32)count, (LPDWORD)&dwBytesWritten, NULL)) {
         if (nBytesWritten)
             *nBytesWritten = dwBytesWritten;
@@ -291,6 +295,7 @@ lverror_t LVFileStream::Write(const void* buf, lvsize_t count, lvsize_t* nBytesW
 #else
     if (m_fd == -1)
         return LVERR_FAIL;
+    clearCachedHash();
     ssize_t res = write(m_fd, buf, count);
     if (res != (ssize_t)-1) {
         if (nBytesWritten)
