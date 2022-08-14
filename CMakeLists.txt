@@ -57,6 +57,7 @@ option(USE_NANOSVG "Use nanosvg for svg image support" ON)
 option(USE_CHM "Enable chm support via built-in chmlib" ON)
 option(USE_ANTIWORD "Enable doc support via built-in antiword" ON)
 option(USE_FONTCONFIG "Use FontConfig to enumerate available fonts" ON)
+option(USE_SHASUM "Use sources from RFC6234 to calculate SHA sums" OFF)
 
 # other
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
@@ -348,6 +349,14 @@ if (USE_FONTCONFIG)
   find_package(FontConfig ${FONTCONFIG_MIN_VERSION} REQUIRED)
   list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${FONTCONFIG_INCLUDE_DIRS})
   list(APPEND PRIVATE_LINK_LIBRARIES ${FONTCONFIG_LIBRARIES})
+endif()
+
+# built-in rfc6234-shas
+if (USE_SHASUM)
+  message("Will build RFC6234 SHAs library")
+  add_subdirectory(thirdparty/rfc6234-shas)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/rfc6234-shas)
+  list(APPEND PRIVATE_LINK_LIBRARIES cre_rfc6234-shas)
 endif()
 
 # check usage consistency

@@ -127,6 +127,10 @@
 #define USE_FONTCONFIG 0
 #endif
 
+#ifndef USE_SHASUM
+#define USE_SHASUM 0
+#endif
+
 #ifndef GRAY_INVERSE
 #define GRAY_INVERSE 0
 #endif
