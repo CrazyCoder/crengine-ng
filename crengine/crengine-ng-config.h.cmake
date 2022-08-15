@@ -24,5 +24,6 @@
 #cmakedefine01 USE_NANOSVG
 #cmakedefine01 USE_CHM
 #cmakedefine01 USE_ANTIWORD
+#cmakedefine01 USE_SHASUM
 
 #endif  // CRENGINE_NG_CONFIG_H

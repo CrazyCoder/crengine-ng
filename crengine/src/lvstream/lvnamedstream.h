@@ -30,8 +30,12 @@ protected:
     lString32 m_filename;
     lString32 m_path;
     lvopen_mode_t m_mode;
-    lUInt32 _crc;
+    lUInt32 _crc; // cached CRC32
     bool _crcFailed;
+#if (USE_SHASUM == 1)
+    lString8 _sha256; // cached SHA256
+    bool _sha256Failed;
+#endif
     lvsize_t _autosyncLimit;
     lvsize_t _bytesWritten;
     virtual void handleAutoSync(lvsize_t bytesWritten) {
@@ -43,13 +47,25 @@ protected:
             _bytesWritten = 0;
         }
     }
+    void clearCachedHash() {
+        _crc = 0;
+        _crcFailed = false;
+#if (USE_SHASUM == 1)
+        _sha256 = lString8::empty_str;
+        _sha256Failed = false;
+#endif
+    }
 public:
     LVNamedStream()
             : m_mode(LVOM_ERROR)
             , _crc(0)
             , _crcFailed(false)
+#if (USE_SHASUM == 1)
+            , _sha256Failed(false)
+#endif
             , _autosyncLimit(0)
-            , _bytesWritten(0) { }
+            , _bytesWritten(0) {
+    }
     /// set write bytes limit to call flush(true) automatically after writing of each sz bytes
     virtual void setAutoSyncSize(lvsize_t sz) {
         _autosyncLimit = sz;
@@ -62,8 +78,10 @@ public:
     virtual lvopen_mode_t GetMode() {
         return (lvopen_mode_t)(m_mode & LVOM_MASK);
     }
-    /// calculate crc32 code for stream, if possible
+    /// calculate crc32 code for stream if possible and cache it
     virtual lverror_t getcrc32(lUInt32& dst);
+    /// calculate sha256 hash for stream if possible and cache it
+    virtual lverror_t getsha256(lString8& dst);
 };
 
 #endif // __LVNAMEDSTREAM_H_INCLUDED__

@@ -304,6 +304,7 @@ lverror_t LVBlockWriteStream::SetSize(lvsize_t size) {
     lverror_t res = _baseStream->SetSize(size);
     if (res == LVERR_OK)
         _size = size;
+    clearCachedHash();
     return res;
 }
 
@@ -412,5 +413,6 @@ lverror_t LVBlockWriteStream::Write(const void* buf, lvsize_t count, lvsize_t* n
 #if TRACE_BLOCK_WRITE_STREAM
     dumpBlocks("after write");
 #endif
+    clearCachedHash();
     return res;
 }

@@ -5,40 +5,22 @@ set(SRC_LIST
     lvfontglyphcache_b.cpp
 )
 
-set(crengine_part_SRC_LIST
-    ../../src/crconcurrent.cpp
-    ../../src/lvstring.cpp
-    ../../src/lvmemman.cpp
-    ../../src/lvstream/lvdefstreambuffer.cpp
-    ../../src/lvstream/lvfilemappedstream.cpp
-    ../../src/lvstream/lvnamedstream.cpp
-    ../../src/lvstream/lvfilestream.cpp
-    ../../src/lvstream/lvstream.cpp
-    ../../src/lvstream/lvziparc.cpp
-    ../../src/lvstream/lvzipdecodestream.cpp
-    ../../src/lvstream/lvmemorystream.cpp
-    ../../src/lvstream/lvcachedstream.cpp
-    ../../src/lvstream/lvtcrstream.cpp
-    ../../src/lvstream/lvdirectorycontainer.cpp
-    ../../src/lvstream/lvblockwritestream.cpp
-    ../../src/lvstream/lvstreamutils.cpp
-    ../../src/crlog.cpp
-    ../../src/crtxtenc.cpp
-    ../../src/cp_stats.cpp
-    ../../src/lvfont/lvfontglyphcache.cpp
-)
-
-if(UNIX)
-    add_definitions(-DLINUX -D_LINUX)
-endif(UNIX)
+set(CRE_NG)
+if (CRE_BUILD_STATIC)
+  set(CRE_NG crengine-ng_static)
+elseif(CRE_BUILD_SHARED)
+  set(CRE_NG crengine-ng)
+endif()
 
 if(WIN32)
-    add_definitions(-DWIN32 -D_CONSOLE)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
+  add_definitions(-DWIN32 -D_CONSOLE)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
 endif(WIN32)
 
-add_executable(glyphcache_bench ${SRC_LIST} ${crengine_part_SRC_LIST})
-target_include_directories(glyphcache_bench PRIVATE ${UTF8PROC_INCLUDE_DIRS})
-target_link_libraries(glyphcache_bench ${ZLIB_LIBRARIES} ${UTF8PROC_LIBRARIES})
+add_executable(glyphcache_bench ${SRC_LIST})
+target_link_libraries(glyphcache_bench ${CRE_NG} ${PRIVATE_LINK_LIBRARIES})
+if (CRE_BUILD_STATIC)
+  target_include_directories(glyphcache_bench PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
+endif()
 
 configure_file(valgrind_check.sh.cmake ${CMAKE_CURRENT_BINARY_DIR}/valgrind_check.sh)

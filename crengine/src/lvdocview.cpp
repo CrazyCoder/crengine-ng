@@ -3222,6 +3222,10 @@ bool LVDocView::goLink(lString32 link, bool savePos) {
             m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                                (int)stream->GetSize()));
             m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
+            lString8 hash = stream->getsha256();
+            if (!hash.empty())
+                hash = cs8("sha256:") + hash;
+            m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
             // TODO: load document from stream properly
             if (!loadDocumentInt(stream)) {
                 createDefaultDocument(cs32("Load error"), lString32(
@@ -3930,6 +3934,7 @@ static void FileToArcProps(CRPropRef props) {
     props->setString(DOC_PROP_FILE_PATH, lString32::empty_str);
     props->setString(DOC_PROP_FILE_SIZE, lString32::empty_str);
     props->setHex(DOC_PROP_FILE_CRC32, 0);
+    props->setString(DOC_PROP_FILE_HASH, lString32::empty_str);
 }
 
 static bool needToConvertBookmarks(CRFileHistRecord* historyRecord, lUInt32 domVersionRequested) {
@@ -3991,6 +3996,10 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
                                                            (int)stream->GetSize()));
         m_doc_props->setString(DOC_PROP_FILE_NAME, arcItemPathName);
         m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
+        lString8 hash = stream->getsha256();
+        if (!hash.empty())
+            hash = cs8("sha256:") + hash;
+        m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
         CRFileHistRecord* record = m_hist.getRecord(filename32, stream->GetSize());
         lUInt32 newDOMVersion;
         lUInt32 domVersionRequested = m_props->getIntDef(PROP_REQUESTED_DOM_VERSION, gDOMVersionCurrent);
@@ -4056,6 +4065,10 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                        (int)stream->GetSize()));
     m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
+    lString8 hash = stream->getsha256();
+    if (!hash.empty())
+        hash = cs8("sha256:") + hash;
+    m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
 
     CRFileHistRecord* record = m_hist.getRecord(filename32, stream->GetSize());
     int newDOMVersion;
@@ -4146,6 +4159,10 @@ bool LVDocView::LoadDocument(LVStreamRef stream, const lChar32* contentPath, boo
     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                        (int)stream->GetSize()));
     m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
+    lString8 hash = stream->getsha256();
+    if (!hash.empty())
+        hash = cs8("sha256:") + hash;
+    m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
 
     CRFileHistRecord* record = m_hist.getRecord(contentPath16, stream->GetSize());
     int newDOMVersion;
@@ -4603,6 +4620,10 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                     m_doc_props->setString(DOC_PROP_CODE_BASE, LVExtractPath(fn));
                     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa((int)m_stream->GetSize()));
                     m_doc_props->setHex(DOC_PROP_FILE_CRC32, m_stream->getcrc32());
+                    lString8 hash = m_stream->getsha256();
+                    if (!hash.empty())
+                        hash = cs8("sha256:") + hash;
+                    m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
                     found = true;
                 }
             }

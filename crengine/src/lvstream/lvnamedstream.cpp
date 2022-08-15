@@ -63,3 +63,25 @@ lverror_t LVNamedStream::getcrc32(lUInt32& dst) {
         return LVERR_FAIL;
     }
 }
+
+lverror_t LVNamedStream::getsha256(lString8& dst) {
+#if (USE_SHASUM == 1)
+    if (!_sha256.empty()) {
+        dst = _sha256;
+        return LVERR_OK;
+    } else {
+        if (!_sha256Failed) {
+            lverror_t res = LVStream::getsha256(dst);
+            if (res == LVERR_OK) {
+                _sha256 = dst;
+                return LVERR_OK;
+            }
+            _sha256Failed = true;
+        }
+        dst = 0;
+        return LVERR_FAIL;
+    }
+#else
+    return LVERR_NOTIMPL;
+#endif
+}

@@ -883,6 +883,10 @@ public:
     lUInt32 getFileCRC32() const {
         return (lUInt32)m_doc_props->getIntDef(DOC_PROP_FILE_CRC32, 0);
     }
+    /// returns book content hash
+    lString32 getFileHash() const {
+        return m_doc_props->getStringDef(DOC_PROP_FILE_HASH, "");
+    }
 
     /// export to WOL format
     bool exportWolFile(const char* fname, bool flgGray, int levels);

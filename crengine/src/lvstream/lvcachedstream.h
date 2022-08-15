@@ -73,6 +73,11 @@ public:
         return m_stream->getcrc32(dst);
     }
 
+    /// fastly return already known SHA256
+    virtual lverror_t getsha256(lString8& dst) {
+        return m_stream->getsha256(dst);
+    }
+
     virtual bool Eof() {
         return m_pos >= m_size;
     }

@@ -3,37 +3,20 @@ set(SRC_LIST
     langstat.cpp
 )
 
-set(crengine_part_SRC_LIST
-    ../../src/cp_stats.cpp
-    ../../src/crtxtenc.cpp
-    ../../src/lvmemman.cpp
-    ../../src/lvstream/lvdefstreambuffer.cpp
-    ../../src/lvstream/lvfilemappedstream.cpp
-    ../../src/lvstream/lvnamedstream.cpp
-    ../../src/lvstream/lvfilestream.cpp
-    ../../src/lvstream/lvstream.cpp
-    ../../src/lvstream/lvziparc.cpp
-    ../../src/lvstream/lvzipdecodestream.cpp
-    ../../src/lvstream/lvmemorystream.cpp
-    ../../src/lvstream/lvcachedstream.cpp
-    ../../src/lvstream/lvtcrstream.cpp
-    ../../src/lvstream/lvdirectorycontainer.cpp
-    ../../src/lvstream/lvblockwritestream.cpp
-    ../../src/lvstream/lvstreamutils.cpp
-    ../../src/lvstring.cpp
-    ../../src/crlog.cpp
-    ../../src/lvserialbuf.cpp
-)
-
-if(UNIX)
-    add_definitions(-DLINUX -D_LINUX)
-endif(UNIX)
+set(CRE_NG)
+if (CRE_BUILD_STATIC)
+  set(CRE_NG crengine-ng_static)
+elseif(CRE_BUILD_SHARED)
+  set(CRE_NG crengine-ng)
+endif()
 
 if(WIN32)
-    add_definitions(-DWIN32 -D_CONSOLE)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
+  add_definitions(-DWIN32 -D_CONSOLE)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
 endif(WIN32)
 
-add_executable(langstat ${SRC_LIST} ${crengine_part_SRC_LIST})
-target_include_directories(langstat PRIVATE ${UTF8PROC_INCLUDE_DIRS})
-target_link_libraries(langstat ${ZLIB_LIBRARIES} ${UTF8PROC_LIBRARIES})
+add_executable(langstat ${SRC_LIST})
+target_link_libraries(langstat ${CRE_NG} ${PRIVATE_LINK_LIBRARIES})
+if (CRE_BUILD_STATIC)
+  target_include_directories(langstat PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
+endif()

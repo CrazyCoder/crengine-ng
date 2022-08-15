@@ -96,6 +96,7 @@ lverror_t LVMemoryStream::SetSize(lvsize_t size) {
     m_size = size;
     if (m_pos > m_size)
         m_pos = m_size;
+    clearCachedHash();
     return LVERR_OK;
 }
 
@@ -114,6 +115,7 @@ lverror_t LVMemoryStream::Write(const void* buf, lvsize_t count, lvsize_t* nByte
     }
     if (nBytesWritten)
         *nBytesWritten = bytes_avail;
+    clearCachedHash();
     return LVERR_OK;
 }
 
@@ -149,6 +151,7 @@ lverror_t LVMemoryStream::Close() {
     m_size = 0;
     m_bufsize = 0;
     m_pos = 0;
+    clearCachedHash();
     return LVERR_OK;
 }
 
