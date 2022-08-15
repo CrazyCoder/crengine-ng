@@ -67,6 +67,7 @@ This library can use other libraries (links to licenses point to official websit
    * USE_NANOSVG - Use nanosvg for svg image support; default ON
    * USE_CHM - Enable chm support via built-in chmlib; default ON
    * USE_ANTIWORD - Enable doc support via built-in antiword; default ON
+   * USE_SHASUM - Use sources from RFC6234 to calculate SHA sums (engine will create fingerprint for the document opened); default OFF
 
    To use external dependencies:
 
@@ -102,4 +103,5 @@ The "thirdparty" directory contains some patched libraries with their own licens
  * chmlib - [LGPL-2.1](https://www.gnu.org/licenses/lgpl-2.1.html)
  * antiword - [GPL-2.0](https://www.gnu.org/licenses/gpl-2.0.html)
  * nanosvg - [ZLib](https://directory.fsf.org/wiki/License:Zlib)
- * qimagescale - [imlib2](https://directory.fsf.org/wiki/License:Imlib2)
+ * qimagescale - [imlib2](https://directory.fsf.org/wiki/License:Imlib2), [GPL-2.0](https://www.gnu.org/licenses/gpl-2.0.html)
+ * rfc6234-shas [BSD-3-Clause](https://directory.fsf.org/wiki/License:BSD-3-Clause)
