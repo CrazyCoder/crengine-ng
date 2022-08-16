@@ -144,8 +144,8 @@ lString32 extractDocKeywords(ldomDocument* doc) {
     res << doc->createXPointer(U"/FictionBook/description/title-info/date").getText().trim();
 #endif
     // Genres
-    // We use "\n" as a separator here, so if you change it here, you must also change it in
-    // Engine.scanBookPropertiesInternal(), DocView.updateBookInfoInternal().
+    // We use "\n" as a separator here, so if you change it here, you must also
+    // change the keyword parsing code in the client application.
     for (int i = 0; i < 16; i++) {
         lString32 path = cs32("/FictionBook/description/title-info/genre[") + fmt::decimal(i + 1) + "]";
         ldomXPointer genre = doc->createXPointer(path);
