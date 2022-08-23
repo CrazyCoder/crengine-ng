@@ -79,9 +79,7 @@ endif(WIN32)
 
 add_executable(unittests ${SRC_LIST})
 target_link_libraries(unittests ${CRE_NG} ${PRIVATE_LINK_LIBRARIES} gtest_main)
-if (CRE_BUILD_STATIC)
-  target_include_directories(unittests PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
-endif()
+target_include_directories(unittests PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 
 include(GoogleTest)
 gtest_discover_tests(unittests)
