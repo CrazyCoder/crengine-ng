@@ -999,11 +999,6 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
         m_doc_props->setString(DOC_PROP_TITLE, title);
         m_doc_props->setString(DOC_PROP_LANGUAGE, language);
         m_doc_props->setString(DOC_PROP_DESCRIPTION, description);
-        m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
-        lString8 hash = stream->getsha256();
-        if (!hash.empty())
-            hash = cs8("sha256:") + hash;
-        m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
 
         // Return possibly multiple <dc:creator> (authors) and <dc:subject> (keywords)
         // as a single doc_props string with values separated by \n.

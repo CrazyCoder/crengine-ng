@@ -13,6 +13,7 @@
 *******************************************************/
 
 #include <lvstream.h>
+#include <crlog.h>
 
 #include "lvdefstreambuffer.h"
 
@@ -43,6 +44,7 @@ LVStreamBufferRef LVStream::GetWriteBuffer(lvpos_t pos, lvpos_t size) {
 lverror_t LVStream::getcrc32(lUInt32& dst) {
     dst = 0;
     if (GetMode() == LVOM_READ || GetMode() == LVOM_APPEND) {
+        CRLog::debug("LVStream: start to calc CRC32");
         lvpos_t savepos = GetPos();
         lvsize_t size = GetSize();
         lUInt8 buf[CRC_BUF_SIZE];
@@ -60,6 +62,7 @@ lverror_t LVStream::getcrc32(lUInt32& dst) {
             dst = lStr_crc32(dst, buf, sz);
         }
         SetPos(savepos);
+        CRLog::debug("LVStream: done of CRC32 calculation");
         return LVERR_OK;
     } else {
         // not supported
@@ -72,56 +75,61 @@ lverror_t LVStream::getsha256(lString8& dst) {
 #if (USE_SHASUM == 1)
     dst = lString8::empty_str;
     if (GetMode() == LVOM_READ || GetMode() == LVOM_APPEND) {
+        CRLog::debug("LVStream: start to calc SHA256...");
+        lverror_t res = LVERR_FAIL;
         SHA256Context sha256;
         uint8_t digest[SHA256HashSize] = {};
         // Init hash
         int sharet = SHA256Reset(&sha256);
-        if (shaSuccess != sharet) {
-            return LVERR_FAIL;
-        }
-        lvpos_t savepos = GetPos();
-        lvsize_t size = GetSize();
-        lUInt8 buf[CRC_BUF_SIZE];
-        SetPos(0);
-        lvsize_t bytesRead = 0;
-        lverror_t ret = LVERR_OK;
-        bool failed = false;
-        lvpos_t pos = 0;
-        while (pos < size) {
-            ret = Read(buf, CRC_BUF_SIZE, &bytesRead);
-            if (LVERR_OK != ret) {
-                failed = true;
-                break;
-            }
-            // Update hash
-            sharet = SHA256Input(&sha256, buf, bytesRead);
-            if (shaSuccess != sharet) {
-                failed = true;
-                break;
-            }
-            pos += bytesRead;
-            if (bytesRead < CRC_BUF_SIZE)
-                break;
-        }
-        SetPos(savepos);
-        if (failed)
-            return LVERR_FAIL;
-        // Format resulting hash to string
-        sharet = SHA256Result(&sha256, digest);
         if (shaSuccess == sharet) {
-            char str[SHA256HashSize * 2 + 1];
-            const uint8_t* pdigest = digest;
-            char* pstr = str;
-            for (int i = 0; i < SHA256HashSize; i++) {
-                snprintf(pstr, 3, "%02x", *pdigest);
-                pdigest++;
-                pstr += 2;
+            lvpos_t savepos = GetPos();
+            lvsize_t size = GetSize();
+            lUInt8 buf[CRC_BUF_SIZE];
+            SetPos(0);
+            lvsize_t bytesRead = 0;
+            lverror_t ret = LVERR_OK;
+            bool failed = false;
+            lvpos_t pos = 0;
+            while (pos < size) {
+                ret = Read(buf, CRC_BUF_SIZE, &bytesRead);
+                if (LVERR_OK != ret) {
+                    failed = true;
+                    break;
+                }
+                // Update hash
+                sharet = SHA256Input(&sha256, buf, bytesRead);
+                if (shaSuccess != sharet) {
+                    failed = true;
+                    break;
+                }
+                pos += bytesRead;
+                if (bytesRead < CRC_BUF_SIZE)
+                    break;
             }
-            *pstr = 0;
-            dst = str;
-            return LVERR_OK;
+            SetPos(savepos);
+            if (!failed) {
+                // Format resulting hash to string
+                sharet = SHA256Result(&sha256, digest);
+                if (shaSuccess == sharet) {
+                    char str[SHA256HashSize * 2 + 1];
+                    const uint8_t* pdigest = digest;
+                    char* pstr = str;
+                    for (int i = 0; i < SHA256HashSize; i++) {
+                        snprintf(pstr, 3, "%02x", *pdigest);
+                        pdigest++;
+                        pstr += 2;
+                    }
+                    *pstr = 0;
+                    dst = str;
+                    res = LVERR_OK;
+                }
+            }
         }
-        return LVERR_FAIL;
+        if (LVERR_OK == res)
+            CRLog::debug("LVStream: successful calculation of SHA256");
+        else
+            CRLog::debug("LVStream: failed to calculate SHA256");
+        return res;
     } else {
         // not supported
         return LVERR_NOTIMPL;

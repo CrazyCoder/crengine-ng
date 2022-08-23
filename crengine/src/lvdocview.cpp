@@ -3221,11 +3221,6 @@ bool LVDocView::goLink(lString32 link, bool savePos) {
             m_doc_props->setString(DOC_PROP_CODE_BASE, LVExtractPath(filename));
             m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                                (int)stream->GetSize()));
-            m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
-            lString8 hash = stream->getsha256();
-            if (!hash.empty())
-                hash = cs8("sha256:") + hash;
-            m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
             // TODO: load document from stream properly
             if (!loadDocumentInt(stream)) {
                 createDefaultDocument(cs32("Load error"), lString32(
@@ -3995,11 +3990,6 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
         m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                            (int)stream->GetSize()));
         m_doc_props->setString(DOC_PROP_FILE_NAME, arcItemPathName);
-        m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
-        lString8 hash = stream->getsha256();
-        if (!hash.empty())
-            hash = cs8("sha256:") + hash;
-        m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
         CRFileHistRecord* record = m_hist.getRecord(filename32, stream->GetSize());
         lUInt32 newDOMVersion;
         lUInt32 domVersionRequested = m_props->getIntDef(PROP_REQUESTED_DOM_VERSION, gDOMVersionCurrent);
@@ -4064,11 +4054,6 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     m_doc_props->setString(DOC_PROP_FILE_NAME, fn);
     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                        (int)stream->GetSize()));
-    m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
-    lString8 hash = stream->getsha256();
-    if (!hash.empty())
-        hash = cs8("sha256:") + hash;
-    m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
 
     CRFileHistRecord* record = m_hist.getRecord(filename32, stream->GetSize());
     int newDOMVersion;
@@ -4158,11 +4143,6 @@ bool LVDocView::LoadDocument(LVStreamRef stream, const lChar32* contentPath, boo
     m_doc_props->setString(DOC_PROP_FILE_NAME, fn);
     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                        (int)stream->GetSize()));
-    m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
-    lString8 hash = stream->getsha256();
-    if (!hash.empty())
-        hash = cs8("sha256:") + hash;
-    m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
 
     CRFileHistRecord* record = m_hist.getRecord(contentPath16, stream->GetSize());
     int newDOMVersion;
@@ -4298,6 +4278,12 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
     }
     LVLock lock(getMutex());
 
+    m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
+    lString8 hash = stream->getsha256();
+    if (!hash.empty())
+        hash = cs8("sha256:") + hash;
+    m_doc_props->setString(DOC_PROP_FILE_HASH, hash);
+
     //    int pdbFormat = 0;
     //    LVStreamRef pdbStream = LVOpenPDBStream( stream, pdbFormat );
     //    if ( !pdbStream.isNull() ) {
@@ -4368,7 +4354,6 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                 return false;
             } else {
                 m_container = m_doc->getContainer();
-                m_doc_props = m_doc->getProps();
                 setRenderProps(0, 0);
                 REQUEST_RENDER("loadDocument")
                 if (m_callback) {
@@ -4406,7 +4391,6 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                 return false;
             } else {
                 m_container = m_doc->getContainer();
-                m_doc_props = m_doc->getProps();
                 setRenderProps(0, 0);
                 REQUEST_RENDER("loadDocument")
                 if (m_callback) {
@@ -4438,7 +4422,6 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                 return false;
             } else {
                 m_container = m_doc->getContainer();
-                m_doc_props = m_doc->getProps();
                 setRenderProps(0, 0);
                 REQUEST_RENDER("loadDocument")
                 if (m_callback) {
@@ -4470,7 +4453,6 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                 return false;
             } else {
                 m_container = m_doc->getContainer();
-                m_doc_props = m_doc->getProps();
                 setRenderProps(0, 0);
                 REQUEST_RENDER("loadDocument")
                 if (m_callback) {
