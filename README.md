@@ -29,6 +29,7 @@ This library can use other libraries (links to licenses point to official websit
  * FriBiDi - RTL writing support ([LGPL-2.1](https://github.com/fribidi/fribidi/blob/master/COPYING))
  * libunibreak - line breaking and word breaking algorithms ([Zlib](https://github.com/adah1972/libunibreak/blob/master/LICENCE))
  * utf8proc - for unicode string comparision ([utf8proc (MIT-like) + Unicode data license](https://github.com/JuliaStrings/utf8proc/blob/master/LICENSE.md))
+ * GoogleTest - for unit testing, optional, does not require pre-installation ([BSD-3-Clause](https://github.com/google/googletest/blob/main/LICENSE))
 
 ## Installation
 1. Install dependencies (via package manager or compile from sources)
