@@ -100,42 +100,6 @@ void TextLangMan::setMainLangFromHyphDict(lString32 id) {
     CRLog::warn("lang not found for hyphenation dict: %s\n", UnicodeToLocal(id).c_str());
 }
 
-// Used only by TextLangCfg
-HyphMethod* TextLangMan::getHyphMethodForLang(lString32 lang_tag) {
-    // Look for full lang_tag
-    HyphDictionaryList* dictList = HyphMan::getDictList();
-    HyphDictionary* dict;
-    lString32 dict_lang_tag;
-    lang_tag.lowercase();
-    for (int i = 0; dictList && i < dictList->length(); i++) {
-        dict = dictList->get(i);
-        if (dict) {
-            dict_lang_tag = dict->getLangTag();
-            dict_lang_tag.lowercase();
-            if (lang_tag == dict_lang_tag)
-                return HyphMan::getHyphMethodForDictionary(dict->getId());
-        }
-    }
-    // Look for lang_tag initial subpart
-    int m_pos = lang_tag.pos("-");
-    if (m_pos > 0) {
-        lString32 lang_tag2 = lang_tag.substr(0, m_pos);
-        lang_tag2.lowercase();
-        for (int i = 0; dictList && i < dictList->length(); i++) {
-            dict = dictList->get(i);
-            if (dict) {
-                dict_lang_tag = dict->getLangTag();
-                dict_lang_tag.lowercase();
-                if (lang_tag2 == dict_lang_tag)
-                    return HyphMan::getHyphMethodForDictionary(dict->getId());
-            }
-        }
-    }
-    // Fallback to English_US, as other languages are more likely to get mixed
-    // with english text (it feels better than using @algorithm)
-    return HyphMan::getHyphMethodForDictionary(TEXTLANG_FALLBACK_HYPH_DICT_ID);
-}
-
 // Return the (single and cached) TextLangCfg for the provided lang_tag
 TextLangCfg* TextLangMan::getTextLangCfg(lString32 lang_tag) {
     if (!_embedded_langs_enabled) {
@@ -732,7 +696,12 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
     lang_tag.lowercase(); // used by langStartsWith()
 
     // Get hyph method/dictionary from HyphMan::_dictList
-    _hyph_method = TextLangMan::getHyphMethodForLang(lang_tag);
+    _hyph_method = HyphMan::getHyphMethodForLang(lang_tag);
+    if (_hyph_method->getId() == HYPH_DICT_ID_NONE) {
+        // Fallback to English_US, as other languages are more likely to get mixed
+        // with english text (it feels better than using @algorithm)
+        _hyph_method = HyphMan::getHyphMethodForDictionary(TEXTLANG_FALLBACK_HYPH_DICT_ID);
+    }
 
     // Cleanup if we got "en#@something" from legacy HyphMan methods
     int h_pos = lang_tag.pos("#");

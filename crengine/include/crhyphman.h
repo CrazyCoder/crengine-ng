@@ -217,6 +217,13 @@ public:
     static bool setTrustSoftHyphens(int trust_soft_hyphen);
     static bool isEnabled();
     static HyphMethod* getHyphMethodForDictionary(lString32 id);
+    /**
+     * @brief Gets the hyphenation method for the specified language.
+     * @param lang_tag language tag in ISO 639
+     * @return pointer to a hyphenation method with identifier HYPH_DICT_ID_DICTIONARY if a hyphenation dictionary for the given language is found,
+     * otherwise a special method (HDT_NONE) with identifier HYPH_DICT_ID_NONE is returned
+     */
+    static HyphMethod* getHyphMethodForLang(lString32 lang_tag);
 
     HyphMan();
     ~HyphMan();

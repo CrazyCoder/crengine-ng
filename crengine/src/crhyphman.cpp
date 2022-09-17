@@ -393,6 +393,39 @@ HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id) {
     return newmethod;
 }
 
+HyphMethod* HyphMan::getHyphMethodForLang(lString32 lang_tag) {
+    // Look for full lang_tag
+    HyphDictionaryList* dictList = HyphMan::getDictList();
+    HyphDictionary* dict;
+    lString32 dict_lang_tag;
+    lang_tag.lowercase();
+    for (int i = 0; dictList && i < dictList->length(); i++) {
+        dict = dictList->get(i);
+        if (dict) {
+            dict_lang_tag = dict->getLangTag();
+            dict_lang_tag.lowercase();
+            if (lang_tag == dict_lang_tag)
+                return HyphMan::getHyphMethodForDictionary(dict->getId());
+        }
+    }
+    // Look for lang_tag initial subpart
+    int m_pos = lang_tag.pos("-");
+    if (m_pos > 0) {
+        lString32 lang_tag2 = lang_tag.substr(0, m_pos);
+        lang_tag2.lowercase();
+        for (int i = 0; dictList && i < dictList->length(); i++) {
+            dict = dictList->get(i);
+            if (dict) {
+                dict_lang_tag = dict->getLangTag();
+                dict_lang_tag.lowercase();
+                if (lang_tag2 == dict_lang_tag)
+                    return HyphMan::getHyphMethodForDictionary(dict->getId());
+            }
+        }
+    }
+    return &NO_HYPH;
+}
+
 bool HyphDictionary::activate() {
     TextLangMan::setMainLangFromHyphDict(getId());
     return true;

@@ -49,8 +49,6 @@ class TextLangMan
     static HyphMethod* _no_hyph_method;      // instance of hyphman NoHyph
     static HyphMethod* _soft_hyphens_method; // instance of hyphman SoftHyphensHyph
     static HyphMethod* _algo_hyph_method;    // instance of hyphman AlgoHyph
-
-    static HyphMethod* getHyphMethodForLang(lString32 lang_tag); // Used by TextLangCfg
 public:
     static void uninit();
     static lUInt32 getHash();
