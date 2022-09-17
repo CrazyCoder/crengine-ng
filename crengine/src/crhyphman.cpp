@@ -84,10 +84,9 @@ public:
     virtual lUInt32 getHash() {
         return _hash;
     }
-    virtual lUInt32 getCount() {
+    virtual lUInt32 getPatternsCount() {
         return _pattern_count;
     }
-    virtual lUInt32 getSize();
 };
 
 class HyphPatternReader: public LVXMLParserCallback
@@ -95,19 +94,28 @@ class HyphPatternReader: public LVXMLParserCallback
 protected:
     bool _insidePatternTag;
     bool _descriptionTagProcessing;
-    lString32Collection& _dataRef;
+    lString32Collection* _dataPtr;
     lString32 _title;
     lString32 _langTag;
     int _left_hyphen_min;
     int _right_hyphen_min;
 public:
+    // default constructor only for fast scanning of dictionary properties
+    HyphPatternReader()
+            : _insidePatternTag(false)
+            , _descriptionTagProcessing(false)
+            , _dataPtr(NULL)
+            , _left_hyphen_min(-1)
+            , _right_hyphen_min(-1) {
+    }
+    // Main constructor for full dictionary reading
     HyphPatternReader(lString32Collection& result)
             : _insidePatternTag(false)
             , _descriptionTagProcessing(false)
-            , _dataRef(result)
+            , _dataPtr(&result)
             , _left_hyphen_min(-1)
             , _right_hyphen_min(-1) {
-        result.clear();
+        _dataPtr->clear();
     }
     const lString32& GetTitle() const {
         return _title;
@@ -124,7 +132,7 @@ public:
     bool isValid() const {
         return !_title.empty() && !_langTag.empty() &&
                _left_hyphen_min > 0 && _right_hyphen_min > 0 &&
-               _dataRef.length() > 0;
+               (NULL == _dataPtr || (NULL != _dataPtr && _dataPtr->length() > 0));
     }
     /// called on parsing end
     virtual void OnStop() { }
@@ -136,8 +144,14 @@ public:
         if (!lStr_cmp(tagname, "HyphenationDescription")) {
             _descriptionTagProcessing = true;
         } else if (!lStr_cmp(tagname, "pattern")) {
-            _insidePatternTag = true;
             _descriptionTagProcessing = false;
+            if (NULL == _dataPtr) {
+                // In scan mode, we only need to process the <HyphenationDescription> tag,
+                //  so we stop processing the file here.
+                _parser->Stop();
+            } else {
+                _insidePatternTag = true;
+            }
         } else {
             _descriptionTagProcessing = false;
         }
@@ -173,8 +187,8 @@ public:
     /// called on text
     virtual void OnText(const lChar32* text, int len, lUInt32 flags) {
         CR_UNUSED(flags);
-        if (_insidePatternTag)
-            _dataRef.add(lString32(text, len));
+        if (_insidePatternTag && NULL != _dataPtr)
+            _dataPtr->add(lString32(text, len));
     }
     /// add named BLOB data to document
     virtual bool OnBlob(lString32 name, const lUInt8* data, int size) {
@@ -567,16 +581,13 @@ bool HyphDictionaryList::open(lString32 hyphDirectory, bool clear) {
                     CRLog::error("Failed to open hyphenation dictionary: %s\n", LCSTR(filename));
                     continue;
                 }
-                lString32Collection data;
-                HyphPatternReader reader(data);
+                HyphPatternReader reader;
                 LVXMLParser parser(hyphStream, &reader);
                 if (parser.CheckFormat()) {
                     if (parser.Parse()) {
                         if (reader.isValid()) {
-                            if (data.length()) {
-                                title = reader.GetTitle();
-                                langTag = reader.GetLangTag();
-                            }
+                            title = reader.GetTitle();
+                            langTag = reader.GetLangTag();
                         } else {
                             CRLog::error("Invalid/incomplete hyphenation dictionary in file \"%s\"!", LCSTR(name));
                         }
@@ -809,10 +820,6 @@ void TexHyph::addPattern(TexPattern* pattern) {
     pattern->next = *p;
     *p = pattern;
     _pattern_count++;
-}
-
-lUInt32 TexHyph::getSize() {
-    return _pattern_count * sizeof(TexPattern);
 }
 
 bool TexHyph::load(LVStreamRef stream) {

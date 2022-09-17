@@ -81,7 +81,7 @@ TEST_F(HyphenationTests, HyphTestEnglishUS) {
 
     HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 0);
 
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-ver-sa-tions");
     EXPECT_STREQ(doHyphenation(method, "pleasure").c_str(), "plea-sure");
@@ -114,7 +114,7 @@ TEST_F(HyphenationTests, HyphTestEnglishGB) {
 
     HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_GB.pattern"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 0);
 
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-ver-sa-tions");
     EXPECT_STREQ(doHyphenation(method, "pleasure").c_str(), "pleas-ure");
@@ -147,7 +147,7 @@ TEST_F(HyphenationTests, HyphTestRussian) {
 
     HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("Russian.pattern"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 0);
 
     EXPECT_STREQ(doHyphenation(method, "аквариум").c_str(), "ак-ва-ри-ум");
     EXPECT_STREQ(doHyphenation(method, "каблук").c_str(), "каб-лук");
@@ -197,7 +197,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph1.pattern"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 0);
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-versations");
 
     // Dictionary with patterns 'n1v2', 'on2v2'.
@@ -205,7 +205,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph2.pattern"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 0);
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "conversations");
 
     // Dictionary with patterns 'n1v2', 'on2v2', con1v2.
@@ -213,7 +213,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph3.pattern"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 0);
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "conversations");
 
     // Dictionary with patterns 'n1v2', 'on2v2', con3v2.
@@ -221,7 +221,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph4.pattern"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 0);
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-versations");
 
     CRLog::info("Finished SimpleHyphTest");
@@ -238,25 +238,25 @@ TEST_F(HyphenationTests, GetHyphMethodTest) {
     HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
 
     ASSERT_NE(methodNone, nullptr);
-    EXPECT_EQ(methodNone->getCount(), 0);
+    EXPECT_EQ(methodNone->getPatternsCount(), 0);
     EXPECT_NE(methodNone, methodAlgo);
     EXPECT_NE(methodNone, methodSoftHyphens);
     EXPECT_NE(methodNone, methodDict_EN_US);
 
     ASSERT_NE(methodAlgo, nullptr);
-    EXPECT_EQ(methodAlgo->getCount(), 0);
+    EXPECT_EQ(methodAlgo->getPatternsCount(), 0);
     EXPECT_NE(methodAlgo, methodNone);
     EXPECT_NE(methodAlgo, methodSoftHyphens);
     EXPECT_NE(methodAlgo, methodDict_EN_US);
 
     ASSERT_NE(methodSoftHyphens, nullptr);
-    EXPECT_EQ(methodSoftHyphens->getCount(), 0);
+    EXPECT_EQ(methodSoftHyphens->getPatternsCount(), 0);
     EXPECT_NE(methodSoftHyphens, methodNone);
     EXPECT_NE(methodSoftHyphens, methodAlgo);
     EXPECT_NE(methodSoftHyphens, methodDict_EN_US);
 
     ASSERT_NE(methodDict_EN_US, nullptr);
-    EXPECT_GT(methodDict_EN_US->getCount(), 3000);
+    EXPECT_GT(methodDict_EN_US->getPatternsCount(), 3000);
     EXPECT_NE(methodDict_EN_US, methodNone);
     EXPECT_NE(methodDict_EN_US, methodAlgo);
     EXPECT_NE(methodDict_EN_US, methodSoftHyphens);
@@ -271,7 +271,7 @@ TEST_F(HyphenationTests, HyphTestOverrideHyphenMinTest) {
 
     HyphMethod* method = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 0);
 
     // Override left & right hypnenmins
     HyphMan::overrideLeftHyphenMin(1);

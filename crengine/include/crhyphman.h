@@ -54,10 +54,7 @@ public:
     }
     virtual bool hyphenate(const lChar32* str, int len, lUInt16* widths, lUInt8* flags, lUInt16 hyphCharWidth, lUInt16 maxWidth, size_t flagSize = 1) = 0;
     virtual ~HyphMethod() { }
-    virtual lUInt32 getCount() {
-        return 0;
-    }
-    virtual lUInt32 getSize() {
+    virtual lUInt32 getPatternsCount() {
         return 0;
     }
     virtual int getLeftHyphenMin() {
