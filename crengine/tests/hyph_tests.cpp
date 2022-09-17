@@ -53,18 +53,18 @@ protected:
             flags[i] = 0;
         }
         if (method->hyphenate(word.c_str(), len, widths, (lUInt8*)flags, hyphCharWidth, maxWidth, 2)) {
-            lChar32 hypenated[MAX_WORD_SIZE * 2 + 1];
-            memset(hypenated, 0, sizeof(hypenated));
+            lChar32 hyphenated[MAX_WORD_SIZE * 2 + 1];
+            memset(hyphenated, 0, sizeof(hyphenated));
             int idx = 0;
             for (int i = 0; i < len; i++) {
-                hypenated[idx] = word[i];
+                hyphenated[idx] = word[i];
                 idx++;
                 if (flags[i] & LCHAR_ALLOW_HYPH_WRAP_AFTER) {
-                    hypenated[idx] = '-';
+                    hyphenated[idx] = '-';
                     idx++;
                 }
             }
-            return UnicodeToUtf8(hypenated, idx);
+            return UnicodeToUtf8(hyphenated, idx);
         }
         return lString8(word_utf8);
     }
