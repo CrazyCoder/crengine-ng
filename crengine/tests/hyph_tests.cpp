@@ -228,14 +228,15 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     CRLog::info("=======================");
 }
 
-TEST_F(HyphenationTests, GetHyphMethodTest) {
-    CRLog::info("==========================");
-    CRLog::info("Starting GetHyphMethodTest");
+TEST_F(HyphenationTests, GetHyphMethodForDictTest) {
+    CRLog::info("=================================");
+    CRLog::info("Starting GetHyphMethodForDictTest");
 
     HyphMethod* methodNone = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_NONE));
     HyphMethod* methodAlgo = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_ALGORITHM));
     HyphMethod* methodSoftHyphens = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_SOFTHYPHENS));
     HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForDictionary(cs32("English_US.pattern"));
+    HyphMethod* methodDict_INV = HyphMan::getHyphMethodForDictionary(cs32("_invalidX.XYZ"));
 
     ASSERT_NE(methodNone, nullptr);
     EXPECT_EQ(methodNone->getPatternsCount(), 0);
@@ -261,8 +262,45 @@ TEST_F(HyphenationTests, GetHyphMethodTest) {
     EXPECT_NE(methodDict_EN_US, methodAlgo);
     EXPECT_NE(methodDict_EN_US, methodSoftHyphens);
 
-    CRLog::info("Finished GetHyphMethodTest");
-    CRLog::info("==========================");
+    EXPECT_NE(methodDict_INV, nullptr);
+    EXPECT_EQ(methodDict_INV, methodNone);
+
+    CRLog::info("Finished GetHyphMethodForDictTest");
+    CRLog::info("=================================");
+}
+
+TEST_F(HyphenationTests, GetHyphMethodForLangTest) {
+    CRLog::info("=================================");
+    CRLog::info("Starting GetHyphMethodForLangTest");
+
+    HyphMethod* methodNone = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_NONE));
+    ASSERT_NE(methodNone, nullptr);
+    ASSERT_EQ(methodNone->getPatternsCount(), 0);
+
+    HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForLang(cs32("en"));
+    ASSERT_NE(methodDict_EN_US, nullptr);
+    EXPECT_NE(methodDict_EN_US, methodNone);
+    EXPECT_GT(methodDict_EN_US->getPatternsCount(), 3000);
+
+    HyphMethod* methodDict_EN_GB = HyphMan::getHyphMethodForLang(cs32("en-GB"));
+    ASSERT_NE(methodDict_EN_GB, nullptr);
+    EXPECT_NE(methodDict_EN_GB, methodNone);
+    EXPECT_NE(methodDict_EN_GB, methodDict_EN_US);
+    EXPECT_GT(methodDict_EN_GB->getPatternsCount(), 6000);
+
+    HyphMethod* methodDict_EL = HyphMan::getHyphMethodForLang(cs32("el"));
+    ASSERT_NE(methodDict_EL, nullptr);
+    EXPECT_NE(methodDict_EL, methodNone);
+    EXPECT_NE(methodDict_EL, methodDict_EN_US);
+    EXPECT_NE(methodDict_EL, methodDict_EN_GB);
+    EXPECT_GT(methodDict_EL->getPatternsCount(), 3000);
+
+    HyphMethod* methodDict_invalid = HyphMan::getHyphMethodForLang(cs32("inv?-xINV"));
+    ASSERT_NE(methodDict_invalid, nullptr);
+    EXPECT_EQ(methodDict_invalid, methodNone);
+
+    CRLog::info("Finished GetHyphMethodForLangTest");
+    CRLog::info("=================================");
 }
 
 TEST_F(HyphenationTests, HyphTestOverrideHyphenMinTest) {
