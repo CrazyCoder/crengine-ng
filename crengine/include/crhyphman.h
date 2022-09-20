@@ -137,8 +137,8 @@ public:
     bool activate(lString32 id);
 };
 
-#define DEF_HYPHENATION_DICT "English_US.pattern"
-// We'll be loading English_US.pattern even if non-english users
+#define DEF_HYPHENATION_DICT "en-US.pattern"
+// We'll be loading en-US.pattern even if non-english users
 // may never use it, but it's a bit tedious not going with it.
 // It might use around 1M of memory, but it will avoid re-rendering
 // the document if the book does not contain any language tag, and

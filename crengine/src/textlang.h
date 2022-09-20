@@ -22,14 +22,14 @@ extern "C" {
 #endif
 #endif
 
-// Be similar to HyphMan default state with "English_US.pattern"
+// Be similar to HyphMan default state with "en-US.pattern"
 #define TEXTLANG_DEFAULT_MAIN_LANG              "en"  // for LVDocView
 #define TEXTLANG_DEFAULT_MAIN_LANG_32           U"en" // for textlang.cpp
 #define TEXTLANG_DEFAULT_EMBEDDED_LANGS_ENABLED false
 #define TEXTLANG_DEFAULT_HYPHENATION_ENABLED    true
 #define TEXTLANG_DEFAULT_HYPH_SOFT_HYPHENS_ONLY false
 #define TEXTLANG_DEFAULT_HYPH_FORCE_ALGORITHMIC false
-#define TEXTLANG_FALLBACK_HYPH_DICT_ID          U"English_US.pattern" // For languages without specific hyph dicts
+#define TEXTLANG_FALLBACK_HYPH_DICT_ID          U"en-US.pattern" // For languages without specific hyph dicts
 
 class TextLangCfg;
 class HyphMethod;
