@@ -698,7 +698,7 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
     // Get hyph method/dictionary from HyphMan::_dictList
     _hyph_method = HyphMan::getHyphMethodForLang(lang_tag);
     if (_hyph_method->getId() == HYPH_DICT_ID_NONE) {
-        // Fallback to English_US, as other languages are more likely to get mixed
+        // Fallback to en-US, as other languages are more likely to get mixed
         // with english text (it feels better than using @algorithm)
         _hyph_method = HyphMan::getHyphMethodForDictionary(TEXTLANG_FALLBACK_HYPH_DICT_ID);
     }
