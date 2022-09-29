@@ -257,7 +257,7 @@ int main(int argc, const char* argv[]) {
 
     // init hyphenation manager
     HyphMan::initDictionaries(Utf8ToUnicode(exedir));
-    HyphMan::activateDictionary(U"Russian_EnUS.pattern");
+    HyphMan::activateDictionary(U"ru,en-us.pattern");
 
     //LVCHECKPOINT("WinMain start");
 
