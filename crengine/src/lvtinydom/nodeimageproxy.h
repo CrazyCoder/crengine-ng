@@ -14,8 +14,8 @@
 
 #include <lvimagesource.h>
 #include <lvstring.h>
-
-struct ldomNode;
+#include <ldomnode.h>
+#include <ldomdocument.h>
 
 class NodeImageProxy: public LVImageSource
 {
@@ -46,7 +46,12 @@ public:
     virtual int GetHeight() const {
         return _dy;
     }
-    virtual bool Decode(LVImageDecoderCallback* callback);
+    virtual bool Decode(LVImageDecoderCallback* callback) {
+        LVImageSourceRef img = _node->getDocument()->getObjectImageSource(_refName);
+        if (img.isNull())
+            return false;
+        return img->Decode(callback);
+    }
 };
 
 #endif // __NODEIMAGEPROXY_H_INCLUDED__

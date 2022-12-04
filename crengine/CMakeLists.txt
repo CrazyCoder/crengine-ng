@@ -108,7 +108,6 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom/ldomblobcache.cpp
     src/lvtinydom/ldomnode.cpp
     src/lvtinydom/lvbase64nodestream.cpp
-    src/lvtinydom/nodeimageproxy.cpp
     src/lvtinydom/renderrectaccessor.cpp
     src/lvtinydom/lxmldocbase.cpp
     src/lvtinydom/ldomxpointer.cpp
