@@ -94,15 +94,17 @@ $ make install
 ## Authors and acknowledgment
 The list of contributors can be found in the AUTHORS file.
 
-This list of authors is obtained from git history using the script crengine/Tools/getauthors/getauthos.sh.
-The first significant item in the git log is 'Mon Nov 9 16:33:34 2009 +0300', but the project started around 2000, so this list can be incomplete.
-
 ## License
-This project is released under the [GNU General Public License Version 2](https://www.gnu.org/licenses/gpl-2.0.html). See LICENSE file.
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
+## Embedded third party components
 The "thirdparty" directory contains some patched libraries with their own licenses (compatible with GPLv2):
- * chmlib - [LGPL-2.1](https://www.gnu.org/licenses/lgpl-2.1.html)
- * antiword - [GPL-2.0](https://www.gnu.org/licenses/gpl-2.0.html)
+ * chmlib - [LGPL-2.1+](https://www.gnu.org/licenses/lgpl-2.1.html)
+ * antiword - [GPL-2.0+](https://www.gnu.org/licenses/gpl-2.0.html)
  * nanosvg - [ZLib](https://directory.fsf.org/wiki/License:Zlib)
- * qimagescale - [imlib2](https://directory.fsf.org/wiki/License:Imlib2), [GPL-2.0](https://www.gnu.org/licenses/gpl-2.0.html)
- * rfc6234-shas [BSD-3-Clause](https://directory.fsf.org/wiki/License:BSD-3-Clause)
+ * qimagescale - [imlib2](https://directory.fsf.org/wiki/License:Imlib2), [LGPL-3](https://www.gnu.org/licenses/lgpl-3.0.html), [GPL-2.0+](https://www.gnu.org/licenses/gpl-2.0.html)
+ * rfc6234-shas - [BSD-3-Clause](https://directory.fsf.org/wiki/License:BSD-3-Clause)
+
+Other third party can be found in the sources and resources:
+ * xxhash - [BSD-2-Clause](https://directory.fsf.org/wiki/License:BSD-2-Clause)
