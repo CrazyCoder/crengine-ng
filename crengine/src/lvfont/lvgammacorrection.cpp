@@ -1,7 +1,7 @@
 /***************************************************************************
- *   coolreader-ng, gamma correction of font glyph images                  *
- *   Copyright © 2022 by coolreader-ng authors                             *
- *   Copyright © Vadim Lopatin, 2011                                       *
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2011 Vadim Lopatin <coolreader.org@gmail.com>           *
+ *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
