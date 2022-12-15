@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
 ###########################################################################
-#   coolreader-ng, converter of TeX hyphenation files to FBReader format  #
-#   Copyright © 2022 by coolreader-ng authors                             #
-#   Copyright © 2011 by Vadim Lopatin                                     #
+#   crengine-ng, TeX hyphenation file converter                           #
+#   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               #
 #                                                                         #
 #   This program is free software; you can redistribute it and/or         #
 #   modify it under the terms of the GNU General Public License           #
@@ -21,7 +20,14 @@
 #   MA 02110-1301, USA.                                                   #
 ###########################################################################
 
+#
+# This program is based on the mkpattern.cpp sources and uses its algorithms
+# Copyright (C) 2011,2012 Vadim Lopatin <coolreader.org@gmail.com>
+#
+
 use warnings;
+
+use Encode qw(decode encode);
 
 sub makeConversion($$$);
 sub outPattern($$);
@@ -76,6 +82,7 @@ sub makeConversion($$$) {
     my $ch;
     my $state0 = 0; # substate in state 0
     my $comment_line = '';
+    my $comment_opened = 1;
     my $indent = '';
     my $title = 'Unknown';
     my $langtag = 'unk';
@@ -84,10 +91,15 @@ sub makeConversion($$$) {
     foreach (<$infh>) {
         my_chomp;
         if ($state == 0) {
+            # preamble (header, comments), intersection state
             if (m/^% {0,1}(.*)$/) {
                 $comment_line = $1;
-                print $outfh ("$comment_line\n");
                 next if (length($comment_line) == 0);
+                if ($comment_opened) {
+                    print $outfh ("$comment_line\n");
+                } else {
+                    print $outfh ("<!-- $comment_line -->\n");
+                }
                 if ($comment_line =~ m/^( *)(.*)$/) {
                     $indent = $1;
                     $comment_line = $2;
@@ -125,42 +137,98 @@ sub makeConversion($$$) {
                 print $outfh ("<HyphenationDescription\n");
                 print $outfh ("    title=\"${title}\" lang=\"${langtag}\"\n");
                 print $outfh ("    lefthyphenmin=\"${left_hyphenmin}\" righthyphenmin=\"${right_hyphenmin}\">\n");
+                $comment_opened = undef;
                 $state = 1;
                 next;
+            } elsif (m/^\\hyphenation\{(.*)$/) {
+                my $tail = $1;
+                if ($tail =~ m/^ *%(.*)$/) {
+                    if (length($1) > 0) {
+                        print $outfh ("<!-- $1 -->\n");
+                    }
+                }
+                $state = 2;
+                next;
+            } elsif (m/^\\endinput.*$/) {
+                $state = 3;
+                last;
             }
         } else {
-            if (m/^%(.*)$/) {
+            if (m/^ *%(.*)$/) {
                 if (length($1) > 0) {
                     print $outfh ("<!-- $1 -->\n");
                 }
                 next;
             }
-            $word = "";
-            foreach $ch (split //) {
-                if ($ch eq '}') {
-                    print $outfh ("</HyphenationDescription>\n");
-                    $state = 0;
-                    last;
-                }
-                if ($ch =~ m/ |\t|%/) {
-                    if (length($word) > 0) {
-                        outPattern($outfh, $word);
-                        $count++;
-                        $word = "";
-                    }
-                    if ($ch =~ m/%/) {
+            if ($state == 1) {
+                # inside '\patterns' section
+                $_ = decode('UTF-8', $_);
+                $word = "";
+                foreach $ch (split //) {
+                    if ($ch eq '}') {
+                        $state = 0;
                         last;
                     }
-                } else {
-                    $word = $word . $ch;
+                    if ($ch =~ m/ |\t|%/) {
+                        if (length($word) > 0) {
+                            outPattern($outfh, $word);
+                            $count++;
+                            $word = "";
+                        }
+                        if ($ch =~ m/%/) {
+                            last;
+                        }
+                    } else {
+                        $word = $word . $ch;
+                    }
                 }
-            }
-            if (length($word) > 0) {
-                outPattern($outfh, $word);
-                $count++;
+                if (length($word) > 0) {
+                    outPattern($outfh, $word);
+                    $count++;
+                }
+            } elsif ($state == 2) {
+                # inside '\hyphenation' section
+                $_ = decode('UTF-8', $_);
+                $word = "";
+                my $was_hyphen = undef;
+                foreach $ch (split //) {
+                    if ($ch eq '}') {
+                        $state = 3;
+                        last;
+                    }
+                    if ($ch =~ m/ |\t|%/) {
+                        if (length($word) > 0) {
+                            outPattern($outfh, $word);
+                            $count++;
+                            $word = "";
+                        }
+                        if ($ch =~ m/%/) {
+                            last;
+                        }
+                    } else {
+                        if ($ch eq '-') {
+                            $word = $word . '7';
+                            $was_hyphen = 1;
+                        } else {
+                            if (length($word) > 0 && !$was_hyphen) {
+                                $word = $word . '8';
+                            }
+                            $word = $word . $ch;
+                            $was_hyphen = undef;
+                        }
+                    }
+                }
+                if (length($word) > 0) {
+                    outPattern($outfh, $word);
+                    $count++;
+                }
+            } elsif ($state == 3) {
+                # no more supported sections
+                last;
             }
         }
     }
+    print $outfh ("</HyphenationDescription>\n");
     return $count;
 }
 
@@ -172,6 +240,7 @@ sub outPattern($$) {
     if ($pattern =~ m/^(.*)\.$/) {
         $pattern = "$1 ";
     }
+    $pattern = encode('UTF-8', $pattern);
     print $outfh ("  <pattern>${pattern}</pattern>\n");
 }
 
