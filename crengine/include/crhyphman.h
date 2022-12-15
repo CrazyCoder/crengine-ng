@@ -151,8 +151,8 @@ public:
     bool activate(lString32 id);
 };
 
-#define DEF_HYPHENATION_DICT "en-US.pattern"
-// We'll be loading en-US.pattern even if non-english users
+#define DEF_HYPHENATION_DICT "hyph-en-us.pattern"
+// We'll be loading hyph-en-us.pattern even if non-english users
 // may never use it, but it's a bit tedious not going with it.
 // It might use around 1M of memory, but it will avoid re-rendering
 // the document if the book does not contain any language tag, and
@@ -186,6 +186,7 @@ class HyphMan
     static int _OverriddenLeftHyphenMin;
     static int _OverriddenRightHyphenMin;
     static int _TrustSoftHyphens;
+    static HyphMethod* getHyphMethodForLang_impl(lString32 lang_tag);
 public:
     static void uninit();
     static bool initDictionaries(lString32 dir, bool clear = true);

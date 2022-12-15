@@ -60,7 +60,7 @@ public:
             fprintf(stderr, "Cannot init crengine-ng (fonts)\n");
         // init hyphman
         HyphMan::initDictionaries(Utf8ToUnicode(HYPH_DIR));
-        bool hyph_ok = HyphMan::activateDictionary(cs32("Russian_EnUS.pattern"));
+        bool hyph_ok = HyphMan::activateDictionary(cs32("hyph-ru-ru,en-us.pattern"));
         if (!hyph_ok)
             fprintf(stderr, "Cannot init crengine-ng (hyphenation dicts)\n");
         m_initOK = fonts_ok && hyph_ok;

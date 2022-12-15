@@ -66,6 +66,23 @@
 
 #endif
 
+struct lang_tag_alias
+{
+    const char* alias;
+    const char* langTag;
+};
+
+// Aliases for languages:
+//  Let's say we have 2 hyphenation dictionaries: "en-US", "en-GB"
+//  When requested dictionary for "en" without specify country
+//  we have to return something one.
+// See HyphMan::getHyphMethodForLang() function.
+const static struct lang_tag_alias s_langTag_aliases[] = {
+    { "en", "en-US" },
+    { "ru", "ru-RU" },
+    { NULL, NULL }
+};
+
 int HyphMan::_OverriddenLeftHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
 int HyphMan::_OverriddenRightHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
 int HyphMan::_TrustSoftHyphens = HYPH_DEFAULT_TRUST_SOFT_HYPHENS;
@@ -423,25 +440,25 @@ HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id) {
     return newmethod;
 }
 
-HyphMethod* HyphMan::getHyphMethodForLang(lString32 lang_tag) {
+HyphMethod* HyphMan::getHyphMethodForLang_impl(lString32 lang_tag) {
     // Look for full lang_tag
+    lString32 lang_tag_lc = lang_tag.lowercase();
     HyphDictionaryList* dictList = HyphMan::getDictList();
     HyphDictionary* dict;
     lString32 dict_lang_tag;
-    lang_tag.lowercase();
     for (int i = 0; dictList && i < dictList->length(); i++) {
         dict = dictList->get(i);
         if (dict) {
             dict_lang_tag = dict->getLangTag();
-            dict_lang_tag.lowercase();
-            if (lang_tag == dict_lang_tag)
+            dict_lang_tag = dict_lang_tag.lowercase();
+            if (lang_tag_lc == dict_lang_tag)
                 return HyphMan::getHyphMethodForDictionary(dict->getId());
         }
     }
     // Look for lang_tag initial subpart
-    int m_pos = lang_tag.pos("-");
+    int m_pos = lang_tag_lc.pos("-");
     if (m_pos > 0) {
-        lString32 lang_tag2 = lang_tag.substr(0, m_pos);
+        lString32 lang_tag2 = lang_tag_lc.substr(0, m_pos);
         lang_tag2.lowercase();
         for (int i = 0; dictList && i < dictList->length(); i++) {
             dict = dictList->get(i);
@@ -453,7 +470,30 @@ HyphMethod* HyphMan::getHyphMethodForLang(lString32 lang_tag) {
             }
         }
     }
-    return &NO_HYPH;
+    return NULL;
+}
+
+HyphMethod* HyphMan::getHyphMethodForLang(lString32 lang_tag) {
+    // Find in dictList firstly
+    HyphMethod* method = getHyphMethodForLang_impl(lang_tag);
+    if (NULL == method) {
+        // For case when requested short lang tag (for example, "en")
+        //  but we have only "en-US", "en-GB", so use alias map here
+        int i = 0;
+        const struct lang_tag_alias* alias = &s_langTag_aliases[i];
+        lString32 lang_tag_lc = lang_tag.lowercase();
+        do {
+            if (lang_tag_lc.compare(alias->alias) == 0) {
+                method = getHyphMethodForLang_impl(lString32(alias->langTag));
+                break;
+            }
+            i++;
+            alias = &s_langTag_aliases[i];
+        } while (NULL != alias->alias);
+    }
+    if (NULL == method)
+        method = &NO_HYPH;
+    return method;
 }
 
 bool HyphDictionary::activate() {

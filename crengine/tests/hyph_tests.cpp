@@ -95,7 +95,7 @@ TEST_F(HyphenationTests, HyphTestEnglishUS) {
     EXPECT_STREQ(doHyphenation(method, "poison").c_str(), "poi-son");
     EXPECT_STREQ(doHyphenation(method, "however").c_str(), "how-ever");
     EXPECT_STREQ(doHyphenation(method, "history").c_str(), "his-tory");
-    EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-u-ral");
+    EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-ural");
     EXPECT_STREQ(doHyphenation(method, "submitted").c_str(), "sub-mit-ted");
     EXPECT_STREQ(doHyphenation(method, "insolence").c_str(), "in-so-lence");
     EXPECT_STREQ(doHyphenation(method, "finger").c_str(), "fin-ger");
@@ -103,6 +103,22 @@ TEST_F(HyphenationTests, HyphTestEnglishUS) {
     EXPECT_STREQ(doHyphenation(method, "walking").c_str(), "walk-ing");
     EXPECT_STREQ(doHyphenation(method, "melancholy").c_str(), "melan-choly");
     EXPECT_STREQ(doHyphenation(method, "word").c_str(), "word");
+
+    // Some exceptions from dictionary
+    EXPECT_STREQ(doHyphenation(method, "associate").c_str(), "as-so-ciate");
+    EXPECT_STREQ(doHyphenation(method, "associates").c_str(), "as-so-ciates");
+    EXPECT_STREQ(doHyphenation(method, "declination").c_str(), "dec-li-na-tion");
+    EXPECT_STREQ(doHyphenation(method, "obligatory").c_str(), "oblig-a-tory");
+    EXPECT_STREQ(doHyphenation(method, "philanthropic").c_str(), "phil-an-thropic");
+    EXPECT_STREQ(doHyphenation(method, "present").c_str(), "present");
+    EXPECT_STREQ(doHyphenation(method, "presents").c_str(), "presents");
+    EXPECT_STREQ(doHyphenation(method, "project").c_str(), "project");
+    EXPECT_STREQ(doHyphenation(method, "projects").c_str(), "projects");
+    EXPECT_STREQ(doHyphenation(method, "reciprocity").c_str(), "reci-procity");
+    EXPECT_STREQ(doHyphenation(method, "recognizance").c_str(), "re-cog-ni-zance");
+    EXPECT_STREQ(doHyphenation(method, "reformation").c_str(), "ref-or-ma-tion");
+    EXPECT_STREQ(doHyphenation(method, "retribution").c_str(), "ret-ri-bu-tion");
+    EXPECT_STREQ(doHyphenation(method, "table").c_str(), "ta-ble");
 
     CRLog::info("Finished HyphTestEnglishUS");
     CRLog::info("==========================");
@@ -126,7 +142,7 @@ TEST_F(HyphenationTests, HyphTestEnglishGB) {
     EXPECT_STREQ(doHyphenation(method, "shoulders").c_str(), "shoulders");
     EXPECT_STREQ(doHyphenation(method, "remember").c_str(), "re-mem-ber");
     EXPECT_STREQ(doHyphenation(method, "poison").c_str(), "poison");
-    EXPECT_STREQ(doHyphenation(method, "however").c_str(), "however");
+    EXPECT_STREQ(doHyphenation(method, "however").c_str(), "how-ever");
     EXPECT_STREQ(doHyphenation(method, "history").c_str(), "his-tory");
     EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-ural");
     EXPECT_STREQ(doHyphenation(method, "submitted").c_str(), "sub-mit-ted");
@@ -136,6 +152,15 @@ TEST_F(HyphenationTests, HyphTestEnglishGB) {
     EXPECT_STREQ(doHyphenation(method, "walking").c_str(), "walk-ing");
     EXPECT_STREQ(doHyphenation(method, "melancholy").c_str(), "mel-an-choly");
     EXPECT_STREQ(doHyphenation(method, "word").c_str(), "word");
+
+    // Some exceptions from dictionary
+    EXPECT_STREQ(doHyphenation(method, "university").c_str(), "uni-ver-sity");
+    EXPECT_STREQ(doHyphenation(method, "universities").c_str(), "uni-ver-sit-ies");
+    EXPECT_STREQ(doHyphenation(method, "manuscript").c_str(), "ma-nu-script");
+    EXPECT_STREQ(doHyphenation(method, "manuscripts").c_str(), "ma-nu-scripts");
+    EXPECT_STREQ(doHyphenation(method, "reciprocity").c_str(), "re-ci-pro-city");
+    EXPECT_STREQ(doHyphenation(method, "throughout").c_str(), "through-out");
+    EXPECT_STREQ(doHyphenation(method, "something").c_str(), "some-thing");
 
     CRLog::info("Finished HyphTestEnglishGB");
     CRLog::info("==========================");
@@ -193,7 +218,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     // Add test dictionaries manually using `HyphMan::addDictionaryItem()`.
 
     // Dictionary with one pattern 'n1v2'.
-    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph1"), cs32("id=testhyph1.pattern"), cs32("en"), cs32(TESTS_DATADIR "test-hyph/testhyph1.pattern"));
+    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph1"), cs32("id=testhyph1.pattern"), cs32("en-testhyph1"), cs32(TESTS_DATADIR "test-hyph/testhyph1.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph1.pattern"));
     ASSERT_NE(method, nullptr);
@@ -201,7 +226,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "con-versations");
 
     // Dictionary with patterns 'n1v2', 'on2v2'.
-    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph2"), cs32("id=testhyph2.pattern"), cs32("en"), cs32(TESTS_DATADIR "test-hyph/testhyph2.pattern"));
+    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph2"), cs32("id=testhyph2.pattern"), cs32("en-testhyph2"), cs32(TESTS_DATADIR "test-hyph/testhyph2.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph2.pattern"));
     ASSERT_NE(method, nullptr);
@@ -209,7 +234,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "conversations");
 
     // Dictionary with patterns 'n1v2', 'on2v2', con1v2.
-    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph3"), cs32("id=testhyph3.pattern"), cs32("en"), cs32(TESTS_DATADIR "test-hyph/testhyph3.pattern"));
+    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph3"), cs32("id=testhyph3.pattern"), cs32("en-testhyph3"), cs32(TESTS_DATADIR "test-hyph/testhyph3.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph3.pattern"));
     ASSERT_NE(method, nullptr);
@@ -217,7 +242,7 @@ TEST_F(HyphenationTests, SimpleHyphTest) {
     EXPECT_STREQ(doHyphenation(method, "conversations").c_str(), "conversations");
 
     // Dictionary with patterns 'n1v2', 'on2v2', con3v2.
-    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph4"), cs32("id=testhyph4.pattern"), cs32("en"), cs32(TESTS_DATADIR "test-hyph/testhyph4.pattern"));
+    dict = new HyphDictionary(HDT_DICT_TEX, cs32("testhyph4"), cs32("id=testhyph4.pattern"), cs32("en-testhyph4"), cs32(TESTS_DATADIR "test-hyph/testhyph4.pattern"));
     ASSERT_TRUE(HyphMan::addDictionaryItem(dict));
     method = HyphMan::getHyphMethodForDictionary(cs32("id=testhyph4.pattern"));
     ASSERT_NE(method, nullptr);
@@ -235,7 +260,7 @@ TEST_F(HyphenationTests, GetHyphMethodForDictTest) {
     HyphMethod* methodNone = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_NONE));
     HyphMethod* methodAlgo = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_ALGORITHM));
     HyphMethod* methodSoftHyphens = HyphMan::getHyphMethodForDictionary(cs32(HYPH_DICT_ID_SOFTHYPHENS));
-    HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForDictionary(cs32("en-US.pattern"));
+    HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForDictionary(cs32("hyph-en-us.pattern"));
     HyphMethod* methodDict_INV = HyphMan::getHyphMethodForDictionary(cs32("_invalidX.XYZ"));
 
     ASSERT_NE(methodNone, nullptr);
@@ -277,10 +302,18 @@ TEST_F(HyphenationTests, GetHyphMethodForLangTest) {
     ASSERT_NE(methodNone, nullptr);
     ASSERT_EQ(methodNone->getPatternsCount(), 0);
 
-    HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForLang(cs32("en"));
+    HyphMethod* methodDict_EN = HyphMan::getHyphMethodForLang(cs32("en"));
+    ASSERT_NE(methodDict_EN, nullptr);
+    EXPECT_NE(methodDict_EN, methodNone);
+    EXPECT_GT(methodDict_EN->getPatternsCount(), 3000);
+
+    HyphMethod* methodDict_EN_US = HyphMan::getHyphMethodForLang(cs32("en-US"));
     ASSERT_NE(methodDict_EN_US, nullptr);
     EXPECT_NE(methodDict_EN_US, methodNone);
     EXPECT_GT(methodDict_EN_US->getPatternsCount(), 3000);
+
+    // 'en' is alias for 'en-US'
+    ASSERT_EQ(methodDict_EN, methodDict_EN_US);
 
     HyphMethod* methodDict_EN_GB = HyphMan::getHyphMethodForLang(cs32("en-GB"));
     ASSERT_NE(methodDict_EN_GB, nullptr);
@@ -309,7 +342,7 @@ TEST_F(HyphenationTests, HyphTestOverrideHyphenMinTest) {
 
     HyphMethod* method = HyphMan::getHyphMethodForLang(cs32("en"));
     ASSERT_NE(method, nullptr);
-    ASSERT_GT(method->getPatternsCount(), 0);
+    ASSERT_GT(method->getPatternsCount(), 3000);
 
     // Override left & right hypnenmins
     HyphMan::overrideLeftHyphenMin(1);
@@ -320,7 +353,7 @@ TEST_F(HyphenationTests, HyphTestOverrideHyphenMinTest) {
     EXPECT_STREQ(doHyphenation(method, "shoulders").c_str(), "shoul-der-s");
     EXPECT_STREQ(doHyphenation(method, "however").c_str(), "how-ev-er");
     EXPECT_STREQ(doHyphenation(method, "history").c_str(), "his-to-ry");
-    EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-u-ral");
+    EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-ur-al");
 
     // Set no override for left & right hypnenmins
     HyphMan::overrideLeftHyphenMin(0);
@@ -331,7 +364,7 @@ TEST_F(HyphenationTests, HyphTestOverrideHyphenMinTest) {
     EXPECT_STREQ(doHyphenation(method, "shoulders").c_str(), "shoul-ders");
     EXPECT_STREQ(doHyphenation(method, "however").c_str(), "how-ever");
     EXPECT_STREQ(doHyphenation(method, "history").c_str(), "his-tory");
-    EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-u-ral");
+    EXPECT_STREQ(doHyphenation(method, "natural").c_str(), "nat-ural");
 
     CRLog::info("Finished HyphTestOverrideHyphenMinTest");
     CRLog::info("======================================");
