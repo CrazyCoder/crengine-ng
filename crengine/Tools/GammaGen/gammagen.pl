@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
 ###########################################################################
-#   coolreader-ng, generator for glyph gamma correction tables            #
-#   Copyright © 2022 by coolreader-ng authors                             #
-#   Copyright © 2011 by Vadim Lopatin                                     #
+#   crengine-ng                                                           #
+#   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               #
 #                                                                         #
 #   This program is free software; you can redistribute it and/or         #
 #   modify it under the terms of the GNU General Public License           #
@@ -20,6 +19,11 @@
 #   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            #
 #   MA 02110-1301, USA.                                                   #
 ###########################################################################
+
+#
+# This program is based on the gammagen.cpp sources and uses its algorithms
+# Copyright (C) 2011 Vadim Lopatin <coolreader.org@gmail.com>
+#
 
 use 5.022;
 use POSIX qw(lround);
@@ -56,9 +60,9 @@ print $out1fh <<EOF;
 //
 
 /***************************************************************************
- *   coolreader-ng, gamma correction tables                                *
- *   Copyright © 2022 by coolreader-ng authors                             *
- *   Copyright © Vadim Lopatin, 2011                                       *
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2011 Vadim Lopatin <coolreader.org\@gmail.com>           *
+ *   Copyright (C) 2022 Aleksey Chernov <valexlin\@gmail.com>               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -124,9 +128,9 @@ print $out2fh <<EOF;
 //
 
 /***************************************************************************
- *   coolreader-ng, gamma correction tables                                *
- *   Copyright © 2022 by coolreader-ng authors                             *
- *   Copyright © Vadim Lopatin, 2011                                       *
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2011 Vadim Lopatin <coolreader.org\@gmail.com>           *
+ *   Copyright (C) 2022 Aleksey Chernov <valexlin\@gmail.com>               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *

@@ -1,93 +1,51 @@
-/*******************************************************
-
-   CoolReader Engine
-
-   lvdrawbuf_utils.cpp
-
-   (c) Vadim Lopatin, 2000-2006
-   This source code is distributed under the terms of
-   GNU General Public License
-
-   See LICENSE file for details
-
-*******************************************************/
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2007,2010-2013 Vadim Lopatin <coolreader.org@gmail.com> *
+ *   Copyright (C) 2018 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2019 NiLuJe <ninuje@gmail.com>                          *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
 
 #include "lvdrawbuf_utils.h"
 #include <lvdrawbuf.h>
 
-//static const short dither_2bpp_4x4[] = {
-//    5, 13,  8,  16,
-//    9,  1,  12,  4,
-//    7, 15,  6,  14,
-//    11, 3,  10,  2,
-//};
+// clang-format off
+
+#if 0
+static const short dither_2bpp_4x4[] = {
+     5, 13,  8, 16,
+     9,  1, 12,  4,
+     7, 15,  6, 14,
+    11,  3, 10,  2,
+};
+#endif
 
 static const short dither_2bpp_8x8[] = {
-    0,
-    32,
-    12,
-    44,
-    2,
-    34,
-    14,
-    46,
-    48,
-    16,
-    60,
-    28,
-    50,
-    18,
-    62,
-    30,
-    8,
-    40,
-    4,
-    36,
-    10,
-    42,
-    6,
-    38,
-    56,
-    24,
-    52,
-    20,
-    58,
-    26,
-    54,
-    22,
-    3,
-    35,
-    15,
-    47,
-    1,
-    33,
-    13,
-    45,
-    51,
-    19,
-    63,
-    31,
-    49,
-    17,
-    61,
-    29,
-    11,
-    43,
-    7,
-    39,
-    9,
-    41,
-    5,
-    37,
-    59,
-    27,
-    55,
-    23,
-    57,
-    25,
-    53,
-    21,
+     0, 32, 12, 44,  2, 34, 14, 46,
+    48, 16, 60, 28, 50, 18, 62, 30,
+     8, 40,  4, 36, 10, 42,  6, 38,
+    56, 24, 52, 20, 58, 26, 54, 22,
+     3, 35, 15, 47,  1, 33, 13, 45,
+    51, 19, 63, 31, 49, 17, 61, 29,
+    11, 43,  7, 39,  9, 41,  5, 37,
+    59, 27, 55, 23, 57, 25, 53, 21,
 };
+
+// clang-format on
 
 lUInt32 Dither1BitColor(lUInt32 color, lUInt32 x, lUInt32 y) {
     int cl = ((((color >> 16) & 255) + ((color >> 8) & 255) + ((color)&255)) * (256 / 3)) >> 8;

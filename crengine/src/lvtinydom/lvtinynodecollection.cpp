@@ -1,13 +1,27 @@
-/**
- * CoolReader Engine
- *
- * (c) Vadim Lopatin, 2000-2011
- * (c) Other CoolReader authors (See AUTHORS file)
- *
- * This source code is distributed under the terms of
- * GNU General Public License version 2
- * See LICENSE file for details
- */
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2010-2012,2015 Vadim Lopatin <coolreader.org@gmail.com> *
+ *   Copyright (C) 2016 Yifei(Frank) ZHU <fredyifei@gmail.com>             *
+ *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
+ *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
+ *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2018-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
 
 #include <lvtinynodecollection.h>
 #include <ldomdoccache.h>
@@ -37,12 +51,6 @@
 #define RECT_CACHE_CHUNK_SIZE      0x00F000 // 64K
 #define STYLE_CACHE_UNPACKED_SPACE (10 * DOC_BUFFER_SIZE / 100)
 #define STYLE_CACHE_CHUNK_SIZE     0x00C000 // 48K
-
-// default is to use the TEXT_CACHE_UNPACKED_SPACE & co defined above as is
-static float _storageMaxUncompressedSizeFactor = 1;
-void setStorageMaxUncompressedSizeFactor(float factor) {
-    _storageMaxUncompressedSizeFactor = factor;
-}
 
 // default is to compress to use smaller cache files (but slower rendering
 // and page turns with big documents)
@@ -208,10 +216,10 @@ tinyNodeCollection::tinyNodeCollection()
         , _renderBlockRenderingFlags(BLOCK_RENDERING_FLAGS_DEFAULT)
         , _DOMVersionRequested(DOM_VERSION_CURRENT)
         , _interlineScaleFactor(INTERLINE_SCALE_FACTOR_NO_SCALE) {
-    _textStorage = new ldomDataStorageManager(this, 't', (lUInt32)(TEXT_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), TEXT_CACHE_CHUNK_SIZE);    // persistent text node data storage
-    _elemStorage = new ldomDataStorageManager(this, 'e', (lUInt32)(ELEM_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), ELEM_CACHE_CHUNK_SIZE);    // persistent element data storage
-    _rectStorage = new ldomDataStorageManager(this, 'r', (lUInt32)(RECT_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), RECT_CACHE_CHUNK_SIZE);    // element render rect storage
-    _styleStorage = new ldomDataStorageManager(this, 's', (lUInt32)(STYLE_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), STYLE_CACHE_CHUNK_SIZE); // element style info storage
+    _textStorage = new ldomDataStorageManager(this, 't', TEXT_CACHE_UNPACKED_SPACE, TEXT_CACHE_CHUNK_SIZE);    // persistent text node data storage
+    _elemStorage = new ldomDataStorageManager(this, 'e', ELEM_CACHE_UNPACKED_SPACE, ELEM_CACHE_CHUNK_SIZE);    // persistent element data storage
+    _rectStorage = new ldomDataStorageManager(this, 'r', RECT_CACHE_UNPACKED_SPACE, RECT_CACHE_CHUNK_SIZE);    // element render rect storage
+    _styleStorage = new ldomDataStorageManager(this, 's', STYLE_CACHE_UNPACKED_SPACE, STYLE_CACHE_CHUNK_SIZE); // element style info storage
     memset(_textList, 0, sizeof(_textList));
     memset(_elemList, 0, sizeof(_elemList));
     _blobCache = new ldomBlobCache;
@@ -250,10 +258,10 @@ tinyNodeCollection::tinyNodeCollection(tinyNodeCollection& v)
         , _renderBlockRenderingFlags(v._renderBlockRenderingFlags)
         , _DOMVersionRequested(v._DOMVersionRequested)
         , _interlineScaleFactor(v._interlineScaleFactor) {
-    _textStorage = new ldomDataStorageManager(this, 't', (lUInt32)(TEXT_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), TEXT_CACHE_CHUNK_SIZE);    // persistent text node data storage
-    _elemStorage = new ldomDataStorageManager(this, 'e', (lUInt32)(ELEM_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), ELEM_CACHE_CHUNK_SIZE);    // persistent element data storage
-    _rectStorage = new ldomDataStorageManager(this, 'r', (lUInt32)(RECT_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), RECT_CACHE_CHUNK_SIZE);    // element render rect storage
-    _styleStorage = new ldomDataStorageManager(this, 's', (lUInt32)(STYLE_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), STYLE_CACHE_CHUNK_SIZE); // element style info storage
+    _textStorage = new ldomDataStorageManager(this, 't', TEXT_CACHE_UNPACKED_SPACE, TEXT_CACHE_CHUNK_SIZE);    // persistent text node data storage
+    _elemStorage = new ldomDataStorageManager(this, 'e', ELEM_CACHE_UNPACKED_SPACE, ELEM_CACHE_CHUNK_SIZE);    // persistent element data storage
+    _rectStorage = new ldomDataStorageManager(this, 'r', RECT_CACHE_UNPACKED_SPACE, RECT_CACHE_CHUNK_SIZE);    // element render rect storage
+    _styleStorage = new ldomDataStorageManager(this, 's', STYLE_CACHE_UNPACKED_SPACE, STYLE_CACHE_CHUNK_SIZE); // element style info storage
     memset(_textList, 0, sizeof(_textList));
     memset(_elemList, 0, sizeof(_elemList));
     _blobCache = new ldomBlobCache;

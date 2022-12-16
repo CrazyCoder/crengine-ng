@@ -1,16 +1,30 @@
-/** \file crhyphman.h
-    \brief AlReader hyphenation manager
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2007-2012,2015 Vadim Lopatin <coolreader.org@gmail.com> *
+ *   Copyright (C) Alan <alan@alreader.com>                                *
+ *   Copyright (C) 2018-2020 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2020,2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
 
-    (c) Alan, http://alreader.kms.ru/
-
-    Adapted for CREngine by Vadim Lopatin
-
-    This source code is distributed under the terms of
-    GNU General Public License.
-
-    See LICENSE file for details.
-
-*/
+/**
+ *  \file crhyphman.h
+ *  \brief AlReader hyphenation manager adapted for CREngine by Vadim Lopatin
+ */
 
 #ifndef _CRHYPHEN_
 #define _CRHYPHEN_
@@ -137,8 +151,8 @@ public:
     bool activate(lString32 id);
 };
 
-#define DEF_HYPHENATION_DICT "en-US.pattern"
-// We'll be loading en-US.pattern even if non-english users
+#define DEF_HYPHENATION_DICT "hyph-en-us.pattern"
+// We'll be loading hyph-en-us.pattern even if non-english users
 // may never use it, but it's a bit tedious not going with it.
 // It might use around 1M of memory, but it will avoid re-rendering
 // the document if the book does not contain any language tag, and
@@ -172,6 +186,7 @@ class HyphMan
     static int _OverriddenLeftHyphenMin;
     static int _OverriddenRightHyphenMin;
     static int _TrustSoftHyphens;
+    static HyphMethod* getHyphMethodForLang_impl(lString32 lang_tag);
 public:
     static void uninit();
     static bool initDictionaries(lString32 dir, bool clear = true);

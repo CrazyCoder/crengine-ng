@@ -1,24 +1,41 @@
-/** \file lvfreetypefontman.cpp
-    \brief FreeType font manager implementation
-
-    CoolReader Engine
-
-
-    (c) Vadim Lopatin, 2000-2006
-    This source code is distributed under the terms of
-    GNU General Public License.
-
-    See LICENSE file for details.
-
-*/
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2007-2013,2015 Vadim Lopatin <coolreader.org@gmail.com> *
+ *   Copyright (C) 2012 Olexandr Nesterenko <olexn@ukr.net>                *
+ *   Copyright (C) 2014 macnuts <macnuts@gmx.com>                          *
+ *   Copyright (C) 2014 Huang Xin <chrox.huang@gmail.com>                  *
+ *   Copyright (C) 2015 Yifei(Frank) ZHU <fredyifei@gmail.com>             *
+ *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
+ *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
+ *   Copyright (C) 2018-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
 
 #include "lvfreetypefontman.h"
 
 #if (USE_FREETYPE == 1)
 
 #include "lvfreetypeface.h"
+#if !defined(USE_FT_EMBOLDEN) || (USE_FT_EMBOLDEN == 0)
 #include "lvfontboldtransform.h"
+#endif
 #include <lvcontainer.h>
+#include <lvstream.h>
 #include <crlog.h>
 
 #include FT_LCD_FILTER_H
@@ -235,13 +252,6 @@ LVFontRef LVFreeTypeFontManager::GetFallbackFont(int size, int index) {
         return LVFontRef();
     if (index < 0 || index >= _fallbackFontFaces.length())
         return LVFontRef();
-    // reduce number of possible distinct sizes for fallback font
-    if (size > 40)
-        size &= 0xFFF8;
-    else if (size > 28)
-        size &= 0xFFFC;
-    else if (size > 16)
-        size &= 0xFFFE;
     LVFontCacheItem* item = _cache.findFallback(_fallbackFontFaces[index], size);
     lUInt32 fallbackMask = 1 << index;
     if (!item->getFont().isNull()) {
@@ -925,7 +935,7 @@ LVFontRef LVFreeTypeFontManager::GetFont(int size, int weight, bool italic, css_
             // Be sure we ignore any instantiated font found in cache that
             // has features different than the ones requested.
         } else {
-#if USE_FT_EMBOLDEN
+#if (USE_FT_EMBOLDEN == 1)
             int deltaWeight = myabs(weight - item->getDef()->getWeight());
             if (deltaWeight >= 25) {
                 // This instantiated cached font has a too different weight
@@ -1002,7 +1012,7 @@ LVFontRef LVFreeTypeFontManager::GetFont(int size, int weight, bool italic, css_
         newDef.setSize(size);
         //item->setFont( ref );
         //_cache.update( def, ref );
-#if USE_FT_EMBOLDEN
+#if (USE_FT_EMBOLDEN == 1)
         int deltaWeight = myabs(weight - newDef.getWeight());
         if (deltaWeight >= 25) {
             // embolden

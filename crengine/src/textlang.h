@@ -1,3 +1,25 @@
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2020,2021 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
+ *   Copyright (C) 2020-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
+
 #ifndef __TEXTLANG_H_INCLUDED__
 #define __TEXTLANG_H_INCLUDED__
 
@@ -22,14 +44,14 @@ extern "C" {
 #endif
 #endif
 
-// Be similar to HyphMan default state with "en-US.pattern"
+// Be similar to HyphMan default state with "hyph-en-us.pattern"
 #define TEXTLANG_DEFAULT_MAIN_LANG              "en"  // for LVDocView
 #define TEXTLANG_DEFAULT_MAIN_LANG_32           U"en" // for textlang.cpp
 #define TEXTLANG_DEFAULT_EMBEDDED_LANGS_ENABLED false
 #define TEXTLANG_DEFAULT_HYPHENATION_ENABLED    true
 #define TEXTLANG_DEFAULT_HYPH_SOFT_HYPHENS_ONLY false
 #define TEXTLANG_DEFAULT_HYPH_FORCE_ALGORITHMIC false
-#define TEXTLANG_FALLBACK_HYPH_DICT_ID          U"en-US.pattern" // For languages without specific hyph dicts
+#define TEXTLANG_FALLBACK_HYPH_DICT_ID          U"hyph-en-us.pattern" // For languages without specific hyph dicts
 
 class TextLangCfg;
 class HyphMethod;

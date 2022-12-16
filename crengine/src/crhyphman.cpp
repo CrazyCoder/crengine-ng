@@ -1,17 +1,33 @@
-/** \file crhyphman.cpp
-    \brief AlReader hyphenation manager
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2007-2014,2019 Vadim Lopatin <coolreader.org@gmail.com> *
+ *   Copyright (C) Alan <alan@alreader.com>                                *
+ *   Copyright (C) Mark Lipsman - Algorithmic hyphenation, modified my Mike & SeNS
+ *   Copyright (C) 2016 Yifei(Frank) ZHU <fredyifei@gmail.com>             *
+ *   Copyright (C) 2018-2019 sebastien <28014131+cramoisi@users.noreply.github.com>
+ *   Copyright (C) 2018-2020 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2019-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
 
-    (c) Alan, adapted TeX hyphenation dictionaries code: http://alreader.kms.ru/
-    (c) Mark Lipsman -- hyphenation algorithm, modified my Mike & SeNS
-
-    Adapted for CREngine by Vadim Lopatin
-
-    This source code is distributed under the terms of
-    GNU General Public License.
-
-    See LICENSE file for details.
-
-*/
+/**
+ * @file hyphman.cpp
+ * @brief AlReader hyphenation manager adapted for CREngine by Vadim Lopatin
+ */
 
 // set to 1 for debug dump
 #if 0
@@ -49,6 +65,23 @@
 #include <cri18n.h>
 
 #endif
+
+struct lang_tag_alias
+{
+    const char* alias;
+    const char* langTag;
+};
+
+// Aliases for languages:
+//  Let's say we have 2 hyphenation dictionaries: "en-US", "en-GB"
+//  When requested dictionary for "en" without specify country
+//  we have to return something one.
+// See HyphMan::getHyphMethodForLang() function.
+const static struct lang_tag_alias s_langTag_aliases[] = {
+    { "en", "en-US" },
+    { "ru", "ru-RU" },
+    { NULL, NULL }
+};
 
 int HyphMan::_OverriddenLeftHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
 int HyphMan::_OverriddenRightHyphenMin = HYPH_DEFAULT_HYPHEN_MIN;
@@ -407,25 +440,25 @@ HyphMethod* HyphMan::getHyphMethodForDictionary(lString32 id) {
     return newmethod;
 }
 
-HyphMethod* HyphMan::getHyphMethodForLang(lString32 lang_tag) {
+HyphMethod* HyphMan::getHyphMethodForLang_impl(lString32 lang_tag) {
     // Look for full lang_tag
+    lString32 lang_tag_lc = lang_tag.lowercase();
     HyphDictionaryList* dictList = HyphMan::getDictList();
     HyphDictionary* dict;
     lString32 dict_lang_tag;
-    lang_tag.lowercase();
     for (int i = 0; dictList && i < dictList->length(); i++) {
         dict = dictList->get(i);
         if (dict) {
             dict_lang_tag = dict->getLangTag();
-            dict_lang_tag.lowercase();
-            if (lang_tag == dict_lang_tag)
+            dict_lang_tag = dict_lang_tag.lowercase();
+            if (lang_tag_lc == dict_lang_tag)
                 return HyphMan::getHyphMethodForDictionary(dict->getId());
         }
     }
     // Look for lang_tag initial subpart
-    int m_pos = lang_tag.pos("-");
+    int m_pos = lang_tag_lc.pos("-");
     if (m_pos > 0) {
-        lString32 lang_tag2 = lang_tag.substr(0, m_pos);
+        lString32 lang_tag2 = lang_tag_lc.substr(0, m_pos);
         lang_tag2.lowercase();
         for (int i = 0; dictList && i < dictList->length(); i++) {
             dict = dictList->get(i);
@@ -437,7 +470,30 @@ HyphMethod* HyphMan::getHyphMethodForLang(lString32 lang_tag) {
             }
         }
     }
-    return &NO_HYPH;
+    return NULL;
+}
+
+HyphMethod* HyphMan::getHyphMethodForLang(lString32 lang_tag) {
+    // Find in dictList firstly
+    HyphMethod* method = getHyphMethodForLang_impl(lang_tag);
+    if (NULL == method) {
+        // For case when requested short lang tag (for example, "en")
+        //  but we have only "en-US", "en-GB", so use alias map here
+        int i = 0;
+        const struct lang_tag_alias* alias = &s_langTag_aliases[i];
+        lString32 lang_tag_lc = lang_tag.lowercase();
+        do {
+            if (lang_tag_lc.compare(alias->alias) == 0) {
+                method = getHyphMethodForLang_impl(lString32(alias->langTag));
+                break;
+            }
+            i++;
+            alias = &s_langTag_aliases[i];
+        } while (NULL != alias->alias);
+    }
+    if (NULL == method)
+        method = &NO_HYPH;
+    return method;
 }
 
 bool HyphDictionary::activate() {

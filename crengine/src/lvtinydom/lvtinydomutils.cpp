@@ -1,13 +1,26 @@
-/**
- * CoolReader Engine
- *
- * (c) Vadim Lopatin, 2000-2011
- * (c) Other CoolReader authors (See AUTHORS file)
- *
- * This source code is distributed under the terms of
- * GNU General Public License version 2
- * See LICENSE file for details
- */
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2007-2010,2012 Vadim Lopatin <coolreader.org@gmail.com> *
+ *   Copyright (C) 2012 Daniel Savard <daniels@xsoli.com>                  *
+ *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
+ *   Copyright (C) 2020 NiLuJe <ninuje@gmail.com>                          *
+ *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
 
 #include <lvtinydomutils.h>
 #include <lvtinydom_common.h>
@@ -53,32 +66,6 @@ const int gDOMVersionCurrent = DOM_VERSION_CURRENT;
 
 
  */
-
-/*
-class simpleLogFile
-{
-public:
-    FILE * f;
-    simpleLogFile(const char * fname) { f = fopen( fname, "wt" ); }
-    ~simpleLogFile() { if (f) fclose(f); }
-    simpleLogFile & operator << ( const char * str ) { fprintf( f, "%s", str ); fflush( f ); return *this; }
-    simpleLogFile & operator << ( int d ) { fprintf( f, "%d(0x%X) ", d, d ); fflush( f ); return *this; }
-    simpleLogFile & operator << ( const lChar32 * str )
-    {
-        if (str)
-        {
-            for (; *str; str++ )
-            {
-                fputc( *str >= 32 && *str<127 ? *str : '?', f );
-            }
-        }
-        fflush( f );
-        return *this;
-    }
-};
-
-simpleLogFile logfile("logfile.log");
-*/
 
 lString32 extractDocAuthors(ldomDocument* doc, lString32 delimiter, bool shortMiddleName) {
     if (delimiter.empty())
@@ -405,37 +392,3 @@ ldomDocument* LVParseHTMLStream(LVStreamRef stream,
     }
     return doc;
 }
-
-#if 0
-static lString32 escapeDocPath( lString32 path )
-{
-    for ( int i=0; i<path.length(); i++ ) {
-        lChar32 ch = path[i];
-        if ( ch=='/' || ch=='\\')
-            path[i] = '_';
-    }
-    return path;
-}
-#endif
-
-//void calcStyleHash( ldomNode * node, lUInt32 & value )
-//{
-//    if ( !node )
-//        return;
-//
-//    if ( node->isText() || node->getRendMethod()==erm_invisible ) {
-//        value = value * 75 + 1673251;
-//        return; // don't go through invisible nodes
-//    }
-//
-//    css_style_ref_t style = node->getStyle();
-//    font_ref_t font = node->getFont();
-//    lUInt32 styleHash = (!style) ? 4324324 : calcHash( style );
-//    lUInt32 fontHash = (!font) ? 256371 : calcHash( font );
-//    value = (value*75 + styleHash) * 75 + fontHash;
-//
-//    int cnt = node->getChildCount();
-//    for ( int i=0; i<cnt; i++ ) {
-//        calcStyleHash( node->getChildNode(i), value );
-//    }
-//}

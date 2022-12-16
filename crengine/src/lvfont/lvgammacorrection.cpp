@@ -1,7 +1,7 @@
 /***************************************************************************
- *   coolreader-ng, gamma correction of font glyph images                  *
- *   Copyright © 2022 by coolreader-ng authors                             *
- *   Copyright © Vadim Lopatin, 2011                                       *
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2011 Vadim Lopatin <coolreader.org@gmail.com>           *
+ *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -31,7 +31,7 @@ static inline float my_fabs(float value) {
 }
 
 int LVGammaCorrection::getIndex(float gamma) {
-    int index = 0;
+    int index = LVGammaCorrection::NoCorrectionIndex;
     float min = my_fabs(lvgammatbl_data[0].gamma - gamma);
     for (int i = 1; i < GAMMA_LEVELS; i++) {
         float diff = my_fabs(lvgammatbl_data[i].gamma - gamma);

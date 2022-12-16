@@ -14,7 +14,6 @@ set(CRENGINE_NG_SOURCES
     src/lvstyles.cpp
     src/crtxtenc.cpp
     src/lvstsheet.cpp
-    src/txtselector.cpp
     src/textlang.cpp
     src/lvstream/lvdefstreambuffer.cpp
     src/lvstream/lvfilemappedstream.cpp
@@ -108,7 +107,6 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom/ldomblobcache.cpp
     src/lvtinydom/ldomnode.cpp
     src/lvtinydom/lvbase64nodestream.cpp
-    src/lvtinydom/nodeimageproxy.cpp
     src/lvtinydom/renderrectaccessor.cpp
     src/lvtinydom/lxmldocbase.cpp
     src/lvtinydom/ldomxpointer.cpp
@@ -119,7 +117,6 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom/ldomxrange.cpp
     src/lvtinydom/ldomxrangelist.cpp
     src/lvtinydom/ldommarkedrange.cpp
-    src/lvtinydom/ldommarkedrangelist.cpp
     src/lvtinydom/ldomdocument.cpp
     src/lvtinydom/lvimportstylesheetparser.cpp
     src/lvtinydom/ldomdoccache.cpp

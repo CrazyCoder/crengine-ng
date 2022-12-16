@@ -1,14 +1,29 @@
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2019 Konstantin Potapov <pkbo@users.sourceforge.net>    *
+ *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
+
 /**
-    CoolReader Engine
-
-    fb3fmt.cpp: FB3 support implementation.
-
-    (c) Konstantin Potapov <pkbo@users.sourceforge.net>, 2019-2020
-    This source code is distributed under the terms of
-    GNU General Public License.
-
-    See LICENSE file for details.
-*/
+ * \file fb3fmt.cpp
+ * \brief FB3 support implementation
+ */
 
 #include "fb3fmt.h"
 
@@ -152,7 +167,7 @@ fb3ImportContext::~fb3ImportContext() {
         delete m_descDoc;
 }
 
-lString32 fb3ImportContext::geImageTarget(const lString32 relationId) {
+lString32 fb3ImportContext::getImageTarget(const lString32 relationId) {
     return m_bookPart->getRelatedPartName(fb3_ImageRelationship, relationId);
 }
 
@@ -246,7 +261,7 @@ void fb3DomWriter::OnAttribute(const lChar32* nsname, const lChar32* attrname, c
         else
             m_parent->OnAttribute(NULL, U"type", U"comment");
     } else if (!lStr_cmp(attrname, "src")) {
-        lString32 target = m_context->geImageTarget(attrvalue);
+        lString32 target = m_context->getImageTarget(attrvalue);
         if (!target.empty()) {
             m_parent->OnAttribute(nsname, attrname, target.c_str());
             pass = false;

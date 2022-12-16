@@ -1,13 +1,25 @@
-/**
- * CoolReader Engine
- *
- * (c) Vadim Lopatin, 2000-2011
- * (c) Other CoolReader authors (See AUTHORS file)
- *
- * This source code is distributed under the terms of
- * GNU General Public License version 2
- * See LICENSE file for details
- */
+/***************************************************************************
+ *   crengine-ng                                                           *
+ *   Copyright (C) 2008-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
+ *   Copyright (C) 2018-2020 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
+ *   Copyright (C) 2020,2021 Aleksey Chernov <valexlin@gmail.com>          *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *   modify it under the terms of the GNU General Public License           *
+ *   as published by the Free Software Foundation; either version 2        *
+ *   of the License, or (at your option) any later version.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,            *
+ *   MA 02110-1301, USA.                                                   *
+ ***************************************************************************/
 
 #ifndef __LVTINYNODECOLLECTION_H_INCLUDED__
 #define __LVTINYNODECOLLECTION_H_INCLUDED__
@@ -382,9 +394,5 @@ public:
 /// pass false to not compress data in cache files
 void setCacheCompressionType(CacheCompressionType type);
 #endif
-
-/// increase the 4 hardcoded TEXT_CACHE_UNPACKED_SPACE, ELEM_CACHE_UNPACKED_SPACE,
-// RECT_CACHE_UNPACKED_SPACE and STYLE_CACHE_UNPACKED_SPACE by this factor
-void setStorageMaxUncompressedSizeFactor(float factor);
 
 #endif // __LVTINYNODECOLLECTION_H_INCLUDED__
