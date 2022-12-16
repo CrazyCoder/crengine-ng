@@ -52,12 +52,6 @@
 #define STYLE_CACHE_UNPACKED_SPACE (10 * DOC_BUFFER_SIZE / 100)
 #define STYLE_CACHE_CHUNK_SIZE     0x00C000 // 48K
 
-// default is to use the TEXT_CACHE_UNPACKED_SPACE & co defined above as is
-static float _storageMaxUncompressedSizeFactor = 1;
-void setStorageMaxUncompressedSizeFactor(float factor) {
-    _storageMaxUncompressedSizeFactor = factor;
-}
-
 // default is to compress to use smaller cache files (but slower rendering
 // and page turns with big documents)
 static CacheCompressionType _cacheCompressionType =
@@ -222,10 +216,10 @@ tinyNodeCollection::tinyNodeCollection()
         , _renderBlockRenderingFlags(BLOCK_RENDERING_FLAGS_DEFAULT)
         , _DOMVersionRequested(DOM_VERSION_CURRENT)
         , _interlineScaleFactor(INTERLINE_SCALE_FACTOR_NO_SCALE) {
-    _textStorage = new ldomDataStorageManager(this, 't', (lUInt32)(TEXT_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), TEXT_CACHE_CHUNK_SIZE);    // persistent text node data storage
-    _elemStorage = new ldomDataStorageManager(this, 'e', (lUInt32)(ELEM_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), ELEM_CACHE_CHUNK_SIZE);    // persistent element data storage
-    _rectStorage = new ldomDataStorageManager(this, 'r', (lUInt32)(RECT_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), RECT_CACHE_CHUNK_SIZE);    // element render rect storage
-    _styleStorage = new ldomDataStorageManager(this, 's', (lUInt32)(STYLE_CACHE_UNPACKED_SPACE * _storageMaxUncompressedSizeFactor), STYLE_CACHE_CHUNK_SIZE); // element style info storage
+    _textStorage = new ldomDataStorageManager(this, 't', TEXT_CACHE_UNPACKED_SPACE, TEXT_CACHE_CHUNK_SIZE);    // persistent text node data storage
+    _elemStorage = new ldomDataStorageManager(this, 'e', ELEM_CACHE_UNPACKED_SPACE, ELEM_CACHE_CHUNK_SIZE);    // persistent element data storage
+    _rectStorage = new ldomDataStorageManager(this, 'r', RECT_CACHE_UNPACKED_SPACE, RECT_CACHE_CHUNK_SIZE);    // element render rect storage
+    _styleStorage = new ldomDataStorageManager(this, 's', STYLE_CACHE_UNPACKED_SPACE, STYLE_CACHE_CHUNK_SIZE); // element style info storage
     memset(_textList, 0, sizeof(_textList));
     memset(_elemList, 0, sizeof(_elemList));
     _blobCache = new ldomBlobCache;

@@ -395,8 +395,4 @@ public:
 void setCacheCompressionType(CacheCompressionType type);
 #endif
 
-/// increase the 4 hardcoded TEXT_CACHE_UNPACKED_SPACE, ELEM_CACHE_UNPACKED_SPACE,
-// RECT_CACHE_UNPACKED_SPACE and STYLE_CACHE_UNPACKED_SPACE by this factor
-void setStorageMaxUncompressedSizeFactor(float factor);
-
 #endif // __LVTINYNODECOLLECTION_H_INCLUDED__
