@@ -111,3 +111,5 @@ The "thirdparty" directory contains some patched libraries with their own licens
 
 Other third party can be found in the sources and resources:
  * xxhash - [BSD-2-Clause](https://directory.fsf.org/wiki/License:BSD-2-Clause)
+ * fc-lang - [FontConfig, MIT like](https://gitlab.freedesktop.org/fontconfig/fontconfig/-/blob/main/COPYING)
+ * libiconv (fragments) - [LGPLv2+](https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html)
