@@ -91,6 +91,9 @@ $ make -j10 VERBOSE=1
 $ make install
 ```
 
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
 ## Authors and acknowledgment
 The list of contributors can be found in the AUTHORS file.
 
