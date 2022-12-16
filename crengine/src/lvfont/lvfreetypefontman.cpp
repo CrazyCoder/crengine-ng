@@ -249,13 +249,6 @@ LVFontRef LVFreeTypeFontManager::GetFallbackFont(int size, int index) {
         return LVFontRef();
     if (index < 0 || index >= _fallbackFontFaces.length())
         return LVFontRef();
-    // reduce number of possible distinct sizes for fallback font
-    if (size > 40)
-        size &= 0xFFF8;
-    else if (size > 28)
-        size &= 0xFFFC;
-    else if (size > 16)
-        size &= 0xFFFE;
     LVFontCacheItem* item = _cache.findFallback(_fallbackFontFaces[index], size);
     lUInt32 fallbackMask = 1 << index;
     if (!item->getFont().isNull()) {
