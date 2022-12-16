@@ -61,17 +61,6 @@ struct css_elem_def_props_t;
 // #define MAX_DOCUMENT_INSTANCE_COUNT 256
 #define MAX_DOCUMENT_INSTANCE_COUNT 16
 
-/// compact 32bit value for node
-struct ldomNodeHandle
-{
-    // See comment above around #define TNC_PART_COUNT and TNC_PART_SHIFT changes
-    // Original crengine field sizes:
-    // unsigned _docIndex:8;
-    // unsigned _dataIndex:24;
-    unsigned _docIndex :4;  // index in ldomNode::_documentInstances[MAX_DOCUMENT_INSTANCE_COUNT];
-    unsigned _dataIndex:28; // index of node in document's storage and type
-};
-
 // no vtable, very small size (16 bytes)
 // optimized for 32 bit systems
 struct ldomNode
@@ -96,6 +85,18 @@ private:
         ,
         NT_PTEXT = 2,   // immutable (persistent) text node
         NT_PELEMENT = 3 // immutable (persistent) element node
+    };
+
+    /// compact 32bit value for node
+    struct ldomNodeHandle
+    {
+        // See comment above around #define TNC_PART_COUNT and TNC_PART_SHIFT changes
+        //  in lvtinynodecollection.h
+        // Original crengine field sizes:
+        // unsigned _docIndex:8;
+        // unsigned _dataIndex:24;
+        unsigned _docIndex :4;  // index in ldomNode::_documentInstances[MAX_DOCUMENT_INSTANCE_COUNT];
+        unsigned _dataIndex:28; // index of node in document's storage and type
     };
 
     /// 0: packed 32bit data field
