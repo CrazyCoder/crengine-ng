@@ -49,7 +49,7 @@ public:
     fb3ImportContext(OpcPackage* package);
     virtual ~fb3ImportContext();
 
-    lString32 geImageTarget(const lString32 relationId);
+    lString32 getImageTarget(const lString32 relationId);
     LVStreamRef openBook();
     ldomDocument* getDescription();
 public:

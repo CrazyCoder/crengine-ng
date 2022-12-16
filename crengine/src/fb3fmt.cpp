@@ -167,7 +167,7 @@ fb3ImportContext::~fb3ImportContext() {
         delete m_descDoc;
 }
 
-lString32 fb3ImportContext::geImageTarget(const lString32 relationId) {
+lString32 fb3ImportContext::getImageTarget(const lString32 relationId) {
     return m_bookPart->getRelatedPartName(fb3_ImageRelationship, relationId);
 }
 
@@ -261,7 +261,7 @@ void fb3DomWriter::OnAttribute(const lChar32* nsname, const lChar32* attrname, c
         else
             m_parent->OnAttribute(NULL, U"type", U"comment");
     } else if (!lStr_cmp(attrname, "src")) {
-        lString32 target = m_context->geImageTarget(attrvalue);
+        lString32 target = m_context->getImageTarget(attrvalue);
         if (!target.empty()) {
             m_parent->OnAttribute(nsname, attrname, target.c_str());
             pass = false;
