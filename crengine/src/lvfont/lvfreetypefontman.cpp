@@ -31,8 +31,11 @@
 #if (USE_FREETYPE == 1)
 
 #include "lvfreetypeface.h"
+#if !defined(USE_FT_EMBOLDEN) || (USE_FT_EMBOLDEN == 0)
 #include "lvfontboldtransform.h"
+#endif
 #include <lvcontainer.h>
+#include <lvstream.h>
 #include <crlog.h>
 
 #include FT_LCD_FILTER_H
@@ -932,7 +935,7 @@ LVFontRef LVFreeTypeFontManager::GetFont(int size, int weight, bool italic, css_
             // Be sure we ignore any instantiated font found in cache that
             // has features different than the ones requested.
         } else {
-#if USE_FT_EMBOLDEN
+#if (USE_FT_EMBOLDEN == 1)
             int deltaWeight = myabs(weight - item->getDef()->getWeight());
             if (deltaWeight >= 25) {
                 // This instantiated cached font has a too different weight
@@ -1009,7 +1012,7 @@ LVFontRef LVFreeTypeFontManager::GetFont(int size, int weight, bool italic, css_
         newDef.setSize(size);
         //item->setFont( ref );
         //_cache.update( def, ref );
-#if USE_FT_EMBOLDEN
+#if (USE_FT_EMBOLDEN == 1)
         int deltaWeight = myabs(weight - newDef.getWeight());
         if (deltaWeight >= 25) {
             // embolden
