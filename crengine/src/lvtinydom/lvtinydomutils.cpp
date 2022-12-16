@@ -67,32 +67,6 @@ const int gDOMVersionCurrent = DOM_VERSION_CURRENT;
 
  */
 
-/*
-class simpleLogFile
-{
-public:
-    FILE * f;
-    simpleLogFile(const char * fname) { f = fopen( fname, "wt" ); }
-    ~simpleLogFile() { if (f) fclose(f); }
-    simpleLogFile & operator << ( const char * str ) { fprintf( f, "%s", str ); fflush( f ); return *this; }
-    simpleLogFile & operator << ( int d ) { fprintf( f, "%d(0x%X) ", d, d ); fflush( f ); return *this; }
-    simpleLogFile & operator << ( const lChar32 * str )
-    {
-        if (str)
-        {
-            for (; *str; str++ )
-            {
-                fputc( *str >= 32 && *str<127 ? *str : '?', f );
-            }
-        }
-        fflush( f );
-        return *this;
-    }
-};
-
-simpleLogFile logfile("logfile.log");
-*/
-
 lString32 extractDocAuthors(ldomDocument* doc, lString32 delimiter, bool shortMiddleName) {
     if (delimiter.empty())
         delimiter = ", ";
@@ -418,37 +392,3 @@ ldomDocument* LVParseHTMLStream(LVStreamRef stream,
     }
     return doc;
 }
-
-#if 0
-static lString32 escapeDocPath( lString32 path )
-{
-    for ( int i=0; i<path.length(); i++ ) {
-        lChar32 ch = path[i];
-        if ( ch=='/' || ch=='\\')
-            path[i] = '_';
-    }
-    return path;
-}
-#endif
-
-//void calcStyleHash( ldomNode * node, lUInt32 & value )
-//{
-//    if ( !node )
-//        return;
-//
-//    if ( node->isText() || node->getRendMethod()==erm_invisible ) {
-//        value = value * 75 + 1673251;
-//        return; // don't go through invisible nodes
-//    }
-//
-//    css_style_ref_t style = node->getStyle();
-//    font_ref_t font = node->getFont();
-//    lUInt32 styleHash = (!style) ? 4324324 : calcHash( style );
-//    lUInt32 fontHash = (!font) ? 256371 : calcHash( font );
-//    value = (value*75 + styleHash) * 75 + fontHash;
-//
-//    int cnt = node->getChildCount();
-//    for ( int i=0; i<cnt; i++ ) {
-//        calcStyleHash( node->getChildNode(i), value );
-//    }
-//}
