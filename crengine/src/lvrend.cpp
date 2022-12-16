@@ -39,7 +39,7 @@
 #include <fb2def.h>
 #include <ldomnode.h>
 #include <ldomdocument.h>
-#include <ldommarkedrangelist.h>
+#include <ldommarkedrange.h>
 #include <crlog.h>
 
 #include "lvdrawbuf/lvinkmeasurementdrawbuf.h"

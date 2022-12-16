@@ -42,7 +42,7 @@
 #include <ldomxpointer.h>
 #include <ldomxrange.h>
 #include <ldomdocument.h>
-#include <ldommarkedrangelist.h>
+#include <ldommarkedrange.h>
 #include <lvrend.h>
 #include <lvimg.h>
 

@@ -22,7 +22,6 @@
 
 #include <ldomxrangelist.h>
 #include <ldommarkedrange.h>
-#include <ldommarkedrangelist.h>
 
 /// create list by filtering existing list, to get only values which intersect filter range
 ldomXRangeList::ldomXRangeList(ldomXRangeList& srcList, ldomXRange& filter) {

@@ -117,7 +117,6 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom/ldomxrange.cpp
     src/lvtinydom/ldomxrangelist.cpp
     src/lvtinydom/ldommarkedrange.cpp
-    src/lvtinydom/ldommarkedrangelist.cpp
     src/lvtinydom/ldomdocument.cpp
     src/lvtinydom/lvimportstylesheetparser.cpp
     src/lvtinydom/ldomdoccache.cpp

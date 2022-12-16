@@ -1,7 +1,7 @@
 /***************************************************************************
  *   crengine-ng                                                           *
  *   Copyright (C) 2007,2011,2012 Vadim Lopatin <coolreader.org@gmail.com> *
- *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
+ *   Copyright (C) 2019,2020 poire-z <poire-z@users.noreply.github.com>    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -77,6 +77,17 @@ public:
             , end(v.end)
             , flags(v.flags) {
     }
+};
+
+/// list of marked ranges
+class ldomMarkedRangeList: public LVPtrVector<ldomMarkedRange>
+{
+public:
+    ldomMarkedRangeList() {
+    }
+    /// create bounded by RC list, with (0,0) coordinates at left top corner
+    // crop/discard elements outside of rc (or outside of crop_rc instead if provided)
+    ldomMarkedRangeList(const ldomMarkedRangeList* list, lvRect& rc, lvRect* crop_rc = NULL);
 };
 
 #endif // __LDOMMARKEDRANGE_H_INCLUDED__

@@ -43,7 +43,7 @@
 #include <crsetup.h>
 #include <crskin.h>
 #include <ldomxrangelist.h>
-#include <ldommarkedrangelist.h>
+#include <ldommarkedrange.h>
 #include <lvtocitem.h>
 #include <ldomwordexlist.h>
 #include <ldomnavigationhistory.h>
