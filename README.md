@@ -10,6 +10,8 @@ The founder and developer of CoolReader is Vadim Lopatin. Other authors are list
 
 Supported platforms: Windows, Linux, MacOS.
 
+This repository is created from the official CoolReader repository by removing everything that does not belong to the "crengine" library using the "git-filter-repo" utility.
+
 ## Project goals
 This project is in the experimental phase, the main goals are:
  * Main goal is the same as CoolReader's crengine - support & development fast and portable library which allows to create e-book readers for different platform including handheld devices.
