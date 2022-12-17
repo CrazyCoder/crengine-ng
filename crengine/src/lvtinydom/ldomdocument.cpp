@@ -34,6 +34,7 @@
 #include <lvstreamutils.h>
 #include <lvcacheloadingcallback.h>
 #include <lvdocviewcallback.h>
+#include <lvdocviewprops.h>
 #include <crlog.h>
 
 #include "lxmlattribute.h"
@@ -338,9 +339,9 @@ bool ldomDocument::setRenderProps(int width, int dy, bool /*showCover*/, int /*y
     s->text_transform = css_tt_none;
     s->hyphenate = css_hyph_auto;
     s->color.type = css_val_unspecified;
-    s->color.value = 0x000000;
+    s->color.value = props->getColorDef(PROP_FONT_COLOR, 0);
     s->background_color.type = css_val_unspecified;
-    s->background_color.value = 0xFFFFFF;
+    s->background_color.value = props->getColorDef(PROP_BACKGROUND_COLOR, 0);
     //_def_style->background_color.type = color;
     //_def_style->background_color.value = 0xFFFFFF;
     s->page_break_before = css_pb_auto;
