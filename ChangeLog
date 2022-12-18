@@ -1,5 +1,16 @@
 2022-12-18  Aleksey Chernov  <valexlin@gmail.com>
 
+	* Version 0.9.2 released.
+	==========================
+
+	Tag sources with `0.9.2'.
+
+	  Main changes:
+	*  Added crengine/data/hyph/hyph-fr.pattern: French hyphenation patterns
+
+
+2022-12-18  Aleksey Chernov  <valexlin@gmail.com>
+
 	* Version 0.9.1 released.
 	==========================
 
