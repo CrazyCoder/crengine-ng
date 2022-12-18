@@ -1,3 +1,293 @@
+2022-12-18  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.1 released.
+	==========================
+
+	Tag sources with `0.9.1'.
+
+	  Main changes:
+	* Following the change to the wording of the CoolReader license, we are also changing the wording of the license to clearly "GPLv2 or later".
+	* Minor fixes: SEGFAULTS, optimizations...
+	* Refactoring
+	* Updated hyphenation dictionaries for most popular languages & also for some other languages. Now we only have GPL compliant dictionaries.
+	* Format of hyphenation dictionaries has been updated: added properties 'title', 'lang', 'lefthyphenmin', 'righthyphenmin' to eliminate hardcoding this data in sources.
+	* Added crengine/Tools/HyphConv/mkpattern.pl: convert TeX hyphenation patterns to xml format.
+	* Added calculation and assignment of SHA256, just like CRC32 for document contents (optional).
+	* LVDocView: added getAvgTextLineHeight() functions to retrieve the average height of a line of text.
+	* Other fixes
+
+	See below for other changes.
+
+2022-12-17  Aleksey Chernov  <valexlin@gmail.com>
+
+	ldomDocument default style: use text color and background color from document properties instead of black and white. This fixes incorrect colors for mathml elements with non-standard color settings.
+
+2022-12-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	Revert part of "Allow for increasing unpacked cache size (and warn when reached)" Only 'storage max uncompressed size factor' stuff reverted.
+
+	Revert "Use factor also in the other tinyNodeCollection constructor (#104)"
+
+	FreeType fallback fonts: don't reduce number of possible distinct sizes for fallback font.
+
+	crengine/src/lvtinydom/lvtinydomutils.cpp: removed unused/obsolete/outdated stuff.
+
+	`struct ldomNodeHandle` moved into `struct ldomNode` as inner
+
+	LVGammaCorrection::getIndex(): set default/initial value for `index` to `LVGammaCorrection::NoCorrectionIndex`
+
+
+	Typo fixed in fb3fmt: geImageTarget() -> getImageTarget()
+
+	Update source file header in crengine/tests/: use the standard GPLv2+ header.
+
+	Update crengine/_clang_format.sh: allow to specify clang-format executable in config file, header added with license information.
+
+	Update AUTHORS: using crengine/Tools/getauthors/collect_authors.pl
+
+	Added script crengine/Tools/getauthors/collect_authors.pl to parse sources files & extract authors.
+
+	The engine has been adapted for the new hyphenation dictionaries.
+
+2022-12-15  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added hyphenation dictionaries for most popular languages & also for some other languages. Added special 'hyph-ru-ru,en-us.pattern' hyphenation dictionary - a union of hyphenation dictionaries for 'ru-RU' and 'en-US' languages. Only dictionaries compliant with GPL was added.
+
+	Update crengine/Tools/HyphConv/mkpattern.pl: fixes, improvements... Added crengine/Tools/HyphConv/mkpattern_dic.pl: text (.dic) hyphenation file converter
+
+	LVFontBoldTransform::getTextWidth(): replace magic const 2048 with MAX_LINE_WIDTH.
+
+	Update crengine/src/lvfont/lvfreetypeface.cpp: 'static lUInt16 char_flags[]' -> 'static const lUInt16 char_flags[]'
+
+	Since `LVCreateFontTransform()` function implementation is lost, declaration of this function also removed.
+
+	Removed unnecessary/obsolete files.
+
+	Update source file header in crengine/Tools/*/: use the standard GPLv2+ header. File authors reconstructed.
+
+	Update source file header in crengine/src/private/: use the standard GPLv2+ header. File authors reconstructed.
+
+	Update source file headers in crengine/src/lvxml/: use the standard GPLv2+ header. File authors reconstructed.
+
+	Update source file headers in crengine/src/lvtinydom/: use the standard GPLv2+ header. File authors reconstructed.
+
+	Update source file headers in crengine/src/lvstream/: use the standard GPLv2+ header. File authors reconstructed.
+
+	Update source file headers in crengine/src/lvimg/: use the standard GPLv2+ header. File authors reconstructed.
+
+	Update source file headers in crengine/src/lvfont/: use the standard GPLv2+ header. File authors reconstructed.
+
+	Update source file headers in crengine/src/lvdrawbuf/: use the standard GPLv2+ header. File authors reconstructed.
+
+	Update crengine/src/locale_data/*/*: Added copyright & license information. crengine/include/fc-lang-data.h: update source URL crengine/src/locale_data/fc-lang-data.c: Update source URL
+
+2022-12-14  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update source file headers in crengine/src/: use the standard GPLv2+ header. File authors reconstructed. mathml_operators.h inherits from its source MPL-2.0.
+
+	Update source file headers in crengine/include/: use the standard GPLv2+ header. File authors reconstructed.
+
+2022-12-13  Aleksey Chernov  <valexlin@gmail.com>
+
+	With the permission of the authors of the CoolReader project, the wording of the license has been changed to a clear "GPLv2 or later" Also updated info about embedded third party components.
+
+2022-09-20  Aleksey Chernov  <valexlin@gmail.com>
+
+	Unit tests updated for new hyphenation dictionaries.
+
+	Updated hardcoded hyphenation dictionaries names in the engine.
+
+2022-09-18  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added a unit test for the HyphMan::getHyphMethodForLang() function.
+
+2022-09-17  Aleksey Chernov  <valexlin@gmail.com>
+
+	Speeded up scanning of a directory with hyphenation dictionaries, as a result, the program starts faster. HyphMethod class refactoring: getSize() method removed, getCount() method renamed to getPatternsCount().
+
+2022-09-17  Aleksey Chernov  <valexlin@gmail.com>
+
+	getHyphMethodForLang() method moved from TextLangMan class to HyphMan class.
+
+2022-08-23  Aleksey Chernov  <valexlin@gmail.com>
+
+	Unittests build error fixed when building shared crengine-ng only.
+
+2022-08-23  Aleksey Chernov  <valexlin@gmail.com>
+
+	* LVDocView:loadDocument(), loadDocumentInt(): start calculating CRC32 and SHA256 only after calling LVDocViewCallback::OnLoadFileStart(), since these operations are not fast. * LVDocView:loadDocument(): removed redundant m_doc_props reassignment.
+
+2022-08-19  Aleksey Chernov  <valexlin@gmail.com>
+
+	cmake project: DEBUG_EXTRA_FLAGS (for clang): add "-fsanitize=undefined", "-fstack-check" bring back
+
+2022-08-17  Aleksey Chernov  <valexlin@gmail.com>
+
+	cmake project: DEBUG_EXTRA_FLAGS (for gcc): "-fstack-check" replaced by "-fstack-clash-protection"
+
+2022-08-17  Aleksey Chernov  <valexlin@gmail.com>
+
+	GitLab CI: added unittests in release build configuration, debug builds compiled with asan.
+
+2022-08-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	src/lvtinydom/lvtinydomutils.cpp: updated comment about keyword separator in extractDocKeywords()
+
+	Because the book's metadata is cached, and the hash sum has been added to that metadata, we must update the cache file format version so that the cache is regenerated.
+
+2022-08-15  Aleksey Chernov  <valexlin@gmail.com>
+
+	unittests: added tests for LVDocView::getFileCRC32() & LVDocView::getFileHash() functions.
+
+	Added calculation and assignment of SHA256, just like CRC32. Also, cached CRC32 and SHA256 are reset when writing to the stream.
+
+2022-08-14  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update CMakeLists.txt in 'Tools' subdirectory to always use crengine-ng library instead of separate source files.
+
+2022-08-14  Aleksey Chernov  <valexlin@gmail.com>
+
+	Add thirdparty/rfc6234-shas/ to build system.
+
+	Added RFC6234 with sources as thirdparty/rfc6234-shas/. All source code is a direct copy of RFC6234 snippets without any modifications. The source code in this RFC is distributed under the terms of the BSD-3-Clause license.
+
+2022-07-31  Aleksey Chernov  <valexlin@gmail.com>
+
+	crhyphman.cpp: HyphDictionaryList::addDefault() fixed: use a different `langTag` for different special algorithms.
+
+2022-07-31  Aleksey Chernov  <valexlin@gmail.com>
+
+	textlang.cpp: removed LANG_STARTS_WITH*** macros for better code readability.
+
+2022-07-30  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added unit tests for TextLangMan::getTextLangCfg() and TextLangMan::setMainLang().
+
+	Removed the `_hyph_dict_table` static variable from textlang.cpp, which actually duplicates the hyphenation data in the 'crengine/data/hyph/' directory. Instead, a directory with hyphenation dictionaries is scanned to obtain this data. As an alternative to this mechanism, language-specific hyphenation dictionary definitions can be manually added using the `HyphMan::addDictionaryItem()` function.
+
+2022-07-24  Aleksey Chernov  <valexlin@gmail.com>
+
+	Page header rendering is tuned for HiDPI screens. Also fixed the overlay of the page text on the page header with a zero top margin.
+
+2022-07-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView::propsApply(): copy-past issue fixed: PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT -> PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION
+
+2022-07-15  Aleksey Chernov  <valexlin@gmail.com>
+
+	Removed unused/obsolete setting options. Also removed are options that are related/used in the client and not in the engine.
+
+2022-07-10  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added unit test for HyphMan::overrideLeftHyphenMin() & HyphMan::overrideRightHyphenMin() functions.
+
+2022-07-09  Aleksey Chernov  <valexlin@gmail.com>
+
+	Removed left & right hyphenmins arguments from HyphMan::getHyphMethodForDictionary(), HyphMethod::HyphMethod(), TexHyph::TexHyph() since its's not needed anymore. HyphMan class refactored: HyphMan::setLeftHyphenMin() (and `right` too) method renamed to HyphMan::overrideLeftHyphenMin(), HyphMan::getLeftHyphenMin() (and `right` too) to HyphMan::getOverriddenLeftHyphenMin().
+
+	textlang.cpp: removed `left_hyphen_min`, `left_hyphen_min` from `_hyph_dict_table` since now this properties already defined in hyphenation dictionary (*.pattern format).
+
+2022-07-04  Aleksey Chernov  <valexlin@gmail.com>
+
+	HyphMan: Update HyphPatternReader to load new dictionary attributes.
+
+	Update textlang.cpp: correct language names.
+
+	unittests: test hyphenation dictionaries updated: added title, langtag, hyphenmins.
+
+	Hyphenation dictionaries updated: added title, langtag, hyphenmins.
+
+2022-07-03  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update crengine/Tools/HyphConv/mkpattern.pl: add title, langtag, hyphenmin:left, hyphenmin:right to output.
+
+2022-07-02  Aleksey Chernov  <valexlin@gmail.com>
+
+	unittests: add HyphenationTests.GetHyphMethodTest to test HyphMan::getHyphMethodForDictionary() function.
+
+2022-07-01  Aleksey Chernov  <valexlin@gmail.com>
+
+	Tests for hyphenation module added.
+
+	LVGammaCorrection: add modifier `const` for `LVGammaCorrection::NoCorrectionIndex`;                    add static inline my_fabs();
+
+	Update crengine/Tools/HyphConv/mkpattern.pl: skip '%' char in comment section.
+
+2022-06-27  Aleksey Chernov  <valexlin@gmail.com>
+
+	crengine/Tools/HyphConv/mkpattern rewriten in perl.
+
+2022-06-18  Aleksey Chernov  <valexlin@gmail.com>
+
+	Gamma correction tables refactoring
+
+2022-06-10  Aleksey Chernov  <valexlin@gmail.com>
+
+	Allow to use sanitizer for android build
+
+2022-05-22  Aleksey Chernov  <valexlin@gmail.com>
+
+	CRLog: refactoring
+
+2022-05-14  Aleksey Chernov  <valexlin@gmail.com>
+
+	container item info: added packed size info
+
+2022-05-10  Aleksey Chernov  <valexlin@gmail.com>
+
+	Improved unit tests for zip archives: Win32 support added. makeRandomFile() has been rewritten to support the creation of Unicode filenames in Win32.
+
+2022-05-08  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView: log file openning errors.
+
+2022-05-06  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added tests to check locales names detection.
+
+2022-04-22  Aleksey Chernov  <valexlin@gmail.com>
+
+	SIGSEGV fixed in ldomDataStorageManager class. AddressSanitizer: heap-use-after-free
+
+2022-04-21  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added unit test to check LVDocView::getAvgTextLineHeight() function.
+
+	LVDocView: added getAvgTextLineHeight() functions to retrieve the average height of a line of text.
+
+2022-04-03  Aleksey Chernov  <valexlin@gmail.com>
+
+	cmake project: added new option ENABLE_LTO to enable Link Time Optimization (disabled by default).
+
+2022-03-28  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added unit tests to check zip-archives processing.
+
+2022-03-27  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update crengine/src/lvstream/lvstreamutils.cpp: LVPumpStream() function improved: added check result of write operation.
+
+	Update crengine/_clang_format.sh: support more variants of `find' utility.
+
+2022-03-26  Aleksey Chernov  <valexlin@gmail.com>
+
+	Sanitizer error in lvfilestream.cpp fixed:  crengine/src/lvstream/lvfilestream.cpp:391:33: runtime error: load of value 20, which is not a valid value for type 'lvopen_mode_t'
+
+	crengine/Tools/zip-test: build failure fixed.
+
+	Bump version to 0.9.1.alpha1
+
+2022-03-25  Aleksey Chernov  <valexlin@gmail.com>
+
+	crengine/src/lvstream/lvcommoncontaineriteminfo.h: Added missing 'const' modifiers to methods.
+
+	ZIP processing: replaced hardcoded maximum entry name length and maximum extra entry data length with a new macro in ziphdr.h  It is allowed to skip extra entry data if it is too long without stopping the processing of the zip archive.
+
+2022-03-20  Aleksey Chernov  <valexlin@gmail.com>
+
+	Fixed compilation issue for Android.
+
+
 2022-02-10  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.0 released.
