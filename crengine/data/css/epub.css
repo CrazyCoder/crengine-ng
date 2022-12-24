@@ -224,6 +224,23 @@ img[align=right i]   { float: right; }
 table[align=left i]  { float: left; }
 table[align=right i] { float: right; }
 
+/* Footnotes attributes */
+/* EPUB attributes: */
+*[type~="note"], *[type~="footnote"], *[type~="rearnote"],
+*[role~="doc-note"], *[role~="doc-footnote"], *[role~="doc-rearnote"],
+/* Classic footnotes class names: */
+.footnote, .note, .note1, .note2, .note3,
+.ntb, .ntb-txt, .ntb-txt-j {
+    -cr-hint: footnote-inpage;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+*[type~="noteref"] {
+    vertical-align: super;
+    font-size: 80%;
+}
+
 /* EPUB3 epub:type="pagebreak" may sometimes have the page number
  * as content: hide it. (Usually, its content is empty and the
  * page number is in a title= attribute.) */
