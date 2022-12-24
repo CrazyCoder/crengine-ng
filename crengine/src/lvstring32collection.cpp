@@ -2,7 +2,7 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2007,2009,2010,2012 Vadim Lopatin <coolreader.org@gmail.com>
  *   Copyright (C) 2019 poire-z <poire-z@users.noreply.github.com>         *
- *   Copyright (C) 2018,2020,2021 Aleksey Chernov <valexlin@gmail.com>     *
+ *   Copyright (C) 2018,2020-2022 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -88,7 +88,7 @@ void lString32Collection::clear() {
 void lString32Collection::erase(int offset, int cnt) {
     if (count <= 0)
         return;
-    if (offset < 0 || offset + cnt >= count)
+    if (offset < 0 || offset + cnt > count)
         return;
     int i;
     for (i = offset; i < offset + cnt; i++) {

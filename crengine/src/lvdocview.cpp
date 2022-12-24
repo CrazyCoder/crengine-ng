@@ -3357,20 +3357,25 @@ bool LVDocView::navigateTo(lString32 historyPath) {
     return true;
 }
 
-/// go back. returns true if navigation was successful
+/// check if back navigation is possible
 bool LVDocView::canGoBack() {
     return _navigationHistory.backCount() > 0;
 }
 
-/// go forward. returns true if navigation was successful
+/// check if forward navigation is possible
 bool LVDocView::canGoForward() {
     return _navigationHistory.forwardCount() > 0;
 }
 
 /// go back. returns true if navigation was successful
 bool LVDocView::goBack() {
-    if (_navigationHistory.forwardCount() == 0 && savePosToNavigationHistory())
-        _navigationHistory.back();
+    if (!canGoForward()) {
+        // Save the current position if we are at the end of the list of navigation positions...
+        if (savePosToNavigationHistory()) {
+            //  ... and skip the position just saved
+            _navigationHistory.back();
+        }
+    }
     lString32 s = _navigationHistory.back();
     if (s.empty())
         return false;
@@ -5555,7 +5560,7 @@ bool LVDocView::moveByPage(int delta) {
     }
 }
 
-/// -1 moveto previous chapter, 0 to current chaoter first pae, 1 to next chapter
+/// -1 - move to previous chapter, 0 - to the first page of the current chapter, 1 - to next chapter
 bool LVDocView::moveByChapter(int delta) {
     /// returns pointer to TOC root node
     LVPtrVector<LVTocItem, false> items;

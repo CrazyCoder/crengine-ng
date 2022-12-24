@@ -641,9 +641,9 @@ public:
     virtual bool goBack();
     /// go forward. returns true if navigation was successful
     virtual bool goForward();
-    /// check if navigation forward is possible
+    /// check if back navigation is possible
     virtual bool canGoBack();
-    /// check if navigation back is possible
+    /// check if forward navigation is possible
     virtual bool canGoForward();
 
     /// create empty document with specified message (e.g. to show errors)
