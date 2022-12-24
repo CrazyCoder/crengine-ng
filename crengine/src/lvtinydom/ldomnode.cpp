@@ -6,7 +6,7 @@
  *   Copyright (C) 2018 Frans de Jonge <fransdejonge@gmail.com>            *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
  *   Copyright (C) 2018-2021 Aleksey Chernov <valexlin@gmail.com>          *
- *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2017-2022 poire-z <poire-z@users.noreply.github.com>    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *

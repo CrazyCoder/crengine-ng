@@ -3,9 +3,9 @@
  *   Copyright (C) 2007-2010,2012 Vadim Lopatin <coolreader.org@gmail.com> *
  *   Copyright (C) 2011 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2015,2016 Yifei(Frank) ZHU <fredyifei@gmail.com>        *
- *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
  *   Copyright (C) 2020,2021 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018-2022 poire-z <poire-z@users.noreply.github.com>    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *

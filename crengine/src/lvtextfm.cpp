@@ -10,8 +10,8 @@
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
  *   Copyright (C) 2021 NiLuJe <ninuje@gmail.com>                          *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
- *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
  *   Copyright (C) 2018,2020,2021 Aleksey Chernov <valexlin@gmail.com>     *
+ *   Copyright (C) 2018-2022 poire-z <poire-z@users.noreply.github.com>    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *

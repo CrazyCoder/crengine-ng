@@ -3,7 +3,7 @@
  *   Copyright (C) 2007-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
  *   Copyright (C) 2019,2020 Konstantin Potapov <pkbo@users.sourceforge.net>
  *   Copyright (C) 2018,2020 Aleksey Chernov <valexlin@gmail.com>          *
- *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2018-2022 poire-z <poire-z@users.noreply.github.com>    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
