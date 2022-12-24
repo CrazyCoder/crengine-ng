@@ -5748,7 +5748,7 @@ bool LVDocView::exportBookmarks(lString32 filename) {
             newContent.append(1, (lChar8)0xef);
             newContent.append(1, (lChar8)0xbb);
             newContent.append(1, (lChar8)0xbf);
-            newContent << "# Cool Reader 3 - exported bookmarks\r\n";
+            newContent << "# crengine-ng - exported bookmarks\r\n";
             newContent << "# file name: " << UnicodeToUtf8(rec->getFileName())
                        << "\r\n";
             if (!rec->getFilePathName().empty())

@@ -75,7 +75,7 @@ bool LVTextBookmarkParser::CheckFormat() {
     FillBuffer(TEXT_PARSER_DETECT_SIZE);
     int charsDecoded = ReadTextBytes(0, m_buf_len, chbuf, TEXT_PARSER_DETECT_SIZE - 1, 0);
     bool res = false;
-    lString32 pattern("# Cool Reader 3 - exported bookmarks\r\n# file name: ");
+    lString32 pattern("# crengine-ng - exported bookmarks\r\n# file name: ");
     if (charsDecoded > (int)pattern.length() && chbuf[0] == 0xFEFF) { // BOM
         res = true;
         for (int i = 0; i < (int)pattern.length(); i++)
