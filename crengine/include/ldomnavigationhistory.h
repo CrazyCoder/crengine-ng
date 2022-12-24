@@ -3,7 +3,7 @@
  *   Copyright (C) 2008,2009,2012 Vadim Lopatin <coolreader.org@gmail.com> *
  *   Copyright (C) 2011 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020,2022 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -32,10 +32,14 @@ private:
     lString32Collection _links;
     int _pos;
     void clearTail() {
-        if (_links.length() > _pos)
+        if (_pos < _links.length()) {
             _links.erase(_pos, _links.length() - _pos);
+        }
     }
 public:
+    ldomNavigationHistory()
+            : _pos(0) {
+    }
     void clear() {
         _links.clear();
         _pos = 0;
@@ -43,7 +47,7 @@ public:
     bool save(lString32 link) {
         if (_pos == (int)_links.length() && _pos > 0 && _links[_pos - 1] == link)
             return false;
-        if (_pos >= (int)_links.length() || _links[_pos] != link) {
+        if (_pos >= (int)_links.length() || _pos < (_links.length() - 1) || _links[_pos] != link) {
             clearTail();
             _links.add(link);
             _pos = _links.length();
@@ -68,7 +72,10 @@ public:
         return _pos;
     }
     int forwardCount() {
-        return _links.length() - _pos;
+        int count = _links.length() - _pos - 1;
+        if (count < 0)
+            count = 0;
+        return count;
     }
 };
 
