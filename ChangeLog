@@ -1,3 +1,33 @@
+2022-12-25  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.3 released.
+	==========================
+
+	Tag sources with `0.9.3'.
+
+	  Main changes:
+	* Update epub.css: allows you to display footnotes in epub documents at the bottom of the page.
+	* Fixed sizing of float/inline-block image containers.
+	* Fixed history navigation: clear history navigation tail when saving new position not at end; incorrect forward posistions count.
+
+	See below for other changes.
+
+2022-12-24  Aleksey Chernov  <valexlin@gmail.com>
+
+	Export bookmarks to file: change "Cool Reader 3" signature to "crengine-ng".
+
+	LVDocView::goBack(): Improving code readability; Fixed comments for some functions.
+
+	Fix lString32Collection::erase(): incorrect index out of bounds check
+
+	Fix ldomNavigationHistory: clear history navigation tail when saving new position not at end; incorrect forward posistions count.
+
+2022-03-12  poire-z  <poire-z@users.noreply.github.com>
+
+	Fix sizing of float/inline-block image containers
+	(cherry-picked from https://github.com/koreader/crengine/pull/467)
+
+
 2022-12-18  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.2 released.
