@@ -46,7 +46,6 @@
 #include <ldommarkedrange.h>
 #include <lvtocitem.h>
 #include <ldomwordexlist.h>
-#include <ldomnavigationhistory.h>
 #include <lvpagesplitter.h>
 #include <lvdrawbuf.h>
 #include <lvcolordrawbuf.h>
@@ -283,6 +282,8 @@ enum
 
 typedef LVArray<int> LVBookMarkPercentInfo;
 
+class lvNavigationHistory;
+
 #define DEF_COLOR_BUFFER_BPP 32
 
 /**
@@ -395,7 +396,7 @@ private:
 
     lString8 m_defaultFontFace;
     lString8 m_statusFontFace;
-    ldomNavigationHistory _navigationHistory;
+    lvNavigationHistory* _navigationHistory;
 
     doc_format_t m_doc_format;
 
@@ -619,10 +620,6 @@ public:
     /// update selection -- command handler
     int onSelectionCommand(int cmd, int param);
 
-    /// navigation history
-    ldomNavigationHistory& getNavigationHistory() {
-        return _navigationHistory;
-    }
     /// get list of links
     virtual void getCurrentPageLinks(ldomXRangeList& list);
     /// selects first link on page, if any. returns selected link range, null if no links.

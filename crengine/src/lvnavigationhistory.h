@@ -21,12 +21,12 @@
  *   MA 02110-1301, USA.                                                   *
  ***************************************************************************/
 
-#ifndef __LDOMNAVIGATIONHISTORY_H_INCLUDED__
-#define __LDOMNAVIGATIONHISTORY_H_INCLUDED__
+#ifndef __LVNAVIGATIONHISTORY_H_INCLUDED__
+#define __LVNAVIGATIONHISTORY_H_INCLUDED__
 
 #include <lvstring32collection.h>
 
-class ldomNavigationHistory
+class lvNavigationHistory
 {
 private:
     lString32Collection _links;
@@ -37,7 +37,7 @@ private:
         }
     }
 public:
-    ldomNavigationHistory()
+    lvNavigationHistory()
             : _pos(0) {
     }
     void clear() {
@@ -79,4 +79,4 @@ public:
     }
 };
 
-#endif // __LDOMNAVIGATIONHISTORY_H_INCLUDED__
+#endif // __LVNAVIGATIONHISTORY_H_INCLUDED__

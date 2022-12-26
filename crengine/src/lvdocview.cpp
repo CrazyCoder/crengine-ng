@@ -57,6 +57,7 @@
 #include "lvtinydom/renderrectaccessor.h"
 #include "lvtinydom/ldomdocumentwriterfilter.h"
 #include "lvtinydom/cachefile.h"
+#include "lvnavigationhistory.h"
 
 #include "rtfimp.h"
 #include "wolutil.h"
@@ -271,6 +272,7 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
 
     //m_drawbuf.Clear(m_backgroundColor);
 
+    _navigationHistory = new lvNavigationHistory;
     if (!noDefaultDocument)
         // NOLINTNEXTLINE: Call to virtual function during construction
         createDefaultDocument(cs32("No document"), lString32(
@@ -288,6 +290,7 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
 
 LVDocView::~LVDocView() {
     Clear();
+    delete _navigationHistory;
 }
 
 CRPageSkinRef LVDocView::getPageSkin() {
@@ -639,7 +642,7 @@ void LVDocView::Clear() {
         m_section_bounds_valid = false;
     }
     clearImageCache();
-    _navigationHistory.clear();
+    _navigationHistory->clear();
     // Also drop font instances from previous document (see
     // lvtinydom.cpp ldomDocument::render() for the reason)
     fontMan->gc();
@@ -3319,7 +3322,7 @@ bool LVDocView::savePosToNavigationHistory(lString32 path) {
         lString32 s = getNavigationPath() + NAVIGATION_FILENAME_SEPARATOR + path;
         CRLog::debug("savePosToNavigationHistory(%s)",
                      UnicodeToUtf8(s).c_str());
-        return _navigationHistory.save(s);
+        return _navigationHistory->save(s);
     }
     return false;
 }
@@ -3359,12 +3362,12 @@ bool LVDocView::navigateTo(lString32 historyPath) {
 
 /// check if back navigation is possible
 bool LVDocView::canGoBack() {
-    return _navigationHistory.backCount() > 0;
+    return _navigationHistory->backCount() > 0;
 }
 
 /// check if forward navigation is possible
 bool LVDocView::canGoForward() {
-    return _navigationHistory.forwardCount() > 0;
+    return _navigationHistory->forwardCount() > 0;
 }
 
 /// go back. returns true if navigation was successful
@@ -3373,10 +3376,10 @@ bool LVDocView::goBack() {
         // Save the current position if we are at the end of the list of navigation positions...
         if (savePosToNavigationHistory()) {
             //  ... and skip the position just saved
-            _navigationHistory.back();
+            _navigationHistory->back();
         }
     }
-    lString32 s = _navigationHistory.back();
+    lString32 s = _navigationHistory->back();
     if (s.empty())
         return false;
     return navigateTo(s);
@@ -3384,7 +3387,7 @@ bool LVDocView::goBack() {
 
 /// go forward. returns true if navigation was successful
 bool LVDocView::goForward() {
-    lString32 s = _navigationHistory.forward();
+    lString32 s = _navigationHistory->forward();
     if (s.empty())
         return false;
     return navigateTo(s);
