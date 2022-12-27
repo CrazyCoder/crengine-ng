@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <limits.h>
 
 #if !defined(__SYMBIAN32__) && defined(_WIN32)
 extern "C" {
