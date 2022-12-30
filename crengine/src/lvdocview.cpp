@@ -4916,6 +4916,8 @@ bool LVDocView::ParseDocument() {
         CRLog::info("Cannot get document from cache, parsing...");
     }
 
+    bool failed = false;
+    lString32 failReason;
     {
         ldomDocumentWriter writer(m_doc);
         ldomDocumentWriterFilter writerFilter(m_doc, false, HTML_AUTOCLOSE_TABLE);
@@ -5000,93 +5002,101 @@ bool LVDocView::ParseDocument() {
         }
 
         // unknown format (never reached)
-        if (!parser) {
+        if (parser == NULL) {
             setDocFormat(doc_format_none);
-            createDefaultDocument(cs32("ERROR: Unknown document format"),
-                                  cs32("Cannot open document"));
+            failed = true;
+            failReason = cs32("ERROR: Unknown document format");
             if (m_callback) {
                 m_callback->OnLoadFileError(
                         cs32("Unknown document format"));
             }
-            return false;
         }
 
-        if (m_callback) {
-            m_callback->OnLoadFileFormatDetected(getDocFormat());
-        }
-        updateDocStyleSheet();
-        setRenderProps(0, 0);
-
-        // set stylesheet
-        //m_doc->getStyleSheet()->clear();
-        //m_doc->getStyleSheet()->parse(m_stylesheet.c_str());
-        //m_doc->setStyleSheet( m_stylesheet.c_str(), true );
-
-        // parse
-        parser->setProgressCallback(m_callback);
-        if (!parser->Parse()) {
-            delete parser;
+        if (!failed) {
             if (m_callback) {
-                m_callback->OnLoadFileError(cs32("Bad document format"));
+                m_callback->OnLoadFileFormatDetected(getDocFormat());
             }
-            createDefaultDocument(cs32("ERROR: Bad document format"),
-                                  cs32("Cannot open document"));
-            return false;
+            updateDocStyleSheet();
+            setRenderProps(0, 0);
+
+            // set stylesheet
+            //m_doc->getStyleSheet()->clear();
+            //m_doc->getStyleSheet()->parse(m_stylesheet.c_str());
+            //m_doc->setStyleSheet( m_stylesheet.c_str(), true );
+
+            // parse
+            parser->setProgressCallback(m_callback);
+            if (!parser->Parse()) {
+                if (m_callback) {
+                    m_callback->OnLoadFileError(cs32("Bad document format"));
+                }
+                failed = true;
+                failReason = cs32("ERROR: Bad document format");
+            }
+            delete parser;
+            _pos = 0;
+            _page = 0;
         }
-        delete parser;
-        _pos = 0;
-        _page = 0;
 
-        //m_doc->compact();
-        m_doc->dumpStatistics();
+        if (!failed) {
+            //m_doc->compact();
+            m_doc->dumpStatistics();
 
-        if (m_doc_format == doc_format_html) {
-            static lUInt16 path[] = { el_html, el_head, el_title, 0 };
-            ldomNode* el = NULL;
-            ldomNode* rootNode = m_doc->getRootNode();
-            if (rootNode)
-                el = rootNode->findChildElement(path);
-            if (el != NULL) {
-                lString32 s = el->getText(U' ', 1024);
-                if (!s.empty()) {
-                    m_doc_props->setString(DOC_PROP_TITLE, s);
+            if (m_doc_format == doc_format_html) {
+                static lUInt16 path[] = { el_html, el_head, el_title, 0 };
+                ldomNode* el = NULL;
+                ldomNode* rootNode = m_doc->getRootNode();
+                if (rootNode)
+                    el = rootNode->findChildElement(path);
+                if (el != NULL) {
+                    lString32 s = el->getText(U' ', 1024);
+                    if (!s.empty()) {
+                        m_doc_props->setString(DOC_PROP_TITLE, s);
+                    }
                 }
             }
-        }
 
-        //        lString32 docstyle = m_doc->createXPointer(U"/FictionBook/stylesheet").getText();
-        //        if ( !docstyle.empty() && m_doc->getDocFlag(DOC_FLAG_ENABLE_INTERNAL_STYLES) ) {
-        //            //m_doc->getStyleSheet()->parse(UnicodeToUtf8(docstyle).c_str());
-        //            m_doc->setStyleSheet( UnicodeToUtf8(docstyle).c_str(), false );
-        //        }
+            //        lString32 docstyle = m_doc->createXPointer(U"/FictionBook/stylesheet").getText();
+            //        if ( !docstyle.empty() && m_doc->getDocFlag(DOC_FLAG_ENABLE_INTERNAL_STYLES) ) {
+            //            //m_doc->getStyleSheet()->parse(UnicodeToUtf8(docstyle).c_str());
+            //            m_doc->setStyleSheet( UnicodeToUtf8(docstyle).c_str(), false );
+            //        }
 
 #ifdef SAVE_COPY_OF_LOADED_DOCUMENT //def _DEBUG
-        LVStreamRef ostream = LVOpenFileStream("test_save_source.xml", LVOM_WRITE);
-        m_doc->saveToStream(ostream, "utf-16");
+            LVStreamRef ostream = LVOpenFileStream("test_save_source.xml", LVOM_WRITE);
+            m_doc->saveToStream(ostream, "utf-16");
 #endif
 #if 0
-        {
-            LVStreamRef ostream = LVOpenFileStream("test_save.fb2", LVOM_WRITE);
-            m_doc->saveToStream(ostream, "utf-16");
-            m_doc->getRootNode()->recurseElements(SaveBase64Objects);
-        }
+            {
+                LVStreamRef ostream = LVOpenFileStream("test_save.fb2", LVOM_WRITE);
+                m_doc->saveToStream(ostream, "utf-16");
+                m_doc->getRootNode()->recurseElements(SaveBase64Objects);
+            }
 #endif
 
-        //m_doc->getProps()->clear();
-        if (m_doc_props->getStringDef(DOC_PROP_TITLE, "").empty()) {
-            m_doc_props->setString(DOC_PROP_AUTHORS, extractDocAuthors(m_doc));
-            m_doc_props->setString(DOC_PROP_TITLE, extractDocTitle(m_doc));
-            if (txt_autodet_lang.length() > 0) // true only for doc_format_txt
-                m_doc_props->setString(DOC_PROP_LANGUAGE, txt_autodet_lang);
-            else
-                m_doc_props->setString(DOC_PROP_LANGUAGE, extractDocLanguage(m_doc));
-            m_doc_props->setString(DOC_PROP_KEYWORDS, extractDocKeywords(m_doc));
-            m_doc_props->setString(DOC_PROP_DESCRIPTION, extractDocDescription(m_doc));
-            int seriesNumber = -1;
-            lString32 seriesName = extractDocSeries(m_doc, &seriesNumber);
-            m_doc_props->setString(DOC_PROP_SERIES_NAME, seriesName);
-            m_doc_props->setString(DOC_PROP_SERIES_NUMBER, seriesNumber > 0 ? lString32::itoa(seriesNumber) : lString32::empty_str);
+            //m_doc->getProps()->clear();
+            if (m_doc_props->getStringDef(DOC_PROP_TITLE, "").empty()) {
+                m_doc_props->setString(DOC_PROP_AUTHORS, extractDocAuthors(m_doc));
+                m_doc_props->setString(DOC_PROP_TITLE, extractDocTitle(m_doc));
+                if (txt_autodet_lang.length() > 0) // true only for doc_format_txt
+                    m_doc_props->setString(DOC_PROP_LANGUAGE, txt_autodet_lang);
+                else
+                    m_doc_props->setString(DOC_PROP_LANGUAGE, extractDocLanguage(m_doc));
+                m_doc_props->setString(DOC_PROP_KEYWORDS, extractDocKeywords(m_doc));
+                m_doc_props->setString(DOC_PROP_DESCRIPTION, extractDocDescription(m_doc));
+                int seriesNumber = -1;
+                lString32 seriesName = extractDocSeries(m_doc, &seriesNumber);
+                m_doc_props->setString(DOC_PROP_SERIES_NAME, seriesName);
+                m_doc_props->setString(DOC_PROP_SERIES_NUMBER, seriesNumber > 0 ? lString32::itoa(seriesNumber) : lString32::empty_str);
+            }
         }
+    }
+    if (failed) {
+        // We can call createDefaultDocument() only after all write filters have been destroyed
+        //  since it's create new m_doc
+        setDocFormat(doc_format_none);
+        createDefaultDocument(failReason, cs32("Cannot open document"));
+        return false;
     }
     //m_doc->persist();
 
