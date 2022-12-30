@@ -260,7 +260,7 @@ TEST_F(DocParseTests, ParseHTMLRubyElementsEnhanced) {
     CRLog::info("==================================");
 }
 
-#if USE_CMARK == 1
+#if (USE_CMARK == 1) || (USE_CMARK_GFM == 1)
 TEST_F(DocParseTests, ParseSimpleMD) {
     CRLog::info("======================");
     CRLog::info("Starting ParseSimpleMD");
@@ -279,7 +279,11 @@ TEST_F(DocParseTests, ParseSimpleMD) {
     ASSERT_TRUE(dumpXML("doc-dump.xml"));
 
     // compare with reference
+#if USE_CMARK == 1
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoTextFiles("doc-dump.xml", DOCPARSE_REFERENCE_DIR "simple-md-cmark.xml.gz"));
+#elif USE_CMARK_GFM == 1
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoTextFiles("doc-dump.xml", DOCPARSE_REFERENCE_DIR "simple-md-cmark-gfm.xml.gz"));
+#endif
 
     CRLog::info("Finished ParseSimpleMD");
     CRLog::info("======================");

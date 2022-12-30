@@ -20,7 +20,7 @@
 
 #include "mdfmt.h"
 
-#if USE_CMARK == 1
+#if (USE_CMARK == 1) || (USE_CMARK_GFM == 1)
 
 #include <ldomdocument.h>
 #include <lvdocviewcallback.h>
@@ -30,7 +30,13 @@
 #include "lvstream/lvmemorystream.h"
 #include "lvtinydom/ldomdocumentwriter.h"
 
+#if USE_CMARK == 1
 #include <cmark.h>
+#elif USE_CMARK_GFM == 1
+#include <cmark-gfm.h>
+#include <cmark-gfm-core-extensions.h>
+#include <parser.h>
+#endif
 #include <string.h>
 #include <crlog.h>
 
@@ -69,6 +75,24 @@ bool ImportMarkdownDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCall
                         CMARK_OPT_UNSAFE;         // Render raw HTML and unsafe links
     cmark_node* document = NULL;
     cmark_parser* parser = cmark_parser_new(cmark_options);
+#if USE_CMARK_GFM == 1
+    cmark_gfm_core_extensions_ensure_registered();
+    static const char* cmark_gfm_ext_names[] = {
+        "strikethrough",
+        "autolink",
+        "table",
+        "tagfilter",
+        "tasklist",
+        NULL
+    };
+    cmark_syntax_extension* extension;
+    for (const char** ext_name = &cmark_gfm_ext_names[0]; NULL != *ext_name; ext_name++) {
+        extension = cmark_find_syntax_extension(*ext_name);
+        if (NULL != extension) {
+            cmark_parser_attach_syntax_extension(parser, extension);
+        }
+    }
+#endif
     // Read stream & feed to parser
     char buffer[TEXT_PARSER_CHUNK_SIZE];
     lvsize_t bytesRead = 0;
@@ -79,9 +103,13 @@ bool ImportMarkdownDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCall
             break;
     }
     document = cmark_parser_finish(parser);
-    cmark_parser_free(parser);
     // convert to html
+#if USE_CMARK_GFM == 1
+    char* result = cmark_render_html(document, cmark_options, parser->syntax_extensions);
+#else
     char* result = cmark_render_html(document, cmark_options);
+#endif
+    cmark_parser_free(parser);
     cmark_node_free(document);
     // Write document content to stream to parse them
     lvsize_t result_len = strlen(result);
@@ -113,4 +141,4 @@ bool ImportMarkdownDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCall
     return res;
 }
 
-#endif // USE_CMARK == 1
+#endif // (USE_CMARK == 1) || (USE_CMARK_GFM == 1)
