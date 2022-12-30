@@ -4571,7 +4571,7 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
             if (m_callback)
                 m_callback->OnLoadFileFormatDetected(doc_format_md);
             updateDocStyleSheet();
-            bool res = ImportMarkdownDocument(m_stream, m_doc, m_callback, this);
+            bool res = ImportMarkdownDocument(m_stream, fn, m_doc, m_callback, this);
             if (!res) {
                 setDocFormat(doc_format_none);
                 createDefaultDocument(cs32("ERROR: Error reading Markdown format"), cs32("Cannot open document"));

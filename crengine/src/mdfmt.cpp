@@ -24,6 +24,8 @@
 
 #include <ldomdocument.h>
 #include <lvdocviewcallback.h>
+#include <lvdocprops.h>
+#include <lvstreamutils.h>
 
 #include "lvxml/lvtextparser.h"
 #include "lvxml/lvhtmlparser.h"
@@ -42,9 +44,6 @@
 
 #define TEXT_PARSER_CHUNK_SIZE 16384
 
-static const char md_gen_preamble[] = "<html><head></head><body>";
-static const char md_gen_tail[] = "</body></html>";
-
 bool DetectMarkdownFormat(LVStreamRef stream, const lString32& fileName) {
     // Check file extension
     lString32 nm = fileName;
@@ -62,7 +61,7 @@ bool DetectMarkdownFormat(LVStreamRef stream, const lString32& fileName) {
     return res;
 }
 
-bool ImportMarkdownDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback) {
+bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback) {
     if (doc->openFromCache(formatCallback)) {
         if (progressCallback) {
             progressCallback->OnLoadFileEnd();
@@ -113,22 +112,25 @@ bool ImportMarkdownDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCall
     cmark_node_free(document);
     // Write document content to stream to parse them
     lvsize_t result_len = strlen(result);
+    lString32 title = LVExtractFilenameWithoutExtension(fileName);
+    lString8 gen_preamble = cs8("<html><head><title>") + UnicodeToUtf8(title) + cs8("</title></head><body>");
+    lString8 gen_tail = cs8("</body></html>");
     lvsize_t dw;
     LVMemoryStream* memStream = new LVMemoryStream;
     LVStreamRef memRef = LVStreamRef(memStream);
     res = LVERR_OK == memStream->Create();
     if (res)
-        res = LVERR_OK == memStream->Write(md_gen_preamble, sizeof(md_gen_preamble), &dw);
+        res = LVERR_OK == memStream->Write(gen_preamble.c_str(), gen_preamble.length(), &dw);
     if (res)
-        res = dw == sizeof(md_gen_preamble);
+        res = dw == gen_preamble.length();
     if (res)
         res = LVERR_OK == memStream->Write(result, result_len, &dw);
     if (res)
         res = dw == result_len;
     if (res)
-        res = LVERR_OK == memStream->Write(md_gen_tail, sizeof(md_gen_tail), &dw);
+        res = LVERR_OK == memStream->Write(gen_tail.c_str(), gen_tail.length(), &dw);
     if (res)
-        res = dw == sizeof(md_gen_tail);
+        res = dw == gen_tail.length();
     // html result is no longer needed
     free(result);
     if (res) {
@@ -137,6 +139,7 @@ bool ImportMarkdownDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCall
         LVHTMLParser parser(memRef, &writer);
         parser.setProgressCallback(progressCallback);
         res = parser.CheckFormat() && parser.Parse();
+        doc->getProps()->setString(DOC_PROP_TITLE, title);
     }
     return res;
 }

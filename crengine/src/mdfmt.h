@@ -35,7 +35,7 @@ class CacheLoadingCallback;
 #define MARKDOWN_MAX_FILE_SIZE 10 * 1024 * 1024 // 10M
 
 bool DetectMarkdownFormat(LVStreamRef stream, const lString32& fileName);
-bool ImportMarkdownDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback);
+bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback);
 
 #endif // (USE_CMARK == 1) || (USE_CMARK_GFM == 1)
 

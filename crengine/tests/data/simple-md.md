@@ -63,6 +63,8 @@ e<sup>x</sup> x<sub>i</sub>
 my $x ~= s/^([0-9]+).*$/\1/;
 ```
 
+In some text `inline code foo bar()` line tail.
+
 Users homepage: <https://www.autolink.com/>
 
 Users homepage2: https://www.autolink2.com/

@@ -269,7 +269,7 @@ TEST_F(DocParseTests, ParseSimpleMD) {
     // open document & render into drawbuf
     //ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-md.md")); // load document
     ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-md.md")); // load document
-    ASSERT_TRUE(setCSS("htm.css"));
+    ASSERT_TRUE(setCSS("markdown.css"));
 
     // render document
     m_view->requestRender();

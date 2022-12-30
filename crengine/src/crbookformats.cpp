@@ -1,7 +1,7 @@
 /***************************************************************************
  *   crengine-ng                                                           *
  *   Copyright (C) 2013 Vadim Lopatin <coolreader.org@gmail.com>           *
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020,2022 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -81,7 +81,7 @@ lString8 LVDocFormatCssFileName(int fmt) {
         case doc_format_odt:
             return lString8("odt.css");
         case doc_format_md:
-            return lString8("htm.css");
+            return lString8("markdown.css");
         default:
             return lString8("txt.css");
     }
