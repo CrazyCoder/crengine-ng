@@ -260,6 +260,32 @@ TEST_F(DocParseTests, ParseHTMLRubyElementsEnhanced) {
     CRLog::info("==================================");
 }
 
+#if USE_CMARK == 1
+TEST_F(DocParseTests, ParseSimpleMD) {
+    CRLog::info("======================");
+    CRLog::info("Starting ParseSimpleMD");
+    ASSERT_TRUE(m_initOK);
+
+    // open document & render into drawbuf
+    //ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-md.md")); // load document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-md.md")); // load document
+    ASSERT_TRUE(setCSS("htm.css"));
+
+    // render document
+    m_view->requestRender();
+    m_view->checkRender();
+
+    // Save dump
+    ASSERT_TRUE(dumpXML("doc-dump.xml"));
+
+    // compare with reference
+    EXPECT_TRUE(crengine_ng::unittesting::compareTwoTextFiles("doc-dump.xml", DOCPARSE_REFERENCE_DIR "simple-md-cmark.xml.gz"));
+
+    CRLog::info("Finished ParseSimpleMD");
+    CRLog::info("======================");
+}
+#endif
+
 TEST_F(DocParseTests, ParseSimpleODT) {
     // KNOWN ISSUES:
     //   Not implemented:

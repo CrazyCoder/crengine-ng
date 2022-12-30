@@ -1,8 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2010,2011,2013 Vadim Lopatin <coolreader.org@gmail.com> *
- *   Copyright (C) 2019,2020 Konstantin Potapov <pkbo@users.sourceforge.net>
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -20,35 +18,25 @@
  *   MA 02110-1301, USA.                                                   *
  ***************************************************************************/
 
-#ifndef CRBOOKFORMATS_H
-#define CRBOOKFORMATS_H
+#ifndef __MDFMT_H_INCLUDED__
+#define __MDFMT_H_INCLUDED__
 
+#include <crsetup.h>
+
+#if USE_CMARK == 1
+
+#include <lvcontainer.h>
 #include <lvstring.h>
 
-/// source document formats
-typedef enum
-{
-    doc_format_none,
-    doc_format_fb2,
-    doc_format_fb3,
-    doc_format_txt,
-    doc_format_rtf,
-    doc_format_epub,
-    doc_format_html,
-    doc_format_txt_bookmark, // coolreader TXT format bookmark
-    doc_format_chm,
-    doc_format_doc,
-    doc_format_docx,
-    doc_format_pdb,
-    doc_format_odt,
-    doc_format_md,
-    doc_format_max = doc_format_md
-    // don't forget update getDocFormatName() when changing this enum
-    // Add new types of formats only at the end of this enum to save the correct format number in the history file/database!
-} doc_format_t;
+class ldomDocument;
+class LVDocViewCallback;
+class CacheLoadingCallback;
 
-lString32 LVDocFormatName(int fmt);
-int LVDocFormatFromExtension(lString32& pathName);
-lString8 LVDocFormatCssFileName(int fmt);
+#define MARKDOWN_MAX_FILE_SIZE 10 * 1024 * 1024 // 10M
 
-#endif // CRBOOKFORMATS_H
+bool DetectMarkdownFormat(LVStreamRef stream, const lString32& fileName);
+bool ImportMarkdownDocument(LVStreamRef stream, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback);
+
+#endif // USE_CMARK == 1
+
+#endif // __MDFMT_H_INCLUDED__

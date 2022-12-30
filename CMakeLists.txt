@@ -365,6 +365,7 @@ if (USE_CMARK)
   message("Will build cmark library")
   add_subdirectory(thirdparty/cmark)
   list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/cmark/src)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/thirdparty/cmark/src)
   list(APPEND PRIVATE_LINK_LIBRARIES cre_cmark)
 endif(USE_CMARK)
 

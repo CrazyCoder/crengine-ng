@@ -47,6 +47,8 @@ lString32 LVDocFormatName(int fmt) {
             return lString32("PDB");
         case doc_format_odt:
             return lString32("ODT");
+        case doc_format_md:
+            return lString32("MD");
         default:
             return lString32("?");
     }
@@ -78,6 +80,8 @@ lString8 LVDocFormatCssFileName(int fmt) {
             return lString8("htm.css");
         case doc_format_odt:
             return lString8("odt.css");
+        case doc_format_md:
+            return lString8("htm.css");
         default:
             return lString8("txt.css");
     }
@@ -108,5 +112,7 @@ int LVDocFormatFromExtension(lString32& pathName) {
         return doc_format_pdb;
     if (pathName.endsWith(".odt"))
         return doc_format_odt;
+    if (pathName.endsWith(".md"))
+        return doc_format_md;
     return doc_format_none;
 }

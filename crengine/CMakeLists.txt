@@ -127,6 +127,7 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom/ldomdocumentfragmentwriter.cpp
     src/lvtinydom/ldomwordexlist.cpp
     src/lvtinydom/lstridmap.cpp
+    src/mdfmt.cpp
 )
 
 if(USE_LOCALE_DATA)
