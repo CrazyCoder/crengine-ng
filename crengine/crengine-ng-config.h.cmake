@@ -22,6 +22,7 @@
 #cmakedefine01 USE_FONTCONFIG
 #cmakedefine01 USE_UTF8PROC
 #cmakedefine01 USE_CMARK
+#cmakedefine01 USE_CMARK_GFM
 #cmakedefine01 USE_NANOSVG
 #cmakedefine01 USE_CHM
 #cmakedefine01 USE_ANTIWORD
