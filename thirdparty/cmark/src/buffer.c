@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <limits.h>
 
-#include "config.h"
+#include "cmark-config.h"
 #include "cmark_ctype.h"
 #include "buffer.h"
 

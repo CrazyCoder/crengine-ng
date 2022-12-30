@@ -58,6 +58,7 @@ option(USE_CHM "Enable chm support via built-in chmlib" ON)
 option(USE_ANTIWORD "Enable doc support via built-in antiword" ON)
 option(USE_FONTCONFIG "Use FontConfig to enumerate available fonts" ON)
 option(USE_SHASUM "Use sources from RFC6234 to calculate SHA sums" OFF)
+option(USE_CMARK "Enable Markdown support via built-in cmark" OFF)
 
 # other
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
@@ -358,6 +359,14 @@ if (USE_SHASUM)
   list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/rfc6234-shas)
   list(APPEND PRIVATE_LINK_LIBRARIES cre_rfc6234-shas)
 endif()
+
+# built-in cmark
+if (USE_CMARK)
+  message("Will build cmark library")
+  add_subdirectory(thirdparty/cmark)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/cmark/src)
+  list(APPEND PRIVATE_LINK_LIBRARIES cre_cmark)
+endif(USE_CMARK)
 
 # check usage consistency
 if (NOT USE_FREETYPE)

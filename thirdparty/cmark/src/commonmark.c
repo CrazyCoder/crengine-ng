@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <assert.h>
 
-#include "config.h"
+#include "cmark-config.h"
 #include "cmark.h"
 #include "node.h"
 #include "buffer.h"

@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "cmark_ctype.h"
-#include "config.h"
+#include "cmark-config.h"
 #include "node.h"
 #include "parser.h"
 #include "references.h"

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include "config.h"
+#include "cmark-config.h"
 #include "cmark.h"
 #include "node.h"
 
