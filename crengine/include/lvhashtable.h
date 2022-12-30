@@ -96,7 +96,7 @@ public:
                 , ptr(v.ptr) {
         }
         pair* next() {
-            if (index >= _tbl._size)
+            if (index > _tbl._size)
                 return NULL;
             if (ptr)
                 ptr = ptr->next;
