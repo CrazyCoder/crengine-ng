@@ -58,6 +58,8 @@ option(USE_CHM "Enable chm support via built-in chmlib" ON)
 option(USE_ANTIWORD "Enable doc support via built-in antiword" ON)
 option(USE_FONTCONFIG "Use FontConfig to enumerate available fonts" ON)
 option(USE_SHASUM "Use sources from RFC6234 to calculate SHA sums" OFF)
+option(USE_CMARK "Enable Markdown support via built-in cmark" OFF)
+option(USE_CMARK_GFM "Enable Markdown support via built-in cmark-gfm" ON)
 
 # other
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
@@ -87,6 +89,10 @@ endif()
 if(NOT CRE_BUILD_SHARED AND NOT CRE_BUILD_STATIC)
   message(FATAL_ERROR "Nothing to build...")
 endif(NOT CRE_BUILD_SHARED AND NOT CRE_BUILD_STATIC)
+
+if(USE_CMARK AND USE_CMARK_GFM)
+  message(FATAL_ERROR "Choose only one, either USE_CMARK or USE_CMARK_GFM")
+endif(USE_CMARK AND USE_CMARK_GFM)
 
 set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG}     -D_DEBUG=1 -DDEBUG=1")
 set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -D_DEBUG=1 -DDEBUG=1")
@@ -358,6 +364,26 @@ if (USE_SHASUM)
   list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/rfc6234-shas)
   list(APPEND PRIVATE_LINK_LIBRARIES cre_rfc6234-shas)
 endif()
+
+# built-in cmark
+if (USE_CMARK)
+  message("Will build cmark library")
+  add_subdirectory(thirdparty/cmark)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/cmark/src)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/thirdparty/cmark/src)
+  list(APPEND PRIVATE_LINK_LIBRARIES cre_cmark)
+endif(USE_CMARK)
+
+# built-in cmark-gfm
+if (USE_CMARK_GFM)
+  message("Will build cmark-gfm library")
+  add_subdirectory(thirdparty/cmark-gfm)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/cmark-gfm/src)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/thirdparty/cmark-gfm/src)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/cmark-gfm/extensions)
+  list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/thirdparty/cmark-gfm/extensions)
+  list(APPEND PRIVATE_LINK_LIBRARIES cre_cmark-gfm cre_cmark-gfm-extensions)
+endif(USE_CMARK)
 
 # check usage consistency
 if (NOT USE_FREETYPE)

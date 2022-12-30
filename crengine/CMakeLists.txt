@@ -127,6 +127,7 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom/ldomdocumentfragmentwriter.cpp
     src/lvtinydom/ldomwordexlist.cpp
     src/lvtinydom/lstridmap.cpp
+    src/mdfmt.cpp
 )
 
 if(USE_LOCALE_DATA)
@@ -228,6 +229,13 @@ endif()
 list(APPEND cre_install_libs cre_qimagescale)
 if (USE_SHASUM)
   list(APPEND cre_install_libs cre_rfc6234-shas)
+endif()
+if (USE_CMARK)
+  list(APPEND cre_install_libs cre_cmark)
+endif()
+if (USE_CMARK_GFM)
+  list(APPEND cre_install_libs cre_cmark-gfm)
+  list(APPEND cre_install_libs cre_cmark-gfm-extensions)
 endif()
 
 if(BUILD_TOOLS)

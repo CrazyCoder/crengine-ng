@@ -68,6 +68,7 @@
 #include "fb3fmt.h"
 #include "docxfmt.h"
 #include "odtfmt.h"
+#include "mdfmt.h"
 
 /// to show page bounds rectangles
 //#define SHOW_PAGE_RECT
@@ -4302,10 +4303,9 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
 
     setRenderProps(0, 0); // to allow apply styles and rend method while loading
 
-    if (m_callback) {
-        m_callback->OnLoadFileStart(
-                m_doc_props->getStringDef(DOC_PROP_FILE_NAME, ""));
-    }
+    lString32 fn = m_doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    if (m_callback)
+        m_callback->OnLoadFileStart(fn);
     LVLock lock(getMutex());
 
     m_doc_props->setHex(DOC_PROP_FILE_CRC32, stream->getcrc32());
@@ -4561,6 +4561,37 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
         }
 #endif
 
+#if (USE_CMARK == 1) || (USE_CMARK_GFM == 1)
+        if (DetectMarkdownFormat(m_stream, fn)) {
+            CRLog::info("Markdown format detected");
+            createEmptyDocument();
+            m_doc->setProps(m_doc_props);
+            setRenderProps(0, 0);
+            setDocFormat(doc_format_md);
+            if (m_callback)
+                m_callback->OnLoadFileFormatDetected(doc_format_md);
+            updateDocStyleSheet();
+            bool res = ImportMarkdownDocument(m_stream, fn, m_doc, m_callback, this);
+            if (!res) {
+                setDocFormat(doc_format_none);
+                createDefaultDocument(cs32("ERROR: Error reading Markdown format"), cs32("Cannot open document"));
+                if (m_callback) {
+                    m_callback->OnLoadFileError(cs32("Error reading Markdown document"));
+                }
+                return false;
+            } else {
+                setRenderProps(0, 0);
+                REQUEST_RENDER("loadDocument")
+                if (m_callback) {
+                    m_callback->OnLoadFileEnd();
+                    //m_doc->compact();
+                    m_doc->dumpStatistics();
+                }
+                return true;
+            }
+        }
+#endif
+
         bool repeat_recursively = false;
         m_arc = LVOpenArchieve(m_stream);
         if (!m_arc.isNull()) {
@@ -4607,6 +4638,8 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                             eligibleCount++;
                         } else if (s.endsWith(".fbd")) {
                             eligibleCount++;
+                        } else if (s.endsWith(".md")) {
+                            eligibleCount++;
                         } else {
                             nameIsOk = false;
                         }
@@ -4622,7 +4655,7 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
             if (!fn.empty()) {
                 lString32 s = fn;
                 s = s.lowercase();
-                bool set_codebase = (s.endsWith(".htm") || s.endsWith(".html"));
+                bool set_codebase = (s.endsWith(".htm") || s.endsWith(".html") || s.endsWith(".md"));
                 if (s.endsWith(".fb3") || s.endsWith(".epub") || s.endsWith(".doc") ||
                     s.endsWith(".docx") || s.endsWith(".odt"))
                     repeat_recursively = true;
@@ -4630,8 +4663,10 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                 if (!m_stream.isNull()) {
                     CRLog::debug("Opened archive stream %s", LCSTR(fn));
                     m_doc_props->setString(DOC_PROP_FILE_NAME, fn);
-                    if (set_codebase)
+                    if (set_codebase) {
+                        // Set code base for external resources
                         m_doc_props->setString(DOC_PROP_CODE_BASE, LVExtractPath(fn, false));
+                    }
                     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa((int)m_stream->GetSize()));
                     m_doc_props->setHex(DOC_PROP_FILE_CRC32, m_stream->getcrc32());
                     lString8 hash = m_stream->getsha256();
@@ -4731,6 +4766,8 @@ const lChar32* getDocFormatName(doc_format_t fmt) {
             return U"DOCX";
         case doc_format_odt:
             return U"OpenDocument (ODT)";
+        case doc_format_md:
+            return U"Markdown";
         default:
             return U"Unknown format";
     }

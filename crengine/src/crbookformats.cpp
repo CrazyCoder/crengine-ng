@@ -1,7 +1,7 @@
 /***************************************************************************
  *   crengine-ng                                                           *
  *   Copyright (C) 2013 Vadim Lopatin <coolreader.org@gmail.com>           *
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020,2022 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -47,6 +47,8 @@ lString32 LVDocFormatName(int fmt) {
             return lString32("PDB");
         case doc_format_odt:
             return lString32("ODT");
+        case doc_format_md:
+            return lString32("MD");
         default:
             return lString32("?");
     }
@@ -78,6 +80,8 @@ lString8 LVDocFormatCssFileName(int fmt) {
             return lString8("htm.css");
         case doc_format_odt:
             return lString8("odt.css");
+        case doc_format_md:
+            return lString8("markdown.css");
         default:
             return lString8("txt.css");
     }
@@ -108,5 +112,7 @@ int LVDocFormatFromExtension(lString32& pathName) {
         return doc_format_pdb;
     if (pathName.endsWith(".odt"))
         return doc_format_odt;
+    if (pathName.endsWith(".md"))
+        return doc_format_md;
     return doc_format_none;
 }

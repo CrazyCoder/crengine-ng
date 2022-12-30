@@ -110,6 +110,8 @@ The "thirdparty" directory contains some patched libraries with their own licens
  * nanosvg - [ZLib](https://directory.fsf.org/wiki/License:Zlib)
  * qimagescale - [imlib2](https://directory.fsf.org/wiki/License:Imlib2), [LGPL-3](https://www.gnu.org/licenses/lgpl-3.0.html), [GPL-2.0+](https://www.gnu.org/licenses/gpl-2.0.html)
  * rfc6234-shas - [BSD-3-Clause](https://directory.fsf.org/wiki/License:BSD-3-Clause)
+ * cmark - [BSD-2-Clause](https://directory.fsf.org/wiki/License:BSD-2-Clause)
+ * cmark-gfm - [BSD-2-Clause](https://directory.fsf.org/wiki/License:BSD-2-Clause)
 
 Other third party can be found in the sources and resources:
  * xxhash - [BSD-2-Clause](https://directory.fsf.org/wiki/License:BSD-2-Clause)

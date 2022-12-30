@@ -2,7 +2,7 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2010,2011,2013 Vadim Lopatin <coolreader.org@gmail.com> *
  *   Copyright (C) 2019,2020 Konstantin Potapov <pkbo@users.sourceforge.net>
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020,2022 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -41,7 +41,8 @@ typedef enum
     doc_format_docx,
     doc_format_pdb,
     doc_format_odt,
-    doc_format_max = doc_format_odt
+    doc_format_md,
+    doc_format_max = doc_format_md
     // don't forget update getDocFormatName() when changing this enum
     // Add new types of formats only at the end of this enum to save the correct format number in the history file/database!
 } doc_format_t;
