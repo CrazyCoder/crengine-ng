@@ -7,5 +7,7 @@ set(CMARK_GFM_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJEC
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+add_definitions(-DCMARK_GFM_STATIC_DEFINE)
+
 add_subdirectory(src)
 add_subdirectory(extensions)

@@ -5,4 +5,6 @@ set(CMARK_VERSION_PATCH 2)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+add_definitions(-DCMARK_STATIC_DEFINE)
+
 add_subdirectory(src)
