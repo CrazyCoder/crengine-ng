@@ -140,6 +140,7 @@ bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomD
         parser.setProgressCallback(progressCallback);
         res = parser.CheckFormat() && parser.Parse();
         doc->getProps()->setString(DOC_PROP_TITLE, title);
+        doc->buildTocFromHeadings();
     }
     return res;
 }
