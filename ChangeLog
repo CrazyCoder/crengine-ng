@@ -1,3 +1,51 @@
+2022-12-31  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.4 released.
+	==========================
+
+	Tag sources with `0.9.4'.
+
+	  Main changes:
+	* Markdown rendering is implemented using the cmark or cmark-gfm library.
+	  To select an implementation, use either the USE_CMARK or USE_CMARK_GFM cmake option.
+	  USE_CMARK to use the built-in cmark (https://github.com/commonmark/cmark),
+	  USE_CMARK_GFM to use the built-in cmark-gfm (https://github.com/github/cmark-gfm).
+	* An old memory leak in the implementation of hash tables has been found and fixed.
+	* allowed to open '*.fb3', '*.epub', '*.doc', '*.docx', '*.odt' inside zip archives.
+
+	See below for other changes.
+
+2022-12-31  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVHashTable::iterator: memory leak fixed
+
+2022-12-31  Aleksey Chernov  <valexlin@gmail.com>
+
+	Markdown support: use 'markdown.css' instead of 'htm.css', set document title by filename.
+
+2022-12-30  Aleksey Chernov  <valexlin@gmail.com>
+
+	Markdown rendering: allow to use either cmark or cmark-gfm
+
+	Add local cmark-gfm (thirdparty/cmark-gfm) to build system.
+
+	Markdown rendering implemented using cmark library.
+
+	Add local cmark (thirdparty/cmark) to build system.
+
+	Added new thirdparty 'cmark-gfm'. cmark-gfm is an extended version of the C reference implementation of CommonMark, a rationalized version of Markdown syntax with a spec. Origin: https://github.com/github/cmark-gfm Last commit: Thu 27 Oct 2022 13:36:03 AWST
+
+	Added new thirdparty 'cmark'. 'cmark' is the C reference implementation of CommonMark, a rationalized version of Markdown syntax with a spec. Origin: https://github.com/commonmark/cmark.git Last commit: Thu Nov 3 08:57:23 2022 -0700
+
+2022-12-27  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update crengine/src/lvstring.cpp: clang compatibility
+
+2022-12-27  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView::loadDocumentInt(): allow to open '*.fb3', '*.epub', '*.doc', '*.docx', '*.odt' inside zip-archives.
+
+
 2022-12-25  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.3 released.
