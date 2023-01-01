@@ -59,6 +59,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #ifdef CHM_DEBUG
 #include <stdio.h>
 #endif
@@ -70,13 +71,8 @@
 #ifdef WIN32
 #include <windows.h>
 #include <malloc.h>
-#ifdef _WIN32_WCE
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
-#else
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#endif
 #else
 /* basic Linux system includes */
 #define _XOPEN_SOURCE 500

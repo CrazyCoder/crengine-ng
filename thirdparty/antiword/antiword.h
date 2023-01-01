@@ -31,6 +31,9 @@
 #else
 #include <sys/types.h>
 #endif /* __riscos */
+#include <string.h>
+#include <strings.h>
+
 #include "wordconst.h"
 #include "wordtypes.h"
 #include "fail.h"
