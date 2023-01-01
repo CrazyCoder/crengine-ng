@@ -71,6 +71,8 @@ This library can use other libraries (links to licenses point to official websit
    * USE_CHM - Enable chm support via built-in chmlib; default ON
    * USE_ANTIWORD - Enable doc support via built-in antiword; default ON
    * USE_SHASUM - Use sources from RFC6234 to calculate SHA sums (engine will create fingerprint for the document opened); default OFF
+   * USE_CMARK - Enable Markdown support via built-in cmark; default OFF
+   * USE_CMARK_GFM - Enable Markdown support via built-in cmark-gfm; default ON
 
    To use external dependencies:
 
