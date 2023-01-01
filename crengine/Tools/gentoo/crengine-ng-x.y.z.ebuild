@@ -49,6 +49,8 @@ src_configure() {
 		-DUSE_CHM=$(usex chm)
 		-DUSE_FONTCONFIG=ON
 		-DUSE_SHASUM=OFF
+		-DUSE_CMARK=OFF
+		-DUSE_CMARK_GFM=ON
 	)
 	cmake_src_configure
 }
