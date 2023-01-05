@@ -2,7 +2,7 @@
 crengine-ng is cross-platform library designed to implement text viewers and e-book readers.
 
 ## Description
-Supported document formats: fb2, fb3, epub (without DRM), rtf, doc, docx, odt, htm, chm, pdb, mobi (without DRM), txt, trc, prc.
+Supported document formats: fb2, fb3, epub (without DRM), rtf, doc, docx, odt, htm, Markdown, chm, pdb, mobi (without DRM), txt, trc, prc.
 
 In fact, this is a fork of the [CoolReader](https://github.com/buggins/coolreader) project.
 
