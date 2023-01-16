@@ -5,7 +5,7 @@
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
  *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2018-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -1169,6 +1169,11 @@ lUInt32 calcGlobalSettingsHash(int documentId, bool already_rendered) {
     hash = hash * 31 + (int)fontMan->GetHintingMode();
     hash = hash * 31 + LVRendGetBaseFontWeight();
     hash = hash * 31 + fontMan->GetFallbackFontFaces().getHash();
+    hash = hash * 31 + getGenericFontFamilyFace(css_ff_serif).getHash();
+    hash = hash * 31 + getGenericFontFamilyFace(css_ff_sans_serif).getHash();
+    hash = hash * 31 + getGenericFontFamilyFace(css_ff_cursive).getHash();
+    hash = hash * 31 + getGenericFontFamilyFace(css_ff_fantasy).getHash();
+    hash = hash * 31 + getGenericFontFamilyFace(css_ff_monospace).getHash();
     hash = hash * 31 + gRenderDPI;
     // If not yet rendered (initial loading with XML parsing), we can
     // ignore some global flags that have not yet produced any effect,

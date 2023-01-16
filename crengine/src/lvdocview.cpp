@@ -16,7 +16,7 @@
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
  *   Copyright (C) 2021 zwim <martin.zwicknagl@kirchbichl.net>             *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2018-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -6501,8 +6501,30 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->setHexDef(PROP_STATUS_FONT_COLOR, 0xFF000000);
 
     lString8 defFontFace;
-    static const char* goodFonts[] = { "DejaVu Sans", "FreeSans",
-                                       "Noto Sans", "Liberation Sans", "Arial", "Verdana", NULL };
+    lString8 defSerifFontFace;
+    lString8 defSansFontFace;
+    lString8 defCursiveFontFace;
+    lString8 defFantasyFontFace;
+    lString8 defMonoFontFace;
+    lString8 defStatusFontFace(DEFAULT_STATUS_FONT_NAME);
+    static const char* goodFonts[] = { "DejaVu Sans", "FreeSans", "Noto Sans",
+                                       "Liberation Sans", "Arial", "Verdana", NULL };
+    static const char* serifFonts[] = { "Noto Serif", "FreeSerif", "DejaVu Serif",
+                                        "Liberation Serif", "Droid Serif", "Georgia", "Times",
+                                        "Times New Roman", "Marion", "PT Serif", "Palatino",
+                                        "STSong", NULL };
+    static const char* sansFonts[] = { "Noto Sans", "FreeSans", "DejaVu Sans", "Droid Sans",
+                                       "Liberation Sans", "Roboto", "Helvetica", "PT Sans",
+                                       "Arial", "Verdana", "Tahoma", NULL };
+    static const char* cursiveFonts[] = { "Brush Script MT", "Brush Script Std", "Lucida Calligraphy",
+                                          "Lucida Handwriting", "Dancing Script", "Dancing Script OT",
+                                          "Corsiva", "Zapfino", "Pacifico", "Apple Chancery", "cursive", NULL };
+    static const char* fantasyFonts[] = { "Papyrus", "Herculanum", "Party LET", "Curlz MT",
+                                          "Harrington", "Comic Sans MS", "fantasy", NULL };
+    static const char* monoFonts[] = { "Noto Mono", "FreeMono", "Courier New", "Andale Mono",
+                                       "Liberation Mono", "Ayuthaya", "DejaVu Sans Mono",
+                                       "Droid Sans Mono", "Fira Code", "Inconsolata", "Monaco",
+                                       "Monospaced", "Source Code Pro", "PT Mono", "Menlo", NULL };
     static const char* fallbackFonts = "Noto Color Emoji; Droid Sans Fallback; Noto Sans CJK SC; Noto Sans Arabic UI; Noto Sans Devanagari UI; FreeSans; FreeSerif; Noto Serif; Noto Sans; Arial Unicode MS";
     for (int i = 0; goodFonts[i]; i++) {
         if (list.contains(lString32(goodFonts[i]))) {
@@ -6510,11 +6532,55 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
             break;
         }
     }
+    for (int i = 0; serifFonts[i]; i++) {
+        if (list.contains(lString32(serifFonts[i]))) {
+            defSerifFontFace = lString8(serifFonts[i]);
+            break;
+        }
+    }
+    for (int i = 0; sansFonts[i]; i++) {
+        if (list.contains(lString32(sansFonts[i]))) {
+            defSansFontFace = lString8(sansFonts[i]);
+            break;
+        }
+    }
+    for (int i = 0; cursiveFonts[i]; i++) {
+        if (list.contains(lString32(cursiveFonts[i]))) {
+            defCursiveFontFace = lString8(cursiveFonts[i]);
+            break;
+        }
+    }
+    for (int i = 0; fantasyFonts[i]; i++) {
+        if (list.contains(lString32(fantasyFonts[i]))) {
+            defFantasyFontFace = lString8(fantasyFonts[i]);
+            break;
+        }
+    }
+    for (int i = 0; monoFonts[i]; i++) {
+        if (list.contains(lString32(monoFonts[i]))) {
+            defMonoFontFace = lString8(monoFonts[i]);
+            break;
+        }
+    }
     if (defFontFace.empty())
         defFontFace = UnicodeToUtf8(list[0]);
+    if (defSerifFontFace.empty())
+        defSerifFontFace = UnicodeToUtf8(list[0]);
+    if (defSansFontFace.empty())
+        defSansFontFace = UnicodeToUtf8(list[0]);
+    if (defCursiveFontFace.empty())
+        defCursiveFontFace = UnicodeToUtf8(list[0]);
+    if (defFantasyFontFace.empty())
+        defFantasyFontFace = UnicodeToUtf8(list[0]);
+    if (defMonoFontFace.empty())
+        defMonoFontFace = UnicodeToUtf8(list[0]);
 
-    lString8 defStatusFontFace(DEFAULT_STATUS_FONT_NAME);
     props->setStringDef(PROP_FONT_FACE, defFontFace.c_str());
+    props->setStringDef(PROP_GENERIC_SERIF_FONT_FACE, defSerifFontFace.c_str());
+    props->setStringDef(PROP_GENERIC_SANS_SERIF_FONT_FACE, defSansFontFace.c_str());
+    props->setStringDef(PROP_GENERIC_CURSIVE_FONT_FACE, defCursiveFontFace.c_str());
+    props->setStringDef(PROP_GENERIC_FANTASY_FONT_FACE, defFantasyFontFace.c_str());
+    props->setStringDef(PROP_GENERIC_MONOSPACE_FONT_FACE, defMonoFontFace.c_str());
     props->setStringDef(PROP_STATUS_FONT_FACE, defStatusFontFace.c_str());
     if (list.length() > 0 && !list.contains(props->getStringDef(PROP_FONT_FACE,
                                                                 defFontFace.c_str())))
@@ -6736,6 +6802,26 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
             value = Utf8ToUnicode(fontMan->GetFallbackFontFaces());
             if (UnicodeToUtf8(value) != oldFaces) {
                 REQUEST_RENDER("propsApply  fallback font faces")
+            }
+        } else if (name == PROP_GENERIC_SERIF_FONT_FACE) {
+            if (setGenericFontFamilyFace(css_ff_serif, UnicodeToUtf8(value))) {
+                REQUEST_RENDER("propsApply  generic serif font face")
+            }
+        } else if (name == PROP_GENERIC_SANS_SERIF_FONT_FACE) {
+            if (setGenericFontFamilyFace(css_ff_sans_serif, UnicodeToUtf8(value))) {
+                REQUEST_RENDER("propsApply  generic sans-serif font face")
+            }
+        } else if (name == PROP_GENERIC_CURSIVE_FONT_FACE) {
+            if (setGenericFontFamilyFace(css_ff_cursive, UnicodeToUtf8(value))) {
+                REQUEST_RENDER("propsApply  generic cursive font face")
+            }
+        } else if (name == PROP_GENERIC_FANTASY_FONT_FACE) {
+            if (setGenericFontFamilyFace(css_ff_fantasy, UnicodeToUtf8(value))) {
+                REQUEST_RENDER("propsApply  generic fantasy font face")
+            }
+        } else if (name == PROP_GENERIC_MONOSPACE_FONT_FACE) {
+            if (setGenericFontFamilyFace(css_ff_monospace, UnicodeToUtf8(value))) {
+                REQUEST_RENDER("propsApply  generic monospace font face")
             }
         } else if (name == PROP_STATUS_FONT_FACE) {
             setStatusFontFace(UnicodeToUtf8(value));

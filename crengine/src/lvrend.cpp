@@ -9,8 +9,8 @@
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
  *   Copyright (C) 2020 NiLuJe <ninuje@gmail.com>                          *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
- *   Copyright (C) 2020,2021 Aleksey Chernov <valexlin@gmail.com>          *
  *   Copyright (C) 2017-2022 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2020,2021,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -2334,7 +2334,67 @@ int LVRendGetBaseFontWeight() {
     return rend_font_base_weight;
 }
 
-LVFontRef getFont(ldomNode* node, css_style_rec_t* style, int documentId) {
+static lString8Collection s_generic_font_family_faces;
+static const unsigned int s_generic_font_families_count = 5;
+
+static inline void s_init_generic_font_family_faces() {
+    if (s_generic_font_family_faces.empty()) {
+        for (unsigned int i = 0; i < s_generic_font_families_count; i++) {
+            s_generic_font_family_faces.add("");
+        }
+    }
+}
+
+bool setGenericFontFamilyFace(css_font_family_t family, lString8 face) {
+    bool res = false;
+    int idx = -1;
+    switch (family) {
+        case css_ff_serif:
+        case css_ff_sans_serif:
+        case css_ff_cursive:
+        case css_ff_fantasy:
+        case css_ff_monospace:
+            idx = (int)(family - css_ff_serif);
+            break;
+        default:
+            // ignore all other
+            break;
+    }
+    if (idx >= 0) {
+        if (s_generic_font_family_faces.empty())
+            s_init_generic_font_family_faces();
+        if (s_generic_font_family_faces[idx] != face) {
+            s_generic_font_family_faces[idx] = face;
+            res = true;
+        }
+    }
+    return res;
+}
+
+lString8 getGenericFontFamilyFace(css_font_family_t family) {
+    int idx = -1;
+    switch (family) {
+        case css_ff_serif:
+        case css_ff_sans_serif:
+        case css_ff_cursive:
+        case css_ff_fantasy:
+        case css_ff_monospace:
+            idx = (int)(family - css_ff_serif);
+            break;
+        default:
+            // ignore all other
+            break;
+    }
+    if (idx >= 0) {
+        if (s_generic_font_family_faces.empty())
+            s_init_generic_font_family_faces();
+        s_generic_font_family_faces.reserve(idx + 1);
+        return s_generic_font_family_faces[idx];
+    }
+    return lString8();
+}
+
+LVFontRef getFont(ldomNode* node, const css_style_rec_t* style, int documentId) {
     int sz;
     if (style->font_size.type == css_val_em || style->font_size.type == css_val_ex ||
         style->font_size.type == css_val_ch || style->font_size.type == css_val_percent) {
@@ -2366,13 +2426,17 @@ LVFontRef getFont(ldomNode* node, css_style_rec_t* style, int documentId) {
         fw = 1;
     else if (fw > 999)
         fw = 999;
-    // printf("cssd_font_family: %d %s", style->font_family, style->font_name.c_str());
+    lString8 font_name = style->font_name;
+    if (!font_name.empty())
+        font_name += ",";
+    font_name += getGenericFontFamilyFace(style->font_family);
+    // printf("cssd_font_family: %d %s", style->font_family, font_name.c_str());
     LVFontRef fnt = fontMan->GetFont(
             sz,
             fw,
             style->font_style == css_fs_italic,
             style->font_family,
-            lString8(style->font_name.c_str()),
+            font_name,
             style->font_features.value, // (.type is always css_val_unspecified after setNodeStyle())
             documentId, true);          // useBias=true, so that our preferred font gets used
     return fnt;
