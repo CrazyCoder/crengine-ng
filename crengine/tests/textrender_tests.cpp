@@ -166,7 +166,7 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingNone) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,aa-none-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,aa-none-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -201,7 +201,7 @@ TEST_F(TextRenderTests, RenderTestsAntialiasingGray) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,aa-gray-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,aa-gray-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -280,7 +280,7 @@ TEST_F(TextRenderTests, RenderTestsLigaturesOff) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,ligatures-off-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,ligatures-off-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -315,7 +315,7 @@ TEST_F(TextRenderTests, RenderTestsLigaturesOn) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-full,ligatures-on-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-full,ligatures-on-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -352,7 +352,7 @@ TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOff) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,kerning-off-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("01-hinting-no,shaping-simple,kerning-off-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -389,7 +389,7 @@ TEST_F(TextRenderTests, RenderTestsShapingSimpleKerningOn) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,kerning-on-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("02-hinting-no,shaping-simple,kerning-on-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -426,7 +426,7 @@ TEST_F(TextRenderTests, RenderTestsShapingLightKerningOff) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-hinting-no,shaping-light,kerning-off-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("03-hinting-no,shaping-light,kerning-off-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -463,7 +463,7 @@ TEST_F(TextRenderTests, RenderTestsShapingLightKerningOn) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("04-hinting-no,shaping-light,kerning-on-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("04-hinting-no,shaping-light,kerning-on-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -502,7 +502,7 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOff) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("05-hinting-no,shaping-full,kerning-off-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("05-hinting-no,shaping-full,kerning-off-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -539,7 +539,7 @@ TEST_F(TextRenderTests, RenderTestsShapingFullKerningOn) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("06-hinting-no,shaping-full,kerning-on-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("06-hinting-no,shaping-full,kerning-on-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -576,7 +576,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_0_7) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-aa-gray,gamma-0_7-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("01-aa-gray,gamma-0_7-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -611,7 +611,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_0) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-aa-gray,gamma-1_0-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("02-aa-gray,gamma-1_0-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -646,7 +646,7 @@ TEST_F(TextRenderTests, RenderTestsAAGrayTextGamma_1_7) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-aa-gray,gamma-1_7-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("03-aa-gray,gamma-1_7-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -680,7 +680,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight100) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-roboto-synth-weight-100-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("01-roboto-synth-weight-100-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -714,7 +714,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight250) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-roboto-synth-weight-250-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("02-roboto-synth-weight-250-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -748,7 +748,7 @@ TEST_F(TextRenderTests, RenderTestsRealWeight400) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-roboto-real-weight-400-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("03-roboto-real-weight-400-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -782,7 +782,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight650) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("04-roboto-synth-weight-650-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("04-roboto-synth-weight-650-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -816,13 +816,49 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight900) {
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("05-roboto-synth-weight-900-diff.bmp", diffBuf.get());
+    //crengine_ng::unittesting::saveToBMP("05-roboto-synth-weight-900-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
 
     CRLog::info("Finished RenderTestsSynthWeight900");
     CRLog::info("==================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsGenericFontFamilies) {
+    CRLog::info("=======================================");
+    CRLog::info("Starting RenderTestsGenericFontFamilies");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
+    ASSERT_TRUE(setProperty(PROP_GENERIC_SERIF_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_GENERIC_SANS_SERIF_FONT_FACE, "FreeSans"));
+    ASSERT_TRUE(setProperty(PROP_GENERIC_MONOSPACE_FONT_FACE, "FreeMono"));
+
+    // open document & render into drawbuf
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "generic-font-families-test.html")); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    ASSERT_FALSE(image.isNull());
+    // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("generic-font-families-test.bmp", image->getDrawBufRef());
+
+    // open reference image
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-families/generic-font-families-test.png");
+    ASSERT_FALSE(refDrawBuf.isNull());
+
+    // calc difference drawbuf
+    LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
+    ASSERT_FALSE(diffBuf.isNull());
+    // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("generic-font-families-test-diff.bmp", diffBuf);
+
+    // Validate diff drawbuf
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+
+    CRLog::info("Finished RenderTestsGenericFontFamilies");
+    CRLog::info("=======================================");
 }
 
 #endif // USE_FREETYPE == 1
