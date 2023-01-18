@@ -8,7 +8,7 @@
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
- *   Copyright (C) 2018-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -780,6 +780,26 @@ lString8 LVFreeTypeFontManager::makeFontFileName(lString8 name) {
 void LVFreeTypeFontManager::getFaceList(lString32Collection& list) {
     FONT_MAN_GUARD
     _cache.getFaceList(list);
+}
+
+void LVFreeTypeFontManager::getFaceListFiltered(lString32Collection& list, css_font_family_t family, const lString8& langTag) {
+    FONT_MAN_GUARD
+#if USE_LOCALE_DATA == 1
+    if (langTag.empty()) {
+        _cache.getFaceListForFamily(list, family);
+    } else {
+        lString32Collection tmpList;
+        _cache.getFaceListForFamily(tmpList, family);
+        list.clear();
+        CRLocaleData loc(langTag);
+        for (int i = 0; i < tmpList.length(); i++) {
+            if (font_lang_compat_full == checkFontLangCompat(UnicodeToUtf8(tmpList[i]), langTag))
+                list.add(tmpList[i]);
+        }
+    }
+#else
+    _cache.getFaceListForFamily(list, family);
+#endif
 }
 
 void LVFreeTypeFontManager::getFontFileNameList(lString32Collection& list) {

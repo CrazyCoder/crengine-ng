@@ -5,7 +5,7 @@
  *   Copyright (C) 2015 Yifei(Frank) ZHU <fredyifei@gmail.com>             *
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2017,2018,2020,2021 poire-z <poire-z@users.noreply.github.com>
- *   Copyright (C) 2018-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -147,6 +147,9 @@ public:
 
     /// returns available typefaces
     virtual void getFaceList(lString32Collection& list);
+
+    /// returns available typefaces filtered by family/language
+    virtual void getFaceListFiltered(lString32Collection&, css_font_family_t, const lString8& langTag = lString8::empty_str);
 
     /// returns registered font files
     virtual void getFontFileNameList(lString32Collection& list);

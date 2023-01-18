@@ -2,7 +2,7 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2007,2008,2011,2012,2014 Vadim Lopatin <coolreader.org@gmail.com>
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
- *   Copyright (C) 2020-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -252,6 +252,11 @@ void LVWin32FontManager::SetGamma(double gamma) {
             font->setGammaIndex(_gammaIndex);
         }
     }
+}
+
+void LVWin32FontManager::getFaceListFiltered(lString32Collection& list, css_font_family_t family, const lString8& langTag = lString8::empty_str) {
+    FONT_MAN_GUARD
+    _cache.getFaceListForFamily(list, family);
 }
 
 void LVWin32FontManager::getFontFileNameList(lString32Collection& list) {

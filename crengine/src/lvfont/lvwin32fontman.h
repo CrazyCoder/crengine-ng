@@ -2,7 +2,7 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2007 Vadim Lopatin <coolreader.org@gmail.com>           *
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
- *   Copyright (C) 2020-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -79,6 +79,8 @@ public:
     virtual void getFaceList(lString32Collection& list) {
         _cache.getFaceList(list);
     }
+    /// returns available typefaces filtered by family/language
+    virtual void getFaceListFiltered(lString32Collection&, css_font_family_t, const lString8& langTag = lString8::empty_str);
     /// returns registered font files
     virtual void getFontFileNameList(lString32Collection& list);
 };
