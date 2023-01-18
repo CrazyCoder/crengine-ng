@@ -162,7 +162,7 @@ public:
         return _family;
     }
 
-    void getFamily(css_font_family_t family) {
+    void setFamily(css_font_family_t family) {
         _family = family;
     }
 
