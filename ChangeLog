@@ -1,3 +1,61 @@
+2023-01-19  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.5 released.
+	==========================
+
+	Tag sources with `0.9.5'.
+
+	  Main changes:
+	Added new global properties: PROP_GENERIC_*_FONT_FACE to specify generic font family faces:
+	PROP_GENERIC_SERIF_FONT_FACE - to specify Serif font
+	PROP_GENERIC_SANS_SERIF_FONT_FACE - to specify Sans Serif font
+	PROP_GENERIC_CURSIVE_FONT_FACE - to specify Cursive font
+	PROP_GENERIC_FANTASY_FONT_FACE - to specify Fantasy font
+	PROP_GENERIC_MONOSPACE_FONT_FACE - to specify Monospace font
+
+	This implements generic font family for the 'font-family' CSS attribute.
+
+	See below for other changes.
+
+2023-01-19  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update crengine/src/mdfmt.cpp: compilation warnings fixed.
+
+	LVFreeTypeFontManager::checkFontLangCompat() function fixed: memory leak & optimisation.
+
+	Added unit tests to check the getFaceListFiltered() and checkFontLangCompat() functions of the LVFontManager class.
+
+	LVFontDef: copy-past typo fixed.
+
+	LVFontManager: a new getFaceListFiltered() function has been added to get a list of fonts filtered by font family and optionally by language.
+
+2023-01-17  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added unit test to check rendering using generic font families.
+
+2023-01-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added new global properties: PROP_GENERIC_*_FONT_FACE to specify generic font family faces.
+
+2023-01-05  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update README.md: update supported formats
+
+2023-01-01  Aleksey Chernov  <valexlin@gmail.com>
+
+	ImportMarkdownDocument(): set document title & build TOC only after successfull html parsing.
+
+	Compile warnings/errors fixed: `strcasecmp` missing prototype.
+
+2022-12-31  Aleksey Chernov  <valexlin@gmail.com>
+
+	Win32 fixes
+
+2022-12-30  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView::ParseDocument(): asan: use-after-free fixed
+
+
 2022-12-31  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.4 released.
