@@ -63,6 +63,7 @@ set(SRC_LIST
   zip-use_tests.cpp
   localenames_tests.cpp
   hyph_tests.cpp
+  fontman_funcs_tests.cpp
 )
 
 set(CRE_NG)

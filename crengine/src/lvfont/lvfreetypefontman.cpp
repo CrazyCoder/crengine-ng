@@ -8,7 +8,7 @@
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
- *   Copyright (C) 2018-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -111,7 +111,7 @@ int getFontWeight(FT_Face face) {
 
 #if USE_LOCALE_DATA == 1
 LVHashTable<lString8, font_lang_compat>* getSupportedLangs(FT_Face face) {
-    LVHashTable<lString8, font_lang_compat>* langs = new LVHashTable<lString8, font_lang_compat>(16);
+    LVHashTable<lString8, font_lang_compat>* langs = new LVHashTable<lString8, font_lang_compat>(get_fc_lang_data_size());
 #define FC_LANG_START_INTERVAL_CODE 0xF0F0FFFF
     bool fullSupport;
     bool partialSupport;
@@ -170,6 +170,8 @@ LVHashTable<lString8, font_lang_compat>* getSupportedLangs(FT_Face face) {
                 langs->set(loc.langTag(), font_lang_compat_full);
             else if (partialSupport)
                 langs->set(loc.langTag(), font_lang_compat_partial);
+            else
+                langs->set(loc.langTag(), font_lang_compat_none);
         } else {
             CRLog::warn("getSupportedLangs(): invalid lang tag: %s", rec->lang_code);
         }
@@ -729,6 +731,7 @@ LVFreeTypeFontManager::~LVFreeTypeFontManager() {
         if (langTable)
             delete langTable;
     }
+    _supportedLangs.clear();
     _globalCache.clear();
     _cache.clear();
     if (_library)
@@ -780,6 +783,26 @@ lString8 LVFreeTypeFontManager::makeFontFileName(lString8 name) {
 void LVFreeTypeFontManager::getFaceList(lString32Collection& list) {
     FONT_MAN_GUARD
     _cache.getFaceList(list);
+}
+
+void LVFreeTypeFontManager::getFaceListFiltered(lString32Collection& list, css_font_family_t family, const lString8& langTag) {
+    FONT_MAN_GUARD
+#if USE_LOCALE_DATA == 1
+    if (langTag.empty()) {
+        _cache.getFaceListForFamily(list, family);
+    } else {
+        lString32Collection tmpList;
+        _cache.getFaceListForFamily(tmpList, family);
+        list.clear();
+        CRLocaleData loc(langTag);
+        for (int i = 0; i < tmpList.length(); i++) {
+            if (font_lang_compat_full == checkFontLangCompat(UnicodeToUtf8(tmpList[i]), langTag))
+                list.add(tmpList[i]);
+        }
+    }
+#else
+    _cache.getFaceListForFamily(list, family);
+#endif
 }
 
 void LVFreeTypeFontManager::getFontFileNameList(lString32Collection& list) {
@@ -1042,6 +1065,7 @@ LVFontRef LVFreeTypeFontManager::GetFont(int size, int weight, bool italic, css_
 #if USE_LOCALE_DATA == 1
         LVHashTable<lString8, font_lang_compat>* langTable = NULL;
         if (!_supportedLangs.get(font->getTypeFace(), langTable) || NULL == langTable) {
+            // Here langTable can only be NULL
             FT_Face face = (FT_Face)font->GetHandle();
             if (NULL != face) {
                 langTable = getSupportedLangs(face);
@@ -1092,19 +1116,11 @@ font_lang_compat LVFreeTypeFontManager::checkFontLangCompat(const lString8& type
         LVHashTable<lString8, font_lang_compat>* langTable = NULL;
         res = font_lang_compat_none;
         if (!_supportedLangs.get(typeface, langTable) || NULL == langTable) {
-            if (NULL != langTable) {
-                delete langTable;
-                langTable = NULL;
-                _supportedLangs.remove(typeface);
-            }
+            // Here langTable can only be NULL
+            // Call GetFont() to update language support table in _supportedLangs
             LVFontRef fntRef = GetFont(-1, 400, false, css_ff_inherit, typeface, -1);
-            if (!fntRef.isNull()) {
-                FT_Face face = (FT_Face)fntRef->GetHandle();
-                if (NULL != face) {
-                    langTable = getSupportedLangs(face);
-                    _supportedLangs.set(typeface, langTable);
-                }
-            }
+            // Get updated langTable
+            _supportedLangs.get(typeface, langTable);
         }
         if (NULL != langTable) {
             lString8 best_lang;

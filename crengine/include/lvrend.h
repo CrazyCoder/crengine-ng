@@ -4,8 +4,8 @@
  *   Copyright (C) 2011 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2015,2016 Yifei(Frank) ZHU <fredyifei@gmail.com>        *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
- *   Copyright (C) 2020,2021 Aleksey Chernov <valexlin@gmail.com>          *
  *   Copyright (C) 2018-2022 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2020,2021,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -155,7 +155,7 @@ bool isSameFontStyle(css_style_rec_t* style1, css_style_rec_t* style2);
 /// removes format data from node
 void freeFormatData(ldomNode* node);
 /// returns best suitable font for style
-LVFontRef getFont(ldomNode* node, css_style_rec_t* style, int documentId);
+LVFontRef getFont(ldomNode* node, const css_style_rec_t* style, int documentId);
 /// initializes format data for node
 void initFormatData(ldomNode* node);
 /// initializes rendering method for node
@@ -214,6 +214,10 @@ bool getStyledImageSize(ldomNode* enode, int& img_width, int& img_height, int co
 // Returns ink offsets from the node's RenderRectAccessor (its border box), positive when inward
 bool getInkOffsets(ldomNode* node, lvRect& inkOffsets, bool measure_hidden_content = false,
                    bool ignore_decorations = false, bool skip_initial_borders = false, lvRect* borderBox = NULL);
+
+// Generic font families getters/setters
+bool setGenericFontFamilyFace(css_font_family_t family, lString8 face);
+lString8 getGenericFontFamilyFace(css_font_family_t family);
 
 #define BASE_CSS_DPI                   96 // at 96 dpi, 1 css px = 1 screen px
 #define DEF_RENDER_DPI                 96

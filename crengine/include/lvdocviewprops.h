@@ -4,7 +4,7 @@
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2018,2020-2022 Aleksey Chernov <valexlin@gmail.com>     *
+ *   Copyright (C) 2018,2020-2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -66,6 +66,14 @@
 #define PROP_SHOW_PAGE_NUMBER     "window.status.pos.page.number"
 #define PROP_SHOW_BATTERY_PERCENT "window.status.battery.percent"
 #define PROP_LANDSCAPE_PAGES      "window.landscape.pages"
+
+// Generic font families font faces
+// For css_font_family_t enum (cssdef.h)
+#define PROP_GENERIC_SERIF_FONT_FACE      "crengine.generic.serif.font.face"
+#define PROP_GENERIC_SANS_SERIF_FONT_FACE "crengine.generic.sans-serif.font.face"
+#define PROP_GENERIC_CURSIVE_FONT_FACE    "crengine.generic.cursive.font.face"
+#define PROP_GENERIC_FANTASY_FONT_FACE    "crengine.generic.fantasy.font.face"
+#define PROP_GENERIC_MONOSPACE_FONT_FACE  "crengine.generic.monospace.font.face"
 
 // Obsolete hyph settings:
 #define PROP_HYPHENATION_DICT_VALUE_NONE      "@none"

@@ -3,7 +3,7 @@
  *   Copyright (C) 2007,2008,2011,2012 Vadim Lopatin <coolreader.org@gmail.com>
  *   Copyright (C) 2015 Yifei(Frank) ZHU <fredyifei@gmail.com>             *
  *   Copyright (C) 2017,2018 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2018,2020,2021 Aleksey Chernov <valexlin@gmail.com>     *
+ *   Copyright (C) 2018,2020,2021,2023 Aleksey Chernov <valexlin@gmail.com>*
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -112,11 +112,27 @@ public:
     virtual void getFaceList(lString32Collection& list) {
         list.clear();
         for (int i = 0; i < _registered_list.length(); i++) {
-            if (_registered_list[i]->getDef()->getDocumentId() != -1)
-                continue;
-            lString32 name = Utf8ToUnicode(_registered_list[i]->getDef()->getTypeFace());
-            if (!list.contains(name))
-                list.add(name);
+            LVFontDef* pdef = _registered_list[i]->getDef();
+            if (-1 == pdef->getDocumentId()) {
+                lString32 name = Utf8ToUnicode(pdef->getTypeFace());
+                if (!list.contains(name))
+                    list.add(name);
+            }
+        }
+        list.sort();
+    }
+
+    virtual void getFaceListForFamily(lString32Collection& list, css_font_family_t family) {
+        list.clear();
+        for (int i = 0; i < _registered_list.length(); i++) {
+            LVFontDef* pdef = _registered_list[i]->getDef();
+            if (-1 == pdef->getDocumentId()) {
+                if (pdef->getFamily() == family) {
+                    lString32 name = Utf8ToUnicode(pdef->getTypeFace());
+                    if (!list.contains(name))
+                        list.add(name);
+                }
+            }
         }
         list.sort();
     }
