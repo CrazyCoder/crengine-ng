@@ -122,7 +122,7 @@ bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomD
     if (res)
         res = LVERR_OK == memStream->Write(gen_preamble.c_str(), gen_preamble.length(), &dw);
     if (res)
-        res = dw == gen_preamble.length();
+        res = dw == (lvsize_t)gen_preamble.length();
     if (res)
         res = LVERR_OK == memStream->Write(result, result_len, &dw);
     if (res)
@@ -130,7 +130,7 @@ bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomD
     if (res)
         res = LVERR_OK == memStream->Write(gen_tail.c_str(), gen_tail.length(), &dw);
     if (res)
-        res = dw == gen_tail.length();
+        res = dw == (lvsize_t)gen_tail.length();
     // html result is no longer needed
     free(result);
     if (res) {
