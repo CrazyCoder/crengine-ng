@@ -2427,9 +2427,9 @@ LVFontRef getFont(ldomNode* node, const css_style_rec_t* style, int documentId) 
     else if (fw > 999)
         fw = 999;
     lString8 font_name = style->font_name;
-    if (!font_name.empty())
-        font_name += ",";
-    font_name += getGenericFontFamilyFace(style->font_family);
+    lString8 genericFontFamilyFace = getGenericFontFamilyFace(style->font_family);
+    if (font_name.empty())
+        font_name = genericFontFamilyFace;
     // printf("cssd_font_family: %d %s", style->font_family, font_name.c_str());
     LVFontRef fnt = fontMan->GetFont(
             sz,
@@ -2439,6 +2439,16 @@ LVFontRef getFont(ldomNode* node, const css_style_rec_t* style, int documentId) 
             font_name,
             style->font_features.value, // (.type is always css_val_unspecified after setNodeStyle())
             documentId, true);          // useBias=true, so that our preferred font gets used
+    if (fnt.isNull() || (font_name != genericFontFamilyFace && -1 == font_name.pos(fnt->getTypeFace()))) {
+        fnt = fontMan->GetFont(
+                sz,
+                fw,
+                style->font_style == css_fs_italic,
+                style->font_family,
+                genericFontFamilyFace,
+                style->font_features.value,
+                documentId, true);
+    }
     return fnt;
 }
 
