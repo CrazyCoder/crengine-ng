@@ -1,3 +1,20 @@
+2023-01-22  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.6 released.
+	==========================
+
+	Tag sources with `0.9.6'.
+
+	  Main changes:
+	When getting a font based on a node style, do not add the generic font family font
+	to the style's font list. Instead, first obtain a font instance based on the node's
+	style font list only, then only if the required font is not obtained, request the
+	font of the generic font family.
+	Prior to this, if you try to get a font with an italic style when there is no such
+	font variant, instead of using synthetic italic, the generic font family will be
+	selected if it has an italic variant.
+
+
 2023-01-19  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.5 released.
