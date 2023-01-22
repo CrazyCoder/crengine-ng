@@ -41,6 +41,8 @@
 #include FT_LCD_FILTER_H
 #include FT_CONFIG_OPTIONS_H
 
+#include "lvfontdef.h"
+
 #if (USE_FONTCONFIG == 1)
 #include <fontconfig/fontconfig.h>
 #endif

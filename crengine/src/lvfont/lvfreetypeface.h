@@ -38,19 +38,6 @@
 #include <lvarray.h>
 
 #include "lvfontglyphcache.h"
-#include "lvfontdef.h"
-#include "lvfontcache.h"
-
-// define to filter out all fonts except .ttf
-//#define LOAD_TTF_FONTS_ONLY
-// DEBUG ONLY
-#if 0
-#define USE_FREETYPE   1
-#define USE_FONTCONFIG 1
-//#define DEBUG_FONT_SYNTHESIS 1
-//#define DEBUG_FONT_MAN 1
-//#define DEBUG_FONT_MAN_LOG_FILE "/tmp/font_man.log"
-#endif
 
 #if (USE_FREETYPE == 1)
 

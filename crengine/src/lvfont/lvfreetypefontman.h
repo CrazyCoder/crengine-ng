@@ -23,19 +23,10 @@
  *   MA 02110-1301, USA.                                                   *
  ***************************************************************************/
 
-/** @file lvfreetypefontman.h
-    @brief FreeType font manager interface
-
-    CoolReader Engine
-
-
-    (c) Vadim Lopatin, 2000-2006
-    This source code is distributed under the terms of
-    GNU General Public License.
-
-    See LICENSE file for details.
-
-*/
+/**
+  * \file lvfreetypefontman.h
+  * \brief FreeType font manager interface
+  */
 
 #ifndef __LV_FREETYPEFONTMAN_H_INCLUDED__
 #define __LV_FREETYPEFONTMAN_H_INCLUDED__
@@ -45,8 +36,16 @@
 #include <lvstring8collection.h>
 
 #include "lvfontglyphcache.h"
-#include "lvfontdef.h"
 #include "lvfontcache.h"
+
+// DEBUG ONLY
+#if 0
+//#define DEBUG_FONT_MAN 1
+//#define DEBUG_FONT_MAN_LOG_FILE "/tmp/font_man.log"
+//#define DEBUG_FONT_SYNTHESIS 1
+// define to filter out all fonts except .ttf
+//#define LOAD_TTF_FONTS_ONLY
+#endif
 
 #if (DEBUG_FONT_MAN == 1)
 #include <stdio.h>
