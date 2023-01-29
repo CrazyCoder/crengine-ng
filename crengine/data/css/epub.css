@@ -161,7 +161,7 @@ table caption {
  * approximation than no pre */
 pre, xmp {
     white-space: pre; /* has to be set in fb2def.h to work */
-    font-family: "Droid Sans Mono", "Liberation Mono", "DeJaVu Sans Mono", monospace;
+    font-family: "Noto Mono", "FreeMono", "Courier New", "Andale Mono", "Droid Sans Mono", "Menlo", "Liberation Mono", "DeJaVu Sans Mono", monospace;
     text-align: left;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
@@ -169,7 +169,7 @@ pre, xmp {
 }
 
 /* Inline elements (all unknown elements default now to display: inline) */
-code, kbd, samp, tt     { font-family: "Droid Sans Mono", "Liberation Mono", "DeJaVu Sans Mono", monospace; }
+code, kbd, samp, tt     { font-family: "Noto Mono", "FreeMono", "Courier New", "Andale Mono", "Droid Sans Mono", "Menlo", "Liberation Mono", "DeJaVu Sans Mono", monospace; }
 sup                     { font-size: 70%; vertical-align: super; }
 sub                     { font-size: 70%; vertical-align: sub; }
 small                   { font-size: 80%; }
@@ -179,6 +179,9 @@ i, em, dfn, var, cite   { font-style: italic; }
 u, ins                  { text-decoration: underline; }
 del, s, strike          { text-decoration: line-through; }
 a                       { text-decoration: underline; $link.all }
+
+pre, xmp { $pre.all; }
+code, kbd, samp, tt { $pre.font-face; }
 
 /* Ruby support */
 ruby {

@@ -39,7 +39,16 @@ td, th { text-indent: 0px; padding: 3px }
 th {  font-weight: bold; background-color: #DDD  }
 table > caption { text-indent: 0px; padding: 4px; background-color: #EEE }
 
-code, pre { display: block; white-space: pre; text-align: left; font-family: "Courier New", "Courier", monospace; text-align: left }
+pre, xmp { 
+    display: block;
+    font-family: "Noto Mono", "FreeMono", "Courier New", "Andale Mono", "Droid Sans Mono", "Menlo", "Liberation Mono", "DeJaVu Sans Mono", monospace;
+    white-space: pre;
+    text-align: left;
+    text-align: left; }
+code, kbd, samp, tt { font-family: "Noto Mono", "FreeMono", "Courier New", "Andale Mono", "Droid Sans Mono", "Menlo", "Liberation Mono", "DeJaVu Sans Mono", monospace; }
+
+pre, xmp { $pre.all; }
+code, kbd, samp, tt { $pre.font-face; }
 
 body[name="notes"] { font-size: 70%; }
 body[name="notes"] section title { display: run-in; text-align: left; font-size: 110%; font-weight: bold; page-break-before: auto; page-break-inside: auto; page-break-after: auto; }

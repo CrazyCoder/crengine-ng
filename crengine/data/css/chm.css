@@ -32,12 +32,13 @@ small { font-size: 80%; }
 big { font-size: 130%; } 
 sub { vertical-align: sub; font-size: 70% } 
 sup { vertical-align: super; font-size: 70% } 
-tt, samp, kbd, code, pre { font-family: "Courier New", "Courier", monospace; } 
+tt, samp, kbd, code, pre { font-family: "Noto Mono", "FreeMono", "Courier New", "Andale Mono", "Droid Sans Mono", "Menlo", "Liberation Mono", "DeJaVu Sans Mono", monospace; }
 
 pre { display: block; 
    white-space: pre; 
    $pre.all
    } 
+code, kbd, samp, tt { $pre.font-face; }
 
 nobr { display: inline; hyphenate: none; white-space: nowrap; } 
 
