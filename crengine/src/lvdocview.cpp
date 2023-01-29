@@ -118,14 +118,14 @@ const char* def_stylesheet =
         "p { margin-top:0em; margin-bottom: 0em }\n"
         "text-author { font-weight: bold; font-style: italic; margin-left: 5%}\n"
         "empty-line { height: 1em }\n"
-        "epigraph { margin-left: 30%; margin-right: 4%; text-align: left; text-indent: 1px; font-style: italic; margin-top: 15px; margin-bottom: 25px; font-family: Times New Roman, serif }\n"
+        "epigraph { margin-left: 30%; margin-right: 4%; text-align: left; text-indent: 1px; font-style: italic; margin-top: 15px; margin-bottom: 25px; font-family: serif }\n"
         "strong, b { font-weight: bold }\n"
         "emphasis, i { font-style: italic }\n"
-        "title { text-align: center; text-indent: 0px; font-size: 130%; font-weight: bold; margin-top: 10px; margin-bottom: 10px; font-family: Times New Roman, serif }\n"
+        "title { text-align: center; text-indent: 0px; font-size: 130%; font-weight: bold; margin-top: 10px; margin-bottom: 10px; font-family: serif }\n"
         "subtitle { text-align: center; text-indent: 0px; font-size: 150%; margin-top: 10px; margin-bottom: 10px }\n"
         "title { page-break-before: always; page-break-inside: avoid; page-break-after: avoid; }\n"
         "body { text-align: justify; text-indent: 2em }\n"
-        "cite { margin-left: 30%; margin-right: 4%; text-align: justyfy; text-indent: 0px;  margin-top: 20px; margin-bottom: 20px; font-family: Times New Roman, serif }\n"
+        "cite { margin-left: 30%; margin-right: 4%; text-align: justyfy; text-indent: 0px;  margin-top: 20px; margin-bottom: 20px; font-family: serif }\n"
         "td, th { text-indent: 0px; font-size: 80%; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; text-align: left; padding: 2px }\n"
         "th { font-weight: bold }\n"
         "table > caption { padding: 2px; text-indent: 0px; font-size: 80%; font-weight: bold; text-align: left; background-color: #AAAAAA }\n"
@@ -135,7 +135,7 @@ const char* def_stylesheet =
         "body[name=\"notes\"]  section[id] title { display: block; text-align: left; font-size: 110%; font-weight: bold; page-break-before: auto; page-break-inside: auto; page-break-after: auto; }\n"
         "body[name=\"notes\"]  section[id] title p { text-align: left; display: inline }\n"
         "body[name=\"notes\"]  section[id] empty-line { display: inline }\n"
-        "code, pre { display: block; white-space: pre; font-family: \"Courier New\", monospace }\n";
+        "code, pre { display: block; white-space: pre; font-family: monospace }\n";
 
 static const char* DEFAULT_FONT_NAME = "Arial, DejaVu Sans"; //Times New Roman";
 static const char* DEFAULT_STATUS_FONT_NAME =
@@ -6430,7 +6430,7 @@ static const char* def_style_macros[] = {
     "styles.pre.margin-right",
     "margin-right: 0em",
     "styles.pre.font-face",
-    "font-family: \"Courier New\", \"Courier\", monospace",
+    "font-family: monospace",
     "styles.poem.align",
     "text-align: left",
     "styles.poem.text-indent",
