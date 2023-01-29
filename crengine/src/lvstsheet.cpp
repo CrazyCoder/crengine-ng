@@ -45,6 +45,7 @@
 #include "lvxml/lvxmlutils.h"
 #include "lvtinydom/renderrectaccessor.h"
 #include "textlang.h"
+#include "lvrend.h" // for getGenericFontFamilyFace()
 
 // define to dump all tokens
 //#define DUMP_CSS_PARSING
@@ -2186,13 +2187,18 @@ bool LVCssDeclaration::parse(const char*& decl, lUInt32 domVersionRequested, boo
                                         // above, as well as any other generic name that was after)
                                         n = css_ff_inherit;
                                     }
+                                    list.erase(i, 1);
                                 } else {
                                     // As we browse list from the right, keep replacing
                                     // the generic family name with the left most one
                                     n = nn;
+                                    // Replace generic family name with specific font from settings
+                                    lString8 genericFontFamilyFace = getGenericFontFamilyFace((css_font_family_t)nn);
+                                    if (!genericFontFamilyFace.empty())
+                                        list[i] = genericFontFamilyFace;
+                                    else
+                                        list.erase(i, 1);
                                 }
-                                // remove generic family name from font list
-                                list.erase(i, 1);
                             }
                         }
                         strValue = joinPropertyValueList(list);
