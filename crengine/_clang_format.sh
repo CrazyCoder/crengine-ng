@@ -28,7 +28,7 @@
 dirs="include src Tools tests"
 regex_pat=".*\.(h|c|cpp)"
 
-excludes="^src\/locale_data\/files\/.*$ ^src/xxhash.h$ ^src/xxhash.c$ ^Tools\/Fb2Test\/.*$ ^Tools\/FontConv\/.*$"
+excludes='^src/locale_data/files/.*$ ^src/xxhash.h$ ^src/xxhash.c$ ^Tools/Fb2Test/.*$ ^Tools/FontConv/.*$'
 
 die()
 {
