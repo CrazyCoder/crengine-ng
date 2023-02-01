@@ -246,6 +246,7 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
 #ifdef ANDROID
         , m_rotateAngleInfo(CR_ROTATE_ANGLE_0)
 #endif
+        , m_sharedHist(NULL)
         , m_section_bounds_externally_updated(false)
         , m_section_bounds_valid(false)
         , m_doc_format(doc_format_none)
@@ -2359,6 +2360,10 @@ bool LVDocView::isTimeChanged() {
     return false;
 }
 
+void LVDocView::setSharedHistory(CRFileHist* hist) {
+    m_sharedHist = hist;
+}
+
 /// check whether resize or creation of buffer is necessary, ensure buffer is ok
 static bool checkBufferSize(LVRef<LVColorDrawBuf>& buf, int dx, int dy) {
     if (buf.isNull() || buf->GetWidth() != dx || buf->GetHeight() != dy) {
@@ -3906,9 +3911,9 @@ CRFileHistRecord* LVDocView::getCurrentFileHistRecord() {
     if (!m_originalFilename.empty())
         fn = m_originalFilename;
 #endif
-    //CRLog::debug("m_hist.savePosition(%s, %d)", LCSTR(fn), m_filesize);
-    CRFileHistRecord* res = m_hist.savePosition(fn, m_filesize, title,
-                                                authors, series, bmk);
+    //CRLog::debug("getHistory()->savePosition(%s, %d)", LCSTR(fn), m_filesize);
+    CRFileHistRecord* res = getHistory()->savePosition(fn, m_filesize, title,
+                                                       authors, series, bmk);
     //CRLog::trace("savePosition() returned");
     return res;
 }
@@ -3930,9 +3935,9 @@ void LVDocView::restorePosition() {
     if (!m_originalFilename.empty())
         fn = m_originalFilename;
 #endif
-    //    CRLog::debug("m_hist.restorePosition(%s, %d)", LCSTR(fn),
+    //    CRLog::debug("getHistory()->restorePosition(%s, %d)", LCSTR(fn),
     //            m_filesize);
-    ldomXPointer pos = m_hist.restorePosition(m_doc, fn, m_filesize);
+    ldomXPointer pos = getHistory()->restorePosition(m_doc, fn, m_filesize);
     if (!pos.isNull()) {
         //goToBookmark( pos );
         CRLog::info("LVDocView::restorePosition() - last position is found");
@@ -4021,7 +4026,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
         m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                            (int)stream->GetSize()));
         m_doc_props->setString(DOC_PROP_FILE_NAME, arcItemPathName);
-        CRFileHistRecord* record = m_hist.getRecord(filename32, stream->GetSize());
+        CRFileHistRecord* record = getHistory()->getRecord(filename32, stream->GetSize());
         lUInt32 newDOMVersion;
         lUInt32 domVersionRequested = m_props->getIntDef(PROP_REQUESTED_DOM_VERSION, gDOMVersionCurrent);
         bool convertBookmarks = needToConvertBookmarks(record, domVersionRequested) && !metadataOnly;
@@ -4086,7 +4091,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                        (int)stream->GetSize()));
 
-    CRFileHistRecord* record = m_hist.getRecord(filename32, stream->GetSize());
+    CRFileHistRecord* record = getHistory()->getRecord(filename32, stream->GetSize());
     int newDOMVersion;
     lUInt32 domVersionRequested = m_props->getIntDef(PROP_REQUESTED_DOM_VERSION, gDOMVersionCurrent);
     bool convertBookmarks = needToConvertBookmarks(record, domVersionRequested) && !metadataOnly;
@@ -4175,7 +4180,7 @@ bool LVDocView::LoadDocument(LVStreamRef stream, const lChar32* contentPath, boo
     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
                                                        (int)stream->GetSize()));
 
-    CRFileHistRecord* record = m_hist.getRecord(contentPath16, stream->GetSize());
+    CRFileHistRecord* record = getHistory()->getRecord(contentPath16, stream->GetSize());
     int newDOMVersion;
     lUInt32 domVersionRequested = m_props->getIntDef(PROP_REQUESTED_DOM_VERSION, gDOMVersionCurrent);
     int savedRenderFlags = m_props->getIntDef(PROP_RENDER_BLOCK_RENDERING_FLAGS, BLOCK_RENDERING_FLAGS_LEGACY);

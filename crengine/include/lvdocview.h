@@ -384,6 +384,7 @@ private:
 #endif
 
     CRFileHist m_hist;
+    CRFileHist* m_sharedHist;
 
     LVArray<int> m_section_bounds;
     bool m_section_bounds_valid;
@@ -751,8 +752,12 @@ public:
     }
     /// returns file list with positions/bookmarks
     CRFileHist* getHistory() {
+        if (NULL != m_sharedHist)
+            return m_sharedHist;
         return &m_hist;
     }
+    /// set shared file history object (can be used by multiple LVDocView instances)
+    void setSharedHistory(CRFileHist* hist);
     /// returns formatted page list
     LVRendPageList* getPageList() {
         return &m_pages;
