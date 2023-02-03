@@ -278,7 +278,7 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
     if (!noDefaultDocument)
         // NOLINTNEXTLINE: Call to virtual function during construction
         createDefaultDocument(cs32("No document"), lString32(
-                                                           U"Welcome to CoolReader! Please select file to open"));
+                                                           U"Welcome to coolreader-ng! Please select file to open"));
 
     m_font_size = scaleFontSizeForDPI(m_requested_font_size);
     m_font = fontMan->GetFont(m_font_size, 400, false, DEFAULT_FONT_FAMILY,
