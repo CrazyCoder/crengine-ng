@@ -1089,9 +1089,6 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
             CRLog::debug("Trying loading from cache");
             if (m_doc->openFromCache(formatCallback, progressCallback)) {
                 CRLog::debug("Loaded from cache");
-                if (progressCallback) {
-                    progressCallback->OnLoadFileEnd();
-                }
                 delete doc;
                 return true;
             }
