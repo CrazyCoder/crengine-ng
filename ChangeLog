@@ -1,3 +1,42 @@
+2023-02-04  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.7 released.
+	==========================
+
+	Tag sources with `0.9.7'.
+
+	  Main changes:
+	Generic font families fixes.
+
+	See below for other changes.
+
+2023-02-04  Aleksey Chernov  <valexlin@gmail.com>
+
+	ImportEpubDocument(): removed redundant LVDocViewCallback::OnLoadFileEnd() function call.
+
+	cmake build system: set shared library version to specify API version.
+
+2023-02-03  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView: default stub document: rename 'CoolReader' to 'coolreader-ng'.
+
+	crengine/Tools/qtc-debugger/personaltypes.py added: Qt Creator debugger helper (decoder for lString8, lString16, lString32).
+
+2023-02-01  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update _clang_format.sh: fix "grep: warning: stray \ before /"
+
+	LVDocView: added setSharedHistory() function. To use one CRFileHist with multiple LVDocView instances.
+
+2023-01-30  Aleksey Chernov  <valexlin@gmail.com>
+
+	crengine/src/lvstsheet.cpp: css parsing changed: when generic font family is found, it is replaced with a real font specified in the settings of generic font families.
+
+	crengine/src/lvdocview.cpp: default css style: specific fonts removed, only generic font families left.
+
+	Update crengine/data/css/*.css: extended the list of monospace fonts for elements that use them ('<pre>', '<code>', etc). Also added a declaration for these elements, which will allow the frontend to override the font used ('$pre.all', etc).
+
+
 2023-01-22  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.6 released.

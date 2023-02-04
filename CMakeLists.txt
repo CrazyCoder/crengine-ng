@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 # alphaX - 0X; beta X - 1X; rcX - 2X; releaseX - 3X (or empty)
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 9)
-set(VERSION_PATCH 6)
+set(VERSION_PATCH 7)
 set(VERSION_DEV_A "")
 set(VERSION_DEV_CODE 30)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
@@ -17,7 +17,7 @@ endif()
 set(PACKAGE_VERSION ${VERSION})
 # Set shared library API version
 # Increase if API is changed
-set(LIB_API_VERSION 3)
+set(LIB_API_VERSION 4)
 # for windows rc file
 set(PRODUCTVERSION_V "${VERSION_MAJOR},${VERSION_MINOR},${VERSION_PATCH},${VERSION_DEV_CODE}")
 set(FILEVERSION_V ${PRODUCTVERSION_V})
