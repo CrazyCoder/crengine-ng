@@ -3986,7 +3986,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     CRLog::debug("LoadDocument(%s) textMode=%s", LCSTR(lString32(fname)), getTextFormatOptions() == txt_format_pre ? "pre" : "autoformat");
 
     // split file path and name
-    lString32 filename32(fname);
+    lString32 filename32 = LVGetAbsolutePath(fname);
 
     lString32 arcPathName;
     lString32 arcItemPathName;

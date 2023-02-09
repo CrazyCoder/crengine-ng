@@ -1,7 +1,7 @@
 /***************************************************************************
  *   crengine-ng                                                           *
  *   Copyright (C) 2007-2011,2013-2015 Vadim Lopatin <coolreader.org@gmail.com>
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020,2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -19,17 +19,10 @@
  *   MA 02110-1301, USA.                                                   *
  ***************************************************************************/
 
-/** \file lvstreamutils.h
-    \brief Various stream utilities funstions
-
-    CoolReader Engine
-
-    (c) Vadim Lopatin, 2000-2006
-    This source code is distributed under the terms of
-    GNU General Public License.
-    See LICENSE file for details.
-
-*/
+/**
+ * \file lvstreamutils.h
+ * \brief Various stream utilities funstions
+ */
 
 #ifndef __LVSTREAMUTILS_H_INCLUDED__
 #define __LVSTREAMUTILS_H_INCLUDED__
@@ -166,10 +159,14 @@ lChar32 LVDetectPathDelimiter(lString32 pathName);
 char LVDetectPathDelimiter(lString8 pathName);
 /// returns true if absolute path is specified
 bool LVIsAbsolutePath(lString32 pathName);
+/// Converts the directory path to an absolute path
+lString32 LVGetAbsolutePath(lString32 pathName);
 /// returns full path to file identified by pathName, with base directory == basePath
 lString32 LVMakeRelativeFilename(lString32 basePath, lString32 pathName);
 // resolve relative links
 lString32 LVCombinePaths(lString32 basePath, lString32 newPath);
+/// returns current working directory
+lString32 LVGetCurrentDirectory();
 
 /// tries to split full path name into archive name and file name inside archive using separator "@/" or "@\"
 bool LVSplitArcName(lString32 fullPathName, lString32& arcPathName, lString32& arcItemPathName);
