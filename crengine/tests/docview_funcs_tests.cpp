@@ -134,6 +134,14 @@ TEST_F(DocViewFuncsTests, TestGetFileCRC32) {
     // And test it
     EXPECT_EQ(crc32, 0xEB69EC66); // CRC32 for file "example.fb2"
 
+    // open document in archive (fb2)
+    // We specify only the archive file name, LVDocView should find and open the inner file
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "example.fb2.zip"));
+    // Retrive hash
+    crc32 = m_view->getFileCRC32();
+    // And test it
+    EXPECT_EQ(crc32, 0xEB69EC66); // CRC32 for file "example.fb2"
+
     // open document (epub)
     ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-epub2.epub"));
     // Retrive hash
@@ -198,6 +206,14 @@ TEST_F(DocViewFuncsTests, TestGetFileHash) {
 
     // open document in archive (fb2)
     ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "example.fb2.zip@/example.fb2"));
+    // Retrive hash
+    hash = m_view->getFileHash();
+    // And test it
+    EXPECT_STREQ(LCSTR(hash), "sha256:6d4036055786606a238359926277698369e0608bccf58babdb558e0a47b78e77"); // SHA256 for file "example.fb2"
+
+    // open document in archive (fb2)
+    // We specify only the archive file name, LVDocView should find and open the inner file
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "example.fb2.zip"));
     // Retrive hash
     hash = m_view->getFileHash();
     // And test it
