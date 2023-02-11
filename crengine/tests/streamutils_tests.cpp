@@ -36,7 +36,7 @@ TEST(StreamUtilsTests, LVGetCurrentDirectoryTest) {
     CRLog::trace("cwd is %s", LCSTR(cwd));
     EXPECT_GT(cwd.length(), 0);
     EXPECT_TRUE(LVIsAbsolutePath(cwd));
-    EXPECT_TRUE(cwd.endsWith("/crengine/tests/"));
+    EXPECT_TRUE(cwd.endsWith("/crengine/tests/") || cwd.endsWith("\\crengine\\tests\\"));
 }
 
 TEST(StreamUtilsTests, LVGetAbsolutePathTest) {
@@ -45,13 +45,13 @@ TEST(StreamUtilsTests, LVGetAbsolutePathTest) {
     CRLog::trace("absPath1 is %s", LCSTR(absPath1));
     EXPECT_GT(absPath1.length(), 0);
     EXPECT_TRUE(LVIsAbsolutePath(absPath1));
-    EXPECT_TRUE(absPath1.endsWith("/crengine/tests/Makefile"));
+    EXPECT_TRUE(absPath1.endsWith("/crengine/tests/Makefile") || absPath1.endsWith("\\crengine\\tests\\Makefile"));
     lString32 relPath2 = cs32("../Makefile");
     lString32 absPath2 = LVGetAbsolutePath(relPath2);
     CRLog::trace("absPath2 is %s", LCSTR(absPath2));
     EXPECT_GT(absPath2.length(), 0);
     EXPECT_TRUE(LVIsAbsolutePath(absPath2));
-    EXPECT_TRUE(absPath2.endsWith("/crengine/Makefile"));
+    EXPECT_TRUE(absPath2.endsWith("/crengine/Makefile") || absPath2.endsWith("\\crengine\\Makefile"));
 }
 
 TEST(StreamUtilsTests, OpenDocByRelativePathTest) {
