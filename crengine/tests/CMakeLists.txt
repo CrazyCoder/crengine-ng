@@ -47,6 +47,10 @@ add_definitions(-DFONTS_DIR=\"${FONTS_DIR}/\")
 add_definitions(-DRENDER_REFERENCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/render-references/\")
 add_definitions(-DDOCPARSE_REFERENCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/docparse-references/\")
 
+# Copy from the source directory to the working directory to test the opening of the document by relative path
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/data/hello_fb2.fb2" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/hello_fb2.fb2" "${CMAKE_CURRENT_BINARY_DIR}/hello_fb2_rel.fb2")
+
 set(SRC_LIST
   savetobmp.cpp
   calc-drawbuf-diff.cpp
@@ -64,6 +68,7 @@ set(SRC_LIST
   localenames_tests.cpp
   hyph_tests.cpp
   fontman_funcs_tests.cpp
+  streamutils_tests.cpp
 )
 
 set(CRE_NG)
