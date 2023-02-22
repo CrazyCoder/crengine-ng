@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file streamutils_tests.cpp
+ * \file tests_streamutils.cpp
  * \brief Various tests for streamutils module.
  */
 

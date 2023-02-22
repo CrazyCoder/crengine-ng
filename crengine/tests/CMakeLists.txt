@@ -58,17 +58,17 @@ set(SRC_LIST
   compare-two-binfiles.cpp
   make-rand-file.cpp
   crengine-ng-environment.cpp
-  blockwritecache_tests.cpp
-  tinydom_tests.cpp
-  textrender_tests.cpp
-  wtf8_tests.cpp
-  docparse_tests.cpp
-  docview_funcs_tests.cpp
-  zip-use_tests.cpp
-  localenames_tests.cpp
-  hyph_tests.cpp
-  fontman_funcs_tests.cpp
-  streamutils_tests.cpp
+  tests_blockwritecache.cpp
+  tests_tinydom.cpp
+  tests_textrender.cpp
+  tests_wtf8.cpp
+  tests_docparse.cpp
+  tests_docview_funcs.cpp
+  tests_zip-use.cpp
+  tests_localenames.cpp
+  tests_hyph.cpp
+  tests_fontman_funcs.cpp
+  tests_streamutils.cpp
 )
 
 set(CRE_NG)

@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file textrender_tests.cpp
+ * \file tests_textrender.cpp
  * \brief Tests various text rendering options.
  */
 

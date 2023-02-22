@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 /**
- * \file tinydom_tests.cpp
+ * \file tests_tinydom.cpp
  * \brief Tests some tinyDOM stuff.
  */
 

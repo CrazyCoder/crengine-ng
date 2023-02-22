@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file fontman_funcs_tests.cpp
+ * \file tests_fontman_funcs.cpp
  * \brief Tests various functions of the LVFontManager classes.
  */
 

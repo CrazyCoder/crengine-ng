@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file localenames_tests.cpp
+ * \file tests_localenames.cpp
  * \brief Tests detection and conversion of locale names.
  */
 

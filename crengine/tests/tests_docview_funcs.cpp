@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file docview_funcs_tests.cpp
+ * \file tests_docview_funcs.cpp
  * \brief Tests various functions of the LVDocView class.
  */
 

@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file docparse_tests.cpp
+ * \file tests_docparse.cpp
  * \brief Tests document parsing.
  */
 
