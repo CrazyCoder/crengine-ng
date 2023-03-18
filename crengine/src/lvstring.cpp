@@ -2513,7 +2513,7 @@ int lString32::rpos(lString32 subStr) const {
         return -1;
     int l = subStr.length();
     int dl = length() - l;
-    for (int i = dl; i >= 0; i++) {
+    for (int i = dl; i >= 0; i--) {
         int flg = 1;
         for (int j = 0; j < l; j++)
             if (pchunk->buf._32[i + j] != subStr.pchunk->buf._32[j]) {
