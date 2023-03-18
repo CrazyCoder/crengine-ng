@@ -3300,7 +3300,7 @@ bool LVDocView::goSelectedLink() {
 
 #define NAVIGATION_FILENAME_SEPARATOR U":"
 bool splitNavigationPos(lString32 pos, lString32& fname, lString32& path) {
-    int p = pos.pos(lString32(NAVIGATION_FILENAME_SEPARATOR));
+    int p = pos.rpos(lString32(NAVIGATION_FILENAME_SEPARATOR));
     if (p <= 0) {
         fname = lString32::empty_str;
         path = pos;
@@ -3318,7 +3318,7 @@ lString32 LVDocView::getNavigationPath() const {
     LVAppendPathDelimiter(fpath);
     lString32 s = fpath + fname;
     if (!m_arc.isNull())
-        s = cs32("/") + s;
+        s = LVGetAbsolutePath(s);
     return s;
 }
 
