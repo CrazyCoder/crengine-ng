@@ -2091,7 +2091,7 @@ bool ldomNode::applyNodeStylesheet() {
 }
 
 /// returns XPath segment for this element relative to parent element (e.g. "p[10]")
-lString32 ldomNode::getXPathSegment() {
+lString32 ldomNode::getXPathSegment() const {
     if (isNull() || isRoot())
         return lString32::empty_str;
     ldomNode* parent = getParentNode();

@@ -4,8 +4,8 @@
  *   Copyright (C) 2015,2016 Yifei(Frank) ZHU <fredyifei@gmail.com>        *
  *   Copyright (C) 2016 Qingping Hou <dave2008713@gmail.com>               *
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2020,2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -658,7 +658,7 @@ bool ldomXPointer::getRect(lvRect& rect, bool extended, bool adjusted) const {
     }
 }
 
-lString32 ldomXPointer::toString(XPointerMode mode) {
+lString32 ldomXPointer::toString(XPointerMode mode) const {
     if (XPATH_USE_NAMES == mode) {
         tinyNodeCollection* doc = (tinyNodeCollection*)_data->getDocument();
         if (doc != NULL && doc->getDOMVersionRequested() >= DOM_VERSION_WITH_NORMALIZED_XPOINTERS)
@@ -669,7 +669,7 @@ lString32 ldomXPointer::toString(XPointerMode mode) {
 }
 
 // Using names, old, with boxing elements (non-normalized)
-lString32 ldomXPointer::toStringV1() {
+lString32 ldomXPointer::toStringV1() const {
     lString32 path;
     if (isNull())
         return path;
@@ -743,7 +743,7 @@ static int getElementIndex(ldomNode* parent, ldomNode* targetNode, T predicat, i
 }
 
 // Using names, new, without boxing elements, so: normalized
-lString32 ldomXPointer::toStringV2() {
+lString32 ldomXPointer::toStringV2() const {
     lString32 path;
     if (isNull())
         return path;
@@ -825,7 +825,7 @@ lString32 ldomXPointer::toStringV2() {
 }
 
 // Without element names, normalized (not used)
-lString32 ldomXPointer::toStringV2AsIndexes() {
+lString32 ldomXPointer::toStringV2AsIndexes() const {
     lString32 path;
     if (isNull())
         return path;
@@ -858,7 +858,7 @@ lString32 ldomXPointer::toStringV2AsIndexes() {
 
 /// returns HTML (serialized from the DOM, may be different from the source HTML)
 /// puts the paths of the linked css files met into the provided lString32Collection cssFiles
-lString8 ldomXPointer::getHtml(lString32Collection& cssFiles, int wflags) {
+lString8 ldomXPointer::getHtml(lString32Collection& cssFiles, int wflags) const {
     if (isNull())
         return lString8::empty_str;
     ldomNode* startNode = getNode();
@@ -874,13 +874,13 @@ lString8 ldomXPointer::getHtml(lString32Collection& cssFiles, int wflags) {
 }
 
 /// returns href attribute of <A> element, null string if not found
-lString32 ldomXPointer::getHRef() {
+lString32 ldomXPointer::getHRef() const {
     ldomXPointer unused_a_xpointer;
     return getHRef(unused_a_xpointer);
 }
 
 /// returns href attribute of <A> element, plus xpointer of <A> element itself
-lString32 ldomXPointer::getHRef(ldomXPointer& a_xpointer) {
+lString32 ldomXPointer::getHRef(ldomXPointer& a_xpointer) const {
     if (isNull())
         return lString32::empty_str;
     ldomNode* node = getNode();
