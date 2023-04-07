@@ -5329,16 +5329,13 @@ ldomXPointer LVDocView::getPageBookmark(int page) {
     return ptr;
 }
 
-/// get bookmark position text
-bool LVDocView::getBookmarkPosText(ldomXPointer bm, lString32& titleText,
-                                   lString32& posText) {
-    LVLock lock(getMutex());
-    checkRender();
+/// get bookmark position text (for FictionBook format)
+bool LVDocView::getBookmarkPosTextFB2Impl(ldomXPointer bm, lString32& titleText, lString32& posText) {
     titleText = posText = lString32::empty_str;
     if (bm.isNull())
         return false;
     ldomNode* el = bm.getNode();
-    CRLog::trace("getBookmarkPosText() : getting position text");
+    CRLog::trace("getBookmarkPosTextFB2Impl() : getting position text");
     if (el->isText()) {
         lString32 txt = bm.getNode()->getText();
         int startPos = bm.getOffset();
@@ -5355,8 +5352,14 @@ bool LVDocView::getBookmarkPosText(ldomXPointer bm, lString32& titleText,
     bool inTitle = false;
     do {
         while (el && el->getNodeId() != el_section && el->getNodeId() != el_body) {
-            if (el->getNodeId() == el_title || el->getNodeId() == el_subtitle)
-                inTitle = true;
+            switch (el->getNodeId()) {
+                case el_title:
+                case el_subtitle:
+                    inTitle = true;
+                    break;
+                default:
+                    break;
+            }
             el = el->getParentNode();
         }
         if (el) {
@@ -5386,6 +5389,144 @@ bool LVDocView::getBookmarkPosText(ldomXPointer bm, lString32& titleText,
     limitStringSize(titleText, 70);
     limitStringSize(posText, 120);
     return true;
+}
+
+static bool s_isContainsHeader(const ldomNode* node, lString32& header, lUInt8& level) {
+    header = lString32::empty_str;
+    level = 100;
+    if (NULL == node)
+        return false;
+    switch (node->getNodeId()) {
+        case el_h1:
+            level = 1;
+            break;
+        case el_h2:
+            level = 2;
+            break;
+        case el_h3:
+            level = 3;
+            break;
+        case el_h4:
+            level = 4;
+            break;
+        case el_h5:
+            level = 5;
+            break;
+        case el_h6:
+            level = 6;
+            break;
+        default:
+            break;
+    }
+    if (level > 0 && level < 7) {
+        header = node->getText(U' ', 1024);
+        return true;
+    }
+    bool res = false;
+    for (int i = 0; i < node->getChildCount(); i++) {
+        res = s_isContainsHeader(node->getChildNode(i), header, level);
+        if (res)
+            break;
+    }
+    return res;
+}
+
+/// get bookmark position text (for html-like formats)
+bool LVDocView::getBookmarkPosTextHtmlImpl(ldomXPointer bm, lString32& titleText, lString32& posText) {
+    titleText = posText = lString32::empty_str;
+    if (bm.isNull())
+        return false;
+    ldomNode* el = bm.getNode();
+    CRLog::trace("getBookmarkPosTextHtmlImpl() : getting position text");
+    if (el->isText()) {
+        lString32 txt = bm.getNode()->getText();
+        int startPos = bm.getOffset();
+        int len = txt.length() - startPos;
+        if (len > 0)
+            txt = txt.substr(startPos, len);
+        if (startPos > 0)
+            posText = "...";
+        posText += txt;
+        el = el->getParentNode();
+    } else {
+        posText = el->getText(U' ', 1024);
+    }
+    bool inTitle = false;
+    ldomNode* t = el;
+    while (t && t->getNodeId() != el_body && t->getNodeId() != el_DocFragment) {
+        switch (t->getNodeId()) {
+            case el_h1:
+            case el_h2:
+            case el_h3:
+            case el_h4:
+            case el_h5:
+            case el_h6:
+                inTitle = true;
+                break;
+            default:
+                break;
+        }
+        t = t->getParentNode();
+    }
+    lUInt8 prevLevel = 100;
+    do {
+        lString32 header;
+        lUInt8 level;
+        while (el && el->getNodeId() != el_body && el->getNodeId() != el_DocFragment) {
+            if (s_isContainsHeader(el, header, level)) {
+                if (level < prevLevel) {
+                    // We found the heading
+                    break;
+                }
+            }
+            t = el->getPrevSibling();
+            if (NULL != t)
+                el = t;
+            else
+                el = el->getParentNode();
+        }
+        if (el) {
+            if (inTitle) {
+                ldomNode* nextNode = el->getNextSibling();
+                if (NULL != nextNode && nextNode->getChildCount() > 0) {
+                    ldomNode* node = nextNode->getChildNode(0);
+                    posText = node->getText(' ', 8192);
+                }
+                inTitle = false;
+            }
+            if (el->getNodeId() == el_body && !titleText.empty())
+                break;
+            lString32 txt = header;
+            lChar32 lastch = !txt.empty() ? txt[txt.length() - 1] : 0;
+            if (!titleText.empty()) {
+                if (lastch != '.' && lastch != '?' && lastch != '!')
+                    txt += ".";
+                txt += " ";
+            }
+            titleText = txt + titleText;
+            t = el->getPrevSibling();
+            if (NULL != t)
+                el = t;
+            else
+                el = el->getParentNode();
+            prevLevel = level;
+        }
+        if (titleText.length() > 50)
+            break;
+    } while (el);
+    limitStringSize(titleText, 70);
+    limitStringSize(posText, 120);
+    return true;
+}
+
+/// get bookmark position text
+bool LVDocView::getBookmarkPosText(ldomXPointer bm, lString32& titleText, lString32& posText) {
+    LVLock lock(getMutex());
+    checkRender();
+    ldomNode* body = m_doc->nodeFromXPath(cs32("/FictionBook/body[1]"));
+    if (NULL != body)
+        return getBookmarkPosTextFB2Impl(bm, titleText, posText);
+    return getBookmarkPosTextHtmlImpl(bm, titleText, posText);
 }
 
 /// moves position to bookmark
