@@ -4,8 +4,8 @@
  *   Copyright (C) 2010 Alexander V. Nikolaev <avn@daemon.hole.ru>         *
  *   Copyright (C) 2018 EXL <exlmotodev@gmail.com>                         *
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
- *   Copyright (C) 2020,2021 Aleksey Chernov <valexlin@gmail.com>          *
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
+ *   Copyright (C) 2020,2021,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -27,6 +27,8 @@
  * \file hist.cpp
  * \brief file history and bookmarks container
  */
+
+#include <stdint.h>
 
 #include <crhist.h>
 #include <lvxmlparsercallback.h>
@@ -620,11 +622,11 @@ CRBookmark::CRBookmark(ldomXPointer ptr)
 lString32 CRFileHistRecord::getLastTimeString(bool longFormat) {
     time_t t = getLastTime();
     tm* bt = localtime(&t);
-    char str[20];
+    char str[22];
     if (!longFormat)
-        sprintf(str, "%02d.%02d.%04d", bt->tm_mday, 1 + bt->tm_mon, 1900 + bt->tm_year);
+        sprintf(str, "%02u.%02u.%04u", (uint8_t)bt->tm_mday, (uint8_t)(1 + bt->tm_mon), (uint16_t)(1900 + bt->tm_year));
     else
-        sprintf(str, "%02d.%02d.%04d %02d:%02d", bt->tm_mday, 1 + bt->tm_mon, 1900 + bt->tm_year, bt->tm_hour, bt->tm_min);
+        sprintf(str, "%02u.%02u.%04u %02u:%02u", (uint8_t)bt->tm_mday, (uint8_t)(1 + bt->tm_mon), (uint16_t)(1900 + bt->tm_year), (uint8_t)bt->tm_hour, (uint8_t)bt->tm_min);
     return Utf8ToUnicode(lString8(str));
 }
 
