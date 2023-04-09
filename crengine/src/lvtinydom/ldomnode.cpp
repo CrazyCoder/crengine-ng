@@ -5,8 +5,8 @@
  *   Copyright (C) 2015-2017 Yifei(Frank) ZHU <fredyifei@gmail.com>        *
  *   Copyright (C) 2018 Frans de Jonge <fransdejonge@gmail.com>            *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
- *   Copyright (C) 2018-2021 Aleksey Chernov <valexlin@gmail.com>          *
  *   Copyright (C) 2017-2022 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2018-2021,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -3851,6 +3851,22 @@ ldomNode* ldomNode::getLastChild() const {
                 return getDocument()->getTinyNode(me->children[me->childCount - 1]);
         }
     }
+    return NULL;
+}
+
+ldomNode* ldomNode::getPrevSibling() const {
+    ldomNode* parent = getParentNode();
+    int idx = getNodeIndex();
+    if (NULL != parent && idx > 0)
+        return parent->getChildNode(idx - 1);
+    return NULL;
+}
+
+ldomNode* ldomNode::getNextSibling() const {
+    ldomNode* parent = getParentNode();
+    int idx = getNodeIndex();
+    if (NULL != parent && idx < parent->getChildCount() - 1)
+        return parent->getChildNode(idx + 1);
     return NULL;
 }
 
