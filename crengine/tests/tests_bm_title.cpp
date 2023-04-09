@@ -165,3 +165,77 @@ TEST_F(BookmarkGetTitleTests, GetBMTitleInFB2) {
     CRLog::info("Finished GetBMTitleInFB2");
     CRLog::info("========================");
 }
+
+TEST_F(BookmarkGetTitleTests, GetBMTitleInEPUB) {
+    CRLog::info("=========================");
+    CRLog::info("Starting GetBMTitleInEPUB");
+    ASSERT_TRUE(m_initOK);
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "structured-doc.epub")); // load document
+    ASSERT_TRUE(setCSS("epub.css"));
+
+#if DEBUG_DUMP_XML
+    ASSERT_TRUE(dumpXML("structured-doc-epub-dump.xml"));
+#endif
+
+    // 1. xptr - regular text (in paragraph)
+    ldomXPointer xptr = m_view->getDocument()->createXPointer(U"/body/DocFragment[2]/body/p[3]/text().0");
+    EXPECT_FALSE(xptr.isNull());
+
+    lString32 titleText;
+    lString32 posText;
+    // Get title & text at pointer
+    EXPECT_TRUE(m_view->getBookmarkPosText(xptr, titleText, posText));
+
+    // compare with reference
+    EXPECT_STREQ(UnicodeToUtf8(titleText).c_str(), "Chapter II. Chapter II.a");
+    EXPECT_STREQ(UnicodeToUtf8(posText).c_str(), "Key target text!");
+
+    // 2. xptr - regular text (in paragraph)
+    xptr = m_view->getDocument()->createXPointer(U"/body/DocFragment[2]/body/p[9]/text().0");
+    EXPECT_FALSE(xptr.isNull());
+
+    // Get title & text at pointer
+    EXPECT_TRUE(m_view->getBookmarkPosText(xptr, titleText, posText));
+
+    // compare with reference
+    EXPECT_STREQ(UnicodeToUtf8(titleText).c_str(), "Chapter II. Chapter II.b");
+    EXPECT_STREQ(UnicodeToUtf8(posText).c_str(), "Key target text (2)!");
+
+    // 3. xptr - regular text (in paragraph), complex header (contains child elements)
+    xptr = m_view->getDocument()->createXPointer(U"/body/DocFragment[3]/body/p[2]/text().0");
+    EXPECT_FALSE(xptr.isNull());
+
+    // Get title & text at pointer
+    EXPECT_TRUE(m_view->getBookmarkPosText(xptr, titleText, posText));
+
+    // compare with reference
+    EXPECT_STREQ(UnicodeToUtf8(titleText).c_str(), "CHAPTER III. Some Chapter Name");
+    EXPECT_STREQ(UnicodeToUtf8(posText).c_str(), "Key target text!");
+
+    // 4. xptr - regular text (in paragraph), complex header (header is inside another element)
+    xptr = m_view->getDocument()->createXPointer(U"/body/DocFragment[4]/body/p[2]/text().0");
+    EXPECT_FALSE(xptr.isNull());
+
+    // Get title & text at pointer
+    EXPECT_TRUE(m_view->getBookmarkPosText(xptr, titleText, posText));
+
+    // compare with reference
+    EXPECT_STREQ(UnicodeToUtf8(titleText).c_str(), "CHAPTER IV. Some Chapter Name");
+    EXPECT_STREQ(UnicodeToUtf8(posText).c_str(), "Key target text!");
+
+    // 5. xptr - in title
+    xptr = m_view->getDocument()->createXPointer(U"/body/DocFragment[2]/body/h3[2]/text().0");
+    EXPECT_FALSE(xptr.isNull());
+
+    // Get title & text at pointer
+    EXPECT_TRUE(m_view->getBookmarkPosText(xptr, titleText, posText));
+
+    // compare with reference
+    EXPECT_STREQ(UnicodeToUtf8(titleText).c_str(), "Chapter II. Chapter II.b");
+    EXPECT_STREQ(UnicodeToUtf8(posText).c_str(), "Paragraph 2.2.");
+
+    CRLog::info("Finished GetBMTitleInEPUB");
+    CRLog::info("=========================");
+}
