@@ -72,6 +72,7 @@ set(SRC_LIST
   tests_hyph.cpp
   tests_fontman_funcs.cpp
   tests_streamutils.cpp
+  tests_bm_title.cpp
 )
 
 set(CRE_NG)
