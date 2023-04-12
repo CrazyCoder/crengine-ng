@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file zip-use_tests.cpp
+ * \file tests_zip-use.cpp
  * \brief Tests zip-archive usage.
  */
 

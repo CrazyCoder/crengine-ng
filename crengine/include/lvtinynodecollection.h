@@ -3,7 +3,7 @@
  *   Copyright (C) 2008-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
  *   Copyright (C) 2018-2020 poire-z <poire-z@users.noreply.github.com>    *
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
- *   Copyright (C) 2020,2021 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020,2021,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -375,7 +375,7 @@ public:
     lString32 getStatistics();
 
     /// get ldomNode instance pointer
-    ldomNode* getTinyNode(lUInt32 index);
+    ldomNode* getTinyNode(lUInt32 index) const;
     /// allocate new ldomNode
     ldomNode* allocTinyNode(int type);
     /// allocate new tinyElement

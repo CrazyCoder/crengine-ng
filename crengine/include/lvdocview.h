@@ -435,6 +435,10 @@ private:
     void insertBookmarkPercentInfo(int start_page, int end_y, int percent);
 
     void updateDocStyleSheet();
+    /// get bookmark position text (for FictionBook format)
+    bool getBookmarkPosTextFB2Impl(ldomXPointer bm, lString32& titleText, lString32& posText);
+    /// get bookmark position text (for FictionBook format)
+    bool getBookmarkPosTextHtmlImpl(ldomXPointer bm, lString32& titleText, lString32& posText);
 protected:
     /// returns document offset for next page
     int getNextPageOffset();

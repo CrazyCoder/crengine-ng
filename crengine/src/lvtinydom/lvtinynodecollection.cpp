@@ -641,7 +641,7 @@ bool tinyNodeCollection::loadNodeData() {
 }
 
 /// get ldomNode instance pointer
-ldomNode* tinyNodeCollection::getTinyNode(lUInt32 index) {
+ldomNode* tinyNodeCollection::getTinyNode(lUInt32 index) const {
     if (!index)
         return NULL;
     if (index & 1) // element

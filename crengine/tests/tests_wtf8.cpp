@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file wtf8_tests.cpp
+ * \file tests_wtf8.cpp
  * \brief Tests WTF-8 encoding/decoding.
  */
 

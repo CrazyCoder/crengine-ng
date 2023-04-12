@@ -4,7 +4,7 @@
  *   Copyright (C) 2016 Yifei(Frank) ZHU <fredyifei@gmail.com>             *
  *   Copyright (C) 2018-2020 poire-z <poire-z@users.noreply.github.com>    *
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
- *   Copyright (C) 2018,2020 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018,2020,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -79,7 +79,7 @@ protected:
                 , _dataIndex(v._dataIndex)
                 , _offset(v._offset)
                 , _refCount(1) { }
-        inline ldomDocument* getDocument() {
+        inline ldomDocument* getDocument() const {
             return _doc;
         }
         inline bool operator==(const XPointerData& v) const {
@@ -88,13 +88,13 @@ protected:
         inline bool operator!=(const XPointerData& v) const {
             return _doc != v._doc || _dataIndex != v._dataIndex || _offset != v._offset;
         }
-        inline bool isNull() {
+        inline bool isNull() const {
             return _dataIndex == 0 || _doc == NULL;
         }
-        inline ldomNode* getNode() {
+        inline ldomNode* getNode() const {
             return _dataIndex > 0 ? ((lxmlDocBase*)_doc)->getTinyNode(_dataIndex) : NULL;
         }
-        inline int getOffset() {
+        inline int getOffset() const {
             return _offset;
         }
         inline void setNode(ldomNode* node) {
@@ -131,7 +131,7 @@ public:
         _data = new XPointerData();
     }
     /// return document
-    inline ldomDocument* getDocument() {
+    inline ldomDocument* getDocument() const {
         return _data->getDocument();
     }
     /// returns node pointer
@@ -223,24 +223,24 @@ public:
     /// returns coordinates of pointer inside formatted document
     lvPoint toPoint(bool extended = false) const;
     /// converts to string
-    lString32 toString(XPointerMode mode = XPATH_USE_NAMES);
-    lString32 toStringV1();          // Using names, old, with boxing elements (non-normalized)
-    lString32 toStringV2();          // Using names, new, without boxing elements, so: normalized
-    lString32 toStringV2AsIndexes(); // Without element names, normalized (not used)
+    lString32 toString(XPointerMode mode = XPATH_USE_NAMES) const;
+    lString32 toStringV1() const;          // Using names, old, with boxing elements (non-normalized)
+    lString32 toStringV2() const;          // Using names, new, without boxing elements, so: normalized
+    lString32 toStringV2AsIndexes() const; // Without element names, normalized (not used)
 
     /// returns XPath node text
-    lString32 getText(lChar32 blockDelimiter = 0) {
+    lString32 getText(lChar32 blockDelimiter = 0) const {
         ldomNode* node = getNode();
         if (!node)
             return lString32::empty_str;
         return node->getText(blockDelimiter);
     }
     /// returns href attribute of <A> element, null string if not found
-    lString32 getHRef();
+    lString32 getHRef() const;
     /// returns href attribute of <A> element, plus xpointer of <A> element itself
-    lString32 getHRef(ldomXPointer& a_xpointer);
+    lString32 getHRef(ldomXPointer& a_xpointer) const;
     /// create a copy of pointer data
-    ldomXPointer* clone() {
+    ldomXPointer* clone() const {
         return new ldomXPointer(_data);
     }
     /// returns true if current node is element
@@ -252,8 +252,8 @@ public:
         return !isNull() && getNode()->isText();
     }
     /// returns HTML (serialized from the DOM, may be different from the source HTML)
-    lString8 getHtml(lString32Collection& cssFiles, int wflags = 0);
-    lString8 getHtml(int wflags = 0) {
+    lString8 getHtml(lString32Collection& cssFiles, int wflags = 0) const;
+    lString8 getHtml(int wflags = 0) const {
         lString32Collection cssFiles;
         return getHtml(cssFiles, wflags);
     }

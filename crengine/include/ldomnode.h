@@ -2,8 +2,8 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2007-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
  *   Copyright (C) 2019,2020 Konstantin Potapov <pkbo@users.sourceforge.net>
- *   Copyright (C) 2018,2020 Aleksey Chernov <valexlin@gmail.com>          *
  *   Copyright (C) 2018-2022 poire-z <poire-z@users.noreply.github.com>    *
+ *   Copyright (C) 2018,2020,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -215,7 +215,7 @@ public:
         return _handle._dataIndex && (_handle._dataIndex & 1);
     }
     /// returns true if node is and element that has children
-    inline bool hasChildren() {
+    inline bool hasChildren() const {
         return getChildCount() != 0;
     }
     /// returns true if node is element has attributes
@@ -351,6 +351,10 @@ public:
     ldomNode* getFirstChild() const;
     /// returns last child node
     ldomNode* getLastChild() const;
+    /// returns previous sibling node
+    ldomNode* getPrevSibling() const;
+    /// returns next sibling node
+    ldomNode* getNextSibling() const;
     /// removes and deletes last child element
     void removeLastChild();
     /// move range of children startChildIndex to endChildIndex inclusively to specified element
@@ -373,7 +377,7 @@ public:
     ldomNode* removeChild(lUInt32 index);
 
     /// returns XPath segment for this element relative to parent element (e.g. "p[10]")
-    lString32 getXPathSegment();
+    lString32 getXPathSegment() const;
 
     /// creates stream to read base64 encoded data from element
     LVStreamRef createBase64Stream();

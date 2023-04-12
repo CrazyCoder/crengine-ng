@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">
+ <description>
+  <title-info>
+   <genre>comp_programming</genre>
+   <author>
+    <first-name>First Name</first-name>
+    <last-name>Last Name</last-name>
+   </author>
+   <book-title>structured-doc.fb2</book-title>
+   <annotation>
+    <p>Test fb2 document with tree structure</p>
+   </annotation>
+   <date></date>
+   <lang>en</lang>
+  </title-info>
+  <document-info>
+   <author>
+    <first-name>First Name</first-name>
+    <last-name>Last Name</last-name>
+   </author>
+   <program-used>FictionBook Editor Release 2.6.6</program-used>
+   <date value="2023-02-21">21 February 2023</date>
+   <id>E75F2C55-C62C-4A15-8A74-18CD9010B058</id>
+   <version>1.0</version>
+  </document-info>
+ </description>
+ <body>
+  <section>
+   <title>
+    <p>Chapter I</p>
+   </title>
+   <p>Paragraph 1.</p>
+   <p>Text some text. Some long long long long long long long long long long long long long long long long long long long long long text. Text some text. Some long long long long long long long long long long long long long long long long long long long long long text.</p>
+  </section>
+  <section>
+   <title>
+    <p>Chapter II</p>
+   </title>
+   <section>
+    <title>
+     <p>Chapter II.a</p>
+    </title>
+    <p>Paragraph 2.1.</p>
+    <p>Text some text.</p>
+    <p>Some long long long long long long long long long long long long long long long long long long long long long text.</p>
+    <p>Key target text!</p>
+    <p>Some long long long long long long long long long long long long long long long long long long long long long text.</p>
+    <p>Text some text. Text some text. Text some text.</p>
+   </section>
+   <section>
+    <title>
+     <p>Chapter II.b</p>
+    </title>
+    <p>Paragraph 2.2.</p>
+    <p>Text some text.</p>
+    <p>Some long long long long long long long long long long long long long long long long long long long long long text.</p>
+    <p>Text some text.</p>
+    <p>Some long long long long long long long long long long long long long long long long long long long long long text.</p>
+    <p>Text some text. Text some text. Text some text.</p>
+   </section>
+  </section>
+ </body>
+</FictionBook>

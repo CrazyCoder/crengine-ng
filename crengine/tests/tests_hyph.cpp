@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /**
- * \file hyph_tests.cpp
+ * \file tests_hyph.cpp
  * \brief Testing the hyphenation module.
  */
 

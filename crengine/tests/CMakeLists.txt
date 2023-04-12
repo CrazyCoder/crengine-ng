@@ -3,8 +3,8 @@
 include(FetchContent)
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
-  URL_HASH MD5=e8a8df240b6938bb6384155d4c37d937
+  URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
+  URL_HASH MD5=95b29f0038ec84a611df951d74d99897
 )
 FetchContent_Declare(
   freefont
@@ -16,6 +16,9 @@ FetchContent_Declare(
   URL https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip
   URL_HASH MD5=3b43a5cb33196ec25e44d5fcb40219e1
 )
+
+# GoogleTest 1.13+ requires at least C++14
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 set(BUILD_GMOCK OFF CACHE BOOL "Builds the googlemock subproject" FORCE)
 set(INSTALL_GTEST OFF CACHE BOOL "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" FORCE)
@@ -58,17 +61,18 @@ set(SRC_LIST
   compare-two-binfiles.cpp
   make-rand-file.cpp
   crengine-ng-environment.cpp
-  blockwritecache_tests.cpp
-  tinydom_tests.cpp
-  textrender_tests.cpp
-  wtf8_tests.cpp
-  docparse_tests.cpp
-  docview_funcs_tests.cpp
-  zip-use_tests.cpp
-  localenames_tests.cpp
-  hyph_tests.cpp
-  fontman_funcs_tests.cpp
-  streamutils_tests.cpp
+  tests_blockwritecache.cpp
+  tests_tinydom.cpp
+  tests_textrender.cpp
+  tests_wtf8.cpp
+  tests_docparse.cpp
+  tests_docview_funcs.cpp
+  tests_zip-use.cpp
+  tests_localenames.cpp
+  tests_hyph.cpp
+  tests_fontman_funcs.cpp
+  tests_streamutils.cpp
+  tests_bm_title.cpp
 )
 
 set(CRE_NG)

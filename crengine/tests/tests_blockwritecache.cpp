@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 /**
- * \file blockwritecache_tests.cpp
+ * \file tests_blockwritecache.cpp
  * \brief Tests LVBlockWriteStream class.
  */
 
