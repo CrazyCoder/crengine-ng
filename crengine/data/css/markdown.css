@@ -32,8 +32,19 @@ sub { vertical-align: sub; font-size: 70% }
 sup { vertical-align: super; font-size: 70% }
 tt, samp, kbd, code, pre { font-family: "Noto Mono", "FreeMono", "Courier New", "Andale Mono", "Droid Sans Mono", "Menlo", "Liberation Mono", "DeJaVu Sans Mono", monospace; }
 pre, xmp { display: block; $pre.all }
-code, kbd, samp, tt { $pre.font-face; }
-
+code, kbd, samp, tt {
+    hyphens: none;
+    $pre.font-face;
+}
+pre code {
+    display: block;
+    border-style: solid;
+    border-width: 1pt;
+    border-color: #b0b0b0;
+    padding: 0.7em;
+    margin-top: 0.7em;
+    margin-bottom: 0.7em;
+}
 nobr { display: inline; hyphenate: none; white-space: nowrap; }
 
 h1,h2 {
@@ -113,7 +124,11 @@ dl { margin-left: 0em; list-style-type: disc }
 dt { display: block; margin-left: 0em; margin-top:0.3em; font-weight: bold; }
 dd { display: block; margin-left: 1.3em }
 
-a { display:inline; $link.all }
+a {
+    display:inline;
+    color: #2579cc;
+    $link.all
+}
 
 span { display: inline; }
 
