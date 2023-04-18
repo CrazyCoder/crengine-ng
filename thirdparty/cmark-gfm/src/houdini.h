@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include "cmark-gfm-config.h"
+#include "config.h"
 #include "buffer.h"
 
 #ifdef HAVE___BUILTIN_EXPECT

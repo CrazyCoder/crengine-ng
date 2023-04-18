@@ -581,6 +581,12 @@ www.github.com www.github.com/á
 
 www.google.com/a_b
 
+Underscores not allowed in host name www.xxx.yyy._zzz
+
+Underscores not allowed in host name www.xxx._yyy.zzz
+
+Underscores allowed in domain name www._xxx.yyy.zzz
+
 **Autolink and http://inlines**
 
 ![http://inline.com/image](http://inline.com/image)
@@ -618,6 +624,9 @@ http://🍄.ga/ http://x🍄.ga/
 <p>Email me at:<a href="mailto:scyther@pokemon.com">scyther@pokemon.com</a></p>
 <p><a href="http://www.github.com">www.github.com</a> <a href="http://www.github.com/%C3%A1">www.github.com/á</a></p>
 <p><a href="http://www.google.com/a_b">www.google.com/a_b</a></p>
+<p>Underscores not allowed in host name www.xxx.yyy._zzz</p>
+<p>Underscores not allowed in host name www.xxx._yyy.zzz</p>
+<p>Underscores allowed in domain name <a href="http://www._xxx.yyy.zzz">www._xxx.yyy.zzz</a></p>
 <p><strong>Autolink and <a href="http://inlines">http://inlines</a></strong></p>
 <p><img src="http://inline.com/image" alt="http://inline.com/image" /></p>
 <p><a href="mailto:a.w@b.c">a.w@b.c</a></p>
@@ -728,7 +737,7 @@ Hi!
 <section class="footnotes" data-footnotes>
 <ol>
 <li id="fn-1">
-<p>Some <em>bolded</em> footnote definition. <a href="#fnref-1" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩</a></p>
+<p>Some <em>bolded</em> footnote definition. <a href="#fnref-1" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="1" aria-label="Back to reference 1">↩</a></p>
 </li>
 <li id="fn-footnote">
 <blockquote>
@@ -736,15 +745,15 @@ Hi!
 </blockquote>
 <pre><code>as well as code blocks
 </code></pre>
-<p>or, naturally, simple paragraphs. <a href="#fnref-footnote" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩</a></p>
+<p>or, naturally, simple paragraphs. <a href="#fnref-footnote" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="2" aria-label="Back to reference 2">↩</a></p>
 </li>
 <li id="fn-other-note">
-<p>no code block here (spaces are stripped away) <a href="#fnref-other-note" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩</a></p>
+<p>no code block here (spaces are stripped away) <a href="#fnref-other-note" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="3" aria-label="Back to reference 3">↩</a></p>
 </li>
 <li id="fn-codeblock-note">
 <pre><code>this is now a code block (8 spaces indentation)
 </code></pre>
-<a href="#fnref-codeblock-note" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩</a>
+<a href="#fnref-codeblock-note" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="4" aria-label="Back to reference 4">↩</a>
 </li>
 </ol>
 </section>
@@ -764,7 +773,7 @@ This footnote is referenced[^a-footnote] multiple times, in lots of different pl
 <section class="footnotes" data-footnotes>
 <ol>
 <li id="fn-a-footnote">
-<p>This footnote definition should have three backrefs. <a href="#fnref-a-footnote" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩</a> <a href="#fnref-a-footnote-2" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩<sup class="footnote-ref">2</sup></a> <a href="#fnref-a-footnote-3" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩<sup class="footnote-ref">3</sup></a></p>
+<p>This footnote definition should have three backrefs. <a href="#fnref-a-footnote" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="1" aria-label="Back to reference 1">↩</a> <a href="#fnref-a-footnote-2" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="1-2" aria-label="Back to reference 1-2">↩<sup class="footnote-ref">2</sup></a> <a href="#fnref-a-footnote-3" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="1-3" aria-label="Back to reference 1-3">↩<sup class="footnote-ref">3</sup></a></p>
 </li>
 </ol>
 </section>
@@ -781,7 +790,7 @@ Hello[^"><script>alert(1)</script>]
 <section class="footnotes" data-footnotes>
 <ol>
 <li id="fn-%22%3E%3Cscript%3Ealert(1)%3C/script%3E">
-<p>pwned <a href="#fnref-%22%3E%3Cscript%3Ealert(1)%3C/script%3E" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩</a></p>
+<p>pwned <a href="#fnref-%22%3E%3Cscript%3Ealert(1)%3C/script%3E" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="1" aria-label="Back to reference 1">↩</a></p>
 </li>
 </ol>
 </section>
