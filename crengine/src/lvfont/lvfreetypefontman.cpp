@@ -274,13 +274,6 @@ LVFontRef LVFreeTypeFontManager::GetFallbackFont(int size, int weight, bool ital
         return LVFontRef();
     if (index < 0 || index >= _fallbackFontFaces.length())
         return LVFontRef();
-    // reduce number of possible distinct sizes for fallback font
-    if (size > 40)
-        size &= 0xFFF8;
-    else if (size > 28)
-        size &= 0xFFFC;
-    else if (size > 16)
-        size &= 0xFFFE;
     // We don't use/extend findFallback(), which was made to work
     // assuming the fallback font is a standalone regular font
     // without any bold/italic sibling.
