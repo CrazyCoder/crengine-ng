@@ -23,7 +23,7 @@
 
 #include <crsetup.h>
 
-#if (USE_CMARK == 1) || (USE_CMARK_GFM == 1)
+#if USE_CMARK_GFM == 1
 
 #include <lvcontainer.h>
 #include <lvstring.h>
@@ -37,6 +37,6 @@ class CacheLoadingCallback;
 bool DetectMarkdownFormat(LVStreamRef stream, const lString32& fileName);
 bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback);
 
-#endif // (USE_CMARK == 1) || (USE_CMARK_GFM == 1)
+#endif // USE_CMARK_GFM == 1
 
 #endif // __MDFMT_H_INCLUDED__

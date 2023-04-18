@@ -4566,7 +4566,7 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
         }
 #endif
 
-#if (USE_CMARK == 1) || (USE_CMARK_GFM == 1)
+#if USE_CMARK_GFM == 1
         if (DetectMarkdownFormat(m_stream, fn)) {
             CRLog::info("Markdown format detected");
             createEmptyDocument();
