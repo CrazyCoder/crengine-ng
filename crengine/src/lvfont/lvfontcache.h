@@ -67,6 +67,7 @@ class LVFontCache
     LVPtrVector<LVFontCacheItem> _instance_list;
 public:
     void clear() {
+        clearFallbackFonts();
         _registered_list.clear();
         _instance_list.clear();
     }
@@ -152,6 +153,11 @@ public:
     virtual void getAvailableFontWeights(LVArray<int>& weights, lString8 faceName);
 
     virtual void clearFallbackFonts() {
+        for (int i = 0; i < _instance_list.length(); i++) {
+            LVFontRef fontRef = _instance_list[i]->getFont();
+            if (!fontRef.isNull())
+                fontRef->setFallbackFont(LVFontRef());
+        }
         for (int i = 0; i < _registered_list.length(); i++) {
             LVFontRef fontRef = _registered_list[i]->getFont();
             if (!fontRef.isNull())
