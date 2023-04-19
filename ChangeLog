@@ -1,3 +1,89 @@
+2023-04-19  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.8 released.
+	==========================
+
+	Tag sources with `0.9.8'.
+
+	See below for changes.
+
+2023-04-19  Aleksey Chernov  <valexlin@gmail.com>
+
+	Fixed a memory leak related to non-release of fallback fonts.
+
+2023-04-18  Aleksey Chernov  <valexlin@gmail.com>
+
+	The same as 5928641f7d7b9bb514b7b11a221e0d76f84869b6 FreeType fallback fonts: don't reduce number of possible distinct sizes for fallback font. Similar code has been removed from another function.
+
+	Modified local cmark-gfm (thirdparty/cmark-gfm) to be compatible with the crengine-ng build system.
+
+	Update `thirdparty/cmark-gfm` to 0.29.0.gfm.11
+
+	Remove `thirdparty/cmake` from build system
+
+	Removed thirdparty `thirdparty/cmark/`.
+
+	Tune crengine/data/css/markdown.css
+
+2023-04-11  Aleksey Chernov  <valexlin@gmail.com>
+
+	Bump version to 0.9.8-beta3. The version of the library API has been increased, since the prototypes of some public methods have changed (const added).
+
+2023-04-10  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added unittest 'BookmarkGetTitleTests.GetBMTitleInEPUB' for the LVDocView::getBookmarkPosText() function (for epub documents).
+
+2023-04-09  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added unittest 'BookmarkGetTitleTests.GetBMTitleInFB2' for the LVDocView::getBookmarkPosText() function (for fb2 documents).
+
+	ldomNode: added getPrevSibling(), getNextSibling() functions to get the previous or next neighbor.
+
+2023-04-08  Aleksey Chernov  <valexlin@gmail.com>
+
+	Bump GoogleTest to 1.13.0
+
+	Fixed potential buffer overflow in CRFileHistRecord::getLastTimeString()
+
+2023-04-07  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView::getBookmarkPosText() fixed for non-FictionBook documents.
+
+	Update crengine/Tools/qtc-debugger/personaltypes.py: added ldomNode, ldomXPointer decoders. Renamed: personaltypes.py => crengine-ng-dbg-helper.py
+
+	Constify ldomXPointer methods, tinyNodeCollection::getTinyNode(), ldomNode::getXPathSegment().
+
+2023-02-22  Aleksey Chernov  <valexlin@gmail.com>
+
+	crengine/tests: renames files: '^(.*)_tests\.cpp$' -> 'tests_$1\.cpp'
+
+2023-03-18  Aleksey Chernov  <valexlin@gmail.com>
+
+	Bump version to 0.9.8-beta2
+
+	Fixed a bug in LVDocView that prevented navigation history in the Windows version.
+
+	Fixed bug in lString32::rpos() function: wrong character counter direction.
+
+	Add crengine/Tools/qtc-debugger/.gitignore
+
+2023-02-11  Aleksey Chernov  <valexlin@gmail.com>
+
+	Bump version to 0.9.8-beta1
+
+	Update .gitlab-ci.yml: run 'unittests' from '<builddir>/crengine/tests' not '<builddir>'. This is necessary for correct testing of the relative path to absolute conversion functions.
+
+	Fixed tests related to LVGetAbsolutePath() and LVGetCurrentDirectory() functions.
+
+	Tests DocViewFuncsTests.TestGetFileCRC32, DocViewFuncsTests.TestGetFileHash: extended tests for implicitly opening an internal file in an archive.
+
+	Added tests to check the conversion of a relative path to an absolute.
+
+2023-02-09  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView::LoadDocument(): when opening a file, convert the relative name to absolute,  then the full file name will be written to the history log and this will allow  the file to be opened from the history log the next time the client program is started.
+
+
 2023-02-04  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.7 released.
