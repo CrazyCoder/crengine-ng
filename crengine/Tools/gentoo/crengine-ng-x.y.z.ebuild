@@ -1,21 +1,21 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 inherit cmake
 
 DESCRIPTION="Cross-platform library designed to implement e-book readers. Supports many e-book formats"
 HOMEPAGE="https://gitlab.com/coolreader-ng/crengine-ng"
 SRC_URI="https://gitlab.com/coolreader-ng/${PN}/-/archive/${PV}/${P}.tar.bz2"
 
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="+png +jpeg +gif +svg +chm +harfbuzz fontconfig +libunibreak fribidi zstd +libutf8proc lto static-libs"
+IUSE="+png +jpeg +gif +svg +chm +markdown +harfbuzz fontconfig +libunibreak fribidi zstd +libutf8proc lto static-libs"
 
 CDEPEND="sys-libs/zlib
 	png? ( media-libs/libpng:0 )
-	jpeg? ( virtual/jpeg:0 )
+	jpeg? ( media-libs/libjpeg-turbo )
 	>=media-libs/freetype-2.10.0
 	harfbuzz? ( media-libs/harfbuzz:= )
 	libunibreak? ( dev-libs/libunibreak:= )
@@ -50,8 +50,7 @@ src_configure() {
 		-DUSE_ANTIWORD=ON
 		-DUSE_FONTCONFIG=$(usex fontconfig)
 		-DUSE_SHASUM=OFF
-		-DUSE_CMARK=OFF
-		-DUSE_CMARK_GFM=ON
+		-DUSE_CMARK_GFM=$(usex markdown)
 		-DBUILD_TOOLS=OFF
 		-DENABLE_UNITTESTING=OFF
 		-DENABLE_LTO=$(usex lto)
