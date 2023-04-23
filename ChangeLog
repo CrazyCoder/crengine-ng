@@ -1,3 +1,21 @@
+2023-04-23  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.9 released.
+	==========================
+
+	Tag sources with `0.9.9'.
+
+	Fixes large images breaking into two parts.
+
+2023-04-23  Aleksey Chernov  <valexlin@gmail.com>
+
+	Increased FORMATTING_VERSION_ID to force reformatting of books that exists in the cache.
+
+	Partial revert changes in the LVFormatter::allocate() function in commit b72cb8d4f77806d0f1e3dacbdecf29c938b7c894.
+	This change ends up underscaling to smaller images that are taller than the page size.
+	As a result, the PageSplitState::AddLine() function breaks the image into two parts and move part of the image to the next page.
+
+
 2023-04-19  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.8 released.
