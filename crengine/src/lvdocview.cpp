@@ -5585,12 +5585,8 @@ void LVDocView::updateScroll() {
         m_scrollinfo.pagesize = 1; //getVisiblePageCount();
         m_scrollinfo.scale = 0;
         char str[32] = { 0 };
-        if (m_pages.length() > 1) {
-            if (page <= 0) {
-                sprintf(str, "cover");
-            } else
-                sprintf(str, "%d / %d", page, m_pages.length() - 1);
-        }
+        if (m_pages.length() > 1)
+            sprintf(str, "%d / %d", page + 1, m_pages.length());
         m_scrollinfo.posText = lString32(str);
     }
 }
