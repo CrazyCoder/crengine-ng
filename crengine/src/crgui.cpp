@@ -2,8 +2,8 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2008-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
  *   Copyright (C) 2011 Konstantin Potapov <pkbo@users.sourceforge.net>    *
- *   Copyright (C) 2018,2020 Aleksey Chernov <valexlin@gmail.com>          *
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
+ *   Copyright (C) 2018,2020,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -868,9 +868,11 @@ void CRDocViewWindow::draw() {
             drawStatusBar();
         }
     }
-    LVDocImageRef pageImage = _docview->getPageImage(0);
-    LVDrawBuf* drawbuf = pageImage->getDrawBuf();
-    _wm->getScreen()->draw(drawbuf, clientRect.left, clientRect.top);
+    if (_docview->isDocumentOpened()) {
+        LVDocImageRef pageImage = _docview->getPageImage(0);
+        LVDrawBuf* drawbuf = pageImage->getDrawBuf();
+        _wm->getScreen()->draw(drawbuf, clientRect.left, clientRect.top);
+    }
 }
 
 void CRDocViewWindow::setRect(const lvRect& rc) {

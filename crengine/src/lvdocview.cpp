@@ -1391,6 +1391,8 @@ bool LVDocView::exportWolFile(LVStream* stream, bool flgGray, int levels) {
 int LVDocView::GetFullHeight() {
     LVLock lock(getMutex());
     CHECK_RENDER("getFullHeight()");
+    if (NULL == m_doc)
+        return 0;
     RenderRectAccessor rd(m_doc->getRootNode());
     return (rd.getHeight() + rd.getY());
 }
@@ -1633,8 +1635,10 @@ void LVDocView::getSectionBoundsInt(LVArray<int>& bounds, ldomNode* node, lUInt1
                 lvRect rc;
                 section->getAbsRect(rc);
                 if (getViewMode() == DVM_SCROLL) {
-                    int p = (int)(((lInt64)rc.top * 10000) / fh);
-                    bounds.add(p);
+                    if (fh > 0) {
+                        int p = (int)(((lInt64)rc.top * 10000) / fh);
+                        bounds.add(p);
+                    }
                 } else {
                     int pages_cnt = m_pages.length();
                     if ((pc == 2 && (pages_cnt & 1)))
