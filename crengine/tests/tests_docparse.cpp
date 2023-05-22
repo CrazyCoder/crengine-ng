@@ -40,7 +40,7 @@
 #endif
 
 #ifndef DOCPARSE_REFERENCE_DIR
-#error Please define RENDER_REFERENCE_DIR, which points to the directory with the render reference files
+#error Please define DOCPARSE_REFERENCE_DIR, which points to directory with reference files for document parsing
 #endif
 
 // Fixtures
