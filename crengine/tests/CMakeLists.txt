@@ -49,6 +49,7 @@ add_definitions(-DCSS_DIR=\"${CMAKE_SOURCE_DIR}/crengine/data/css/\")
 add_definitions(-DFONTS_DIR=\"${FONTS_DIR}/\")
 add_definitions(-DRENDER_REFERENCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/render-references/\")
 add_definitions(-DDOCPARSE_REFERENCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/docparse-references/\")
+add_definitions(-DPROPS_REFERENCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/props-references/\")
 
 # Copy from the source directory to the working directory to test the opening of the document by relative path
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/data/hello_fb2.fb2" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
@@ -73,6 +74,7 @@ set(SRC_LIST
   tests_fontman_funcs.cpp
   tests_streamutils.cpp
   tests_bm_title.cpp
+  tests_props.cpp
 )
 
 set(CRE_NG)
