@@ -30,7 +30,6 @@
 
 #if USE_HARFBUZZ == 1
 #include <hb.h>
-#include <hb-ft.h>
 #endif
 
 #if USE_LIBUNIBREAK == 1
