@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
+include(CheckIncludeFile)
+
 #  VERSION_DEV_A/CODE description:
 # alphaX - 0X; beta X - 1X; rcX - 2X; releaseX - 3X (or empty)
 set(VERSION_MAJOR 0)
@@ -250,9 +252,17 @@ elseif(WITH_HARFBUZZ)
   find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION} REQUIRED)
 endif()
 if (HarfBuzz_FOUND)
-  set(USE_HARFBUZZ ON)
   list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${HarfBuzz_INCLUDE_DIRS})
   list(APPEND PRIVATE_LINK_LIBRARIES ${HarfBuzz_LIBRARY})
+  set(CMAKE_REQUIRED_INCLUDES ${PRIVATE_INCLUDE_DIRECTORIES})
+  set(CMAKE_REQUIRED_LIBRARIES ${PRIVATE_LINK_LIBRARIES})
+  CHECK_INCLUDE_FILE("hb-ft.h" HAVE_HARFBUZZ_HB_FT_H)
+  unset(CMAKE_REQUIRED_INCLUDES)
+  unset(CMAKE_REQUIRED_LIBRARIES)
+  if(NOT HAVE_HARFBUZZ_HB_FT_H)
+    message(FATAL_ERROR "The HarfBuzz library must be compiled with FreeType support!")
+  endif(NOT HAVE_HARFBUZZ_HB_FT_H)
+  set(USE_HARFBUZZ ON)
   if (MACOS)
     # workaround for static HarfBuzz compiled with option "--with-coretext=yes"
     list(APPEND PRIVATE_LINK_LIBRARIES "-framework Cocoa")
