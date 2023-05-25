@@ -1,6 +1,6 @@
 
 if(NOT UNIX OR MACOS)
-  message(FATAL_ERROR "This program available only for Unix/Linux!")
+    message(FATAL_ERROR "This program available only for Unix/Linux!")
 endif()
 
 find_package(X11 REQUIRED)
@@ -18,13 +18,13 @@ file(COPY "${CMAKE_SOURCE_DIR}/crengine/data/hyph/hyph-ru-ru,en-us.pattern" DEST
 
 set(CRE_NG)
 if (CRE_BUILD_STATIC)
-  set(CRE_NG crengine-ng_static)
+    set(CRE_NG crengine-ng_static)
 elseif(CRE_BUILD_SHARED)
-  set(CRE_NG crengine-ng)
+    set(CRE_NG crengine-ng)
 endif()
 
 add_executable(fb2view ${SRC_LIST})
 target_link_libraries(fb2view ${CRE_NG} ${PRIVATE_LINK_LIBRARIES} ${X11_LIBRARIES})
 if (CRE_BUILD_STATIC)
-  target_include_directories(fb2view PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
+    target_include_directories(fb2view PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 endif()

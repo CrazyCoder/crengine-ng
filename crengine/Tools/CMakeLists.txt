@@ -1,8 +1,8 @@
 
 if(UNIX)
-  if(NOT MACOS)
-    add_subdirectory(Fb2Linux)
-  endif(NOT MACOS)
+    if(NOT MACOS)
+        add_subdirectory(Fb2Linux)
+    endif(NOT MACOS)
 endif(UNIX)
 
 add_subdirectory(langstat)

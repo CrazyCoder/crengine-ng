@@ -131,9 +131,9 @@ set(CRENGINE_NG_SOURCES
 )
 
 if(USE_LOCALE_DATA)
-  list(APPEND CRENGINE_NG_SOURCES
-      src/locale_data/fc-lang-data.c
-      src/locale_data/crlocaledata.cpp)
+    list(APPEND CRENGINE_NG_SOURCES
+        src/locale_data/fc-lang-data.c
+        src/locale_data/crlocaledata.cpp)
 endif()
 
 if(NOT ANDROID)
@@ -145,104 +145,104 @@ set(PKG_CONFIG_REQUIRED_PRIVATE)
 set(PKG_CONFIG_LIBS_PRIVATE)
 
 if (USE_ZLIB)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "zlib")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "zlib")
 endif ()
 if (USE_LIBPNG)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libpng")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libpng")
 endif ()
 if (USE_LIBJPEG)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libjpeg")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libjpeg")
 endif()
 if (USE_FREETYPE)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "freetype2 >= ${FREETYPE_MIN_VERSION}")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "freetype2 >= ${FREETYPE_MIN_VERSION}")
 endif()
 if (USE_HARFBUZZ)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "harfbuzz >= ${HARFBUZZ_MIN_VERSION}")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "harfbuzz >= ${HARFBUZZ_MIN_VERSION}")
 endif()
 if (USE_FRIBIDI)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "fribidi >= ${FRIBIDI_MIN_VERSION}")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "fribidi >= ${FRIBIDI_MIN_VERSION}")
 endif()
 if (USE_LIBUNIBREAK)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libunibreak >= ${LIBUNIBREAK_MIN_VERSION}")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libunibreak >= ${LIBUNIBREAK_MIN_VERSION}")
 endif()
 if (USE_ZSTD)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libzstd >= ${ZSTD_MIN_VERSION}")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libzstd >= ${ZSTD_MIN_VERSION}")
 endif()
 if (USE_UTF8PROC)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libutf8proc")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libutf8proc")
 endif()
 if (USE_FONTCONFIG)
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "fontconfig >= ${FONTCONFIG_MIN_VERSION}")
+    list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "fontconfig >= ${FONTCONFIG_MIN_VERSION}")
 endif()
 
 if (WIN32)
-  set(CMAKE_RC_COMPILER windres)
-  # set rc syntax
-  set(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> <FLAGS> <DEFINES> -O coff -o <OBJECT> -i <SOURCE>")
-  set(CMAKE_RC_SOURCE_FILE_EXTENSIONS rc)
-  set(CMAKE_RC_FLAGS "-I${CMAKE_BINARY_DIR} -I${CMAKE_CURRENT_BINARY_DIR}")
-  # enable resource language for this project
-  enable_language(RC)
+    set(CMAKE_RC_COMPILER windres)
+    # set rc syntax
+    set(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> <FLAGS> <DEFINES> -O coff -o <OBJECT> -i <SOURCE>")
+    set(CMAKE_RC_SOURCE_FILE_EXTENSIONS rc)
+    set(CMAKE_RC_FLAGS "-I${CMAKE_BINARY_DIR} -I${CMAKE_CURRENT_BINARY_DIR}")
+    # enable resource language for this project
+    enable_language(RC)
 endif(WIN32)
 
 set(CRENGINE_NG_RC_SOURCES)
 if(WIN32)
-  if(CRE_BUILD_SHARED)
-    configure_file(rc-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/rc-config.h)
-    set(CRENGINE_NG_RC_SOURCES crengine-ng.rc)
-    set_property(SOURCE crengine-ng.rc PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h)
-  endif(CRE_BUILD_SHARED)
+    if(CRE_BUILD_SHARED)
+        configure_file(rc-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/rc-config.h)
+        set(CRENGINE_NG_RC_SOURCES crengine-ng.rc)
+        set_property(SOURCE crengine-ng.rc PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h)
+    endif(CRE_BUILD_SHARED)
 endif(WIN32)
 
 set(cre_install_libs)
 if (CRE_BUILD_SHARED)
-  add_library(crengine-ng SHARED ${CRENGINE_NG_SOURCES} ${CRENGINE_NG_RC_SOURCES})
-  set_target_properties(crengine-ng PROPERTIES OUTPUT_NAME crengine-ng)
-  set_target_properties(crengine-ng PROPERTIES VERSION ${VERSION})
-  set_target_properties(crengine-ng PROPERTIES SOVERSION ${LIB_API_VERSION})
-  target_compile_definitions(crengine-ng PRIVATE ${PRIVATE_COMPILE_DEFINITIONS})
-  target_compile_definitions(crengine-ng PUBLIC ${PUBLIC_COMPILE_DEFINITIONS})
-  target_include_directories(crengine-ng PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
-  target_link_libraries(crengine-ng ${PRIVATE_LINK_LIBRARIES})
-  list(APPEND cre_install_libs crengine-ng)
-  if(MACOS)
-    set_target_properties(crengine-ng PROPERTIES FRAMEWORK TRUE FRAMEWORK_VERSION A)
-  endif()
+    add_library(crengine-ng SHARED ${CRENGINE_NG_SOURCES} ${CRENGINE_NG_RC_SOURCES})
+    set_target_properties(crengine-ng PROPERTIES OUTPUT_NAME crengine-ng)
+    set_target_properties(crengine-ng PROPERTIES VERSION ${VERSION})
+    set_target_properties(crengine-ng PROPERTIES SOVERSION ${LIB_API_VERSION})
+    target_compile_definitions(crengine-ng PRIVATE ${PRIVATE_COMPILE_DEFINITIONS})
+    target_compile_definitions(crengine-ng PUBLIC ${PUBLIC_COMPILE_DEFINITIONS})
+    target_include_directories(crengine-ng PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
+    target_link_libraries(crengine-ng ${PRIVATE_LINK_LIBRARIES})
+    list(APPEND cre_install_libs crengine-ng)
+    if(MACOS)
+        set_target_properties(crengine-ng PROPERTIES FRAMEWORK TRUE FRAMEWORK_VERSION A)
+    endif()
 endif (CRE_BUILD_SHARED)
 if (CRE_BUILD_STATIC)
-  add_library(crengine-ng_static STATIC ${CRENGINE_NG_SOURCES})
-  if(MSVC)
-    set_target_properties(crengine-ng_static PROPERTIES OUTPUT_NAME crengine-ng_static)
-  else()
-    set_target_properties(crengine-ng_static PROPERTIES OUTPUT_NAME crengine-ng)
-  endif()
-  target_compile_definitions(crengine-ng_static PRIVATE ${PRIVATE_COMPILE_DEFINITIONS})
-  target_compile_definitions(crengine-ng_static PUBLIC ${PUBLIC_COMPILE_DEFINITIONS})
-  target_include_directories(crengine-ng_static PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
-  target_link_libraries(crengine-ng_static ${PRIVATE_LINK_LIBRARIES})
-  list(APPEND cre_install_libs crengine-ng_static)
+    add_library(crengine-ng_static STATIC ${CRENGINE_NG_SOURCES})
+    if(MSVC)
+        set_target_properties(crengine-ng_static PROPERTIES OUTPUT_NAME crengine-ng_static)
+    else()
+        set_target_properties(crengine-ng_static PROPERTIES OUTPUT_NAME crengine-ng)
+    endif()
+    target_compile_definitions(crengine-ng_static PRIVATE ${PRIVATE_COMPILE_DEFINITIONS})
+    target_compile_definitions(crengine-ng_static PUBLIC ${PUBLIC_COMPILE_DEFINITIONS})
+    target_include_directories(crengine-ng_static PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
+    target_link_libraries(crengine-ng_static ${PRIVATE_LINK_LIBRARIES})
+    list(APPEND cre_install_libs crengine-ng_static)
 endif (CRE_BUILD_STATIC)
 if (USE_CHM)
-  list(APPEND cre_install_libs cre_chmlib)
+    list(APPEND cre_install_libs cre_chmlib)
 endif()
 if (USE_ANTIWORD)
-  list(APPEND cre_install_libs cre_antiword)
+    list(APPEND cre_install_libs cre_antiword)
 endif()
 list(APPEND cre_install_libs cre_qimagescale)
 if (USE_SHASUM)
-  list(APPEND cre_install_libs cre_rfc6234-shas)
+    list(APPEND cre_install_libs cre_rfc6234-shas)
 endif()
 if (USE_CMARK_GFM)
-  list(APPEND cre_install_libs cre_cmark-gfm)
-  list(APPEND cre_install_libs cre_cmark-gfm-extensions)
+    list(APPEND cre_install_libs cre_cmark-gfm)
+    list(APPEND cre_install_libs cre_cmark-gfm-extensions)
 endif()
 
 if(BUILD_TOOLS)
-  add_subdirectory(Tools)
+    add_subdirectory(Tools)
 endif(BUILD_TOOLS)
 
 if(ENABLE_UNITTESTING)
-  add_subdirectory(tests)
+    add_subdirectory(tests)
 endif(ENABLE_UNITTESTING)
 
 # Installation
@@ -253,9 +253,9 @@ string(REPLACE ";" ", " PKG_CONFIG_REQUIRED_PRIVATE "${PKG_CONFIG_REQUIRED_PRIVA
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/crengine-ng)
 set(DATA_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/crengine-ng)
 if(MSVC)
-  set(DEF_CMAKE_INSTALL_DIR CMake)
+    set(DEF_CMAKE_INSTALL_DIR CMake)
 else()
-  set(DEF_CMAKE_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/crengine-ng)
+    set(DEF_CMAKE_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/crengine-ng)
 endif()
 set(CMAKE_INSTALL_DIR ${DEF_CMAKE_INSTALL_DIR} CACHE PATH "Installation directory for CMake files")
 
@@ -264,88 +264,88 @@ set(CRE_NG_DATADIR ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/)
 configure_file(crengine-ng-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h)
 
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
-  install(
-    # Note the trailing slash in the argument to `DIRECTORY'!
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-      DESTINATION ${INCLUDE_INSTALL_DIR}
-      COMPONENT headers)
-  install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h
-      DESTINATION ${INCLUDE_INSTALL_DIR}
-      COMPONENT headers)
+    install(
+        # Note the trailing slash in the argument to `DIRECTORY'!
+        DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+        DESTINATION ${INCLUDE_INSTALL_DIR}
+        COMPONENT headers)
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.h
+        DESTINATION ${INCLUDE_INSTALL_DIR}
+        COMPONENT headers)
 endif()
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
-  if (WIN32)
-    install(TARGETS ${cre_install_libs}
-      EXPORT crengine-ng-targets
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION .
-      COMPONENT libraries)
-  else()
-    install(TARGETS ${cre_install_libs}
-      EXPORT crengine-ng-targets
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-      FRAMEWORK DESTINATION Library/Frameworks
-      COMPONENT libraries)
-  endif()
+    if (WIN32)
+        install(TARGETS ${cre_install_libs}
+            EXPORT crengine-ng-targets
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION .
+            COMPONENT libraries)
+    else()
+        install(TARGETS ${cre_install_libs}
+            EXPORT crengine-ng-targets
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            FRAMEWORK DESTINATION Library/Frameworks
+            COMPONENT libraries)
+    endif()
 
-  install(EXPORT crengine-ng-targets
-    FILE crengine-ng-targets.cmake
-    NAMESPACE crengine-ng::
-    DESTINATION ${CMAKE_INSTALL_DIR}
-    COMPONENT headers)
+    install(EXPORT crengine-ng-targets
+        FILE crengine-ng-targets.cmake
+        NAMESPACE crengine-ng::
+        DESTINATION ${CMAKE_INSTALL_DIR}
+        COMPONENT headers)
 
-  include(CMakePackageConfigHelpers)
+    include(CMakePackageConfigHelpers)
 
-  configure_package_config_file(crengine-ng-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_DIR}
-    PATH_VARS INCLUDE_INSTALL_DIR DATA_INSTALL_DIR)
-  write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config-version.cmake
-    VERSION ${VERSION}
-    COMPATIBILITY SameMajorVersion)
+    configure_package_config_file(crengine-ng-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_DIR}
+        PATH_VARS INCLUDE_INSTALL_DIR DATA_INSTALL_DIR)
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config-version.cmake
+        VERSION ${VERSION}
+        COMPATIBILITY SameMajorVersion)
 
-  install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.cmake
-          ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config-version.cmake
-    DESTINATION ${CMAKE_INSTALL_DIR}
-    COMPONENT headers)
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng-config-version.cmake
+        DESTINATION ${CMAKE_INSTALL_DIR}
+        COMPONENT headers)
 
-  string(REPLACE ";" " " PC_PUBLIC_COMPILE_DEFINITIONS "${PUBLIC_COMPILE_DEFINITIONS}")
-  configure_file(crengine-ng.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc @ONLY)
-  install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-    COMPONENT pkgconfig)
+    string(REPLACE ";" " " PC_PUBLIC_COMPILE_DEFINITIONS "${PUBLIC_COMPILE_DEFINITIONS}")
+    configure_file(crengine-ng.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc @ONLY)
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/crengine-ng.pc
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+        COMPONENT pkgconfig)
 endif()
 
 if(NOT SKIP_INSTALL_DATA AND NOT SKIP_INSTALL_ALL)
-  if (WIN32)
-    install(
-      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
-        DESTINATION .
-        COMPONENT css
-        FILES_MATCHING PATTERN "*.css")
-    install(
-      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
-        DESTINATION hyph
-        COMPONENT hyph
-        FILES_MATCHING PATTERN "*.pattern")
-  else()
-    install(
-      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
-        DESTINATION ${DATA_INSTALL_DIR}
-        COMPONENT css
-        FILES_MATCHING PATTERN "*.css")
-    install(
-      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
-        DESTINATION ${DATA_INSTALL_DIR}/hyph
-        COMPONENT hyph
-        FILES_MATCHING PATTERN "*.pattern")
-  endif()
+    if (WIN32)
+        install(
+            DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
+            DESTINATION .
+            COMPONENT css
+            FILES_MATCHING PATTERN "*.css")
+        install(
+            DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
+            DESTINATION hyph
+            COMPONENT hyph
+            FILES_MATCHING PATTERN "*.pattern")
+    else()
+        install(
+            DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/css/
+            DESTINATION ${DATA_INSTALL_DIR}
+            COMPONENT css
+            FILES_MATCHING PATTERN "*.css")
+        install(
+            DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/hyph/
+            DESTINATION ${DATA_INSTALL_DIR}/hyph
+            COMPONENT hyph
+            FILES_MATCHING PATTERN "*.pattern")
+    endif()
 endif()

@@ -2,19 +2,19 @@
 # Add googletest sources
 include(FetchContent)
 FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
-  URL_HASH MD5=95b29f0038ec84a611df951d74d99897
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
+    URL_HASH MD5=95b29f0038ec84a611df951d74d99897
 )
 FetchContent_Declare(
-  freefont
-  URL      http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
-  URL_HASH MD5=e23c149a4cc494ac1f473f13cca16b67
+    freefont
+    URL      http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
+    URL_HASH MD5=e23c149a4cc494ac1f473f13cca16b67
 )
 FetchContent_Declare(
-  robotofont
-  URL https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip
-  URL_HASH MD5=3b43a5cb33196ec25e44d5fcb40219e1
+    robotofont
+    URL https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip
+    URL_HASH MD5=3b43a5cb33196ec25e44d5fcb40219e1
 )
 
 # GoogleTest 1.13+ requires at least C++14
@@ -31,7 +31,7 @@ FetchContent_Populate(robotofont)
 
 find_program(ZIP_PROG NAMES zip)
 if(NOT EXISTS "${ZIP_PROG}")
-  message(FATAL_ERROR "zip program NOT found!")
+    message(FATAL_ERROR "zip program NOT found!")
 endif()
 add_definitions(-DZIP_PROG=\"${ZIP_PROG}\")
 
@@ -56,38 +56,38 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/data/hello_fb2.fb2" DESTINATION "${CMAKE_
 file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/hello_fb2.fb2" "${CMAKE_CURRENT_BINARY_DIR}/hello_fb2_rel.fb2")
 
 set(SRC_LIST
-  savetobmp.cpp
-  calc-drawbuf-diff.cpp
-  compare-two-textfiles.cpp
-  compare-two-binfiles.cpp
-  make-rand-file.cpp
-  crengine-ng-environment.cpp
-  tests_blockwritecache.cpp
-  tests_tinydom.cpp
-  tests_textrender.cpp
-  tests_wtf8.cpp
-  tests_docparse.cpp
-  tests_docview_funcs.cpp
-  tests_zip-use.cpp
-  tests_localenames.cpp
-  tests_hyph.cpp
-  tests_fontman_funcs.cpp
-  tests_streamutils.cpp
-  tests_bm_title.cpp
-  tests_props.cpp
-  tests_formating.cpp
+    savetobmp.cpp
+    calc-drawbuf-diff.cpp
+    compare-two-textfiles.cpp
+    compare-two-binfiles.cpp
+    make-rand-file.cpp
+    crengine-ng-environment.cpp
+    tests_blockwritecache.cpp
+    tests_tinydom.cpp
+    tests_textrender.cpp
+    tests_wtf8.cpp
+    tests_docparse.cpp
+    tests_docview_funcs.cpp
+    tests_zip-use.cpp
+    tests_localenames.cpp
+    tests_hyph.cpp
+    tests_fontman_funcs.cpp
+    tests_streamutils.cpp
+    tests_bm_title.cpp
+    tests_props.cpp
+    tests_formating.cpp
 )
 
 set(CRE_NG)
 if (CRE_BUILD_STATIC)
-  set(CRE_NG crengine-ng_static)
+    set(CRE_NG crengine-ng_static)
 elseif(CRE_BUILD_SHARED)
-  set(CRE_NG crengine-ng)
+    set(CRE_NG crengine-ng)
 endif()
 
 if(WIN32)
-  add_definitions(-DWIN32 -D_CONSOLE)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
+    add_definitions(-DWIN32 -D_CONSOLE)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole")
 endif(WIN32)
 
 add_executable(unittests ${SRC_LIST})
