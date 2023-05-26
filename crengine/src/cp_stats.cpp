@@ -15595,14 +15595,6 @@ static const dbl_char_stat_t dbl_ch_stat_utf8_ro1[256] = {
     { 0xe2, 0x80, 0x0074 }, // 240..255
 };
 
-typedef struct
-{
-    const short* ch_stat;
-    const dbl_char_stat_t* dbl_ch_stat;
-    const char* cp_name;
-    const char* lang_name;
-} cp_stat_t;
-
 cp_stat_t cp_stat_table[] = {
     { ch_stat_cp1251_ru1, dbl_ch_stat_cp1251_ru1, "cp1251", "ru" },
     { ch_stat_cp1251_ru6, dbl_ch_stat_cp1251_ru6, "cp1251", "ru" },
