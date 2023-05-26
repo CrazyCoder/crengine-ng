@@ -18,7 +18,7 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(glyphcache_bench ${SRC_LIST})
-target_link_libraries(glyphcache_bench ${CRE_NG} ${PRIVATE_LINK_LIBRARIES})
+target_link_libraries(glyphcache_bench ${CRE_NG})
 if (CRE_BUILD_STATIC)
     target_include_directories(glyphcache_bench PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 endif()

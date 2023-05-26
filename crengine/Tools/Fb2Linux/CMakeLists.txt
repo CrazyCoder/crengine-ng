@@ -24,7 +24,7 @@ elseif(CRE_BUILD_SHARED)
 endif()
 
 add_executable(fb2view ${SRC_LIST})
-target_link_libraries(fb2view ${CRE_NG} ${PRIVATE_LINK_LIBRARIES} ${X11_LIBRARIES})
+target_link_libraries(fb2view ${CRE_NG} ${X11_LIBRARIES})
 if (CRE_BUILD_STATIC)
     target_include_directories(fb2view PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 endif()

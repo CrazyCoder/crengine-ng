@@ -135,7 +135,7 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(unittests ${SRC_LIST})
-target_link_libraries(unittests ${CRE_NG} ${PRIVATE_LINK_LIBRARIES} GTest::gtest_main)
+target_link_libraries(unittests ${CRE_NG} GTest::gtest_main)
 target_include_directories(unittests PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 
 include(GoogleTest)

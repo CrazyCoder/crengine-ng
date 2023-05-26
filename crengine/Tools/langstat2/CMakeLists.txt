@@ -16,7 +16,7 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(langstat2 ${SRC_LIST})
-target_link_libraries(langstat2 ${CRE_NG} ${PRIVATE_LINK_LIBRARIES})
+target_link_libraries(langstat2 ${CRE_NG})
 if (CRE_BUILD_STATIC)
     target_include_directories(langstat2 PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 endif()
