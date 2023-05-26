@@ -1,46 +1,90 @@
 
-# Add googletest sources
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
-    URL_HASH MD5=95b29f0038ec84a611df951d74d99897
-)
-FetchContent_Declare(
-    freefont
-    URL      http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
-    URL_HASH MD5=e23c149a4cc494ac1f473f13cca16b67
-)
-FetchContent_Declare(
-    robotofont
-    URL https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip
-    URL_HASH MD5=3b43a5cb33196ec25e44d5fcb40219e1
-)
+set(FONTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/fonts)
+file(MAKE_DIRECTORY ${FONTS_DIR})
 
 # GoogleTest 1.13+ requires at least C++14
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
-set(BUILD_GMOCK OFF CACHE BOOL "Builds the googlemock subproject" FORCE)
-set(INSTALL_GTEST OFF CACHE BOOL "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" FORCE)
-FetchContent_MakeAvailable(googletest)
-# add_subdirectory() for googletest sources
-# is called automatically as cmake is also used
+if(OFFLINE_BUILD_MODE)
+    find_package(GTest 1.11.0 REQUIRED)
+    # Check fonts availability in ${FONTS_DIR}
+    list(APPEND FREEFONT_FILES "FreeMono.otf")
+    list(APPEND FREEFONT_FILES "FreeMonoBold.otf")
+    list(APPEND FREEFONT_FILES "FreeMonoOblique.otf")
+    list(APPEND FREEFONT_FILES "FreeMonoBoldOblique.otf")
+    list(APPEND FREEFONT_FILES "FreeSans.otf")
+    list(APPEND FREEFONT_FILES "FreeSansBold.otf")
+    list(APPEND FREEFONT_FILES "FreeSansOblique.otf")
+    list(APPEND FREEFONT_FILES "FreeSansBoldOblique.otf")
+    list(APPEND FREEFONT_FILES "FreeSerif.otf")
+    list(APPEND FREEFONT_FILES "FreeSerifBold.otf")
+    list(APPEND FREEFONT_FILES "FreeSerifItalic.otf")
+    list(APPEND FREEFONT_FILES "FreeSerifBoldItalic.otf")
+    list(APPEND ROBOTOFONT_FILES "Roboto-Regular.ttf")
+    list(APPEND ALL_FONTS_FOR_TESTS ${FREEFONT_FILES})
+    list(APPEND ALL_FONTS_FOR_TESTS ${ROBOTOFONT_FILES})
+    set(HAVE_ALL_FONTS ON)
+    foreach(_FONT IN ITEMS ${ALL_FONTS_FOR_TESTS})
+        message("Check ${_FONT}")
+        if (NOT EXISTS "${FONTS_DIR}/${_FONT}")
+            message("Font file ${_FONT} NOT found!")
+            set(HAVE_ALL_FONTS OFF)
+            break()
+        endif()
+    endforeach()
+    if(NOT HAVE_ALL_FONTS)
+        message("Not all required fonts were found in the ${FONTS_DIR} directory")
+        message("For unit tests to work, please download the fonts and extract them to this directory.")
+        message("1. Download FreeFont from http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz")
+        message("# wget -c http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz")
+        message("2. Extract all *.otf files and place them in the ${FONTS_DIR} directory.")
+        message("# tar -xvzf freefont-otf-20120503.tar.gz -C crengine/tests/fonts/ --strip-components=1 --wildcards '*.otf'")
+        message("3. Download Roboto from https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip")
+        message("# wget -c https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip")
+        message("4. Extract  Roboto-Regular.ttf file and place it into ${FONTS_DIR}")
+        message("# unzip roboto-android.zip Roboto-Regular.ttf -d crengine/tests/fonts/")
+        message("5. Then re-call cmake")
+        message(FATAL_ERROR "Emergency abort")
+    endif(NOT HAVE_ALL_FONTS)
+else(OFFLINE_BUILD_MODE)
+    # Add googletest sources
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
+        URL_HASH MD5=95b29f0038ec84a611df951d74d99897
+    )
+    FetchContent_Declare(
+        freefont
+        URL      http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
+        URL_HASH MD5=e23c149a4cc494ac1f473f13cca16b67
+    )
+    FetchContent_Declare(
+        robotofont
+        URL https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip
+        URL_HASH MD5=3b43a5cb33196ec25e44d5fcb40219e1
+    )
 
-FetchContent_Populate(freefont)
-FetchContent_Populate(robotofont)
+    set(BUILD_GMOCK OFF CACHE BOOL "Builds the googlemock subproject" FORCE)
+    set(INSTALL_GTEST OFF CACHE BOOL "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" FORCE)
+    FetchContent_MakeAvailable(googletest)
+    # add_subdirectory() for googletest sources
+    # is called automatically as cmake is also used
+
+    FetchContent_Populate(freefont)
+    FetchContent_Populate(robotofont)
+
+    file(GLOB FREEFONT_OTF_FILES ${freefont_SOURCE_DIR}/*.otf)
+    file(COPY ${FREEFONT_OTF_FILES} DESTINATION ${FONTS_DIR})
+    # From Roboto family we use only one file Roboto-Regular.ttf for testing purposes
+    file(COPY ${robotofont_SOURCE_DIR}/Roboto-Regular.ttf DESTINATION ${FONTS_DIR})
+endif(OFFLINE_BUILD_MODE)
 
 find_program(ZIP_PROG NAMES zip)
 if(NOT EXISTS "${ZIP_PROG}")
     message(FATAL_ERROR "zip program NOT found!")
 endif()
 add_definitions(-DZIP_PROG=\"${ZIP_PROG}\")
-
-set(FONTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/fonts)
-file(MAKE_DIRECTORY ${FONTS_DIR})
-file(GLOB FREEFONT_OTF_FILES ${freefont_SOURCE_DIR}/*.otf)
-file(COPY ${FREEFONT_OTF_FILES} DESTINATION ${FONTS_DIR})
-# From Roboto family we use only one file Roboto-Regular.ttf for testing purposes
-file(COPY ${robotofont_SOURCE_DIR}/Roboto-Regular.ttf DESTINATION ${FONTS_DIR})
 
 add_definitions(-DTESTS_DATADIR=\"${CMAKE_CURRENT_SOURCE_DIR}/data/\")
 add_definitions(-DTESTS_TMPDIR=\"${CMAKE_CURRENT_BINARY_DIR}/\")
@@ -91,7 +135,7 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(unittests ${SRC_LIST})
-target_link_libraries(unittests ${CRE_NG} ${PRIVATE_LINK_LIBRARIES} gtest_main)
+target_link_libraries(unittests ${CRE_NG} ${PRIVATE_LINK_LIBRARIES} GTest::gtest_main)
 target_include_directories(unittests PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 
 include(GoogleTest)

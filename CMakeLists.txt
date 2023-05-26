@@ -67,6 +67,7 @@ option(USE_CMARK_GFM "Enable Markdown support via built-in cmark-gfm" ON)
 
 # other
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
+option(OFFLINE_BUILD_MODE "Do not download anything during project build" OFF)
 option(ENABLE_UNITTESTING "Enable unit testing using googletest" OFF)
 option(ENABLE_LTO "Enable Link Time Optimization" OFF)
 
