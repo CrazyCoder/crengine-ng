@@ -31,7 +31,7 @@ This library can use other libraries (links to licenses point to official websit
  * FriBiDi - RTL writing support ([LGPL-2.1](https://github.com/fribidi/fribidi/blob/master/COPYING))
  * libunibreak - line breaking and word breaking algorithms ([Zlib](https://github.com/adah1972/libunibreak/blob/master/LICENCE))
  * utf8proc - for unicode string comparision ([utf8proc (MIT-like) + Unicode data license](https://github.com/JuliaStrings/utf8proc/blob/master/LICENSE.md))
- * GoogleTest - for unit testing, optional, does not require pre-installation ([BSD-3-Clause](https://github.com/google/googletest/blob/main/LICENSE))
+ * GoogleTest - for unit testing, optional ([BSD-3-Clause](https://github.com/google/googletest/blob/main/LICENSE))
 
 ## Installation
 1. Install dependencies (via package manager or compile from sources)
@@ -63,6 +63,7 @@ This library can use other libraries (links to licenses point to official websit
    * USE_GIF - Allow GIF support via embedded decoder; default ON
    * BUILD_TOOLS - Build some debug tools & utils; default OFF
    * ENABLE_UNITTESTING - Enable building unit tests using googletest; default OFF
+   * OFFLINE_BUILD_MODE - Offline build mode; default OFF
    * ENABLE_LTO - Enable Link Time Optimization; default OFF
 
    To use bundled third party:
@@ -93,6 +94,19 @@ $ cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release -DCRE_BUILD
 $ make -j10 VERBOSE=1
 $ make install
 ```
+
+Note about **OFFLINE_BUILD_MODE**: This mode only affects build of unit tests.
+This mode uses the GoogleTest library installed in the system.
+The GNU FreeFont and Roboto fonts must first be copied to the "${CMAKE_BINARY_DIR}/crengine/tests/fonts" folder.
+
+For example, in the build directory, you can run the following commands:
+```sh
+# wget -c http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
+# tar -xvzf freefont-otf-20120503.tar.gz -C crengine/tests/fonts/ --strip-components=1 --wildcards '*.otf'
+# wget -c https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip
+# unzip roboto-android.zip Roboto-Regular.ttf -d crengine/tests/fonts/
+```
+When this mode is disabled, all these components are downloaded automatically using cmake.
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md) file.
