@@ -3,7 +3,7 @@ Render references for font-families feature.
 width: 640
 height: 360
 bpp: 32
-Fonts: FreeSerif, FreeSans, FreeMono, Roboto, 20 px
+Fonts: FreeSerif, FreeSans, FreeMono, 20 px
 Background color: white
 TextColor: black
 Hinting: None

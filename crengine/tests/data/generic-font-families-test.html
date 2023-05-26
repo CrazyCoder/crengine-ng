@@ -1,12 +1,13 @@
 <html>
 <head>
   <!-- Ref: https://developer.mozilla.org/en-US/docs/Web/CSS/font-family#values -->
+  <!-- The styles ".serif" and ".sans-serif" intentionally specify fonts that do not match the style name to make sure that these styles work. -->
   <style>
     .generic-only-serif { font-family: serif; }
     .generic-only-sans-serif { font-family: sans-serif; }
     .generic-only-monospace { font-family: monospace; }
-    .serif { font-family: "FreeSerif", serif; }
-    .sans-serif { font-family: "Roboto", sans-serif; }
+    .serif { font-family: "FreeSans", serif; }
+    .sans-serif { font-family: "FreeSerif", sans-serif; }
     .monospace { font-family: "FreeMono", monospace; }
     .monospace-with-missing { font-family: "Not Existing Mono", monospace; }
   </style>
@@ -17,8 +18,8 @@
   <p class="generic-only-serif">Serif font (only generic)</p>
   <p class="generic-only-sans-serif">Sans-serif font (only generic)</p>
   <p class="generic-only-monospace">Monospace font (only generic)</p>
-  <p class="serif">Serif font (specific)</p>
-  <p class="sans-serif">Sans-serif font (specific)</p>
+  <p class="serif">Specific "serif" style</p>
+  <p class="sans-serif">Specific "sans-serif" style</p>
   <p class="monospace">Monospace font (specific)</p>
   <p class="monospace-with-missing">Monospace font  (specific with missing font)</p>
 </body>

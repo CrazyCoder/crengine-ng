@@ -97,14 +97,12 @@ $ make install
 
 Note about **OFFLINE_BUILD_MODE**: This mode only affects build of unit tests.
 This mode uses the GoogleTest library installed in the system.
-The GNU FreeFont and Roboto fonts must first be copied to the "${CMAKE_BINARY_DIR}/crengine/tests/fonts" folder.
+The GNU FreeFont fonts must first be copied to the "${CMAKE_BINARY_DIR}/crengine/tests/fonts" folder.
 
 For example, in the build directory, you can run the following commands:
 ```sh
 # wget -c http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
 # tar -xvzf freefont-otf-20120503.tar.gz -C crengine/tests/fonts/ --strip-components=1 --wildcards '*.otf'
-# wget -c https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip
-# unzip roboto-android.zip Roboto-Regular.ttf -d crengine/tests/fonts/
 ```
 When this mode is disabled, all these components are downloaded automatically using cmake.
 

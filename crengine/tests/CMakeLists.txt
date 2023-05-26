@@ -20,12 +20,10 @@ if(OFFLINE_BUILD_MODE)
     list(APPEND FREEFONT_FILES "FreeSerifBold.otf")
     list(APPEND FREEFONT_FILES "FreeSerifItalic.otf")
     list(APPEND FREEFONT_FILES "FreeSerifBoldItalic.otf")
-    list(APPEND ROBOTOFONT_FILES "Roboto-Regular.ttf")
     list(APPEND ALL_FONTS_FOR_TESTS ${FREEFONT_FILES})
-    list(APPEND ALL_FONTS_FOR_TESTS ${ROBOTOFONT_FILES})
     set(HAVE_ALL_FONTS ON)
     foreach(_FONT IN ITEMS ${ALL_FONTS_FOR_TESTS})
-        message("Check ${_FONT}")
+        #message("Checking ${_FONT}")
         if (NOT EXISTS "${FONTS_DIR}/${_FONT}")
             message("Font file ${_FONT} NOT found!")
             set(HAVE_ALL_FONTS OFF)
@@ -39,11 +37,7 @@ if(OFFLINE_BUILD_MODE)
         message("# wget -c http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz")
         message("2. Extract all *.otf files and place them in the ${FONTS_DIR} directory.")
         message("# tar -xvzf freefont-otf-20120503.tar.gz -C crengine/tests/fonts/ --strip-components=1 --wildcards '*.otf'")
-        message("3. Download Roboto from https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip")
-        message("# wget -c https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip")
-        message("4. Extract  Roboto-Regular.ttf file and place it into ${FONTS_DIR}")
-        message("# unzip roboto-android.zip Roboto-Regular.ttf -d crengine/tests/fonts/")
-        message("5. Then re-call cmake")
+        message("3. Then re-call cmake")
         message(FATAL_ERROR "Emergency abort")
     endif(NOT HAVE_ALL_FONTS)
 else(OFFLINE_BUILD_MODE)
@@ -59,11 +53,6 @@ else(OFFLINE_BUILD_MODE)
         URL      http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
         URL_HASH MD5=e23c149a4cc494ac1f473f13cca16b67
     )
-    FetchContent_Declare(
-        robotofont
-        URL https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip
-        URL_HASH MD5=3b43a5cb33196ec25e44d5fcb40219e1
-    )
 
     set(BUILD_GMOCK OFF CACHE BOOL "Builds the googlemock subproject" FORCE)
     set(INSTALL_GTEST OFF CACHE BOOL "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" FORCE)
@@ -72,12 +61,9 @@ else(OFFLINE_BUILD_MODE)
     # is called automatically as cmake is also used
 
     FetchContent_Populate(freefont)
-    FetchContent_Populate(robotofont)
 
     file(GLOB FREEFONT_OTF_FILES ${freefont_SOURCE_DIR}/*.otf)
     file(COPY ${FREEFONT_OTF_FILES} DESTINATION ${FONTS_DIR})
-    # From Roboto family we use only one file Roboto-Regular.ttf for testing purposes
-    file(COPY ${robotofont_SOURCE_DIR}/Roboto-Regular.ttf DESTINATION ${FONTS_DIR})
 endif(OFFLINE_BUILD_MODE)
 
 find_program(ZIP_PROG NAMES zip)

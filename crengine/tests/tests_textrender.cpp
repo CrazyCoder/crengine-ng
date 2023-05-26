@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng, unit testing                                             *
- *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2022,2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -661,7 +661,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight100) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
     ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
     ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "100"));
 
@@ -670,17 +670,17 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight100) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-roboto-synth-weight-100.bmp", image->getDrawBufRef());
+    //crengine_ng::unittesting::saveToBMP("01-freesans-synth-weight-100.bmp", image->getDrawBufRef());
 
     // open reference image
-    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/01-roboto-synth-weight-100.png");
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/01-freesans-synth-weight-100.png");
     ASSERT_FALSE(refDrawBuf.isNull());
 
     // calc difference drawbuf
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("01-roboto-synth-weight-100-diff.bmp", diffBuf);
+    //crengine_ng::unittesting::saveToBMP("01-freesans-synth-weight-100-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -695,7 +695,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight250) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
     ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
     ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "250"));
 
@@ -704,17 +704,17 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight250) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-roboto-synth-weight-250.bmp", image->getDrawBufRef());
+    //crengine_ng::unittesting::saveToBMP("02-freesans-synth-weight-250.bmp", image->getDrawBufRef());
 
     // open reference image
-    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/02-roboto-synth-weight-250.png");
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/02-freesans-synth-weight-250.png");
     ASSERT_FALSE(refDrawBuf.isNull());
 
     // calc difference drawbuf
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("02-roboto-synth-weight-250-diff.bmp", diffBuf);
+    //crengine_ng::unittesting::saveToBMP("02-freesans-synth-weight-250-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -729,7 +729,7 @@ TEST_F(TextRenderTests, RenderTestsRealWeight400) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
     ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
     ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "400"));
 
@@ -738,17 +738,17 @@ TEST_F(TextRenderTests, RenderTestsRealWeight400) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-roboto-real-weight-400.bmp", image->getDrawBufRef());
+    //crengine_ng::unittesting::saveToBMP("03-freesans-real-weight-400.bmp", image->getDrawBufRef());
 
     // open reference image
-    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/03-roboto-real-weight-400.png");
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/03-freesans-real-weight-400.png");
     ASSERT_FALSE(refDrawBuf.isNull());
 
     // calc difference drawbuf
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("03-roboto-real-weight-400-diff.bmp", diffBuf);
+    //crengine_ng::unittesting::saveToBMP("03-freesans-real-weight-400-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -763,7 +763,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight650) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
     ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
     ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "650"));
 
@@ -772,17 +772,17 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight650) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("04-roboto-synth-weight-650.bmp", image->getDrawBufRef());
+    //crengine_ng::unittesting::saveToBMP("04-freesans-synth-weight-650.bmp", image->getDrawBufRef());
 
     // open reference image
-    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/04-roboto-synth-weight-650.png");
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/04-freesans-synth-weight-650.png");
     ASSERT_FALSE(refDrawBuf.isNull());
 
     // calc difference drawbuf
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("04-roboto-synth-weight-650-diff.bmp", diffBuf);
+    //crengine_ng::unittesting::saveToBMP("04-freesans-synth-weight-650-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -797,7 +797,7 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight900) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
     ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "80"));
     ASSERT_TRUE(setProperty(PROP_FONT_BASE_WEIGHT, "900"));
 
@@ -806,17 +806,17 @@ TEST_F(TextRenderTests, RenderTestsSynthWeight900) {
     LVDocImageRef image = m_view->getPageImage(0);
     ASSERT_FALSE(image.isNull());
     // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("05-roboto-synth-weight-900.bmp", image->getDrawBufRef());
+    //crengine_ng::unittesting::saveToBMP("05-freesans-synth-weight-900.bmp", image->getDrawBufRef());
 
     // open reference image
-    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/05-roboto-synth-weight-900.png");
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "font-synth-weight/05-freesans-synth-weight-900.png");
     ASSERT_FALSE(refDrawBuf.isNull());
 
     // calc difference drawbuf
     LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
     ASSERT_FALSE(diffBuf.isNull());
     // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
-    //crengine_ng::unittesting::saveToBMP("05-roboto-synth-weight-900-diff.bmp", diffBuf);
+    //crengine_ng::unittesting::saveToBMP("05-freesans-synth-weight-900-diff.bmp", diffBuf);
 
     // Validate diff drawbuf
     EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
@@ -831,7 +831,7 @@ TEST_F(TextRenderTests, RenderTestsGenericFontFamilies) {
     ASSERT_TRUE(m_initOK);
 
     // set properties
-    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "Roboto"));
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
     ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "20"));
     ASSERT_TRUE(setProperty(PROP_GENERIC_SERIF_FONT_FACE, "FreeSerif"));
     ASSERT_TRUE(setProperty(PROP_GENERIC_SANS_SERIF_FONT_FACE, "FreeSans"));
