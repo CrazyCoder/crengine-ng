@@ -1,3 +1,49 @@
+2023-05-26  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.10 released.
+	==========================
+
+	Tag sources with `0.9.10'.
+
+	Mostly improvements in unit tests.
+
+2023-05-26  Aleksey Chernov  <valexlin@gmail.com>
+
+	Warning fixed: type ‘struct cp_stat_t’ violates the C++ One Definition Rule [-Wodr]
+
+	Don't use "Roboto" font in unit tests.
+
+	CMakeLists.txt: separated public and private dependency libraries.
+
+	thirdparty/cmark-gfm/CMakeLists.txt: removed deprecated macro.
+
+	Update README.md: added description of OFFLINE_BUILD_MODE option.
+
+	Added offline build mode for cmake. This mode only affects build of unit tests. This mode uses the GoogleTest library installed in the system.
+	The GNU FreeFont fonts must first be copied to the "${CMAKE_BINARY_DIR}/crengine/tests/fonts" folder.
+
+2023-05-24  Aleksey Chernov  <valexlin@gmail.com>
+
+	CMakeLists.txt: added check for the presence of the hb-ft.h file when using the HarfBuzz library.
+
+	Added a test to check the text formatter. This test was originally in cr3wx/src/cr3.cpp
+
+2023-05-22  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added a test to check the property container. This test was originally in cr3wx/src/cr3.cpp
+
+	crengine/tests/tests_docparse.cpp: fixed description of DOCPARSE_REFERENCE_DIR macro
+
+	crengine/src/textlang.h: cleared include section
+
+2023-05-11  Aleksey Chernov  <valexlin@gmail.com>
+
+	Fixed LVDocView::updateScroll(): correct page numbers in `posText`.
+
+	Fixed SIGSEGV in CRDocViewWindow::draw() -> LVDocView::getPageImage() -> LVDocView::checkPos() -> LVDocView::SetPos() -> LVDocView::GetFullHeight() call chain.
+	This can happen when opening another document in scroll view mode.
+
+
 2023-04-23  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.9 released.
@@ -37,7 +83,7 @@
 
 	Update `thirdparty/cmark-gfm` to 0.29.0.gfm.11
 
-	Remove `thirdparty/cmake` from build system
+	Removed `thirdparty/cmark` from build system
 
 	Removed thirdparty `thirdparty/cmark/`.
 
