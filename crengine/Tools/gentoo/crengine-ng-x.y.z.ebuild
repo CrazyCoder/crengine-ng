@@ -7,10 +7,11 @@ inherit cmake
 DESCRIPTION="Cross-platform library designed to implement e-book readers"
 HOMEPAGE="https://gitlab.com/coolreader-ng/crengine-ng"
 SRC_URI="https://gitlab.com/coolreader-ng/${PN}/-/archive/${PV}/${P}.tar.bz2"
+SRC_URI+=" test? ( mirror://gnu/freefont/freefont-otf-20120503.tar.gz )"
 
 LICENSE="GPL-2+"
 SLOT="0/5"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~arm64"
 IUSE="+png +jpeg +gif +svg +chm +markdown +harfbuzz fontconfig +libunibreak fribidi zstd +libutf8proc lto static-libs test"
 
 RESTRICT="!test? ( test )"
@@ -29,7 +30,8 @@ CDEPEND="sys-libs/zlib
 RDEPEND="${CDEPEND}"
 DEPEND="
 	${RDEPEND}
-	test? ( dev-cpp/gtest media-fonts/freefont )
+	test? ( dev-cpp/gtest
+		app-arch/zip )
 "
 BDEPEND="virtual/pkgconfig
 	${CDEPEND}"
@@ -39,7 +41,7 @@ src_prepare() {
 	cmake_src_prepare
 	if use test; then
 		mkdir -p "${BUILD_DIR}/crengine/tests/fonts/"
-		cp -p "${EPREFIX}/usr/share/fonts/freefont/"*.otf "${BUILD_DIR}/crengine/tests/fonts/"
+		cp -p "${WORKDIR}/freefont-20120503/"*.otf "${BUILD_DIR}/crengine/tests/fonts/"
 	fi
 }
 
