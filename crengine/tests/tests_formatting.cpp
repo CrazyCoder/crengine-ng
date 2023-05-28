@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 /**
- * \file tests_formating.cpp
+ * \file tests_formatting.cpp
  * \brief Testing the text formatter
  */
 

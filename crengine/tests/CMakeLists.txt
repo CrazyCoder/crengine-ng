@@ -105,7 +105,7 @@ set(SRC_LIST
     tests_streamutils.cpp
     tests_bm_title.cpp
     tests_props.cpp
-    tests_formating.cpp
+    tests_formatting.cpp
 )
 
 set(CRE_NG)
