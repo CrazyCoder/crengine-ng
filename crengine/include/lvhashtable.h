@@ -147,6 +147,8 @@ public:
         return _size;
     }
     void resize(int nsize) {
+        if (nsize < 16)
+            nsize = 16;
         pair** new_table = new pair*[nsize]();
         if (_table) {
             for (int i = 0; i < _size; i++) {
