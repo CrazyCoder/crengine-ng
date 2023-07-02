@@ -31,7 +31,7 @@ static inline float my_fabs(float value) {
 }
 
 int LVGammaCorrection::getIndex(float gamma) {
-    int index = LVGammaCorrection::NoCorrectionIndex;
+    int index = 0;
     float min = my_fabs(lvgammatbl_data[0].gamma - gamma);
     for (int i = 1; i < GAMMA_LEVELS; i++) {
         float diff = my_fabs(lvgammatbl_data[i].gamma - gamma);
