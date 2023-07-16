@@ -1413,10 +1413,13 @@ int LVDocView::getPageHeaderHeight() const {
     //==== ========== ==========-------------------------------------------------------------    navbar
     //                                |                     |                   |           |    navbar (bottom part)
     //---------------------------------------------------------------------------------------
+    bool drawBatteryPercent = m_props->getBoolDef(PROP_SHOW_BATTERY_PERCENT, true);
     // Slightly reduce the height of the text at the expense of part of ascender and descender
     int textH = (9 * getInfoFont()->getHeight() + 5) / 10;
     int navbarh = scaleForRenderDPI(HEADER_NAVBAR_H);
-    int bh = m_batteryIcons.length() > 0 ? m_batteryIcons[0]->GetHeight() : 0;
+    int bh = 0;
+    if (((m_pageHeaderInfo & PGHDR_BATTERY) == PGHDR_BATTERY) && !drawBatteryPercent && (m_batteryIcons.length() > 0))
+        bh = m_batteryIcons[0]->GetHeight();
     if (bh + 2 > textH)
         textH = bh + 2;
     return textH + HEADER_MARGIN + navbarh + 1;
