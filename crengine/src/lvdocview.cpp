@@ -147,11 +147,7 @@ static css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 //    css_ff_fantasy,
 //    css_ff_monospace
 
-#ifdef LBOOK
 #define INFO_FONT_SIZE 22
-#else
-#define INFO_FONT_SIZE 22
-#endif
 
 #ifndef MIN_STATUS_FONT_SIZE
 #define MIN_STATUS_FONT_SIZE 8
@@ -174,11 +170,7 @@ static css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 #include <e32std.h>
 #define DEFAULT_PAGE_MARGIN 2
 #else
-#ifdef LBOOK
-#define DEFAULT_PAGE_MARGIN 8
-#else
 #define DEFAULT_PAGE_MARGIN 12
-#endif
 #endif
 
 #define HEADER_MARGIN          4
@@ -204,9 +196,7 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
         , m_battery_state(CR_BATTERY_STATE_NO_BATTERY)
         , m_battery_charging_conn(CR_BATTERY_CHARGER_NO)
         , m_battery_charge_level(0)
-#if (LBOOK == 1)
-        , m_requested_font_size(32)
-#elif defined(__SYMBIAN32__)
+#if defined(__SYMBIAN32__)
         , m_requested_font_size(30)
 #else
         , m_requested_font_size(24)
@@ -234,11 +224,7 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
         , m_pagesVisible(2)
         , m_pagesVisibleOverride(0)
         , m_pageHeaderPos(PAGE_HEADER_POS_TOP)
-        , m_pageHeaderInfo(PGHDR_PAGE_NUMBER
-#ifndef LBOOK
-                           | PGHDR_CLOCK
-#endif
-                           | PGHDR_BATTERY | PGHDR_PAGE_COUNT | PGHDR_AUTHOR | PGHDR_TITLE)
+        , m_pageHeaderInfo(PGHDR_PAGE_NUMBER | PGHDR_CLOCK | PGHDR_BATTERY | PGHDR_PAGE_COUNT | PGHDR_AUTHOR | PGHDR_TITLE)
         , m_showCover(true)
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
         , m_rotateAngle(CR_ROTATE_ANGLE_0)
