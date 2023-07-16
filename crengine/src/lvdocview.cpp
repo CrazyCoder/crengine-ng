@@ -509,7 +509,7 @@ void LVDocView::setPageHeaderPosition(int pos) {
     }
 }
 
-void LVDocView::setPageHeaderInfo(int hdrFlags) {
+void LVDocView::setPageHeaderInfo(lUInt32 hdrFlags) {
     if (m_pageHeaderInfo == hdrFlags)
         return;
     LVLock lock(getMutex());
@@ -1242,7 +1242,7 @@ bool LVDocView::exportWolFile(LVStream* stream, bool flgGray, int levels) {
     checkRender();
     int save_m_dx = m_dx;
     int save_m_dy = m_dy;
-    int old_flags = m_pageHeaderInfo;
+    lUInt32 old_flags = m_pageHeaderInfo;
     int save_pos = _pos;
     int save_page = _pos;
     bool showCover = getShowCover();
@@ -1399,12 +1399,11 @@ int LVDocView::getPageHeaderHeight() const {
     //==== ========== ==========-------------------------------------------------------------    navbar
     //                                |                     |                   |           |    navbar (bottom part)
     //---------------------------------------------------------------------------------------
-    bool drawBatteryPercent = m_props->getBoolDef(PROP_SHOW_BATTERY_PERCENT, true);
     // Slightly reduce the height of the text at the expense of part of ascender and descender
     int textH = (9 * getInfoFont()->getHeight() + 5) / 10;
     int navbarh = scaleForRenderDPI(HEADER_NAVBAR_H);
     int bh = 0;
-    if (((m_pageHeaderInfo & PGHDR_BATTERY) == PGHDR_BATTERY) && !drawBatteryPercent && (m_batteryIcons.length() > 0))
+    if (((m_pageHeaderInfo & (PGHDR_BATTERY | PGHDR_BATTERY_PERCENT)) == PGHDR_BATTERY) && (m_batteryIcons.length() > 0))
         bh = m_batteryIcons[0]->GetHeight();
     if (bh + 2 > textH)
         textH = bh + 2;
@@ -1460,7 +1459,7 @@ void LVDocView::drawBatteryState(LVDrawBuf* drawbuf, const lvRect& batteryRc) {
     drawbuf->SetTextColor(bgColor);
     drawbuf->SetBackgroundColor(textColor);
     LVRefVec<LVImageSource> icons;
-    bool drawPercent = m_props->getBoolDef(PROP_SHOW_BATTERY_PERCENT, true) || m_batteryIcons.size() <= 2;
+    bool drawPercent = (m_pageHeaderInfo & PGHDR_BATTERY_PERCENT) || (m_batteryIcons.size() <= 2);
     if (m_batteryIcons.size() > 1) {
         icons.add(m_batteryIcons[0]);
         if (drawPercent) {
@@ -1793,7 +1792,7 @@ void LVDocView::setPageHeaderOverride(lString32 s) {
 
 /// draw page header to buffer
 void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
-                               int pageIndex, int phi, int pageCount) {
+                               int pageIndex, lUInt32 phi, int pageCount) {
     int w = GetWidth();
     int h = GetHeight();
     if (w > h)
@@ -1911,7 +1910,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
         }
         bool batteryPercentNormalFont = false; // PROP_SHOW_BATTERY_PERCENT
         if ((phi & PGHDR_BATTERY) && m_battery_state != CR_BATTERY_STATE_NO_BATTERY) {
-            batteryPercentNormalFont = m_props->getBoolDef(PROP_SHOW_BATTERY_PERCENT, true) || m_batteryIcons.size() <= 2;
+            batteryPercentNormalFont = (phi & PGHDR_BATTERY_PERCENT) || m_batteryIcons.size() <= 2;
             if (!batteryPercentNormalFont) {
                 lvRect brc = info;
                 brc.right -= 2;
@@ -2070,7 +2069,7 @@ void LVDocView::drawPageTo(LVDrawBuf* drawbuf, LVRendPageInfo& page,
     if (page.flags & RN_PAGE_TYPE_COVER)
         clip.top = pageRect->top + m_pageMargins.top;
     if ((((m_pageHeaderPos != PAGE_HEADER_POS_NONE && m_pageHeaderInfo) || !m_pageHeaderOverride.empty()) && (page.flags & RN_PAGE_TYPE_NORMAL)) && getViewMode() == DVM_PAGES) {
-        int phi = m_pageHeaderInfo;
+        lUInt32 phi = m_pageHeaderInfo;
         if (getVisiblePageCount() == 2) {
             if (page.index & 1) {
                 // right
@@ -6807,15 +6806,29 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
 }
 
 void LVDocView::setStatusMode(int pos, bool showClock, bool showTitle,
-                              bool showBattery, bool showChapterMarks, bool showPercent, bool showPageNumber, bool showPageCount) {
+                              bool showBattery, bool showBatteryPercent, bool showChapterMarks, bool showPosPercent, bool showPageNumber, bool showPageCount) {
     CRLog::debug("LVDocView::setStatusMode(%d, %s %s %s %s)", pos,
                  showClock ? "clock" : "", showTitle ? "title" : "",
                  showBattery ? "battery" : "", showChapterMarks ? "marks" : "");
     setPageHeaderPosition(pos);
-    setPageHeaderInfo(
-            (showPageNumber ? PGHDR_PAGE_NUMBER : 0) | (showClock ? PGHDR_CLOCK : 0) | (showBattery ? PGHDR_BATTERY : 0) | (showPageCount ? PGHDR_PAGE_COUNT : 0) | (showTitle ? PGHDR_AUTHOR : 0) | (showTitle ? PGHDR_TITLE : 0) | (showChapterMarks ? PGHDR_CHAPTER_MARKS : 0) | (showPercent ? PGHDR_PERCENT : 0)
-            //| PGHDR_CLOCK
-    );
+    lUInt32 phi = 0;
+    if (showClock)
+        phi |= PGHDR_CLOCK;
+    if (showTitle)
+        phi |= PGHDR_AUTHOR | PGHDR_TITLE;
+    if (showBattery)
+        phi |= PGHDR_BATTERY;
+    if (showBatteryPercent)
+        phi |= PGHDR_BATTERY_PERCENT;
+    if (showChapterMarks)
+        phi |= PGHDR_CHAPTER_MARKS;
+    if (showPosPercent)
+        phi |= PGHDR_PERCENT;
+    if (showPageNumber)
+        phi |= PGHDR_PAGE_NUMBER;
+    if (showPageCount)
+        phi |= PGHDR_PAGE_COUNT;
+    setPageHeaderInfo(phi);
 }
 
 bool LVDocView::propApply(lString8 name, lString32 value) {
@@ -6960,12 +6973,13 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
             }
         } else if (name == PROP_STATUS_FONT_FACE) {
             setStatusFontFace(UnicodeToUtf8(value));
-        } else if (name == PROP_STATUS_LINE || name == PROP_SHOW_TIME || name == PROP_SHOW_TITLE || name == PROP_SHOW_BATTERY || name == PROP_STATUS_CHAPTER_MARKS || name == PROP_SHOW_POS_PERCENT || name == PROP_SHOW_PAGE_COUNT || name == PROP_SHOW_PAGE_NUMBER) {
+        } else if (name == PROP_STATUS_LINE || name == PROP_SHOW_TIME || name == PROP_SHOW_TITLE || name == PROP_SHOW_BATTERY || name == PROP_SHOW_BATTERY_PERCENT || name == PROP_STATUS_CHAPTER_MARKS || name == PROP_SHOW_POS_PERCENT || name == PROP_SHOW_PAGE_COUNT || name == PROP_SHOW_PAGE_NUMBER) {
             m_props->setString(name.c_str(), value);
             setStatusMode(m_props->getIntDef(PROP_STATUS_LINE, 1),
                           m_props->getBoolDef(PROP_SHOW_TIME, false),
                           m_props->getBoolDef(PROP_SHOW_TITLE, true),
                           m_props->getBoolDef(PROP_SHOW_BATTERY, true),
+                          m_props->getBoolDef(PROP_SHOW_BATTERY_PERCENT, true),
                           m_props->getBoolDef(PROP_STATUS_CHAPTER_MARKS, true),
                           m_props->getBoolDef(PROP_SHOW_POS_PERCENT, false),
                           m_props->getBoolDef(PROP_SHOW_PAGE_NUMBER, true),

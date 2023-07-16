@@ -268,14 +268,15 @@ public:
 enum
 {
     PGHDR_NONE = 0,
-    PGHDR_PAGE_NUMBER = 1,
-    PGHDR_PAGE_COUNT = 2,
-    PGHDR_AUTHOR = 4,
-    PGHDR_TITLE = 8,
-    PGHDR_CLOCK = 16,
-    PGHDR_BATTERY = 32,
-    PGHDR_CHAPTER_MARKS = 64,
-    PGHDR_PERCENT = 128
+    PGHDR_PAGE_NUMBER = 1,      // show current page number
+    PGHDR_PAGE_COUNT = 2,       // show total pages count
+    PGHDR_AUTHOR = 4,           // show book author
+    PGHDR_TITLE = 8,            // show book title
+    PGHDR_CLOCK = 16,           // show current clock
+    PGHDR_BATTERY = 32,         // show current battery charge
+    PGHDR_CHAPTER_MARKS = 64,   // show chapter marks
+    PGHDR_PERCENT = 128,        // show current posistion in percent
+    PGHDR_BATTERY_PERCENT = 256 // show current battery charge in percent
 };
 
 //typedef lUInt64 LVPosBookmark;
@@ -371,7 +372,7 @@ private:
     int m_pagesVisible;
     int m_pagesVisibleOverride;
     int m_pageHeaderPos;
-    int m_pageHeaderInfo;
+    lUInt32 m_pageHeaderInfo;
     bool m_showCover;
     LVRefVec<LVImageSource> m_headerIcons;
     LVRefVec<LVImageSource> m_batteryIcons;
@@ -460,7 +461,7 @@ public:
     /// get screen rectangle for specified cursor position, returns false if not visible
     bool getCursorRect(ldomXPointer ptr, lvRect& rc, bool scrollToCursor = false);
     /// set status bar and clock mode
-    void setStatusMode(int pos, bool showClock, bool showTitle, bool showBattery, bool showChapterMarks, bool showPercent, bool showPageNumber, bool showPageCount);
+    void setStatusMode(int pos, bool showClock, bool showTitle, bool showBattery, bool showBatteryPercent, bool showChapterMarks, bool showPosPercent, bool showPageNumber, bool showPageCount);
     /// draw to specified buffer by either Y pos or page number (unused param should be -1)
     void Draw(LVDrawBuf& drawbuf, int pageTopPosition, int pageNumber, bool rotate, bool autoresize = true);
     /// ensure current position is set to current bookmark value
@@ -799,11 +800,11 @@ public:
     /// set page header position
     void setPageHeaderPosition(int pos);
     /// get page header info mask
-    int getPageHeaderInfo() const {
+    lUInt32 getPageHeaderInfo() const {
         return m_pageHeaderInfo;
     }
     /// set page header info mask
-    void setPageHeaderInfo(int hdrFlags);
+    void setPageHeaderInfo(lUInt32 hdrFlags);
     /// get info line font
     font_ref_t getInfoFont() const {
         return m_infoFont;
@@ -813,7 +814,7 @@ public:
         m_infoFont = font;
     }
     /// draw page header to buffer
-    virtual void drawPageHeader(LVDrawBuf* drawBuf, const lvRect& headerRc, int pageIndex, int headerInfoFlags, int pageCount);
+    virtual void drawPageHeader(LVDrawBuf* drawBuf, const lvRect& headerRc, int pageIndex, lUInt32 headerInfoFlags, int pageCount);
     /// draw battery state to buffer
     virtual void drawBatteryState(LVDrawBuf* drawBuf, const lvRect& rc);
 
