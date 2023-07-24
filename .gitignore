@@ -4,8 +4,10 @@
 qtbuild
 qt-build
 qtcreator-build
+cmake-build-*
 CMakeLists.txt.user
 CMakeLists.txt.user.*
+.idea
 *~
 *.a
 *.so
