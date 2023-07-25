@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2021 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2021,2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -35,8 +35,8 @@
 class CRLocaleData
 {
 public:
-    CRLocaleData(const char* langtag);
-    CRLocaleData(const lString8& langtag);
+    explicit CRLocaleData(const char* langtag);
+    explicit CRLocaleData(const lString8& langtag);
     bool isValid() const {
         return m_isValid;
     }
