@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng, unit testing                                             *
- *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2022,2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -492,6 +492,18 @@ TEST(LocaleDataTests, TestLocaleParsing) {
         EXPECT_EQ(loc.regionNumeric(), 344);
     }
     // invalid langTag
+    {
+        CRLocaleData loc("");
+        EXPECT_FALSE(loc.isValid());
+        EXPECT_TRUE(loc.scriptCode().empty());
+        EXPECT_TRUE(loc.scriptName().empty());
+        EXPECT_TRUE(loc.scriptAlias().empty());
+        EXPECT_EQ(loc.scriptNumeric(), 0);
+        EXPECT_TRUE(loc.regionAlpha2().empty());
+        EXPECT_TRUE(loc.regionAlpha3().empty());
+        EXPECT_TRUE(loc.regionName().empty());
+        EXPECT_EQ(loc.regionNumeric(), 0);
+    }
     {
         CRLocaleData loc("abcd");
         EXPECT_FALSE(loc.isValid());
