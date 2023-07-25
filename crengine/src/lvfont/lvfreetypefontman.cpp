@@ -786,13 +786,15 @@ void LVFreeTypeFontManager::getFaceListFiltered(lString32Collection& list, css_f
     if (langTag.empty()) {
         _cache.getFaceListForFamily(list, family);
     } else {
-        lString32Collection tmpList;
-        _cache.getFaceListForFamily(tmpList, family);
         list.clear();
         CRLocaleData loc(langTag);
-        for (int i = 0; i < tmpList.length(); i++) {
-            if (font_lang_compat_full == checkFontLangCompat(UnicodeToUtf8(tmpList[i]), langTag))
-                list.add(tmpList[i]);
+        if (loc.isValid()) {
+            lString32Collection tmpList;
+            _cache.getFaceListForFamily(tmpList, family);
+            for (int i = 0; i < tmpList.length(); i++) {
+                if (font_lang_compat_full == checkFontLangCompat(UnicodeToUtf8(tmpList[i]), langTag))
+                    list.add(tmpList[i]);
+            }
         }
     }
 #else

@@ -148,7 +148,7 @@ public:
     virtual void getFaceList(lString32Collection& list);
 
     /// returns available typefaces filtered by family/language
-    virtual void getFaceListFiltered(lString32Collection&, css_font_family_t, const lString8& langTag = lString8::empty_str);
+    virtual void getFaceListFiltered(lString32Collection&, css_font_family_t, const lString8& langTag);
 
     /// returns registered font files
     virtual void getFontFileNameList(lString32Collection& list);
