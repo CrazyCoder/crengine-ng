@@ -84,13 +84,16 @@ lString32 extractDocAuthors(ldomDocument* doc, lString32 delimiter, bool shortMi
         lString32 lastName = pauthor.relative(U"/last-name").getText().trim();
         lString32 middleName = pauthor.relative(U"/middle-name").getText().trim();
         lString32 author = firstName;
-        if (!author.empty())
-            author += " ";
-        if (!middleName.empty())
+        if (!middleName.empty()) {
+            if (!author.empty())
+                author += " ";
             author += shortMiddleName ? lString32(middleName, 0, 1) + "." : middleName;
-        if (!lastName.empty() && !author.empty())
-            author += " ";
-        author += lastName;
+        }
+        if (!lastName.empty()) {
+            if (!author.empty())
+                author += " ";
+            author += lastName;
+        }
         if (!authors.empty())
             authors += delimiter;
         authors += author;
