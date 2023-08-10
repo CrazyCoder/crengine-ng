@@ -8,7 +8,7 @@
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
  *   Copyright (C) 2020 NiLuJe <ninuje@gmail.com>                          *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2020-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -1029,40 +1029,31 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
         m_doc_props->setString(DOC_PROP_DESCRIPTION, description);
 
         // Return possibly multiple <dc:creator> (authors) and <dc:subject> (keywords)
-        // as a single doc_props string with values separated by \n.
-        // (these \n can be replaced on the lua side for the most appropriate display)
-        bool authors_set = false;
+        // as a single doc_props string with values separated by ", " string.
         lString32 authors;
+        // TODO: Allow to specify a delimiter before calling this function
+        const lString32 delimiter(", ");
         for (size_t i = 1; i <= EPUB_META_MAX_ITER; i++) {
             ldomNode* item = doc->nodeFromXPath(lString32("package/metadata/creator[") << fmt::decimal(i) << "]");
             if (!item)
                 break;
             lString32 author = item->getText().trim();
-            if (authors_set) {
-                authors << "\n"
-                        << author;
-            } else {
-                authors << author;
-                authors_set = true;
-            }
+            if (!authors.empty())
+                authors += delimiter;
+            authors += author;
         }
         m_doc_props->setString(DOC_PROP_AUTHORS, authors);
 
         // There may be multiple <dc:subject> tags, which are usually used for keywords, categories
-        bool subjects_set = false;
         lString32 subjects;
         for (size_t i = 1; i <= EPUB_META_MAX_ITER; i++) {
             ldomNode* item = doc->nodeFromXPath(lString32("package/metadata/subject[") << fmt::decimal(i) << "]");
             if (!item)
                 break;
             lString32 subject = item->getText().trim();
-            if (subjects_set) {
-                subjects << "\n"
-                         << subject;
-            } else {
-                subjects << subject;
-                subjects_set = true;
-            }
+            if (!subjects.empty())
+                subjects += delimiter;
+            subjects += subject;
         }
         m_doc_props->setString(DOC_PROP_KEYWORDS, subjects);
 

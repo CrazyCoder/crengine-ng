@@ -4,7 +4,7 @@
  *   Copyright (C) 2012 Daniel Savard <daniels@xsoli.com>                  *
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
  *   Copyright (C) 2020 NiLuJe <ninuje@gmail.com>                          *
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020,2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -70,6 +70,8 @@ const int gDOMVersionCurrent = DOM_VERSION_CURRENT;
 lString32 extractDocAuthors(ldomDocument* doc, lString32 delimiter, bool shortMiddleName) {
     if (delimiter.empty())
         delimiter = ", ";
+    // We are using a specific delimiter here, so if you change it here you must also
+    // change the authors parsing code in the client application.
     lString32 authors;
     for (int i = 0; i < 16; i++) {
         lString32 path = cs32("/FictionBook/description/title-info/author[") + fmt::decimal(i + 1) + "]";
@@ -124,14 +126,12 @@ lString32 extractDocSeries(ldomDocument* doc, int* pSeriesNumber) {
     return res;
 }
 
-lString32 extractDocKeywords(ldomDocument* doc) {
+lString32 extractDocKeywords(ldomDocument* doc, lString32 delimiter) {
     lString32 res;
-#if 0
-    // Year
-    res << doc->createXPointer(U"/FictionBook/description/title-info/date").getText().trim();
-#endif
+    if (delimiter.empty())
+        delimiter = ", ";
     // Genres
-    // We use "\n" as a separator here, so if you change it here, you must also
+    // We are using a specific delimiter here, so if you change it here you must also
     // change the keyword parsing code in the client application.
     for (int i = 0; i < 16; i++) {
         lString32 path = cs32("/FictionBook/description/title-info/genre[") + fmt::decimal(i + 1) + "]";
@@ -142,7 +142,7 @@ lString32 extractDocKeywords(ldomDocument* doc) {
         lString32 text = genre.getText().trim();
         if (!text.empty()) {
             if (!res.empty())
-                res << "\n";
+                res << delimiter;
             res << text;
         }
     }

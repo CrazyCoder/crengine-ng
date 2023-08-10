@@ -34,7 +34,7 @@ lString32 extractDocTitle(ldomDocument* doc);
 lString32 extractDocLanguage(ldomDocument* doc);
 /// returns "(Series Name #number)" if pSeriesNumber is NULL, separate name and number otherwise
 lString32 extractDocSeries(ldomDocument* doc, int* pSeriesNumber = NULL);
-lString32 extractDocKeywords(ldomDocument* doc);
+lString32 extractDocKeywords(ldomDocument* doc, lString32 delimiter = lString32::empty_str);
 lString32 extractDocDescription(ldomDocument* doc);
 
 /// parse XML document from stream, returns NULL if failed
