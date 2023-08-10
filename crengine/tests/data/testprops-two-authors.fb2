@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">
+ <description>
+  <title-info>
+   <genre>comp_programming</genre>
+   <author>
+    <first-name>First</first-name>
+    <last-name>Author</last-name>
+   </author>
+   <author>
+    <first-name>Second</first-name>
+    <middle-name>Good</middle-name>
+    <last-name>Author</last-name>
+   </author>
+   <book-title>Test document with two authors</book-title>
+   <annotation>
+    <p>Введите сюда краткую аннотацию</p>
+   </annotation>
+   <date value="2023-08-10">10 August 2023</date>
+   <lang>en</lang>
+   <src-lang>en</src-lang>
+  </title-info>
+  <document-info>
+   <author>
+    <first-name>Your</first-name>
+    <last-name>Name</last-name>
+   </author>
+   <program-used>FictionBook Editor Release 2.6.6</program-used>
+   <date value="2023-08-10">10 August 2023</date>
+   <id>A3381DF4-06DE-483D-90C7-F7D2C3EEB527</id>
+   <version>1.0</version>
+   <history>
+    <p>1.0 — создание файла</p>
+   </history>
+  </document-info>
+ </description>
+ <body>
+  <section>
+   <p>Чтобы изменить документ по умолчанию, отредактируйте файл "blank.fb2" вручную.</p>
+   <empty-line/>
+  </section>
+ </body>
+</FictionBook>
