@@ -107,7 +107,7 @@
 /// to avoid showing title/author if coverpage image present
 #define NO_TEXT_IN_COVERPAGE
 
-const char* def_stylesheet =
+static const char* def_stylesheet =
         "image { text-align: center; text-indent: 0px } \n"
         "empty-line { height: 1em; } \n"
         "sub { vertical-align: sub; font-size: 70% }\n"
@@ -140,7 +140,7 @@ const char* def_stylesheet =
 static const char* DEFAULT_FONT_NAME = "Arial, DejaVu Sans"; //Times New Roman";
 static const char* DEFAULT_STATUS_FONT_NAME =
         "Arial Narrow, Arial, DejaVu Sans"; //Times New Roman";
-static css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
+static const css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 //    css_ff_serif,
 //    css_ff_sans_serif,
 //    css_ff_cursive,
