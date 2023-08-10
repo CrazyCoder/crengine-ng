@@ -55,11 +55,11 @@
 #error These unit tests do not work without zlib!
 #endif
 
-// Image comaparision constansts: the maximum allowable deviation of one color component
+// Image comparison constants: the maximum allowable deviation of one color component
 #define MAX_COLOR_DEVI 2
-// Image comaparision constansts: the maximum allowed number of dots with a color deviation allowed
+// Image comparison constants: the maximum allowed number of dots with a color deviation allowed
 #define MAX_TOLERANCE_POINTS_COUNT 100
-// Image comaparision constansts: the maximum allowed number of points with non-permissible color deviation
+// Image comparison constants: the maximum allowed number of points with non-permissible color deviation
 #define MAX_ERRORS_POINTS_COUNT 30
 
 // Fixtures
