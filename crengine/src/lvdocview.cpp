@@ -1047,7 +1047,8 @@ LVStreamRef LVDocView::getDocumentFileStream(lString32 filePath) {
 }
 
 /// returns cover page image stream, if any
-LVStreamRef LVDocView::getCoverPageImageStream() {
+LVStreamRef LVDocView::getBookCoverImageStream() {
+    // Archive based book formats
     lString32 fileName;
     //m_doc_props
     //    for ( int i=0; i<m_doc_props->getCount(); i++ ) {
@@ -1073,7 +1074,7 @@ LVStreamRef LVDocView::getCoverPageImageStream() {
     }
 
     // FB2 coverpage
-    //CRLog::trace("LVDocView::getCoverPageImage()");
+    //CRLog::trace("LVDocView::getBookCoverImageStream()");
     //m_doc->dumpStatistics();
     lUInt16 path[] = { el_FictionBook, el_description, el_title_info, el_coverpage, 0 };
     //lUInt16 path[] = { el_FictionBook, el_description, el_title_info, el_coverpage, el_image, 0 };
@@ -1099,7 +1100,7 @@ LVStreamRef LVDocView::getCoverPageImageStream() {
 
 /// returns cover page image source, if any
 LVImageSourceRef LVDocView::getCoverPageImage() {
-    //    LVStreamRef stream = getCoverPageImageStream();
+    //    LVStreamRef stream = getBookCoverImageStream();
     //    if ( !stream.isNull() )
     //        CRLog::trace("Image stream size is %d", (int)stream->GetSize() );
     //CRLog::trace("LVDocView::getCoverPageImage()");

@@ -455,6 +455,10 @@ protected:
     bool loadDocumentInt(LVStreamRef stream, bool metadataOnly = false);
     /// get section bounds for specific root node and specific section depth level, in 1/100 of percent
     void getSectionBoundsInt(LVArray<int>& bounds, ldomNode* node, lUInt16 section_id, int target_level, int level);
+    /// draws coverpage to image buffer
+    void drawCoverTo(LVDrawBuf* drawBuf, lvRect& rc);
+    /// returns cover page image source, if any
+    LVImageSourceRef getCoverPageImage();
 public:
     /// get outer (before margins are applied) page rectangle
     virtual void getPageRectangle(int pageIndex, lvRect& pageRect) const;
@@ -935,12 +939,9 @@ public:
 
     /// draws page to image buffer
     void drawPageTo(LVDrawBuf* drawBuf, LVRendPageInfo& page, lvRect* pageRect, int pageCount, int basePage);
-    /// draws coverpage to image buffer
-    void drawCoverTo(LVDrawBuf* drawBuf, lvRect& rc);
-    /// returns cover page image source, if any
-    LVImageSourceRef getCoverPageImage();
+
     /// returns cover page image stream, if any
-    LVStreamRef getCoverPageImageStream();
+    LVStreamRef getBookCoverImageStream();
 
     /// returns bookmark
     ldomXPointer getBookmark(bool precise = true);
