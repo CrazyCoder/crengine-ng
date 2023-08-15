@@ -107,6 +107,7 @@ set(SRC_LIST
     tests_props.cpp
     tests_formatting.cpp
     tests_doc_props.cpp
+    tests_book_cover.cpp
 )
 
 set(CRE_NG)
