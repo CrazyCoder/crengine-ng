@@ -1118,6 +1118,14 @@ public:
     void draw(LVDrawBuf& buf, lvRect rc, int halign, int valign);
 };
 
+/**
+ * Returns cover page image stream, if any.
+ * @param filepath Path to document. Can be path to the archive asset.
+ * @return stream reference to book cover image
+ */
+LVStreamRef LVGetBookCoverStream(const lChar32* filepath);
+LVStreamRef LVGetBookCoverStream(const lChar8* filepath);
+
 /// draw book cover, either from image, or generated from title/authors
 void LVDrawBookCover(LVDrawBuf& buf, LVImageSourceRef image, bool respectAspectRatio, lString8 fontFace, lString32 title, lString32 authors, lString32 seriesName, int seriesNumber);
 

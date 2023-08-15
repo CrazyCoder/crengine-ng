@@ -7249,6 +7249,72 @@ ldomWordEx* LVPageWordSelector::reducePattern() {
     return res;
 }
 
+LVStreamRef LVGetBookCoverStream(const lChar32* filepath) {
+    // Optimized the book cover image extraction method.
+    // Alternatively, to get a book cover image, you can create instance of the class LVDocView,
+    //  open the book file and call the LVDocView::getBookCoverImageStream() function.
+    //  But it will be much slower.
+    // Drawback of this optimized implementation: it can only process fb2-documents inside a zip archive,
+    //  for example, it failed for "heap.zip@/book1.epub"
+    CRLog::debug("LVGetBookCoverStream(): filepath=%s", LCSTR(filepath));
+    lString32 arcname, item;
+    LVStreamRef imgStream;
+    LVContainerRef arc;
+    if (!LVSplitArcName(filepath, arcname, item)) {
+        // not in archive
+        LVStreamRef stream = LVOpenFileStream(filepath, LVOM_READ);
+        if (!stream.isNull()) {
+            arc = LVOpenArchieve(stream);
+            if (!arc.isNull()) {
+                // ZIP-based format
+                if (DetectEpubFormat(stream)) {
+                    // EPUB
+                    // extract coverpage from epub
+                    imgStream = GetEpubCoverpage(arc);
+                }
+                // TODO: add other supported zip-based formats here
+            } else {
+                imgStream = GetFB2Coverpage(stream);
+                if (imgStream.isNull()) {
+                    doc_format_t fmt;
+                    if (DetectPDBFormat(stream, fmt)) {
+                        imgStream = GetPDBCoverpage(stream);
+                    }
+                }
+            }
+        }
+    } else {
+        CRLog::debug("LVGetBookCoverStream(): is archive, item=%s, arc=%s", LCSTR(item), LCSTR(arcname));
+        LVStreamRef arcstream = LVOpenFileStream(arcname.c_str(), LVOM_READ);
+        if (!arcstream.isNull()) {
+            arc = LVOpenArchieve(arcstream);
+            if (!arc.isNull()) {
+                LVStreamRef stream = arc->OpenStream(item.c_str(), LVOM_READ);
+                if (!stream.isNull()) {
+                    CRLog::debug("LVGetBookCoverStream(): archive stream opened ok, parsing");
+                    imgStream = GetFB2Coverpage(stream);
+                    if (imgStream.isNull()) {
+                        doc_format_t fmt;
+                        if (DetectPDBFormat(stream, fmt)) {
+                            imgStream = GetPDBCoverpage(stream);
+                        }
+                    }
+                    // TODO: add other supported formats here
+                }
+            }
+        }
+    }
+    if (!imgStream.isNull())
+        CRLog::debug("LVGetBookCoverStream(): cover image found");
+    else
+        CRLog::debug("LVGetBookCoverStream(): cover image not found");
+    return imgStream;
+}
+
+LVStreamRef LVGetBookCoverStream(const lChar8* filepath) {
+    return LVGetBookCoverStream(LocalToUnicode(lString8(filepath)).c_str());
+}
+
 SimpleTitleFormatter::SimpleTitleFormatter(lString32 text, lString8 fontFace, bool bold, bool italic, lUInt32 color, int maxWidth, int maxHeight, int fntSize)
         : _text(text)
         , _fontFace(fontFace)
