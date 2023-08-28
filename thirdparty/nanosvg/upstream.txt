@@ -1,0 +1,2 @@
+URL: https://github.com/memononen/nanosvg.git
+commit: 25241c5a8f8451d41ab1b02ab2d865b01600d949
