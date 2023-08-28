@@ -31,11 +31,8 @@
 #define NANOSVG_ALL_COLOR_KEYWORDS
 #define NANOSVG_IMPLEMENTATION
 #define NANOSVGRAST_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_STATIC
 #include <nanosvg.h>
 #include <nanosvgrast.h>
-#include <stb_image_write.h> // for svg to png conversion
 
 LVSvgImageSource::LVSvgImageSource(ldomNode* node, LVStreamRef stream)
         : LVNodeImageSource(node, stream) {
@@ -155,56 +152,6 @@ int LVSvgImageSource::DecodeFromBuffer(unsigned char* buf, int buf_size, LVImage
     nsvgDeleteRasterizer(rast);
     nsvgDelete(image);
     return res;
-}
-
-// Convenience function to convert SVG image data to PNG
-unsigned char* convertSVGtoPNG(unsigned char* svg_data, int svg_data_size, float zoom_factor, int* png_data_len) {
-    NSVGimage* image = NULL;
-    NSVGrasterizer* rast = NULL;
-    unsigned char* img = NULL;
-    int w, h, pw, ph;
-    unsigned char* png = NULL;
-
-    // printf("SVG: converting to PNG...\n");
-    image = nsvgParse((char*)svg_data, "px", 96.0f);
-    if (image == NULL) {
-        printf("SVG: could not parse SVG stream.\n");
-        nsvgDelete(image);
-        return png;
-    }
-
-    if (!image->shapes) {
-        printf("SVG: got image with zero supported shape.\n");
-        nsvgDelete(image);
-        return png;
-    }
-
-    w = (int)image->width;
-    h = (int)image->height;
-    // The rasterizer (while antialiasing?) has a tendency to eat some of the
-    // right and bottom pixels. We can avoid that by adding N pixels around
-    // each side, by increasing width and height with 2*N here, and using
-    // offsets of N in nsvgRasterize. Using zoom_factor as N gives nice results.
-    int offset = zoom_factor;
-    pw = w * zoom_factor + 2 * offset;
-    ph = h * zoom_factor + 2 * offset;
-    rast = nsvgCreateRasterizer();
-    if (rast == NULL) {
-        printf("SVG: could not init rasterizer.\n");
-    } else {
-        img = (unsigned char*)malloc(pw * ph * 4);
-        if (img == NULL) {
-            printf("SVG: could not alloc image buffer.\n");
-        } else {
-            // printf("SVG: rasterizing to png image %d x %d\n", pw, ph);
-            nsvgRasterize(rast, image, offset, offset, zoom_factor, img, pw, ph, pw * 4);
-            png = stbi_write_png_to_mem(img, pw * 4, pw, ph, 4, png_data_len);
-            free(img);
-        }
-    }
-    nsvgDeleteRasterizer(rast);
-    nsvgDelete(image);
-    return png;
 }
 
 #endif // (USE_NANOSVG==1)

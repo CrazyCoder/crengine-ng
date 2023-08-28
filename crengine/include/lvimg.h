@@ -79,8 +79,6 @@ LVImageSourceRef LVCreateAlphaTransformImageSource(LVImageSourceRef srcImage, in
 // if no icons provided, battery will be drawn
 void LVDrawBatteryIcon(LVDrawBuf* drawbuf, const lvRect& batteryRc, int percent, bool charging, LVRefVec<LVImageSource> icons, LVFont* font);
 
-unsigned char* convertSVGtoPNG(unsigned char* svg_data, int svg_data_size, float zoom_factor, int* png_data_len);
-
 // Declare our bit of scaler ripped from Qt5...
 namespace CRe
 {
