@@ -1,2 +1,2 @@
 URL: https://github.com/github/cmark-gfm
-commit: 1e230827a584ebc9938c3eadc5059c55ef3c9abf
+commit: 587a12bb54d95ac37241377e6ddc93ea0e45439b
