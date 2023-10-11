@@ -185,3 +185,269 @@ TEST(DocPropsTests, GetDocKeywordsTwoInEPUB) {
     CRLog::info("Finished GetDocKeywordsTwoInEPUB");
     CRLog::info("================================");
 }
+
+TEST(DocPropsTests, GetFB2FileProps1) {
+    CRLog::info("=========================");
+    CRLog::info("Starting GetFB2FileProps1");
+
+    // open document
+    LVDocView* view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2"));
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), "");
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    EXPECT_STREQ(LCSTR(s_arc_size), "");
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), TESTS_DATADIR);
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "hello_fb2.fb2");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 876L);
+
+    delete view;
+
+    CRLog::info("Finished GetFB2FileProps1");
+    CRLog::info("=========================");
+}
+
+TEST(DocPropsTests, GetFB2FilePropsInArc1) {
+    CRLog::info("==============================");
+    CRLog::info("Starting GetFB2FilePropsInArc1");
+
+    // open document
+    LVDocView* view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument(TESTS_DATADIR "example.fb2.zip"));
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "example.fb2.zip");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), TESTS_DATADIR);
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    lInt64 arc_size = -1;
+    ASSERT_TRUE(s_arc_size.atoi(arc_size));
+    EXPECT_EQ(arc_size, 60828L);
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), "");
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "example.fb2");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 100407L);
+
+    delete view;
+
+    CRLog::info("Finished GetFB2FilePropsInArc1");
+    CRLog::info("==============================");
+}
+
+TEST(DocPropsTests, GetFB2FilePropsInArc2) {
+    CRLog::info("==============================");
+    CRLog::info("Starting GetFB2FilePropsInArc2");
+
+    // open document
+    LVDocView* view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument(TESTS_DATADIR "example.fb2.zip@/example.fb2"));
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "example.fb2.zip");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), TESTS_DATADIR);
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    lInt64 arc_size = -1;
+    ASSERT_TRUE(s_arc_size.atoi(arc_size));
+    EXPECT_EQ(arc_size, 60828L);
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), "");
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "example.fb2");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 100407L);
+
+    delete view;
+
+    CRLog::info("Finished GetFB2FilePropsInArc2");
+    CRLog::info("==============================");
+}
+
+TEST(DocPropsTests, GetEPUBFileProps1) {
+    CRLog::info("==========================");
+    CRLog::info("Starting GetEPUBFileProps1");
+
+    // open document
+    LVDocView* view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument(TESTS_DATADIR "simple-epub2.epub"));
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), "");
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    EXPECT_STREQ(LCSTR(s_arc_size), "");
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), TESTS_DATADIR);
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "simple-epub2.epub");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 10775L);
+
+    delete view;
+
+    CRLog::info("Finished GetEPUBFileProps1");
+    CRLog::info("==========================");
+}
+
+TEST(DocPropsTests, GetEPUBFilePropsInArc1) {
+    CRLog::info("===============================");
+    CRLog::info("Starting GetEPUBFilePropsInArc1");
+
+    // open document
+    LVDocView* view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument(TESTS_DATADIR "simple-epub2.epub.zip"));
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "simple-epub2.epub.zip");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), TESTS_DATADIR);
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    lInt64 arc_size = -1;
+    ASSERT_TRUE(s_arc_size.atoi(arc_size));
+    EXPECT_EQ(arc_size, 10633L);
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), "");
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "simple-epub2.epub");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 10775L);
+
+    delete view;
+
+    CRLog::info("Finished GetEPUBFilePropsInArc1");
+    CRLog::info("===============================");
+}
+
+TEST(DocPropsTests, GetEPUBFilePropsInArc2) {
+    CRLog::info("===============================");
+    CRLog::info("Starting GetEPUBFilePropsInArc2");
+
+    // open document
+    LVDocView* view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument(TESTS_DATADIR "simple-epub2.epub.zip@/simple-epub2.epub"));
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "simple-epub2.epub.zip");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), TESTS_DATADIR);
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    lInt64 arc_size = -1;
+    ASSERT_TRUE(s_arc_size.atoi(arc_size));
+    EXPECT_EQ(arc_size, 10633L);
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), "");
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "simple-epub2.epub");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 10775L);
+
+    delete view;
+
+    CRLog::info("Finished GetEPUBFilePropsInArc2");
+    CRLog::info("===============================");
+}
