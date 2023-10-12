@@ -2951,7 +2951,7 @@ void LVDocView::Render(int dx, int dy, LVRendPageList* pages) {
         CRLog::debug("Render is finished");
 
         if (!m_swapDone) {
-            int fs = m_doc_props->getIntDef(DOC_PROP_FILE_SIZE, 0);
+            lInt64 fs = m_doc_props->getInt64Def(DOC_PROP_FILE_SIZE, 0);
             int mfs = m_props->getIntDef(PROP_MIN_FILE_SIZE_TO_CACHE,
                                          DOCUMENT_CACHING_SIZE_THRESHOLD);
             CRLog::info(
@@ -3243,8 +3243,7 @@ bool LVDocView::goLink(lString32 link, bool savePos) {
             m_doc_props->setString(DOC_PROP_FILE_PATH, dir);
             m_doc_props->setString(DOC_PROP_FILE_NAME, filename);
             m_doc_props->setString(DOC_PROP_CODE_BASE, LVExtractPath(filename));
-            m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
-                                                               (int)stream->GetSize()));
+            m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(stream->GetSize()));
             // TODO: load document from stream properly
             if (!loadDocumentInt(stream)) {
                 createDefaultDocument(cs32("Load error"), lString32(
@@ -3991,12 +3990,11 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
         // load from archive, using @/ separated arhive/file pathname
         CRLog::info("Loading document %s from archive %s", LCSTR(arcItemPathName), LCSTR(arcPathName));
         LVStreamRef stream = LVOpenFileStream(arcPathName.c_str(), LVOM_READ);
-        int arcsize = 0;
         if (stream.isNull()) {
             CRLog::error("Cannot open archive file %s", LCSTR(arcPathName));
             return false;
         }
-        arcsize = (int)stream->GetSize();
+        lvsize_t arcsize = stream->GetSize();
         m_container = LVOpenArchieve(stream);
         if (m_container.isNull()) {
             CRLog::error("Cannot read archive contents from %s",
@@ -4016,8 +4014,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
         m_doc_props->setString(DOC_PROP_ARC_NAME, fn);
         m_doc_props->setString(DOC_PROP_ARC_PATH, dir);
         m_doc_props->setString(DOC_PROP_ARC_SIZE, lString32::itoa(arcsize));
-        m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
-                                                           (int)stream->GetSize()));
+        m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(stream->GetSize()));
         m_doc_props->setString(DOC_PROP_FILE_NAME, arcItemPathName);
         CRFileHistRecord* record = getHistory()->getRecord(filename32, stream->GetSize());
         lUInt32 newDOMVersion;
@@ -4081,8 +4078,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     }
     m_doc_props->setString(DOC_PROP_FILE_PATH, dir);
     m_doc_props->setString(DOC_PROP_FILE_NAME, fn);
-    m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
-                                                       (int)stream->GetSize()));
+    m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(stream->GetSize()));
 
     CRFileHistRecord* record = getHistory()->getRecord(filename32, stream->GetSize());
     int newDOMVersion;
@@ -4095,6 +4091,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     }
 
     if (loadDocumentInt(stream, metadataOnly)) {
+        // TODO: update m_filename (for inner filename in archive)
         m_filename = lString32(fname);
         m_stream.Clear();
         if (convertBookmarks) {
@@ -4170,8 +4167,7 @@ bool LVDocView::LoadDocument(LVStreamRef stream, const lChar32* contentPath, boo
 
     m_doc_props->setString(DOC_PROP_FILE_PATH, dir);
     m_doc_props->setString(DOC_PROP_FILE_NAME, fn);
-    m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(
-                                                       (int)stream->GetSize()));
+    m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(stream->GetSize()));
 
     CRFileHistRecord* record = getHistory()->getRecord(contentPath16, stream->GetSize());
     int newDOMVersion;
@@ -4594,7 +4590,7 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
         m_arc = LVOpenArchieve(m_stream);
         if (!m_arc.isNull()) {
             m_container = m_arc;
-            // archieve
+            // archive
             FileToArcProps(m_doc_props);
             m_container = m_arc;
             m_doc_props->setInt(DOC_PROP_ARC_FILE_COUNT, m_arc->GetObjectCount());
@@ -4665,7 +4661,8 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                         // Set code base for external resources
                         m_doc_props->setString(DOC_PROP_CODE_BASE, LVExtractPath(fn, false));
                     }
-                    m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa((int)m_stream->GetSize()));
+                    m_filesize = m_stream->GetSize();
+                    m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(m_filesize));
                     m_doc_props->setHex(DOC_PROP_FILE_CRC32, m_stream->getcrc32());
                     lString8 hash = m_stream->getsha256();
                     if (!hash.empty())
@@ -5161,7 +5158,7 @@ ContinuousOperationResult LVDocView::updateCache() {
 
 /// save document to cache file, with timeout option
 ContinuousOperationResult LVDocView::swapToCache(CRTimerUtil& maxTime) {
-    int fs = m_doc_props->getIntDef(DOC_PROP_FILE_SIZE, 0);
+    lInt64 fs = m_doc_props->getInt64Def(DOC_PROP_FILE_SIZE, 0);
     CRLog::trace("LVDocView::swapToCache(fs = %d)", fs);
     // minimum file size to swap, even if forced
     // TODO

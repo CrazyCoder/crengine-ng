@@ -371,7 +371,7 @@ bool tinyNodeCollection::createCacheFile() {
     //lString32 cacheFileName("/tmp/cr3swap.tmp");
 
     lString32 fname = getProps()->getStringDef(DOC_PROP_FILE_NAME, "noname");
-    lUInt32 sz = (lUInt32)getProps()->getInt64Def(DOC_PROP_FILE_SIZE, 0);
+    lUInt64 sz = (lUInt64)getProps()->getInt64Def(DOC_PROP_FILE_SIZE, 0);
     lUInt32 crc = (lUInt32)getProps()->getIntDef(DOC_PROP_FILE_CRC32, 0);
 
     if (!ldomDocCache::enabled()) {
@@ -383,7 +383,8 @@ bool tinyNodeCollection::createCacheFile() {
     CRLog::info("ldomDocument::createCacheFile() - initialized swapping of document %s to cache file", UnicodeToUtf8(fname).c_str());
 
     lString32 cache_path;
-    LVStreamRef map = ldomDocCache::createNew(fname, crc, getPersistenceFlags(), sz, cache_path);
+    // TODO: ldomDocCache::createNew(): change the "fileSize" argument type to lUInt64
+    LVStreamRef map = ldomDocCache::createNew(fname, crc, getPersistenceFlags(), (lUInt32)sz, cache_path);
     if (map.isNull()) {
         CRLog::error("Cannot swap: failed to allocate cache map");
         delete f;
