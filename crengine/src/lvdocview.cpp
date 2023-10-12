@@ -3960,6 +3960,25 @@ static void FileToArcProps(CRPropRef props) {
     props->setString(DOC_PROP_FILE_HASH, lString32::empty_str);
 }
 
+static lString32 fileNameFromDocProps(CRPropRef doc_props) {
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    bool isArchive = !arcname.empty();
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    LVRemovePathDelimiter(path);
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+
+    lString32 fullFileName;
+    if (isArchive) {
+        lString32 arcFullName = LVCombinePaths(arcpath, arcname);
+        fullFileName = LVCombinePaths(path, filename);
+        fullFileName = arcFullName + ASSET_PATH_PREFIX_S "/" + fullFileName;
+    } else {
+        fullFileName = LVCombinePaths(path, filename);
+    }
+    return fullFileName;
+}
+
 static bool needToConvertBookmarks(CRFileHistRecord* historyRecord, lUInt32 domVersionRequested) {
     bool convertBookmarks = false;
     if (historyRecord && historyRecord->getBookmarks().length() > 1 && domVersionRequested >= DOM_VERSION_WITH_NORMALIZED_XPOINTERS && historyRecord->getDOMversion() < DOM_VERSION_WITH_NORMALIZED_XPOINTERS) {
@@ -4091,8 +4110,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     }
 
     if (loadDocumentInt(stream, metadataOnly)) {
-        // TODO: update m_filename (for inner filename in archive)
-        m_filename = lString32(fname);
+        m_filename = fileNameFromDocProps(m_doc_props);
         m_stream.Clear();
         if (convertBookmarks) {
             record->convertBookmarks(m_doc, newDOMVersion);
