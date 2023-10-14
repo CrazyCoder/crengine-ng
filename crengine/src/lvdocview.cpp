@@ -4191,7 +4191,7 @@ bool LVDocView::LoadDocument(LVStreamRef stream, const lChar32* contentPath, boo
     }
 
     if (loadDocumentInt(stream, metadataOnly)) {
-        m_filename = lString32(contentPath);
+        m_filename = fileNameFromDocProps(m_doc_props);
         if (convertBookmarks) {
             record->convertBookmarks(m_doc, newDOMVersion);
             m_props->setInt(PROP_REQUESTED_DOM_VERSION, newDOMVersion);
