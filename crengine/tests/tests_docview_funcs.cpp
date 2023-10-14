@@ -388,3 +388,51 @@ TEST_F(DocViewFuncsTests, GetEPUBFilePropsInArc2) {
     CRLog::info("Finished GetEPUBFilePropsInArc2");
     CRLog::info("===============================");
 }
+
+TEST_F(DocViewFuncsTests, GetFB2StreamProps1) {
+    CRLog::info("===========================");
+    CRLog::info("Starting GetFB2StreamProps1");
+    ASSERT_TRUE(m_initOK);
+
+    // create memory stream
+    LVStreamRef stream = LVCreateMemoryStream(lString32(TESTS_DATADIR "hello_fb2.fb2"));
+    ASSERT_FALSE(stream.isNull());
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(stream, U"/path/to/file/hello_fb2.fb2"));
+
+    // full file name
+    lString32 filename = m_view->getFileName();
+    EXPECT_STREQ(LCSTR(filename), "/path/to/file/hello_fb2.fb2");
+
+    // file size
+    lvsize_t file_size = m_view->getFileSize();
+    EXPECT_EQ(file_size, 876L);
+
+    CRLog::info("Finished GetFB2StreamProps1");
+    CRLog::info("===========================");
+}
+
+TEST_F(DocViewFuncsTests, GetFB2StreamPropsInArc1) {
+    CRLog::info("================================");
+    CRLog::info("Starting GetFB2StreamPropsInArc1");
+    ASSERT_TRUE(m_initOK);
+
+    // create memory stream
+    LVStreamRef stream = LVCreateMemoryStream(lString32(TESTS_DATADIR "example.fb2.zip"));
+    ASSERT_FALSE(stream.isNull());
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(stream, U"/path/to/file/example.fb2.zip"));
+
+    // full file name
+    lString32 filename = m_view->getFileName();
+    EXPECT_STREQ(LCSTR(filename), "/path/to/file/example.fb2.zip@/example.fb2");
+
+    // file size
+    lvsize_t file_size = m_view->getFileSize();
+    EXPECT_EQ(file_size, 100407L);
+
+    CRLog::info("Finished GetFB2StreamPropsInArc1");
+    CRLog::info("================================");
+}

@@ -25,6 +25,7 @@
 
 #include <crlog.h>
 #include <lvdocview.h>
+#include <lvstreamutils.h>
 
 #include "gtest/gtest.h"
 
@@ -450,4 +451,100 @@ TEST(DocPropsTests, GetEPUBFilePropsInArc2) {
 
     CRLog::info("Finished GetEPUBFilePropsInArc2");
     CRLog::info("===============================");
+}
+
+TEST(DocPropsTests, GetFB2StreamProps1) {
+    CRLog::info("===========================");
+    CRLog::info("Starting GetFB2StreamProps1");
+
+    // create memory stream
+    LVStreamRef stream = LVCreateMemoryStream(lString32(TESTS_DATADIR "hello_fb2.fb2"));
+    ASSERT_FALSE(stream.isNull());
+
+    // open document
+    LVDocView* view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument(stream, U"/path/to/file/hello_fb2.fb2"));
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), "");
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    EXPECT_STREQ(LCSTR(s_arc_size), "");
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), "/path/to/file/");
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "hello_fb2.fb2");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 876L);
+
+    delete view;
+
+    CRLog::info("Finished GetFB2StreamProps1");
+    CRLog::info("===========================");
+}
+
+TEST(DocPropsTests, GetFB2StreamPropsInArc1) {
+    CRLog::info("================================");
+    CRLog::info("Starting GetFB2StreamPropsInArc1");
+
+    // create memory stream
+    LVStreamRef stream = LVCreateMemoryStream(lString32(TESTS_DATADIR "example.fb2.zip"));
+    ASSERT_FALSE(stream.isNull());
+
+    // open document
+    LVDocView* view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument(stream, U"/path/to/file/example.fb2.zip"));
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "example.fb2.zip");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), "/path/to/file/");
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    lInt64 arc_size = -1;
+    ASSERT_TRUE(s_arc_size.atoi(arc_size));
+    EXPECT_EQ(arc_size, 60828L);
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), "");
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "example.fb2");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 100407L);
+
+    delete view;
+
+    CRLog::info("Finished GetFB2StreamPropsInArc1");
+    CRLog::info("================================");
 }
