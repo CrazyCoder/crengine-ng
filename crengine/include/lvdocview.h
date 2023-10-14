@@ -361,10 +361,6 @@ protected:
     ldomMarkedRangeList m_bmkRanges;
 private:
     lString32 m_filename;
-#define ORIGINAL_FILENAME_PATCH
-#ifdef ORIGINAL_FILENAME_PATCH
-    lString32 m_originalFilename;
-#endif
     lvsize_t m_filesize;
 
     lvRect m_pageMargins;
@@ -1058,17 +1054,9 @@ public:
     /// restore last file position
     void restorePosition();
 
-#ifdef ORIGINAL_FILENAME_PATCH
-    void setOriginalFilename(const lString32& fn) {
-        m_originalFilename = fn;
-    }
-    const lString32& getOriginalFilename() const {
-        return m_originalFilename;
-    }
     void setMinFileSizeToCache(int size) {
         m_props->setInt(PROP_MIN_FILE_SIZE_TO_CACHE, size);
     }
-#endif
 
     /// render (format) document
     void Render(int dx = 0, int dy = 0, LVRendPageList* pages = NULL);
