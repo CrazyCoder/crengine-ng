@@ -925,6 +925,10 @@ public:
     lString32 getFileName() const {
         return m_filename;
     }
+    /// returns book file name
+    lvsize_t getFileSize() const {
+        return m_filesize;
+    }
 
     /// export to WOL format
     bool exportWolFile(const char* fname, bool flgGray, int levels);
