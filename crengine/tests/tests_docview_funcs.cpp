@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng, unit testing                                             *
- *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2022,2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -268,3 +268,123 @@ TEST_F(DocViewFuncsTests, TestGetFileHash) {
     CRLog::info("=========================");
 }
 #endif
+
+TEST_F(DocViewFuncsTests, GetFB2FileProps1) {
+    CRLog::info("=========================");
+    CRLog::info("Starting GetFB2FileProps1");
+    ASSERT_TRUE(m_initOK);
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "hello_fb2.fb2"));
+
+    // full file name
+    lString32 filename = m_view->getFileName();
+    EXPECT_STREQ(LCSTR(filename), TESTS_DATADIR "hello_fb2.fb2");
+
+    // file size
+    lvsize_t file_size = m_view->getFileSize();
+    EXPECT_EQ(file_size, 876L);
+
+    CRLog::info("Finished GetFB2FileProps1");
+    CRLog::info("=========================");
+}
+
+TEST_F(DocViewFuncsTests, GetFB2FilePropsInArc1) {
+    CRLog::info("==============================");
+    CRLog::info("Starting GetFB2FilePropsInArc1");
+    ASSERT_TRUE(m_initOK);
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "example.fb2.zip"));
+
+    // full file name
+    lString32 filename = m_view->getFileName();
+    EXPECT_STREQ(LCSTR(filename), TESTS_DATADIR "example.fb2.zip@/example.fb2");
+
+    // file size
+    lvsize_t file_size = m_view->getFileSize();
+    EXPECT_EQ(file_size, 100407L);
+
+    CRLog::info("Finished GetFB2FilePropsInArc1");
+    CRLog::info("==============================");
+}
+
+TEST_F(DocViewFuncsTests, GetFB2FilePropsInArc2) {
+    CRLog::info("==============================");
+    CRLog::info("Starting GetFB2FilePropsInArc2");
+    ASSERT_TRUE(m_initOK);
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "example.fb2.zip@/example.fb2"));
+
+    // full file name
+    lString32 filename = m_view->getFileName();
+    EXPECT_STREQ(LCSTR(filename), TESTS_DATADIR "example.fb2.zip@/example.fb2");
+
+    // file size
+    lvsize_t file_size = m_view->getFileSize();
+    EXPECT_EQ(file_size, 100407L);
+
+    CRLog::info("Finished GetFB2FilePropsInArc2");
+    CRLog::info("==============================");
+}
+
+TEST_F(DocViewFuncsTests, GetEPUBFileProps1) {
+    CRLog::info("==========================");
+    CRLog::info("Starting GetEPUBFileProps1");
+    ASSERT_TRUE(m_initOK);
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-epub2.epub"));
+
+    // full file name
+    lString32 filename = m_view->getFileName();
+    EXPECT_STREQ(LCSTR(filename), TESTS_DATADIR "simple-epub2.epub");
+
+    // file size
+    lvsize_t file_size = m_view->getFileSize();
+    EXPECT_EQ(file_size, 10775L);
+
+    CRLog::info("Finished GetEPUBFileProps1");
+    CRLog::info("==========================");
+}
+
+TEST_F(DocViewFuncsTests, GetEPUBFilePropsInArc1) {
+    CRLog::info("===============================");
+    CRLog::info("Starting GetEPUBFilePropsInArc1");
+    ASSERT_TRUE(m_initOK);
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-epub2.epub.zip"));
+
+    // full file name
+    lString32 filename = m_view->getFileName();
+    EXPECT_STREQ(LCSTR(filename), TESTS_DATADIR "simple-epub2.epub.zip@/simple-epub2.epub");
+
+    // file size
+    lvsize_t file_size = m_view->getFileSize();
+    EXPECT_EQ(file_size, 10775L);
+
+    CRLog::info("Finished GetEPUBFilePropsInArc1");
+    CRLog::info("===============================");
+}
+
+TEST_F(DocViewFuncsTests, GetEPUBFilePropsInArc2) {
+    CRLog::info("===============================");
+    CRLog::info("Starting GetEPUBFilePropsInArc2");
+    ASSERT_TRUE(m_initOK);
+
+    // open document
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "simple-epub2.epub.zip@/simple-epub2.epub"));
+
+    // full file name
+    lString32 filename = m_view->getFileName();
+    EXPECT_STREQ(LCSTR(filename), TESTS_DATADIR "simple-epub2.epub.zip@/simple-epub2.epub");
+
+    // file size
+    lvsize_t file_size = m_view->getFileSize();
+    EXPECT_EQ(file_size, 10775L);
+
+    CRLog::info("Finished GetEPUBFilePropsInArc2");
+    CRLog::info("===============================");
+}
