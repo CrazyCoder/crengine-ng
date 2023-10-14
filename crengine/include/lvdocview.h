@@ -7,7 +7,7 @@
  *   Copyright (C) 2018 EXL <exlmotodev@gmail.com>                         *
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2019-2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2019-2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -920,6 +920,10 @@ public:
     /// returns book content hash
     lString32 getFileHash() const {
         return m_doc_props->getStringDef(DOC_PROP_FILE_HASH, "");
+    }
+    /// returns book file name
+    lString32 getFileName() const {
+        return m_filename;
     }
 
     /// export to WOL format
