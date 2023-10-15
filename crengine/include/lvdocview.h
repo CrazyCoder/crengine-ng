@@ -923,7 +923,7 @@ public:
     lString32 getFileHash() const {
         return m_doc_props->getStringDef(DOC_PROP_FILE_HASH, "");
     }
-    /// returns book file name
+    /// returns the full path to the book file
     lString32 getFileName() const {
         return m_filename;
     }

@@ -4043,7 +4043,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
         }
         // loading document
         if (loadDocumentInt(stream, metadataOnly)) {
-            m_filename = lString32(fname);
+            m_filename = LVGetAbsolutePath(lString32(fname));
             m_stream.Clear();
             if (convertBookmarks) {
                 record->convertBookmarks(m_doc, newDOMVersion);
@@ -4107,7 +4107,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
     }
 
     if (loadDocumentInt(stream, metadataOnly)) {
-        m_filename = fileNameFromDocProps(m_doc_props);
+        m_filename = LVGetAbsolutePath(fileNameFromDocProps(m_doc_props));
         m_stream.Clear();
         if (convertBookmarks) {
             record->convertBookmarks(m_doc, newDOMVersion);
@@ -4196,7 +4196,7 @@ bool LVDocView::LoadDocument(LVStreamRef stream, const lChar32* contentPath, boo
     }
 
     if (loadDocumentInt(stream, metadataOnly)) {
-        m_filename = fileNameFromDocProps(m_doc_props);
+        m_filename = LVGetAbsolutePath(fileNameFromDocProps(m_doc_props));
         if (convertBookmarks) {
             record->convertBookmarks(m_doc, newDOMVersion);
             m_props->setInt(PROP_REQUESTED_DOM_VERSION, newDOMVersion);

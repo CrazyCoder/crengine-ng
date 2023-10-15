@@ -469,8 +469,11 @@ TEST_F(DocViewFuncsTests, GetFB2FilePropsInArc1FromCache) {
     ASSERT_TRUE(m_view->isOpenFromCache());
 
     // full file name
+    lString32 currDir = LVGetCurrentDirectory();
+    LVReplacePathSeparator(currDir, U'/');
     lString32 filename = m_view->getFileName();
-    EXPECT_STREQ(LCSTR(filename), "tmp.fb2.zip@/example.fb2");
+    LVReplacePathSeparator(filename, U'/');
+    EXPECT_STREQ(LCSTR(filename), LCSTR(currDir + "tmp.fb2.zip@/example.fb2"));
 
     // file size
     lvsize_t file_size = m_view->getFileSize();
@@ -517,8 +520,11 @@ TEST_F(DocViewFuncsTests, GetFB2FilePropsInArc2FromCache) {
     ASSERT_TRUE(m_view->isOpenFromCache());
 
     // full file name
+    lString32 currDir = LVGetCurrentDirectory();
+    LVReplacePathSeparator(currDir, U'/');
     lString32 filename = m_view->getFileName();
-    EXPECT_STREQ(LCSTR(filename), "tmp.fb2.zip@/example.fb2");
+    LVReplacePathSeparator(filename, U'/');
+    EXPECT_STREQ(LCSTR(filename), LCSTR(currDir + "tmp.fb2.zip@/example.fb2"));
 
     // file size
     lvsize_t file_size = m_view->getFileSize();
