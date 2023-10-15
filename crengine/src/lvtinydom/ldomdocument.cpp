@@ -1255,12 +1255,50 @@ bool ldomDocument::loadCacheFileContent(CacheLoadingCallback* formatCallback, LV
             CRLog::error("Error while reading props data");
             return false;
         }
-        getProps()->deserialize(propsbuf);
+        CRPropRef docProps = LVCreatePropsContainer();
+        docProps->deserialize(propsbuf);
         if (propsbuf.error()) {
-            CRLog::error("Cannot decode property table for document");
+            CRLog::error("Can not decode property table for document");
             return false;
         }
+        // Check properties in cache
+        lString32 arcName = getProps()->getStringDef(DOC_PROP_ARC_NAME, "");
+        lString32 arcPath = getProps()->getStringDef(DOC_PROP_ARC_PATH, "");
+        lString32 arcSize = getProps()->getStringDef(DOC_PROP_ARC_SIZE, "");
+        lString32 fileName = getProps()->getStringDef(DOC_PROP_FILE_NAME, "");
+        lString32 filePath = getProps()->getStringDef(DOC_PROP_FILE_PATH, "");
+        lString32 CRC32 = getProps()->getStringDef(DOC_PROP_FILE_CRC32, "");
+        lString32 hash = getProps()->getStringDef(DOC_PROP_FILE_HASH, "");
+        lString32 size = getProps()->getStringDef(DOC_PROP_FILE_SIZE, "");
 
+        lString32 inCacheArcName = docProps->getStringDef(DOC_PROP_ARC_NAME, "");
+        lString32 inCacheArcPath = docProps->getStringDef(DOC_PROP_ARC_PATH, "");
+        lString32 inCacheArcSize = docProps->getStringDef(DOC_PROP_ARC_SIZE, "");
+        lString32 inCacheFileName = docProps->getStringDef(DOC_PROP_FILE_NAME, "");
+        lString32 inCacheFilePath = docProps->getStringDef(DOC_PROP_FILE_PATH, "");
+        lString32 inCacheCRC32 = docProps->getStringDef(DOC_PROP_FILE_CRC32, "");
+        lString32 inCacheHash = docProps->getStringDef(DOC_PROP_FILE_HASH, "");
+        lString32 inCacheSize = docProps->getStringDef(DOC_PROP_FILE_SIZE, "");
+
+        if (CRC32 != inCacheCRC32 || hash != inCacheHash || size != inCacheSize) {
+            CRLog::error("Invalid cache file, cannot be used");
+            CRLog::error("CRC32: current %s; in cache %s", LCSTR(CRC32), LCSTR(inCacheCRC32));
+            CRLog::error("hash: current %s; in cache %s", LCSTR(hash), LCSTR(inCacheHash));
+            CRLog::error("size: current %s; in cache %s", LCSTR(size), LCSTR(inCacheSize));
+            return false;
+        }
+        // The file may have been moved so we can't use the old cached properties related to the filepath.
+        if (inCacheArcName != arcName)
+            docProps->setString(DOC_PROP_ARC_NAME, arcName);
+        if (inCacheArcPath != arcPath)
+            docProps->setString(DOC_PROP_ARC_PATH, arcPath);
+        if (inCacheArcSize != arcSize)
+            docProps->setString(DOC_PROP_ARC_SIZE, arcSize);
+        if (inCacheFileName != fileName)
+            docProps->setString(DOC_PROP_FILE_NAME, fileName);
+        if (inCacheFilePath != filePath)
+            docProps->setString(DOC_PROP_FILE_PATH, filePath);
+        getProps()->set(docProps);
         if (formatCallback) {
             int fmt = getProps()->getIntDef(DOC_PROP_FILE_FORMAT_ID,
                                             doc_format_fb2);

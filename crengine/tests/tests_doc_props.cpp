@@ -362,7 +362,10 @@ TEST(DocPropsTests, GetFB2FilePropsInArc1FromCache) {
 
     // archive path
     lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
-    EXPECT_STREQ(LCSTR(arcpath), "");
+    lString32 currDir = LVGetCurrentDirectory();
+    LVReplacePathSeparator(currDir, U'/');
+    LVReplacePathSeparator(arcpath, U'/');
+    EXPECT_STREQ(LCSTR(arcpath), LCSTR(currDir));
 
     // archive file size
     lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
@@ -437,7 +440,10 @@ TEST(DocPropsTests, GetFB2FilePropsInArc2FromCache) {
 
     // archive path
     lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
-    EXPECT_STREQ(LCSTR(arcpath), "");
+    lString32 currDir = LVGetCurrentDirectory();
+    LVReplacePathSeparator(currDir, U'/');
+    LVReplacePathSeparator(arcpath, U'/');
+    EXPECT_STREQ(LCSTR(arcpath), LCSTR(currDir));
 
     // archive file size
     lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
