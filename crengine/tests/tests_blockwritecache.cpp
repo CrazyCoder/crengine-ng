@@ -1,7 +1,7 @@
 /***************************************************************************
  *   crengine-ng, unit testing                                             *
  *   Copyright (C) 2010-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
- *   Copyright (C) 2020,2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020,2022,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -87,11 +87,14 @@ TEST_F(BlockWriteCacheTests, blockWriteCacheTest) {
     LVStreamRef s2 = LVCreateBlockWriteStream(LVOpenFileStream(fn2, LVOM_APPEND), 0x8000, 16);
     EXPECT_TRUE(!s1.isNull());
     EXPECT_TRUE(!s2.isNull());
-    lUInt8 buf[0x100000];
-    for (unsigned int i = 0; i < sizeof(buf); i++) {
+    size_t buf_size = 0x100000;
+    lUInt8* buf = (lUInt8*)malloc(buf_size);
+    ASSERT_FALSE(buf == NULL);
+    for (unsigned int i = 0; i < buf_size; i++) {
         buf[i] = (lUInt8)(rand() & 0xFF);
     }
-    lUInt8 buf2[0x100000];
+    lUInt8* buf2 = (lUInt8*)malloc(buf_size);
+    ASSERT_FALSE(buf2 == NULL);
 
     lverror_t res1;
     lverror_t res2;
@@ -508,4 +511,7 @@ TEST_F(BlockWriteCacheTests, blockWriteCacheTest) {
             EXPECT_EQ(eof1, eof2);
         }
     }
+
+    free(buf2);
+    free(buf);
 }
