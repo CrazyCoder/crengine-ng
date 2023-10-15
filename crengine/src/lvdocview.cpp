@@ -353,8 +353,13 @@ void LVDocView::requestReload() {
 }
 
 /// returns true if document is opened
-bool LVDocView::isDocumentOpened() {
+bool LVDocView::isDocumentOpened() const {
     return m_doc && m_doc->getRootNode() && !m_doc_props->getStringDef(DOC_PROP_FILE_NAME, "").empty();
+}
+
+/// returns true if document is open from cache
+bool LVDocView::isOpenFromCache() const {
+    return isDocumentOpened() && m_doc && m_doc->isOpenFromCache();
 }
 
 /// rotate rectangle by current angle, winToDoc==false for doc->window translation, true==ccw

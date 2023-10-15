@@ -730,7 +730,9 @@ public:
     }
 #endif
     /// returns true if document is opened
-    bool isDocumentOpened();
+    bool isDocumentOpened() const;
+    /// returns true if document is open from cache
+    bool isOpenFromCache() const;
     /// returns section bounds, in 1/100 of percent
     LVArray<int>& getSectionBounds(int max_count, int depth, bool for_external_update = false);
     /// sets battery state

@@ -7,7 +7,7 @@
  *   Copyright (C) 2020 NiLuJe <ninuje@gmail.com>                          *
  *   Copyright (C) 2021 ourairquality <info@ourairquality.org>             *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2018,2020-2022 Aleksey Chernov <valexlin@gmail.com>     *
+ *   Copyright (C) 2018,2020-2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -182,6 +182,7 @@ ldomDocument::ldomDocument()
         , _toc_from_cache_valid(false)
         , _warnings_seen_bitmap(0)
         , _doc_rendering_hash(0)
+        , _open_from_cache(false)
         , lists(100) {
     _docIndex = ldomNode::registerDocument(this);
     ldomNode* node = allocTinyElement(NULL, 0, 0);
@@ -1203,6 +1204,7 @@ bool ldomDocument::findText(lString32 pattern, bool caseInsensitive, bool revers
 
 void ldomDocument::clear() {
     clearRendBlockCache();
+    _open_from_cache = false;
     _rendered = false;
     _urlImageMap.clear();
     _fontList.clear();
@@ -1232,6 +1234,7 @@ bool ldomDocument::openFromCache(CacheLoadingCallback* formatCallback, LVDocView
     _rendered = true;
     _just_rendered_from_cache = true;
     _toc_from_cache_valid = true;
+    _open_from_cache = true;
     // Use cached node_displaystyle_hash as _nodeDisplayStyleHashInitial, as it
     // should be in sync with the DOM stored in the cache
     _nodeDisplayStyleHashInitial = _hdr.node_displaystyle_hash;

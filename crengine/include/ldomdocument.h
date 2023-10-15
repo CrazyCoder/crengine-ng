@@ -3,7 +3,7 @@
  *   Copyright (C) 2007-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
  *   Copyright (C) 2013,2020 Konstantin Potapov <pkbo@users.sourceforge.net>
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2020,2021 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020,2021,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -64,6 +64,7 @@ private:
     lUInt32 _warnings_seen_bitmap;
     ldomXRangeList _selections;
     lUInt32 _doc_rendering_hash;
+    bool _open_from_cache;
 
     lString32 _docStylesheetFileName;
 
@@ -216,6 +217,9 @@ public:
     }
     bool isBeingParsed() {
         return _parsing;
+    }
+    bool isOpenFromCache() const {
+        return _open_from_cache;
     }
     /// renders (formats) document in memory: returns true if re-rendering needed, false if not
     virtual bool render(LVRendPageList* pages, LVDocViewCallback* callback, int width, int dy,
