@@ -26,6 +26,7 @@
 #include <crlog.h>
 #include <lvdocview.h>
 #include <lvstreamutils.h>
+#include <ldomdoccache.h>
 
 #include "gtest/gtest.h"
 
@@ -318,6 +319,156 @@ TEST(DocPropsTests, GetFB2FilePropsInArc2) {
 
     CRLog::info("Finished GetFB2FilePropsInArc2");
     CRLog::info("==============================");
+}
+
+TEST(DocPropsTests, GetFB2FilePropsInArc1FromCache) {
+    CRLog::info("=======================================");
+    CRLog::info("Starting GetFB2FilePropsInArc1FromCache");
+
+    // set up cache
+    ASSERT_TRUE(ldomDocCache::init(cs32("./cache"), 10000000UL));
+
+    LVDocView* view = new LVDocView(32, false);
+    // open document
+    ASSERT_TRUE(view->LoadDocument(TESTS_DATADIR "example.fb2.zip@/example.fb2"));
+    // build render data
+    view->Render(1000, 1000);
+    // Save to cache
+    ASSERT_EQ(view->updateCache(), CR_DONE);
+    // Close
+    view->close();
+    delete view;
+
+    // Make a file copy (in current directory)
+    LVStreamRef streamIn = LVOpenFileStream(TESTS_DATADIR "example.fb2.zip", LVOM_READ);
+    ASSERT_FALSE(streamIn.isNull());
+    LVStreamRef streamOut = LVOpenFileStream("tmp.fb2.zip", LVOM_WRITE);
+    ASSERT_FALSE(streamOut.isNull());
+    ASSERT_EQ(LVPumpStream(streamOut, streamIn), 60828);
+    streamIn.Clear();
+    streamOut.Clear();
+
+    // open the copied document using the cache of the original document
+    view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument("tmp.fb2.zip"));
+    ASSERT_TRUE(view->isOpenFromCache());
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "tmp.fb2.zip");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), "");
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    lInt64 arc_size = -1;
+    ASSERT_TRUE(s_arc_size.atoi(arc_size));
+    EXPECT_EQ(arc_size, 60828L);
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), "");
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "example.fb2");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 100407L);
+
+    delete view;
+
+    ldomDocCache::clear();
+    ldomDocCache::close();
+
+    // Delete a copy of a file
+    LVDeleteFile(cs32("tmp.fb2.zip"));
+
+    CRLog::info("Finished GetFB2FilePropsInArc1FromCache");
+    CRLog::info("=======================================");
+}
+
+TEST(DocPropsTests, GetFB2FilePropsInArc2FromCache) {
+    CRLog::info("==============================");
+    CRLog::info("Starting GetFB2FilePropsInArc2FromCache");
+
+    // set up cache
+    ASSERT_TRUE(ldomDocCache::init(cs32("./cache"), 10000000UL));
+
+    LVDocView* view = new LVDocView(32, false);
+    // open document
+    ASSERT_TRUE(view->LoadDocument(TESTS_DATADIR "example.fb2.zip@/example.fb2"));
+    // build render data
+    view->Render(1000, 1000);
+    // Save to cache
+    ASSERT_EQ(view->updateCache(), CR_DONE);
+    // Close
+    view->close();
+    delete view;
+
+    // Make a file copy (in current directory)
+    LVStreamRef streamIn = LVOpenFileStream(TESTS_DATADIR "example.fb2.zip", LVOM_READ);
+    ASSERT_FALSE(streamIn.isNull());
+    LVStreamRef streamOut = LVOpenFileStream("tmp.fb2.zip", LVOM_WRITE);
+    ASSERT_FALSE(streamOut.isNull());
+    ASSERT_EQ(LVPumpStream(streamOut, streamIn), 60828);
+    streamIn.Clear();
+    streamOut.Clear();
+
+    // open the copied document using the cache of the original document
+    view = new LVDocView(32, false);
+    ASSERT_TRUE(view->LoadDocument("tmp.fb2.zip@/example.fb2"));
+    ASSERT_TRUE(view->isOpenFromCache());
+
+    CRPropRef doc_props = view->getDocProps();
+    ASSERT_FALSE(doc_props.isNull());
+
+    // archive name
+    lString32 arcname = doc_props->getStringDef(DOC_PROP_ARC_NAME, "");
+    EXPECT_STREQ(LCSTR(arcname), "tmp.fb2.zip");
+
+    // archive path
+    lString32 arcpath = doc_props->getStringDef(DOC_PROP_ARC_PATH, "");
+    EXPECT_STREQ(LCSTR(arcpath), "");
+
+    // archive file size
+    lString32 s_arc_size = doc_props->getStringDef(DOC_PROP_ARC_SIZE, "");
+    lInt64 arc_size = -1;
+    ASSERT_TRUE(s_arc_size.atoi(arc_size));
+    EXPECT_EQ(arc_size, 60828L);
+
+    // path to file
+    lString32 path = doc_props->getStringDef(DOC_PROP_FILE_PATH, "");
+    EXPECT_STREQ(LCSTR(path), "");
+
+    // file name
+    lString32 filename = doc_props->getStringDef(DOC_PROP_FILE_NAME, "");
+    EXPECT_STREQ(LCSTR(filename), "example.fb2");
+
+    // file size
+    lString32 s_file_size = doc_props->getStringDef(DOC_PROP_FILE_SIZE, "");
+    lInt64 file_size = -1;
+    ASSERT_TRUE(s_file_size.atoi(file_size));
+    EXPECT_EQ(file_size, 100407L);
+
+    delete view;
+
+    ldomDocCache::clear();
+    ldomDocCache::close();
+
+    // Delete a copy of a file
+    LVDeleteFile(cs32("tmp.fb2.zip"));
+
+    CRLog::info("Finished GetFB2FilePropsInArc2FromCache");
+    CRLog::info("=======================================");
 }
 
 TEST(DocPropsTests, GetEPUBFileProps1) {
