@@ -2,7 +2,7 @@
  *   crengine-ng, unit testing                                             *
  *   Copyright (C) 2010-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
  *   Copyright (C) 2018-2020 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2020,2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020,2022,2023 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -467,11 +467,11 @@ TEST_F(TinyDOMTests, testDocumentCaching) {
     }
     {
         // open document from cache
-        // TODO: check is document is realy loaded from cache...
         LVDocView view(4, false);
         view.Resize(600, 800);
         bool res = view.LoadDocument(TEST_FN_TO_OPEN);
         EXPECT_TRUE(res); // load document
+        EXPECT_TRUE(view.isOpenFromCache());
         view.getDocument()->dumpStatistics();
         LVDocImageRef image = view.getPageImage(0);
         EXPECT_FALSE(image.isNull());
