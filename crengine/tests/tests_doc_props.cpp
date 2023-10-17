@@ -270,6 +270,12 @@ TEST(DocPropsTests, GetFB2FilePropsInArc1) {
     ASSERT_TRUE(s_file_size.atoi(file_size));
     EXPECT_EQ(file_size, 100407L);
 
+    // compressed file size
+    lString32 s_file_packsize = doc_props->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
+    lInt64 file_packsize = -1;
+    ASSERT_TRUE(s_file_packsize.atoi(file_packsize));
+    EXPECT_EQ(file_packsize, 60656L);
+
     delete view;
 
     CRLog::info("Finished GetFB2FilePropsInArc1");
@@ -314,6 +320,12 @@ TEST(DocPropsTests, GetFB2FilePropsInArc2) {
     lInt64 file_size = -1;
     ASSERT_TRUE(s_file_size.atoi(file_size));
     EXPECT_EQ(file_size, 100407L);
+
+    // compressed file size
+    lString32 s_file_packsize = doc_props->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
+    lInt64 file_packsize = -1;
+    ASSERT_TRUE(s_file_packsize.atoi(file_packsize));
+    EXPECT_EQ(file_packsize, 60656L);
 
     delete view;
 
@@ -386,6 +398,12 @@ TEST(DocPropsTests, GetFB2FilePropsInArc1FromCache) {
     lInt64 file_size = -1;
     ASSERT_TRUE(s_file_size.atoi(file_size));
     EXPECT_EQ(file_size, 100407L);
+
+    // compressed file size
+    lString32 s_file_packsize = doc_props->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
+    lInt64 file_packsize = -1;
+    ASSERT_TRUE(s_file_packsize.atoi(file_packsize));
+    EXPECT_EQ(file_packsize, 60656L);
 
     delete view;
 
@@ -464,6 +482,12 @@ TEST(DocPropsTests, GetFB2FilePropsInArc2FromCache) {
     lInt64 file_size = -1;
     ASSERT_TRUE(s_file_size.atoi(file_size));
     EXPECT_EQ(file_size, 100407L);
+
+    // compressed file size
+    lString32 s_file_packsize = doc_props->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
+    lInt64 file_packsize = -1;
+    ASSERT_TRUE(s_file_packsize.atoi(file_packsize));
+    EXPECT_EQ(file_packsize, 60656L);
 
     delete view;
 
@@ -559,6 +583,12 @@ TEST(DocPropsTests, GetEPUBFilePropsInArc1) {
     ASSERT_TRUE(s_file_size.atoi(file_size));
     EXPECT_EQ(file_size, 10775L);
 
+    // compressed file size
+    lString32 s_file_packsize = doc_props->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
+    lInt64 file_packsize = -1;
+    ASSERT_TRUE(s_file_packsize.atoi(file_packsize));
+    EXPECT_EQ(file_packsize, 10449L);
+
     delete view;
 
     CRLog::info("Finished GetEPUBFilePropsInArc1");
@@ -603,6 +633,12 @@ TEST(DocPropsTests, GetEPUBFilePropsInArc2) {
     lInt64 file_size = -1;
     ASSERT_TRUE(s_file_size.atoi(file_size));
     EXPECT_EQ(file_size, 10775L);
+
+    // compressed file size
+    lString32 s_file_packsize = doc_props->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
+    lInt64 file_packsize = -1;
+    ASSERT_TRUE(s_file_packsize.atoi(file_packsize));
+    EXPECT_EQ(file_packsize, 10449L);
 
     delete view;
 
@@ -699,6 +735,12 @@ TEST(DocPropsTests, GetFB2StreamPropsInArc1) {
     lInt64 file_size = -1;
     ASSERT_TRUE(s_file_size.atoi(file_size));
     EXPECT_EQ(file_size, 100407L);
+
+    // compressed file size
+    lString32 s_file_packsize = doc_props->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
+    lInt64 file_packsize = -1;
+    ASSERT_TRUE(s_file_packsize.atoi(file_packsize));
+    EXPECT_EQ(file_packsize, 60656L);
 
     delete view;
 
