@@ -101,8 +101,8 @@ The GNU FreeFont fonts must first be copied to the "${CMAKE_BINARY_DIR}/crengine
 
 For example, in the build directory, you can run the following commands:
 ```sh
-# wget -c http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
-# tar -xvzf freefont-otf-20120503.tar.gz -C crengine/tests/fonts/ --strip-components=1 --wildcards '*.otf'
+$ wget -c http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
+$ tar -xvzf freefont-otf-20120503.tar.gz -C crengine/tests/fonts/ --strip-components=1 --wildcards '*.otf'
 ```
 When this mode is disabled, all these components are downloaded automatically using cmake.
 
