@@ -1270,6 +1270,7 @@ bool ldomDocument::loadCacheFileContent(CacheLoadingCallback* formatCallback, LV
         lString32 CRC32 = getProps()->getStringDef(DOC_PROP_FILE_CRC32, "");
         lString32 hash = getProps()->getStringDef(DOC_PROP_FILE_HASH, "");
         lString32 size = getProps()->getStringDef(DOC_PROP_FILE_SIZE, "");
+        lString32 packSize = getProps()->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
 
         lString32 inCacheArcName = docProps->getStringDef(DOC_PROP_ARC_NAME, "");
         lString32 inCacheArcPath = docProps->getStringDef(DOC_PROP_ARC_PATH, "");
@@ -1279,6 +1280,7 @@ bool ldomDocument::loadCacheFileContent(CacheLoadingCallback* formatCallback, LV
         lString32 inCacheCRC32 = docProps->getStringDef(DOC_PROP_FILE_CRC32, "");
         lString32 inCacheHash = docProps->getStringDef(DOC_PROP_FILE_HASH, "");
         lString32 inCacheSize = docProps->getStringDef(DOC_PROP_FILE_SIZE, "");
+        lString32 inCachePackSize = docProps->getStringDef(DOC_PROP_FILE_PACK_SIZE, "");
 
         if (CRC32 != inCacheCRC32 || hash != inCacheHash || size != inCacheSize) {
             CRLog::error("Invalid cache file, cannot be used");
@@ -1298,6 +1300,8 @@ bool ldomDocument::loadCacheFileContent(CacheLoadingCallback* formatCallback, LV
             docProps->setString(DOC_PROP_FILE_NAME, fileName);
         if (inCacheFilePath != filePath)
             docProps->setString(DOC_PROP_FILE_PATH, filePath);
+        if (inCachePackSize != packSize)
+            docProps->setString(DOC_PROP_FILE_PACK_SIZE, packSize);
         getProps()->set(docProps);
         if (formatCallback) {
             int fmt = getProps()->getIntDef(DOC_PROP_FILE_FORMAT_ID,

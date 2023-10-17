@@ -4017,6 +4017,18 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
                          LCSTR(arcPathName));
             return false;
         }
+        lvsize_t packSize = 0;
+        lString32 cmpItemName = arcItemPathName;
+        LVReplacePathSeparator(cmpItemName, U'/');
+        for (int i = 0; i < m_container->GetObjectCount(); i++) {
+            const LVContainerItemInfo* item = m_container->GetObjectInfo(i);
+            lString32 itemName = item->GetName();
+            LVReplacePathSeparator(itemName, U'/');
+            if (itemName == cmpItemName) {
+                packSize = item->GetPackSize();
+                break;
+            }
+        }
         stream = m_container->OpenStream(arcItemPathName.c_str(), LVOM_READ);
         if (stream.isNull()) {
             CRLog::error("Cannot open archive file item stream %s",
@@ -4031,6 +4043,7 @@ bool LVDocView::LoadDocument(const lChar32* fname, bool metadataOnly) {
         m_doc_props->setString(DOC_PROP_ARC_PATH, dir);
         m_doc_props->setString(DOC_PROP_ARC_SIZE, lString32::itoa(arcsize));
         m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(stream->GetSize()));
+        m_doc_props->setString(DOC_PROP_FILE_PACK_SIZE, lString32::itoa(packSize));
         m_doc_props->setString(DOC_PROP_FILE_NAME, arcItemPathName);
         CRFileHistRecord* record = getHistory()->getRecord(filename32, stream->GetSize());
         lUInt32 newDOMVersion;
@@ -4613,6 +4626,8 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
             int eligibleCount = 0;
             lString32 defHtml;
             lString32 firstGood;
+            lvsize_t defHtmlPackSize;
+            lvsize_t firstGoodPackSize;
             for (int i = 0; i < m_arc->GetObjectCount(); i++) {
                 const LVContainerItemInfo* item = m_arc->GetObjectInfo(i);
                 if (item) {
@@ -4624,8 +4639,10 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                         bool nameIsOk = true;
                         if (s.endsWith(".htm") || s.endsWith(".html")) {
                             lString32 nm = LVExtractFilenameWithoutExtension(s);
-                            if (nm == "index" || nm == "default")
+                            if (nm == "index" || nm == "default") {
                                 defHtml = name;
+                                defHtmlPackSize = item->GetPackSize();
+                            }
                             eligibleCount++;
                         } else if (s.endsWith(".fb2")) {
                             eligibleCount++;
@@ -4653,14 +4670,24 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                             nameIsOk = false;
                         }
                         if (nameIsOk) {
-                            if (firstGood.empty())
+                            if (firstGood.empty()) {
                                 firstGood = name;
+                                firstGoodPackSize = item->GetPackSize();
+                            }
                         }
                     }
                 }
             }
             CRLog::debug("In archive found %d suitable files", eligibleCount);
-            lString32 fn = !defHtml.empty() ? defHtml : firstGood;
+            lString32 fn;
+            lvsize_t packSize;
+            if (defHtml.empty()) {
+                fn = firstGood;
+                packSize = firstGoodPackSize;
+            } else {
+                fn = defHtml;
+                packSize = defHtmlPackSize;
+            }
             if (!fn.empty()) {
                 lString32 s = fn;
                 s = s.lowercase();
@@ -4678,6 +4705,7 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
                     }
                     m_filesize = m_stream->GetSize();
                     m_doc_props->setString(DOC_PROP_FILE_SIZE, lString32::itoa(m_filesize));
+                    m_doc_props->setString(DOC_PROP_FILE_PACK_SIZE, lString32::itoa(packSize));
                     m_doc_props->setHex(DOC_PROP_FILE_CRC32, m_stream->getcrc32());
                     lString8 hash = m_stream->getsha256();
                     if (!hash.empty())

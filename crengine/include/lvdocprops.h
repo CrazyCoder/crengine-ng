@@ -3,7 +3,7 @@
  *   Copyright (C) 2008,2009,2011 Vadim Lopatin <coolreader.org@gmail.com> *
  *   Copyright (C) 2012 Daniel Savard <daniels@xsoli.com>                  *
  *   Copyright (C) 2017 poire-z <poire-z@users.noreply.github.com>         *
- *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2022,2023 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -39,6 +39,7 @@
 #define DOC_PROP_FILE_NAME      "doc.file.name"
 #define DOC_PROP_FILE_PATH      "doc.file.path"
 #define DOC_PROP_FILE_SIZE      "doc.file.size"
+#define DOC_PROP_FILE_PACK_SIZE "doc.file.packsize"
 #define DOC_PROP_FILE_FORMAT    "doc.file.format"
 #define DOC_PROP_FILE_FORMAT_ID "doc.file.format.id"
 #define DOC_PROP_FILE_CRC32     "doc.file.crc32"
