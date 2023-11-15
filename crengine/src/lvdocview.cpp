@@ -8,7 +8,6 @@
  *   Copyright (C) 2014 Huang Xin <chrox.huang@gmail.com>                  *
  *   Copyright (C) 2012,2014,2015 Qingping Hou <dave2008713@gmail.com>     *
  *   Copyright (C) 2016 Yifei(Frank) ZHU <fredyifei@gmail.com>             *
- *   Copyright (C) 2016 Hzj_jie <hzj_jie@hotmail.com>                      *
  *   Copyright (C) 2018 EXL <exlmotodev@gmail.com>                         *
  *   Copyright (C) 2018 Frans de Jonge <fransdejonge@gmail.com>            *
  *   Copyright (C) 2018 phi <crispyfrog@163.com>                           *
@@ -53,7 +52,6 @@
 #include "lvxml/lvxmlutils.h"
 #include "lvxml/lvhtmlparser.h"
 #include "lvxml/lvtextbookmarkparser.h"
-#include "lvxml/lvtextrobustparser.h"
 #include "lvtinydom/renderrectaccessor.h"
 #include "lvtinydom/ldomdocumentwriterfilter.h"
 #include "lvtinydom/cachefile.h"
@@ -5027,19 +5025,7 @@ bool LVDocView::ParseDocument() {
             }
         }
 
-        /// plain text format (robust, never fail)
-        if (parser == NULL) {
-            setDocFormat(doc_format_txt);
-            parser = new LVTextRobustParser(m_stream, &writer,
-                                            getTextFormatOptions() == txt_format_pre);
-            if (!parser->CheckFormat()) {
-                // Never reached
-                delete parser;
-                parser = NULL;
-            }
-        }
-
-        // unknown format (never reached)
+        // unknown format
         if (parser == NULL) {
             setDocFormat(doc_format_none);
             failed = true;

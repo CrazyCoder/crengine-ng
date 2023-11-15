@@ -34,7 +34,6 @@ set(CRENGINE_NG_SOURCES
     src/lvxml/lvtextparser.cpp
     src/lvxml/lvtextlinequeue.cpp
     src/lvxml/pmltextimport.cpp
-    src/lvxml/lvtextrobustparser.cpp
     src/lvxml/lvtextbookmarkparser.cpp
     src/lvxml/lvxmlparser.cpp
     src/lvxml/lvhtmlparser.cpp
