@@ -428,3 +428,15 @@ TEST_F(DocParseTests, ParseMathMLinHTML) {
     CRLog::info("Finished ParseMathMLinHTML");
     CRLog::info("=======================");
 }
+
+TEST_F(DocParseTests, OpenBrokenTextFile) {
+    CRLog::info("===========================");
+    CRLog::info("Starting OpenBrokenTextFile");
+    ASSERT_TRUE(m_initOK);
+
+    // open document
+    EXPECT_FALSE(m_view->LoadDocument(TESTS_DATADIR "badtext.txt"));
+
+    CRLog::info("Finished OpenBrokenTextFile");
+    CRLog::info("===========================");
+}
