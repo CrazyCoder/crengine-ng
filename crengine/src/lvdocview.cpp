@@ -6174,14 +6174,18 @@ int LVDocView::doCommand(LVDocCmd cmd, int param) {
             break;
         case DCMD_SET_REQUESTED_DOM_VERSION:
             CRLog::trace("DCMD_SET_REQUESTED_DOM_VERSION(%d)", param);
-            m_props->setInt(PROP_REQUESTED_DOM_VERSION, param);
-            getDocument()->setDOMVersionRequested(param);
+            // Not only changes the PROP_REQUESTED_DOM_VERSION property, but also applies
+            //  related properties if there is a switch to legacy rendering or vice versa
+            //  (embedded langs, hyphenations)
+            propApply(cs8(PROP_REQUESTED_DOM_VERSION), lString32::itoa(param));
             REQUEST_RENDER("doCommand-set requested dom version")
             break;
         case DCMD_RENDER_BLOCK_RENDERING_FLAGS:
             CRLog::trace("DCMD_RENDER_BLOCK_RENDERING_FLAGS(%d)", param);
-            m_props->setInt(PROP_RENDER_BLOCK_RENDERING_FLAGS, param);
-            getDocument()->setRenderBlockRenderingFlags(param);
+            // Not only changes the PROP_RENDER_BLOCK_RENDERING_FLAGS property, but also applies
+            //  related properties if there is a switch to legacy rendering or vice versa
+            //  (embedded langs, hyphenations)
+            propApply(cs8(PROP_RENDER_BLOCK_RENDERING_FLAGS), lString32::itoa(param));
             REQUEST_RENDER("doCommand-set block rendering flags")
             break;
         case DCMD_REQUEST_RENDER:
