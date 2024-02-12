@@ -2,8 +2,8 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2007-2009,2011,2012 Vadim Lopatin <coolreader.org@gmail.com>
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
+ *   Copyright (C) 2020,2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -212,17 +212,19 @@ protected:
     propValue props[pi_max];
     stackedValue stack[MAX_PROP_STACK_SIZE];
     LVRtfDestination* dest;
+    bool cpAlreadySet;
     int sp;
     bool error;
 public:
     /// constructor
     LVRtfValueStack()
             : dest(NULL)
+            , cpAlreadySet(false)
             , sp(0)
             , error(false) {
         sp = 0;
         memset(props, 0, sizeof(props));
-        props[pi_ansicpg].p = (void*)GetCharsetByte2UnicodeTable(1254); //
+        props[pi_ansicpg].p = (void*)GetCharsetByte2UnicodeTable(1252);
     }
     ~LVRtfValueStack() {
         if (dest)
@@ -254,7 +256,6 @@ public:
         // skip sequence of ansi characters (\upr{} until \ud{} )
         if (getInt(pi_skip_ansi) != 0)
             return 0;
-        // TODO: add codepage support
         if (ch & 0x80) {
             const lChar32* conv_table = (const lChar32*)props[pi_ansicpg].p;
             return (conv_table[ch & 0x7F]);
@@ -298,11 +299,12 @@ public:
                 stack[sp++].value.p = props[index].p;
                 const lChar32* table = GetCharsetByte2UnicodeTable(value);
                 props[index].p = (void*)table;
+                cpAlreadySet = true;
                 //this->getDestination()->SetCharsetTable(table);
             } else {
                 stack[sp++].value.i = props[index].i;
                 props[index].i = value;
-                if (value != 1024 && value != 0) {
+                if (!cpAlreadySet && value != 1024 && value != 0) {
                     if (index == pi_lang) {
                         set(pi_ansicpg, langToCodepage(value));
                     } else if (index == pi_deflang) {
