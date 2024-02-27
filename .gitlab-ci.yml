@@ -9,9 +9,9 @@ variables:
   DEPLOY_PATH: /tmp/crengine-ng-image/
   BUILD_WORKDIR: /tmp/crengine-ng-build/
   BUILD_WORKDIR_LIBUNIBREAK: /tmp/crengine-ng-build/unibreak
-  LIBUNIBREAK_PKGURL: https://github.com/adah1972/libunibreak/releases/download/libunibreak_5_1/libunibreak-5.1.tar.gz
-  LIBUNIBREAK_PKG: libunibreak-5.1.tar.gz
-  LIBUNIBREAK_SRCDIR: libunibreak-5.1
+  LIBUNIBREAK_PKGURL: https://github.com/adah1972/libunibreak/releases/download/libunibreak_6_0/libunibreak-6.0.tar.gz
+  LIBUNIBREAK_PKG: libunibreak-6.0.tar.gz
+  LIBUNIBREAK_SRCDIR: libunibreak-6.0
 
 default:
   image: ubuntu:22.04
