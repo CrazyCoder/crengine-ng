@@ -418,7 +418,7 @@ static quotes_spec _quotes_spec_table[] = {
 static quotes_spec _quotes_spec_default = { "", U"\x201c", U"\x201d", U"\x2018", U"\x2019" };
 
 #if USE_LIBUNIBREAK == 1
-#if KO_LIBUNIBREAK_PATCH == 1
+#if UNIBREAK_VERSION >= 0x0600
 lChar32 lb_char_sub_func_english(struct LineBreakContext* lbpCtx, const lChar32* text, int pos, int next_usable) {
     // https://github.com/koreader/crengine/issues/364
     // Normally, line breaks are allowed at both sides of an em-dash.
@@ -497,7 +497,7 @@ lChar32 lb_char_sub_func_english(struct LineBreakContext* lbpCtx, const lChar32*
     }
     return text[pos];
 }
-#endif // KO_LIBUNIBREAK_PATCH==1
+#endif // UNIBREAK_VERSION >= 0x0600
 
 lChar32 lb_char_sub_func_polish(struct LineBreakContext* lbpCtx, const lChar32* text, int pos, int next_usable) {
     // https://github.com/koreader/koreader/issues/5645#issuecomment-559193057
@@ -599,7 +599,7 @@ lChar32 TextLangCfg::getCssLbCharSub(css_line_break_t css_linebreak, css_word_br
                        // Everything becoming ID, it can break anywhere
     }
     lChar32 ch = tweaked_ch ? tweaked_ch : text[pos];
-#if KO_LIBUNIBREAK_PATCH == 1
+#if UNIBREAK_VERSION >= 0x0600
     enum LineBreakClass lbc = lb_get_char_class(lbpCtx, ch);
     if (css_wordbreak == css_wb_break_all) {
         if (lbc == LBP_AI || lbc == LBP_AL || lbc == LBP_NU || lbc == LBP_SA) {
@@ -696,7 +696,7 @@ lChar32 TextLangCfg::getCssLbCharSub(css_line_break_t css_linebreak, css_word_br
 #endif
         }
     }
-#endif // KO_LIBUNIBREAK_PATCH==1
+#endif // UNIBREAK_VERSION >= 0x0600
     return ch;
 }
 #endif // USE_LIBUNIBREAK==1
@@ -895,7 +895,7 @@ TextLangCfg::TextLangCfg(lString32 lang_tag) {
 
     // Other line breaking and text layout tweaks
     _lb_char_sub_func = NULL;
-#if KO_LIBUNIBREAK_PATCH == 1
+#if UNIBREAK_VERSION >= 0x0600
     if (langStartsWith(lang_tag, "en")) { // English
         _lb_char_sub_func = &lb_char_sub_func_english;
     } else
