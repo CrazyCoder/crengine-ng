@@ -1,5 +1,5 @@
-project(crengine-ng)
 cmake_minimum_required(VERSION 3.14)
+project(crengine-ng)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
@@ -296,7 +296,7 @@ elseif(WITH_LIBUNIBREAK)
     find_package(libunibreak ${LIBUNIBREAK_MIN_VERSION} REQUIRED)
 endif()
 if (LIBUNIBREAK_FOUND)
-    if (${LIBUNIBREAK_VERSION} VERSION_LESS "6.0")
+    if ("${LIBUNIBREAK_VERSION}" VERSION_LESS "6.0")
         message(STATUS "It is recommended to use libunibreak version 6.0 or later")
     endif()
     set(USE_LIBUNIBREAK ON)
