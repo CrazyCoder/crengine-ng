@@ -28,9 +28,6 @@
 #include <ldomdocument.h>
 #include <ldomdoccache.h>
 #include <lvrend.h>
-#include <lvstreamutils.h>
-
-#include "../src/lvtinydom/writenodeex.h"
 
 #include "gtest/gtest.h"
 
@@ -103,26 +100,6 @@ protected:
         } else {
             return ldomDocCache::close();
         }
-    }
-
-    bool dumpXML(const char* fname) {
-        ldomDocument* doc = m_view->getDocument();
-        if (NULL == doc)
-            return false;
-        LVStreamRef ostream = LVOpenFileStream(fname, LVOM_WRITE);
-        if (ostream.isNull())
-            return false;
-        ldomNode* rootNode = doc->getRootNode();
-        if (NULL == rootNode)
-            return false;
-        for (int i = 0; i < rootNode->getChildCount(); i++) {
-            ldomXPointer pointer = ldomXPointer(rootNode->getChildNode(i), 0);
-            lString8 dump = pointer.getHtml(WRITENODEEX_INDENT_NEWLINE |
-                                            WRITENODEEX_NEWLINE_ALL_NODES |
-                                            WRITENODEEX_INCLUDE_STYLESHEET_ELEMENT);
-            *ostream << dump;
-        }
-        return true;
     }
 };
 
