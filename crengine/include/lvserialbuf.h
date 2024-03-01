@@ -1,7 +1,7 @@
 /***************************************************************************
  *   crengine-ng                                                           *
  *   Copyright (C) 2009,2010 Vadim Lopatin <coolreader.org@gmail.com>      *
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020,2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -32,17 +32,17 @@ class SerialBuf
     bool _ownbuf;
     bool _error;
     bool _autoresize;
-    int _size;
-    int _pos;
+    lUInt32 _size;
+    lUInt32 _pos;
 public:
     /// swap content of buffer with another buffer
     void swap(SerialBuf& v);
     /// constructor of serialization buffer
-    SerialBuf(int sz, bool autoresize = true);
-    SerialBuf(const lUInt8* p, int sz);
+    SerialBuf(lUInt32 sz, bool autoresize = true);
+    SerialBuf(const lUInt8* p, lUInt32 sz);
     ~SerialBuf();
 
-    void set(lUInt8* buf, int size) {
+    void set(lUInt8* buf, lUInt32 size) {
         if (_buf && _ownbuf)
             free(_buf);
         _buf = buf;
@@ -51,20 +51,22 @@ public:
         _autoresize = true;
         _size = _pos = size;
     }
-    bool copyTo(lUInt8* buf, int maxSize);
+    bool copyTo(lUInt8* buf, lUInt32 maxSize);
     inline lUInt8* buf() {
         return _buf;
     }
-    inline void setPos(int pos) {
+    inline void setPos(lUInt32 pos) {
         _pos = pos;
     }
-    inline int space() const {
-        return _size - _pos;
+    inline lUInt32 space() const {
+        if (_size >= _pos)
+            return _size - _pos;
+        return 0;
     }
-    inline int pos() const {
+    inline lUInt32 pos() const {
         return _pos;
     }
-    inline int size() const {
+    inline lUInt32 size() const {
         return _size;
     }
 
@@ -83,14 +85,14 @@ public:
     }
 
     /// checks whether specified number of bytes is available, returns true in case of error
-    bool check(int reserved);
+    bool check(lUInt32 reserved);
 
     // write methods
     /// put magic signature
     void putMagic(const char* s);
 
     /// add CRC32 for last N bytes
-    void putCRC(int N);
+    void putCRC(lUInt32 N);
 
     /// returns CRC32 for the whole buffer
     lUInt32 getCRC();
@@ -136,8 +138,8 @@ public:
     SerialBuf& operator>>(lString32& s);
 
     bool checkMagic(const char* s);
-    /// read crc32 code, comapare with CRC32 for last N bytes
-    bool checkCRC(int N);
+    /// read crc32 code, compare with CRC32 for last N bytes
+    bool checkCRC(lUInt32 N);
 };
 
 #endif // __LV_SERIALBUF_H_INCLUDED__

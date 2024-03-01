@@ -108,6 +108,7 @@ set(SRC_LIST
     tests_formatting.cpp
     tests_doc_props.cpp
     tests_book_cover.cpp
+    tests_doc_with_base64_img.cpp
 )
 
 set(CRE_NG)

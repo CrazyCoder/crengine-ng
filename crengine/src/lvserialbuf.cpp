@@ -1,7 +1,7 @@
 /***************************************************************************
  *   crengine-ng                                                           *
  *   Copyright (C) 2009-2012 Vadim Lopatin <coolreader.org@gmail.com>      *
- *   Copyright (C) 2020 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2020,2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -20,13 +20,14 @@
  ***************************************************************************/
 
 #include <lvserialbuf.h>
+#include <crlog.h>
 
 #include <string.h>
 
 /// serialization/deserialization buffer
 
 /// constructor of serialization buffer
-SerialBuf::SerialBuf(int sz, bool autoresize)
+SerialBuf::SerialBuf(lUInt32 sz, bool autoresize)
         : _buf((lUInt8*)malloc(sz))
         , _ownbuf(true)
         , _error(false)
@@ -36,7 +37,7 @@ SerialBuf::SerialBuf(int sz, bool autoresize)
     memset(_buf, 0, _size);
 }
 /// constructor of deserialization buffer
-SerialBuf::SerialBuf(const lUInt8* p, int sz)
+SerialBuf::SerialBuf(const lUInt8* p, lUInt32 sz)
         : _buf(const_cast<lUInt8*>(p))
         , _ownbuf(false)
         , _error(false)
@@ -50,7 +51,7 @@ SerialBuf::~SerialBuf() {
         free(_buf);
 }
 
-bool SerialBuf::copyTo(lUInt8* buf, int maxSize) {
+bool SerialBuf::copyTo(lUInt8* buf, lUInt32 maxSize) {
     if (_pos == 0)
         return true;
     if (_pos > maxSize)
@@ -60,12 +61,19 @@ bool SerialBuf::copyTo(lUInt8* buf, int maxSize) {
 }
 
 /// checks whether specified number of bytes is available, returns true in case of error
-bool SerialBuf::check(int reserved) {
+bool SerialBuf::check(lUInt32 reserved) {
     if (_error)
         return true;
     if (space() < reserved) {
         if (_autoresize) {
+            lUInt32 oldSize = _size;
             _size = (_size > 16384 ? _size * 2 : 16384) + reserved;
+            if (_size < oldSize) {
+                // integer overflow
+                CRLog::error("SerialBuf::check(): integer overflow: oldSize=%u, newSize=%u", oldSize, _size);
+                _error = true;
+                return true;
+            }
             _buf = cr_realloc(_buf, _size);
             memset(_buf + _pos, 0, _size - _pos);
             return false;
@@ -97,12 +105,12 @@ void SerialBuf::putMagic(const char* s) {
         v.a = tmp;     \
     }
 void SerialBuf::swap(SerialBuf& v) {
-    SWAPVARS(lUInt8*, _buf)
-            SWAPVARS(bool, _ownbuf)
-                    SWAPVARS(bool, _error)
-                            SWAPVARS(bool, _autoresize)
-                                    SWAPVARS(int, _size)
-                                            SWAPVARS(int, _pos)
+    SWAPVARS(lUInt8*, _buf);
+    SWAPVARS(bool, _ownbuf);
+    SWAPVARS(bool, _error);
+    SWAPVARS(bool, _autoresize);
+    SWAPVARS(int, _size);
+    SWAPVARS(int, _pos);
 }
 
 /// add contents of another buffer
@@ -168,24 +176,24 @@ SerialBuf& SerialBuf::operator<<(const lString32& s) {
     if (check(2))
         return *this;
     lString8 s8 = UnicodeToUtf8(s);
-    lUInt16 len = (lUInt16)s8.length();
+    lUInt32 len = (lUInt32)s8.length();
     (*this) << len;
-    for (int i = 0; i < len; i++) {
+    for (lUInt32 i = 0; i < len; i++) {
         if (check(1))
             return *this;
-        (*this) << (lUInt8)(s8[i]);
+        (*this) << (lUInt8)(s8[(int)i]);
     }
     return *this;
 }
 SerialBuf& SerialBuf::operator<<(const lString8& s8) {
     if (check(2))
         return *this;
-    lUInt16 len = (lUInt16)s8.length();
+    lUInt32 len = (lUInt32)s8.length();
     (*this) << len;
-    for (int i = 0; i < len; i++) {
+    for (lUInt32 i = 0; i < len; i++) {
         if (check(1))
             return *this;
-        (*this) << (lUInt8)(s8[i]);
+        (*this) << (lUInt8)(s8[(int)i]);
     }
     return *this;
 }
@@ -207,7 +215,7 @@ SerialBuf& SerialBuf::operator>>(char& n) {
 SerialBuf& SerialBuf::operator>>(bool& n) {
     if (check(1))
         return *this;
-    n = _buf[_pos++] ? true : false;
+    n = _buf[_pos++] != 0;
     return *this;
 }
 
@@ -250,16 +258,16 @@ SerialBuf& SerialBuf::operator>>(lInt32& n) {
 SerialBuf& SerialBuf::operator>>(lString8& s8) {
     if (check(2))
         return *this;
-    lUInt16 len = 0;
+    lUInt32 len = 0;
     (*this) >> len;
     s8.clear();
-    s8.reserve(len);
-    for (int i = 0; i < len; i++) {
+    s8.reserve((lString8::size_type)len);
+    for (lUInt32 i = 0; i < len; i++) {
         if (check(1))
             return *this;
         lUInt8 c = 0;
         (*this) >> c;
-        s8.append(1, c);
+        s8.append(1, (lString8::value_type)c);
     }
     return *this;
 }
@@ -287,7 +295,7 @@ bool SerialBuf::checkMagic(const char* s) {
 }
 
 /// add CRC32 for last N bytes
-void SerialBuf::putCRC(int size) {
+void SerialBuf::putCRC(lUInt32 size) {
     if (error())
         return;
     if (size > _pos) {
@@ -295,7 +303,7 @@ void SerialBuf::putCRC(int size) {
         seterror();
     }
     lUInt32 n = 0;
-    n = lStr_crc32(n, _buf + _pos - size, size);
+    n = lStr_crc32(n, _buf + _pos - size, (int)size);
     *this << n;
 }
 
@@ -309,7 +317,7 @@ lUInt32 SerialBuf::getCRC() {
 }
 
 /// read crc32 code, comapare with CRC32 for last N bytes
-bool SerialBuf::checkCRC(int size) {
+bool SerialBuf::checkCRC(lUInt32 size) {
     if (error())
         return false;
     if (size > _pos) {
