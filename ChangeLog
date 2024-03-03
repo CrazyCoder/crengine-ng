@@ -1,3 +1,278 @@
+2023-03-03  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.11 released.
+	==========================
+
+	Tag sources with `0.9.11'.
+
+	  Main changes:
+	Improvements in the document cache, in particular support for long attribute values,
+	for the correct operation of embedded images encoded in base64.
+	Enabled special handling of em dashes through the introduction of the 
+	lb_get_char_class() function in libunibreak-6.0.
+	Improved RTF file format support: more correct detection of document text encoding.
+	Refusal to open a file as text if the document type could not be determined.
+	Added a new document property: DOC_PROP_FILE_PACK_SIZE - compressed file size in
+	the archive if the book file is in the archive.
+	Updating thirdparty/cmark_gfx and thirdparty/nanosvg from upstream to the latest version.
+	Improved handling of document metadata.
+	Non-critical bug fixes.
+	Minor improvements to unit tests.
+
+	See below for other changes.
+
+2024-03-03  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update .gitlab-ci.yml: bump libunibreak to 6.1
+
+2024-03-01  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update crengine/tests/tests_doc_with_base64_img.cpp: cleanup
+
+	Increased CACHE_FILE_FORMAT_VERSION to force previously cached documents to be
+	reformatted because they may contain incomplete attribute values.
+	See the previous commit for details.
+
+	SerialBuf class: added the ability to save strings longer than 65536 bytes, 
+	this is necessary for serializing long attributes of xml or html tags, for example,
+	when caching an html document that contains embedded images encoded using base64.
+
+	In addition, the unsigned type lUInt32 is used for the buffer size and position
+	instead of the signed int.
+	A check for integer buffer size overflow has also been added.
+
+2024-02-29  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added a test showing incorrect caching of a document with too long attribute values.
+	In this test, a base64 encoded image is used as the long attribute value.
+
+2024-02-28  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update CMakeLists.txt: minor fixes
+
+	Update .gitlab-ci.yml: bump libunibreak to 6.0
+
+2024-02-27  Aleksey Chernov  <valexlin@gmail.com>
+
+	Enabled the use of the new libunibreak function lb_get_char_class(), introduced in
+	version 6.0.
+
+2024-02-12  Aleksey Chernov  <valexlin@gmail.com>
+
+	RTF file support: when processing the '\lang', '\deflang', '\deflangfe' instructions,
+	don't set the text encoding to match the specified language if the '\ansicpg' instruction
+	was previously processed, which explicitly specifies which text encoding to use.
+
+2023-12-11  Aleksey Chernov  <valexlin@gmail.com>
+
+	thirdparty/nanosvg: updated upstream.txt: last applied commit from upstream
+
+	thirdparty/nanosvg: updated to latest version from upstream
+
+2023-11-20  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView::doCommand(): DCMD_SET_REQUESTED_DOM_VERSION, DCMD_RENDER_BLOCK_RENDERING_FLAGS
+	behavior has changed: not only changes these properties, but also applies related
+	properties if there is a switch to legacy rendering or vice versa (embedded langs,
+	hyphenations).
+
+2023-11-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	Unit test suite 'DocParseTests': added 'OpenBrokenTextFile' test to check that
+	a broken text file cannot be opened.
+
+2023-11-15  Aleksey Chernov  <valexlin@gmail.com>
+
+	Revert "Add LVTextRobustParser to force using utf-8 encoding to open unknown format
+	text files, instead of a very unfriendly 'Error: unknown format' message."
+
+2023-11-01  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVZipArc::ReadContents(): fixed type casting of an unsigned type value to a signed type,
+	which did not work correctly on some compilers.
+
+2023-10-24  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update .gitlab-ci.yml: bump libunibreak to 5.1, cleanup.
+
+2023-10-17  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update README.md: formating fixed
+
+	Unit test suite 'DocPropsTests': test new document property 'DOC_PROP_FILE_PACK_SIZE'.
+
+	New document property added 'DOC_PROP_FILE_PACK_SIZE' - compressed size of the file in
+	archive, if the book file is in an archive.
+
+2023-10-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	Unit test 'TinyDOMTests.testDocumentCaching': added check to see if the document is
+	actually opened from cache.
+
+	Unit test 'BlockWriteCacheTests.blockWriteCacheTest': fixed stack overflow on Windows
+	platform.
+
+	When opening a file using a cache, it is possible that the original file has been moved
+	or a copy of the file is opened in a different path. Document properties are loaded from
+	the cache and in this case, some properties related to the file path will be replaced
+	with outdated ones from the cache. Therefore, after successfully loading data from
+	the cache, it is necessary to restore the original document properties related to the
+	file properties. Also, here added a check for the correspondence of some properties in
+	the cache with the properties of the source document, namely: file size, CRC32 and hash.
+
+2023-10-15  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView::getFileName() fixed: returns the full (absolute) path to the file of the
+	currently open book.
+
+	Unit testing: checking the file properties of a document when opening it from the cache.
+
+	ldomDocument, LVDocView: added methods to check that a document is opened from cache.
+
+2023-10-14  Aleksey Chernov  <valexlin@gmail.com>
+
+	Unit testing: checking a document file property when opening it from a stream.
+
+	LVDocView: reconstructing the full file name when opening a document in an archive
+	(represented as a stream) without specifying the inner file.
+
+	Unit tests added for LVDocView.getFileName(), LVDocView.getFileSize() functions.
+
+	LVDocView: added getFileSize() function to return the file size of the currently open book.
+
+	LVDocView: added getFileName() function to return the full path to the file of the
+	currently open book.
+
+	LVDocView: removed the obsolete ORIGINAL_FILENAME_PATCH macro & the m_originalFilename
+	field with getter/setter.
+
+2023-10-12  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView: reconstructing the full file name when opening a document in an archive
+	without specifying an inner file.
+
+	Don't cast the file size to int type when saving it in document properties.
+	This allows to save the correct size of large files in properties.
+
+	Unit testing: added tests to check document file properties
+
+2023-09-01  Aleksey Chernov  <valexlin@gmail.com>
+
+	thirdparty/cmark-gfm: updated upstream.txt: last applied commit from upstream
+
+	cmark-gfm updated from upstream to 0.29.0.gfm.13
+
+	thirdparty/cmark-gfm: added label-file to track updates in upstream
+
+2023-08-28  Aleksey Chernov  <valexlin@gmail.com>
+
+	Removed useless function 'convertSVGtoPNG()' & file 'thirdparty/nanosvg/src/stb_image_write.h'
+	used in it.
+
+	thirdparty/nanosvg: updated upstream.txt: last applied commit from upstream
+
+	thirdparty/nanosvg: updated to latest version from upstream
+
+	thirdparty/nanosvg: added label-file to track updates in upstream
+
+2023-08-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	Bump version to 0.9.11-beta1
+
+	Unit tests added for LVDocView.getBookCoverImageStream(), LVGetBookCoverStream() functions.
+
+	Added global function LVGetBookCoverStream() to get book cover. Alternatively, to get
+	a book cover image, you can create instance of the class LVDocView, open the book file
+	and call the LVDocView::getBookCoverImageStream() function. But it will be much slower.
+
+2023-08-15  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView refactoring: move implementation defined functions from public to protected
+	section: drawCoverTo(), getCoverPageImage();
+	getCoverPageImageStream() public function renamed to getBookCoverImageStream().
+
+	Simplify DocPropsTests
+
+2023-08-12  Aleksey Chernov  <valexlin@gmail.com>
+
+	Because document properties are cached, we must update the version of the cache file so
+	that the properties in the new format are written to the cache.
+
+2023-08-11  Aleksey Chernov  <valexlin@gmail.com>
+
+	crengine/src/lvdocview.cpp: added omitted 'static', 'const' for some constants.
+
+2023-08-10  Aleksey Chernov  <valexlin@gmail.com>
+
+	lvtinidom.cpp: extractDocAuthors(): when getting the author in the fb2 document,
+	the addition of an extra space has been fixed.
+
+	Unit testing: added tests to check retrieval of some document properties (authors, keywords).
+
+	crengine/tests/tests_textrender.cpp: typo fixed
+
+	When forming such document properties as 'authors' and 'genre' (keywords), the string
+	", " is used as a separator, regardless of the document type (epub, fb2).
+
+2023-07-25  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVFreeTypeFontManager::getFaceListFiltered(): short path to exit when lang tag is invalid.
+
+	unit tests: check parsing empty lang tag.
+
+	CRLocaleData class: added "explicit" keyword to constructor declarations.
+
+	CRLocaleData::parseTag(): short path to exit when lang tag is empty.
+
+	Since the prototypes of some public methods of the LVDocView class have changed,
+	the API version of the library has been increased.
+
+2023-07-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	The `PROP_SHOW_BATTERY_PERCENT` property is processed like the rest of the page
+	header/footer properties to conform to the same style.
+
+	Removed usage of deprecated `LBOOK` macro.
+
+	When calculating the height of the header, do not take into account the height of the
+	battery icons if the battery display is not enabled.
+
+2023-07-02  Aleksey Chernov  <valexlin@gmail.com>
+
+	Revert "LVGammaCorrection::getIndex(): set default/initial value for `index` to
+	`LVGammaCorrection::NoCorrectionIndex`"
+
+2023-06-15  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVHashTable: don't allow setting the table size to zero using the resize() function.
+	This can happen when loading the document cache:
+	lxmlldocbase.cpp: lxmlDocBase::deserializeMaps():
+	```cpp
+	    lUInt32 idmsize;
+	    buf >> idmsize;
+	    _idNodeMap.clear();
+	    if (idmsize < 20000)
+	        _idNodeMap.resize(idmsize * 2);
+	```
+	when `idmsize` is zero. In this case, division by zero will occur when calling
+	the get() function. For example, when you click on a link in a specific document:
+	LVDocView::goLink() -> lxmlDocBase::getNodeById() -> LVHashTable<lUInt32, lInt32>::get()
+
+2023-05-28  Aleksey Chernov  <valexlin@gmail.com>
+
+	renamed: crengine/tests/tests_formating.cpp -> crengine/tests/tests_formatting.cpp
+
+	Updated Gentoo ebuild: don't use GNU FreeFont fonts installed in the system for unit testing.
+
+2023-05-27  Aleksey Chernov  <valexlin@gmail.com>
+
+	Revert "thirdparty/cmark-gfm/CMakeLists.txt: removed deprecated macro."
+
+2023-05-26  Aleksey Chernov  <valexlin@gmail.com>
+
+	Updated Gentoo ebuild: added src_test()
+
+
 2023-05-26  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.10 released.
