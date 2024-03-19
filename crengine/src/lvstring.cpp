@@ -7,7 +7,7 @@
  *   Copyright (C) 2020 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2021 zwim <martin.zwicknagl@kirchbichl.net>             *
  *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2018-2021 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018-2021,2024 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -61,6 +61,8 @@ extern "C" {
 
 // set to 1 to enable debugging
 #define DEBUG_STATIC_STRING_ALLOC 0
+
+#define STR_BLOCK_SZ 16
 
 static lChar8 empty_str_8[] = { 0 };
 static lstring_chunk_t empty_chunk_8(empty_str_8);
@@ -712,9 +714,11 @@ void lString32::alloc(int sz) {
 #else
     pchunk = (lstring_chunk_t*)::malloc(sizeof(lstring_chunk_t));
 #endif
-    pchunk->buf._32 = (lChar32*)::malloc(sizeof(lChar32) * (sz + 1));
+    // Calculate the minimum buffer size greater than sz + 1 but a multiple of STR_BLOCK_SZ.
+    lInt32 buff_sz = (((sz + 1) + (STR_BLOCK_SZ - 1)) / STR_BLOCK_SZ) * STR_BLOCK_SZ;
+    pchunk->buf._32 = (lChar32*)::malloc(sizeof(lChar32) * buff_sz);
     assert(pchunk->buf._32 != NULL);
-    pchunk->size = sz;
+    pchunk->size = buff_sz;
     pchunk->refCount = 1;
 }
 
@@ -921,9 +925,11 @@ lString32& lString32::erase(size_type offset, size_type count) {
 
 void lString32::reserve(size_type n) {
     if (refCount() == 1) {
-        if (pchunk->size < n) {
-            pchunk->buf._32 = (lChar32*)::realloc(pchunk->buf._32, sizeof(lChar32) * (n + 1));
-            pchunk->size = n;
+        if (pchunk->size < n + 1) {
+            // Calculate the minimum buffer size greater than n + 1 but a multiple of STR_BLOCK_SZ.
+            lInt32 buff_sz = (((n + 1) + (STR_BLOCK_SZ - 1)) / STR_BLOCK_SZ) * STR_BLOCK_SZ;
+            pchunk->buf._32 = (lChar32*)::realloc(pchunk->buf._32, sizeof(lChar32) * buff_sz);
+            pchunk->size = buff_sz;
         }
     } else {
         lstring_chunk_t* poldchunk = pchunk;
@@ -1391,9 +1397,11 @@ void lString16::alloc(int sz) {
 #else
     pchunk = (lstring_chunk_t*)::malloc(sizeof(lstring_chunk_t));
 #endif
-    pchunk->buf._16 = (lChar16*)::malloc(sizeof(lChar16) * (sz + 1));
+    // Calculate the minimum buffer size greater than sz + 1 but a multiple of STR_BLOCK_SZ.
+    lInt32 buff_sz = (((sz + 1) + (STR_BLOCK_SZ - 1)) / STR_BLOCK_SZ) * STR_BLOCK_SZ;
+    pchunk->buf._16 = (lChar16*)::malloc(sizeof(lChar16) * buff_sz);
     assert(pchunk->buf._16 != NULL);
-    pchunk->size = sz;
+    pchunk->size = buff_sz;
     pchunk->refCount = 1;
 }
 
@@ -1600,9 +1608,11 @@ lString16& lString16::erase(size_type offset, size_type count) {
 
 void lString16::reserve(size_type n) {
     if (refCount() == 1) {
-        if (pchunk->size < n) {
-            pchunk->buf._16 = (lChar16*)::realloc(pchunk->buf._16, sizeof(lChar16) * (n + 1));
-            pchunk->size = n;
+        if (pchunk->size < n + 1) {
+            // Calculate the minimum buffer size greater than n + 1 but a multiple of STR_BLOCK_SZ.
+            lInt32 buff_sz = (((n + 1) + (STR_BLOCK_SZ - 1)) / STR_BLOCK_SZ) * STR_BLOCK_SZ;
+            pchunk->buf._16 = (lChar16*)::realloc(pchunk->buf._16, sizeof(lChar16) * buff_sz);
+            pchunk->size = buff_sz;
         }
     } else {
         lstring_chunk_t* poldchunk = pchunk;
@@ -1947,9 +1957,11 @@ void lString8::alloc(int sz) {
 #else
     pchunk = (lstring_chunk_t*)::malloc(sizeof(lstring_chunk_t));
 #endif
-    pchunk->buf._8 = (lChar8*)::malloc(sizeof(lChar8) * (sz + 1));
+    // Calculate the minimum buffer size greater than sz + 1 but a multiple of STR_BLOCK_SZ.
+    lInt32 buff_sz = (((sz + 1) + (STR_BLOCK_SZ - 1)) / STR_BLOCK_SZ) * STR_BLOCK_SZ;
+    pchunk->buf._8 = (lChar8*)::malloc(sizeof(lChar8) * buff_sz);
     assert(pchunk->buf._8 != NULL);
-    pchunk->size = sz;
+    pchunk->size = buff_sz;
     pchunk->refCount = 1;
 }
 
@@ -2103,9 +2115,11 @@ lString8& lString8::erase(size_type offset, size_type count) {
 
 void lString8::reserve(size_type n) {
     if (refCount() == 1) {
-        if (pchunk->size < n) {
-            pchunk->buf._8 = (lChar8*)::realloc(pchunk->buf._8, sizeof(lChar8) * (n + 1));
-            pchunk->size = n;
+        if (pchunk->size < n + 1) {
+            // Calculate the minimum buffer size greater than n + 1 but a multiple of STR_BLOCK_SZ.
+            lInt32 buff_sz = (((n + 1) + (STR_BLOCK_SZ - 1)) / STR_BLOCK_SZ) * STR_BLOCK_SZ;
+            pchunk->buf._8 = (lChar8*)::realloc(pchunk->buf._8, sizeof(lChar8) * buff_sz);
+            pchunk->size = buff_sz;
         }
     } else {
         lstring_chunk_t* poldchunk = pchunk;
