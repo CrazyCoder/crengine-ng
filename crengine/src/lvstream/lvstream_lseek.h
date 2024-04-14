@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2021 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2021,2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -33,7 +33,7 @@
 // Since we have defined own types 'lvoffset_t', 'lvpos_t' and do not use the system type 'off_t'
 // it is logical to define our own wrapper function 'lseek'.
 static inline lvpos_t cr3_lseek(int fd, lvoffset_t offset, int whence) {
-#if LVLONG_FILE_SUPPORT == 1 && (!defined(MACOS) || MACOS == 0)
+#if LVLONG_FILE_SUPPORT == 1 && (!defined(MACOS) || MACOS == 0) && !defined(__FreeBSD__)
     return (lvpos_t)::lseek64(fd, (off64_t)offset, whence);
 #else
     return (lvpos_t)::lseek(fd, (off_t)offset, whence);
