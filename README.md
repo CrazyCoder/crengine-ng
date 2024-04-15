@@ -20,6 +20,13 @@ This project is in the experimental phase, the main goals are:
  * Bugfixes.
  * Support for modern compilers.
 
+## Applications
+[crqt-ng](https://gitlab.com/coolreader-ng/crqt-ng) - cross-platform desktop e-book reader (using the Qt framework).
+
+[crwx-ng](https://gitlab.com/coolreader-ng/crwx-ng) - cross-platform desktop e-book reader (using wxWidgets).
+
+[LxReader](https://gitlab.com/coolreader-ng/lxreader) - e-book reader for Android.
+
 ## External dependencies
 This library can use other libraries (links to licenses point to official websites whenever possible):
  * FreeType - font rendering (any of your choice [GPLv2](https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/docs/GPLv2.TXT) or [FTL](https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/docs/FTL.TXT))
