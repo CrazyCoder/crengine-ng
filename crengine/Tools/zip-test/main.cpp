@@ -91,11 +91,15 @@ int main(int argc, char* argv[]) {
                             printf("Read error!\n");
                             break;
                         }
-                        if (ReadSize < 4096) {
+                        if (ReadSize > 0) {
+                            if (out_stream->Write(buff, ReadSize, &WriteSize) != LVERR_OK) {
+                                printf("Write error!\n");
+                                break;
+                            }
+                        } else {
                             break;
                         }
-                        if (out_stream->Write(buff, ReadSize, &WriteSize) != LVERR_OK) {
-                            printf("Write error!\n");
+                        if (ReadSize < 4096) {
                             break;
                         }
                     }
