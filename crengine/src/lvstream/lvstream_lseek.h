@@ -18,14 +18,18 @@
  *   MA 02110-1301, USA.                                                   *
  ***************************************************************************/
 
-#ifndef __LVSTREAM_LSEEK_H_INCLUDED__
-#define __LVSTREAM_LSEEK_H_INCLUDED__
+#ifndef LVSTREAM_LSEEK_H
+#define LVSTREAM_LSEEK_H
 
 #include <lvtypes.h>
 
-#if !defined(__SYMBIAN32__) && defined(_WIN32)
+#if defined(_WIN32)
 #include <io.h>
 #else
+#ifndef _LARGEFILE64_SOURCE
+#define _LARGEFILE64_SOURCE
+#endif
+#include <sys/types.h>
 #include <unistd.h>
 #endif
 
@@ -33,11 +37,11 @@
 // Since we have defined own types 'lvoffset_t', 'lvpos_t' and do not use the system type 'off_t'
 // it is logical to define our own wrapper function 'lseek'.
 static inline lvpos_t cr3_lseek(int fd, lvoffset_t offset, int whence) {
-#if LVLONG_FILE_SUPPORT == 1 && (!defined(MACOS) || MACOS == 0) && !defined(__FreeBSD__)
+#if LVLONG_FILE_SUPPORT == 1 && HAVE_LSEEK64 == 1
     return (lvpos_t)::lseek64(fd, (off64_t)offset, whence);
 #else
     return (lvpos_t)::lseek(fd, (off_t)offset, whence);
 #endif
 }
 
-#endif // __LVSTREAM_LSEEK_H_INCLUDED__
+#endif // LVSTREAM_LSEEK_H

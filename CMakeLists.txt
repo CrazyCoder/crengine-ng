@@ -4,6 +4,9 @@ project(crengine-ng)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
 include(CheckIncludeFile)
+include(CheckSymbolExists)
+
+include(project_checks)
 
 #  VERSION_DEV_A/CODE description:
 # alphaX - 0X; beta X - 1X; rcX - 2X; releaseX - 3X (or empty)
@@ -185,6 +188,10 @@ if (ENABLE_LARGEFILE_SUPPORT)
     list(APPEND PRIVATE_COMPILE_DEFINITIONS -D_LARGEFILE64_SOURCE=1 -D_FILE_OFFSET_BITS=64)
     list(APPEND PUBLIC_COMPILE_DEFINITIONS -DLVLONG_FILE_SUPPORT=1)
 endif(ENABLE_LARGEFILE_SUPPORT)
+
+if (HAVE_LSEEK64)
+    list(APPEND PRIVATE_COMPILE_DEFINITIONS -DHAVE_LSEEK64=1)
+endif(HAVE_LSEEK64)
 
 if (NOT USE_COLOR_BACKBUFFER)
     if (NOT DEFINED GRAY_BACKBUFFER_BITS)
