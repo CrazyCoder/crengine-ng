@@ -128,6 +128,7 @@ TEST_F(PropertyTests, AddPropToExistingFile) {
     ASSERT_TRUE(props->loadFromStream(istream.get()));
     props->setBool("add.test.result", props->getIntDef("test.int.value2", 0) == -2);
     EXPECT_TRUE(props->saveToStream(ostream.get()));
+    ostream.Clear();
     EXPECT_TRUE(crengine_ng::unittesting::compareTwoTextFiles("props2.ini", PROPS_REFERENCE_DIR "props2.ini"));
 }
 
