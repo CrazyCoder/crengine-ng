@@ -93,6 +93,11 @@ enum LVDocCmd
     DCMD_EDIT_INSERT_CHAR,
     DCMD_EDIT_REPLACE_CHAR
 };
+
 #define LVDOCVIEW_COMMANDS_END DCMD_SET_ROTATION_INFO_FOR_AA
+
+// Flags for the DCMD_SELECT_* command family parameter
+// Do not change view position when text selection changes
+#define DCMD_SELECT_FLAG_DONT_CHANGE_POS 0x80000
 
 #endif // LVDOCVIEWCMD_H

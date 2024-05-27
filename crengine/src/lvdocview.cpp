@@ -6386,10 +6386,13 @@ int LVDocView::onSelectionCommand(int cmd, int param) {
     ldomXPointerEx pos(getBookmark());
     ldomXRangeList& sel = getDocument()->getSelections();
     ldomXRange currSel;
-    if (sel.length() > 0)
+    if (!sel.empty())
         currSel = *sel[0];
     bool moved = false;
-    bool makeSelStartVisible = true; // true: start, false: end
+    bool dontScrollToSelection = (param & DCMD_SELECT_FLAG_DONT_CHANGE_POS) != 0;
+    param &= ~DCMD_SELECT_FLAG_DONT_CHANGE_POS;
+    bool makeSelStartVisible = !dontScrollToSelection;
+    bool makeSelEndVisible = false;
     if (!currSel.isNull() && cmd == DCMD_SELECT_FIRST_SENTENCE && !pageRange->isInside(currSel.getStart()) && !pageRange->isInside(currSel.getEnd()))
         currSel.clear();
     if (currSel.isNull() || currSel.getStart().isNull()) {
@@ -6407,8 +6410,10 @@ int LVDocView::onSelectionCommand(int cmd, int param) {
         return 0;
     }
     if (cmd == DCMD_SELECT_MOVE_LEFT_BOUND_BY_WORDS || cmd == DCMD_SELECT_MOVE_RIGHT_BOUND_BY_WORDS) {
-        if (cmd == DCMD_SELECT_MOVE_RIGHT_BOUND_BY_WORDS)
+        if (cmd == DCMD_SELECT_MOVE_RIGHT_BOUND_BY_WORDS) {
             makeSelStartVisible = false;
+            makeSelEndVisible = !dontScrollToSelection;
+        }
         int dir = param > 0 ? 1 : -1;
         int distance = param > 0 ? param : -param;
         CRLog::debug("Changing selection by words: bound=%s dir=%d distance=%d", (cmd == DCMD_SELECT_MOVE_LEFT_BOUND_BY_WORDS ? "left" : "right"), dir, distance);
@@ -6491,7 +6496,7 @@ int LVDocView::onSelectionCommand(int cmd, int param) {
                 SetPos(startPoint.y);
         }
         //goToBookmark(currSel.getStart());
-    } else {
+    } else if (makeSelEndVisible) {
         // make end of selection visible
         if (isScrollMode()) {
             if (endPoint.y > y0 + h * 3 / 4 - m_font_size * 2)
