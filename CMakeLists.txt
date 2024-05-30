@@ -22,7 +22,7 @@ endif()
 set(PACKAGE_VERSION ${VERSION})
 # Set shared library API version
 # Increase if API is changed
-set(LIB_API_VERSION 6)
+set(LIB_API_VERSION 7)
 # for windows rc file
 set(PRODUCTVERSION_V "${VERSION_MAJOR},${VERSION_MINOR},${VERSION_PATCH},${VERSION_DEV_CODE}")
 set(FILEVERSION_V ${PRODUCTVERSION_V})
