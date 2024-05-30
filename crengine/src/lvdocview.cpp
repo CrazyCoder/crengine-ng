@@ -15,7 +15,7 @@
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
  *   Copyright (C) 2021 zwim <martin.zwicknagl@kirchbichl.net>             *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2018-2023 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2018-2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -224,6 +224,7 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
         , m_pageHeaderPos(PAGE_HEADER_POS_TOP)
         , m_pageHeaderInfo(PGHDR_PAGE_NUMBER | PGHDR_CLOCK | PGHDR_BATTERY | PGHDR_PAGE_COUNT | PGHDR_AUTHOR | PGHDR_TITLE)
         , m_showCover(true)
+        , m_decimalPointChar('.')
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
         , m_rotateAngle(CR_ROTATE_ANGLE_0)
 #endif
@@ -523,6 +524,13 @@ void LVDocView::setPageHeaderInfo(lUInt32 hdrFlags) {
         REQUEST_RENDER("setPageHeaderInfo")
     } else {
         clearImageCache();
+    }
+}
+
+void LVDocView::setDecimalPointChar(lChar32 decimalPointChar) {
+    if (m_decimalPointChar != decimalPointChar) {
+        m_decimalPointChar = decimalPointChar;
+        REQUEST_RENDER("setDecimalPointChar")
     }
 }
 
@@ -1902,13 +1910,13 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     } else {
         if (getVisiblePageCount() == 1 || !(pageIndex & 1)) {
             int dwIcons = 0;
-            int icony = texty + m_infoFont->getHeight() / 2;
+            int ic_y = texty + m_infoFont->getHeight() / 2;
             for (int ni = 0; ni < m_headerIcons.length(); ni++) {
                 LVImageSourceRef icon = m_headerIcons[ni];
-                int h = icon->GetHeight();
-                int w = icon->GetWidth();
-                drawbuf->Draw(icon, info.left + dwIcons, icony - h / 2, w, h);
-                dwIcons += w + 4;
+                int ic_h = icon->GetHeight();
+                int ic_w = icon->GetWidth();
+                drawbuf->Draw(icon, info.left + dwIcons, ic_y - ic_h / 2, ic_w, ic_h);
+                dwIcons += ic_w + 4;
             }
             info.left += dwIcons;
         }
@@ -1931,7 +1939,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
                 }
                 int batteryIconWidth = 28;
                 int batteryIconHeight = 15;
-                if (m_batteryIcons.length() > 0) {
+                if (!m_batteryIcons.empty()) {
                     batteryIconWidth = m_batteryIcons[0]->GetWidth();
                     batteryIconHeight = m_batteryIcons[0]->GetHeight();
                 }
@@ -1961,7 +1969,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
                 if (!pageinfo.empty())
                     pageinfo += "  ";
                 pageinfo += fmt::decimal(percent / 100);
-                pageinfo += ",";
+                pageinfo += m_decimalPointChar;
                 int pp = percent % 100;
                 if (pp < 10)
                     pageinfo << "0";

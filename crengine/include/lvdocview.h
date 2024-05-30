@@ -7,7 +7,7 @@
  *   Copyright (C) 2018 EXL <exlmotodev@gmail.com>                         *
  *   Copyright (C) 2020 Jellby <jellby@yahoo.com>                          *
  *   Copyright (C) 2017-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2019-2023 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2019-2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -372,6 +372,7 @@ private:
     bool m_showCover;
     LVRefVec<LVImageSource> m_headerIcons;
     LVRefVec<LVImageSource> m_batteryIcons;
+    lChar32 m_decimalPointChar;
 
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
     cr_rotate_angle_t m_rotateAngle;
@@ -815,6 +816,10 @@ public:
     void setInfoFont(font_ref_t font) {
         m_infoFont = font;
     }
+    lChar32 getDecimalPointChar() const {
+        return m_decimalPointChar;
+    }
+    void setDecimalPointChar(lChar32 decimalPointChar);
     /// draw page header to buffer
     virtual void drawPageHeader(LVDrawBuf* drawBuf, const lvRect& headerRc, int pageIndex, lUInt32 headerInfoFlags, int pageCount);
     /// draw battery state to buffer
