@@ -2,6 +2,7 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2017,2021 poire-z <poire-z@users.noreply.github.com>    *
  *   Copyright (C) 2019,2021 NiLuJe <ninuje@gmail.com>                     *
+ *   Copyright (C) 2024 Aleksey Chernov <valexlin@gmail.com>               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -26,13 +27,13 @@
 #include "lvimagedecodercallback.h"
 
 // Support for SVG
-#include <math.h>
-#include <stdio.h>
 #define NANOSVG_ALL_COLOR_KEYWORDS
 #define NANOSVG_IMPLEMENTATION
 #define NANOSVGRAST_IMPLEMENTATION
 #include <nanosvg.h>
 #include <nanosvgrast.h>
+
+#include <crlog.h>
 
 LVSvgImageSource::LVSvgImageSource(ldomNode* node, LVStreamRef stream)
         : LVNodeImageSource(node, stream) {
@@ -82,10 +83,10 @@ int LVSvgImageSource::DecodeFromBuffer(unsigned char* buf, int buf_size, LVImage
     int w, h;
     bool res = false;
 
-    // printf("SVG: parsing...\n");
+    // CRLog::debug("SVG: parsing...");
     image = nsvgParse((char*)buf, "px", 96.0f);
     if (image == NULL) {
-        printf("SVG: could not parse SVG stream.\n");
+        CRLog::error("SVG: could not parse SVG stream.");
         nsvgDelete(image);
         return res;
     }
@@ -103,14 +104,14 @@ int LVSvgImageSource::DecodeFromBuffer(unsigned char* buf, int buf_size, LVImage
 
     // int nbshapes = 0;
     // for (NSVGshape *shape = image->shapes; shape != NULL; shape = shape->next) nbshapes++;
-    // printf("SVG: nb of shapes: %d\n", nbshapes);
+    // CRLog::debug("SVG: nb of shapes: %d", nbshapes);
     if (!image->shapes) {
         // If no supported shapes, it will be a blank empty image.
         // Better to let user know that with an unsupported image display (empty
         // square with borders).
         // But commented to not flood koreader's log for books with many such
         // svg images (crengine would log this at each page change)
-        // printf("SVG: got image with zero supported shape.\n");
+        // CRLog::debug("SVG: got image with zero supported shape.");
         nsvgDelete(image);
         return res;
     }
@@ -120,15 +121,14 @@ int LVSvgImageSource::DecodeFromBuffer(unsigned char* buf, int buf_size, LVImage
     } else {
         rast = nsvgCreateRasterizer();
         if (rast == NULL) {
-            printf("SVG: could not init rasterizer.\n");
+            CRLog::error("SVG: could not init rasterizer.");
         } else {
             img = (unsigned char*)malloc(w * h * 4);
             if (img == NULL) {
-                printf("SVG: could not alloc image buffer.\n");
+                CRLog::error("SVG: could not alloc image buffer.");
             } else {
-                // printf("SVG: rasterizing image %d x %d\n", w, h);
+                // CRLog::debug("SVG: image rasterization (%d x %d)", w, h);
                 nsvgRasterize(rast, image, 1, 1, 1, img, w, h, w * 4); // offsets of 1 pixel, scale = 1
-                // stbi_write_png("/tmp/svg.png", w, h, 4, img, w*4); // for debug
                 callback->OnStartDecode(this);
                 lUInt32* src = (lUInt32*)img;
                 lUInt32* row = new lUInt32[_width];
