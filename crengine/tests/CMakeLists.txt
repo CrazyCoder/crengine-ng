@@ -95,7 +95,6 @@ set(SRC_LIST
     tests_blockwritecache.cpp
     tests_tinydom.cpp
     tests_textrender.cpp
-    tests_wtf8.cpp
     tests_docparse.cpp
     tests_docview_funcs.cpp
     tests_zip-use.cpp
@@ -109,6 +108,7 @@ set(SRC_LIST
     tests_doc_props.cpp
     tests_book_cover.cpp
     tests_doc_with_base64_img.cpp
+    tests_string_funcs.cpp
 )
 
 set(CRE_NG)
