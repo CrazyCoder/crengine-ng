@@ -5,7 +5,7 @@
  *   Copyright (C) 2015 Yifei(Frank) ZHU <fredyifei@gmail.com>             *
  *   Copyright (C) 2016 Bob Gordon <bobgordon62@gmail.com>                 *
  *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2019-2021 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2019-2021,2024 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -1258,9 +1258,9 @@ public:
     /// converts to 64 bit integer, returns true if success
     bool atoi(lInt64& n) const;
     /// convert to double
-    double atod() const;
+    double atod(value_type dp = '.') const;
     /// convert to double, returns true if success
-    bool atod(double& d, char dp = '.') const;
+    bool atod(double& d, value_type dp = '.') const;
     /// returns constant c-string pointer
     const value_type* c_str() const {
         return pchunk->buf._32;

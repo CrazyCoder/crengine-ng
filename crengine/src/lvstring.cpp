@@ -1263,29 +1263,34 @@ bool lString32::atoi(lInt64& n) const {
     return *s == '\0' || *s == ' ' || *s == '\t';
 }
 
-double lString32::atod() const {
+double lString32::atod(value_type dp) const {
     double d = 0.0;
-    bool res = atod(d, '.');
-    return res ? d : 0.0;
+    atod(d, dp);
+    // In case of error, `d` remains 0.0
+    return d;
 }
 
-bool lString32::atod(double& d, char dp) const {
+bool lString32::atod(double& d, value_type dp) const {
     // Simplified implementation without overflow checking
-    int sign = 1;
-    unsigned long intg = 0;
-    unsigned long frac = 0;
-    unsigned long frac_div = 1;
-    unsigned int exp = 0;
-    int exp_sign = 1;
+    bool negative = false;
+    unsigned long intg = 0;     // integral part
+    unsigned long frac = 0;     // fractional part
+    unsigned long frac_div = 1; // fractional power
+    unsigned int exp = 0;       // exponent part
+    bool exp_negative = false;
     bool res = false;
     const value_type* s = c_str();
     while (*s == ' ' || *s == '\t')
         s++;
     if (*s == '-') {
-        sign = -1;
+        negative = true;
         s++;
     } else if (*s == '+') {
         s++;
+    }
+    if (*s == dp) {
+        // Temporarily allow further processing
+        res = true;
     }
     if (*s >= '0' && *s <= '9') {
         res = true;
@@ -1311,7 +1316,7 @@ bool lString32::atod(double& d, char dp) const {
         // exponent part
         s++;
         if (*s == '-') {
-            exp_sign = -1;
+            exp_negative = true;
             s++;
         } else if (*s == '+') {
             s++;
@@ -1329,17 +1334,19 @@ bool lString32::atod(double& d, char dp) const {
         // unprocessed characters left
         res = false;
     }
-    d = (double)intg;
-    if (frac_div > 1)
-        d += ((double)frac) / ((double)frac_div);
-    if (exp > 1) {
-        double pwr = exp_sign > 0 ? 10.0 : 0.1;
-        for (unsigned int i = 0; i < exp; i++) {
-            d *= pwr;
+    if (res) {
+        d = (double)intg;
+        if (frac_div > 1)
+            d += ((double)frac) / ((double)frac_div);
+        if (exp > 1) {
+            double pwr = exp_negative ? 0.1 : 10.0;
+            for (unsigned int i = 0; i < exp; i++) {
+                d *= pwr;
+            }
         }
+        if (negative)
+            d = -d;
     }
-    if (sign < 0)
-        d = -d;
     return res;
 }
 
