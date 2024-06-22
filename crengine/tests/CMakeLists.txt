@@ -45,13 +45,15 @@ else(OFFLINE_BUILD_MODE)
     include(FetchContent)
     FetchContent_Declare(
         googletest
-        URL https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
-        URL_HASH MD5=95b29f0038ec84a611df951d74d99897
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        URL_HASH_MD5=c8340a482851ef6a3fe618a082304cfc
+        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
     )
     FetchContent_Declare(
         freefont
-        URL      http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         URL_HASH MD5=e23c149a4cc494ac1f473f13cca16b67
+        URL      http://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
     )
 
     set(BUILD_GMOCK OFF CACHE BOOL "Builds the googlemock subproject" FORCE)
