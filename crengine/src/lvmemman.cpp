@@ -56,71 +56,11 @@ void crSetFileToRemoveOnFatalError(const char* filename) {
 #ifdef _LINUX
 static struct sigaction old_sa[NSIG];
 
-#ifdef ANDROID
-//#define ANDROID_BACKTRACE
-#endif
-
-#ifdef ANDROID_BACKTRACE
-#include <unwind.h>
-#include <dlfcn.h>
-
-namespace
-{
-struct BacktraceState
-{
-    void** current;
-    void** end;
-};
-
-static _Unwind_Reason_Code unwindCallback(struct _Unwind_Context* context, void* arg) {
-    BacktraceState* state = static_cast<BacktraceState*>(arg);
-    uintptr_t pc = _Unwind_GetIP(context);
-    if (pc) {
-        if (state->current == state->end) {
-            return _URC_END_OF_STACK;
-        } else {
-            *state->current++ = reinterpret_cast<void*>(pc);
-        }
-    }
-    return _URC_NO_REASON;
-}
-
-} // namespace
-
-size_t captureBacktrace(void** buffer, size_t max) {
-    BacktraceState state = { buffer, buffer + max };
-    _Unwind_Backtrace(unwindCallback, &state);
-
-    return state.current - buffer;
-}
-
-void dumpBacktrace(void** addrs, size_t count) {
-    for (size_t idx = 0; idx < count; ++idx) {
-        const void* addr = addrs[idx];
-        const char* symbol = "";
-
-        Dl_info info;
-        if (dladdr(addr, &info) && info.dli_sname) {
-            symbol = info.dli_sname;
-        }
-
-        CRLog::trace("   # %02d : 0x%08x   %s", idx, addr, symbol);
-    }
-}
-
-#endif // ANDROID_BACKTRACE
-
 void cr_sigaction(int signal, siginfo_t* info, void* reserved) {
     CR_UNUSED2(info, reserved);
     if (file_to_remove_on_crash[0])
         unlink(file_to_remove_on_crash);
     CRLog::error("cr_sigaction(%d)", signal);
-
-#ifdef ANDROID_BACKTRACE
-    void* buffer[50];
-    dumpBacktrace(buffer, captureBacktrace(buffer, 50));
-#endif
-
     old_sa[signal].sa_handler(signal);
 }
 #endif
@@ -142,7 +82,7 @@ void crSetSignalHandler() {
     CATCHSIG(SIGSEGV);
     //CATCHSIG(SIGSTKFLT);
     CATCHSIG(SIGPIPE);
-#endif
+#endif // _LINUX
 }
 
 /// default fatal error handler: uses exit()
