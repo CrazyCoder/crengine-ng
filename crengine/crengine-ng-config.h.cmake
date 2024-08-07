@@ -26,5 +26,6 @@
 #cmakedefine01 USE_CHM
 #cmakedefine01 USE_ANTIWORD
 #cmakedefine01 USE_SHASUM
+#cmakedefine01 USE_MD4C
 
 #endif  // CRENGINE_NG_CONFIG_H

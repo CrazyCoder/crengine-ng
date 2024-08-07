@@ -66,7 +66,8 @@ option(USE_CHM "Enable chm support via built-in chmlib" ON)
 option(USE_ANTIWORD "Enable doc support via built-in antiword" ON)
 option(USE_FONTCONFIG "Use FontConfig to enumerate available fonts" ON)
 option(USE_SHASUM "Use sources from RFC6234 to calculate SHA sums" OFF)
-option(USE_CMARK_GFM "Enable Markdown support via built-in cmark-gfm" ON)
+option(USE_CMARK_GFM "Enable Markdown support via built-in cmark-gfm" OFF)
+option(USE_MD4C "Enable Markdown support via built-in md4c" ON)
 
 # other
 option(BUILD_TOOLS "Build some debug tools & utils" OFF)
@@ -400,6 +401,10 @@ if (USE_SHASUM)
     list(APPEND PRIVATE_LINK_LIBRARIES cre_rfc6234-shas)
 endif()
 
+if (USE_CMARK_GFM AND USE_MD4C)
+    message(FATAL_ERROR "You can only choose one of cmark-gfm or md4c!")
+endif()
+
 # built-in cmark-gfm
 if (USE_CMARK_GFM)
     message("Will build cmark-gfm library")
@@ -412,6 +417,14 @@ if (USE_CMARK_GFM)
     list(APPEND PRIVATE_LINK_LIBRARIES cre_cmark-gfm)
     list(APPEND PRIVATE_LINK_LIBRARIES cre_cmark-gfm-extensions)
 endif(USE_CMARK_GFM)
+
+# built-in md4c
+if (USE_MD4C)
+    message("Will build md4c library")
+    add_subdirectory(thirdparty/md4c)
+    list(APPEND PRIVATE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/thirdparty/md4c/src)
+    list(APPEND PRIVATE_LINK_LIBRARIES cre_md4c-html)
+endif(USE_MD4C)
 
 # check usage consistency
 if (NOT USE_FREETYPE)
