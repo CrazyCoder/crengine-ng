@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng, unit testing                                             *
- *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2022,2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -260,7 +260,7 @@ TEST_F(DocParseTests, ParseHTMLRubyElementsEnhanced) {
     CRLog::info("==================================");
 }
 
-#if USE_CMARK_GFM == 1
+#if (USE_CMARK_GFM == 1) || (USE_MD4C == 1)
 TEST_F(DocParseTests, ParseSimpleMD) {
     CRLog::info("======================");
     CRLog::info("Starting ParseSimpleMD");

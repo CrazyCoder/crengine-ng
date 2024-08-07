@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2022,2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -20,7 +20,7 @@
 
 #include "mdfmt.h"
 
-#if USE_CMARK_GFM == 1
+#if (USE_CMARK_GFM == 1) || (USE_MD4C == 1)
 
 #include <ldomdocument.h>
 #include <lvdocviewcallback.h>
@@ -29,16 +29,20 @@
 
 #include "lvxml/lvtextparser.h"
 #include "lvxml/lvhtmlparser.h"
-#include "lvstream/lvmemorystream.h"
 #include "lvtinydom/ldomdocumentwriter.h"
 
 #include <string.h>
 #include <crlog.h>
 
+#if USE_CMARK_GFM == 1
 // cmark-gfm
 #include <cmark-gfm.h>
 #include <cmark-gfm-core-extensions.h>
 #include <parser.h>
+#elif USE_MD4C == 1
+// md4c
+#include <md4c-html.h>
+#endif
 
 #define TEXT_PARSER_CHUNK_SIZE 16384
 
@@ -58,6 +62,8 @@ bool DetectMarkdownFormat(LVStreamRef stream, const lString32& fileName) {
     stream->SetPos(0);
     return res;
 }
+
+#if USE_CMARK_GFM == 1
 
 bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback) {
     if (doc->openFromCache(formatCallback)) {
@@ -108,9 +114,8 @@ bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomD
     lString8 gen_preamble = cs8("<html><head><title>") + UnicodeToUtf8(title) + cs8("</title></head><body>");
     lString8 gen_tail = cs8("</body></html>");
     lvsize_t dw;
-    LVMemoryStream* memStream = new LVMemoryStream;
-    LVStreamRef memRef = LVStreamRef(memStream);
-    res = LVERR_OK == memStream->Create();
+    LVStreamRef memStream = LVCreateMemoryStream();
+    res = !memStream.isNull();
     if (res)
         res = LVERR_OK == memStream->Write(gen_preamble.c_str(), gen_preamble.length(), &dw);
     if (res)
@@ -128,7 +133,7 @@ bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomD
     if (res) {
         // Parse stream to document
         ldomDocumentWriter writer(doc);
-        LVHTMLParser parser(memRef, &writer);
+        LVHTMLParser parser(memStream, &writer);
         parser.setProgressCallback(progressCallback);
         res = parser.CheckFormat() && parser.Parse();
     }
@@ -139,4 +144,88 @@ bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomD
     return res;
 }
 
-#endif // USE_CMARK_GFM == 1
+#elif USE_MD4C == 1
+
+typedef struct cre_md4c_parse_data_tag
+{
+    lString8* htmlData;
+} cre_md4c_parse_data;
+
+static void my_md4c_process_output(const MD_CHAR* chunk, MD_SIZE sz, void* userData) {
+    cre_md4c_parse_data* data = (cre_md4c_parse_data*)userData;
+    data->htmlData->append(chunk, sz);
+}
+
+bool ImportMarkdownDocument(LVStreamRef stream, const lString32& fileName, ldomDocument* doc, LVDocViewCallback* progressCallback, CacheLoadingCallback* formatCallback) {
+    if (doc->openFromCache(formatCallback)) {
+        if (progressCallback) {
+            progressCallback->OnLoadFileEnd();
+        }
+        return true;
+    }
+    bool res = false;
+    // Read stream
+    lString8 rawData;
+    lString8 htmlData;
+    char buffer[TEXT_PARSER_CHUNK_SIZE];
+    lvsize_t bytesRead = 0;
+    stream->SetPos(0);
+    while (stream->Read(buffer, TEXT_PARSER_CHUNK_SIZE, &bytesRead) == LVERR_OK) {
+        rawData.append(buffer, bytesRead);
+        if (bytesRead < TEXT_PARSER_CHUNK_SIZE)
+            break;
+    }
+    // Parse and convert to html
+    cre_md4c_parse_data parseData;
+    parseData.htmlData = &htmlData;
+    int parse_res = md_html(rawData.c_str(), rawData.length(), my_md4c_process_output, (void*)&parseData,
+                            MD_FLAG_COLLAPSEWHITESPACE | MD_FLAG_TABLES | MD_FLAG_TASKLISTS |
+                                    MD_FLAG_STRIKETHROUGH | MD_FLAG_PERMISSIVEURLAUTOLINKS |
+                                    MD_FLAG_PERMISSIVEEMAILAUTOLINKS | MD_FLAG_PERMISSIVEWWWAUTOLINKS |
+                                    MD_FLAG_LATEXMATHSPANS,
+                            0);
+    rawData.clear();
+    if (0 != parse_res) {
+        // Parse failed
+        CRLog::error("MD4C: Failed to parse Markdown document!");
+        return res;
+    }
+    // Write document content to stream to parse them
+    lvsize_t result_len = htmlData.length();
+    lString32 title = LVExtractFilenameWithoutExtension(fileName);
+    lString8 gen_preamble = cs8("<html><head><title>") + UnicodeToUtf8(title) + cs8("</title></head><body>");
+    lString8 gen_tail = cs8("</body></html>");
+    lvsize_t dw;
+    LVStreamRef memStream = LVCreateMemoryStream();
+    res = !memStream.isNull();
+    if (res)
+        res = LVERR_OK == memStream->Write(gen_preamble.c_str(), gen_preamble.length(), &dw);
+    if (res)
+        res = dw == (lvsize_t)gen_preamble.length();
+    if (res) {
+        res = LVERR_OK == memStream->Write(htmlData.data(), result_len, &dw);
+    }
+    htmlData.clear();
+    if (res)
+        res = dw == result_len;
+    if (res)
+        res = LVERR_OK == memStream->Write(gen_tail.c_str(), gen_tail.length(), &dw);
+    if (res)
+        res = dw == (lvsize_t)gen_tail.length();
+    if (res) {
+        // Parse stream to document
+        ldomDocumentWriter writer(doc);
+        LVHTMLParser parser(memStream, &writer);
+        parser.setProgressCallback(progressCallback);
+        res = parser.CheckFormat() && parser.Parse();
+    }
+    if (res) {
+        doc->getProps()->setString(DOC_PROP_TITLE, title);
+        doc->buildTocFromHeadings();
+    }
+    return res;
+}
+
+#endif // USE_CMARK_GFM == 1 / USE_MD4C == 1
+
+#endif // (USE_CMARK_GFM == 1) || (USE_MD4C == 1)
