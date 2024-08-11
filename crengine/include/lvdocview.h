@@ -363,8 +363,11 @@ private:
     lString32 m_filename;
     lvsize_t m_filesize;
 
+    lvRect m_pageMarginsOrigin;
     lvRect m_pageMargins;
     lvRect m_pageRects[2];
+    lvInsets m_pageInsets;
+    bool m_allowPageHeaderOverlap;
     int m_pagesVisible;
     int m_pagesVisibleOverride;
     int m_pageHeaderPos;
@@ -712,7 +715,13 @@ public:
     void updatePageMargins();
     /// returns page margins
     lvRect getPageMargins() const {
-        return m_pageMargins;
+        return m_pageMarginsOrigin;
+    }
+    /// set page insets
+    void setPageInsets(lvInsets insets, bool allowPageHeaderOverlap);
+    /// returns page insets
+    lvInsets getPageInsets() const {
+        return m_pageInsets;
     }
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
     /// sets rotate angle

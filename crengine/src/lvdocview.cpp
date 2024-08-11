@@ -219,6 +219,8 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
         , m_stylesheetNeedsUpdate(true)
         , m_highlightBookmarks(1)
         , m_pageMargins(DEFAULT_PAGE_MARGIN, DEFAULT_PAGE_MARGIN / 2 /*+ INFO_FONT_SIZE + 4 */, DEFAULT_PAGE_MARGIN, DEFAULT_PAGE_MARGIN / 2)
+        , m_pageInsets()
+        , m_allowPageHeaderOverlap(false)
         , m_pagesVisible(2)
         , m_pagesVisibleOverride(0)
         , m_pageHeaderPos(PAGE_HEADER_POS_TOP)
@@ -489,6 +491,26 @@ void LVDocView::updatePageMargins() {
 
 /// sets page margins
 void LVDocView::setPageMargins(lvRect rc) {
+    m_pageMarginsOrigin = rc;
+    int pageHeaderHeight = getPageHeaderHeight();
+    if (m_pageInsets.left > rc.left)
+        rc.left = m_pageInsets.left;
+    if (m_allowPageHeaderOverlap && PAGE_HEADER_POS_TOP == m_pageHeaderPos) {
+        if ((m_pageInsets.top - pageHeaderHeight) > rc.top)
+            rc.top = m_pageInsets.top - pageHeaderHeight;
+    } else {
+        if (m_pageInsets.top > rc.top)
+            rc.top = m_pageInsets.top;
+    }
+    if (m_pageInsets.right > rc.right)
+        rc.right = m_pageInsets.right;
+    if (m_allowPageHeaderOverlap && PAGE_HEADER_POS_BOTTOM == m_pageHeaderPos) {
+        if (m_pageInsets.bottom - pageHeaderHeight > rc.bottom)
+            rc.bottom = m_pageInsets.bottom - pageHeaderHeight;
+    } else {
+        if (m_pageInsets.bottom > rc.bottom)
+            rc.bottom = m_pageInsets.bottom;
+    }
     if (m_pageMargins.left + m_pageMargins.right != rc.left + rc.right || m_pageMargins.top + m_pageMargins.bottom != rc.top + rc.bottom) {
         m_pageMargins = rc;
         updateLayout();
@@ -496,6 +518,37 @@ void LVDocView::setPageMargins(lvRect rc) {
     } else {
         clearImageCache();
         m_pageMargins = rc;
+    }
+}
+
+void LVDocView::setPageInsets(lvInsets insets, bool allowPageHeaderOverlap) {
+    if (m_pageInsets != insets) {
+        // TODO: Limit min/max
+        m_pageInsets = insets;
+        m_allowPageHeaderOverlap = allowPageHeaderOverlap;
+        int pageHeaderHeight = getPageHeaderHeight();
+        lvRect rc = m_pageMarginsOrigin;
+        if (m_pageInsets.left > rc.left)
+            rc.left = m_pageInsets.left;
+        if (m_allowPageHeaderOverlap && PAGE_HEADER_POS_TOP == m_pageHeaderPos) {
+            if ((m_pageInsets.top - pageHeaderHeight) > rc.top)
+                rc.top = m_pageInsets.top - pageHeaderHeight;
+        } else {
+            if (m_pageInsets.top > rc.top)
+                rc.top = m_pageInsets.top;
+        }
+        if (m_pageInsets.right > rc.right)
+            rc.right = m_pageInsets.right;
+        if (m_allowPageHeaderOverlap && PAGE_HEADER_POS_BOTTOM == m_pageHeaderPos) {
+            if (m_pageInsets.bottom - pageHeaderHeight > rc.bottom)
+                rc.bottom = m_pageInsets.bottom - pageHeaderHeight;
+        } else {
+            if (m_pageInsets.bottom > rc.bottom)
+                rc.bottom = m_pageInsets.bottom;
+        }
+        m_pageMargins = rc;
+        updateLayout();
+        REQUEST_RENDER("setPageInsets")
     }
 }
 
@@ -1397,11 +1450,11 @@ int LVDocView::GetFullHeight() {
 
 /// calculate page header height
 int LVDocView::getPageHeaderHeight() const {
-    if (getPageheaderPosition() == 0)
+    if (PAGE_HEADER_POS_NONE == m_pageHeaderPos)
         return 0;
-    if (!getPageHeaderInfo())
+    if (0 == m_pageHeaderInfo)
         return 0;
-    if (!getInfoFont())
+    if (!m_infoFont)
         return 0;
     // Page header layout
     //---------------------------------------------------------------------------------------
@@ -1419,7 +1472,20 @@ int LVDocView::getPageHeaderHeight() const {
         bh = m_batteryIcons[0]->GetHeight();
     if (bh + 2 > textH)
         textH = bh + 2;
-    return textH + HEADER_MARGIN + navbarh + 1;
+    int height = textH + HEADER_MARGIN + navbarh + 1;
+    if (m_allowPageHeaderOverlap) {
+        switch (m_pageHeaderPos) {
+            case PAGE_HEADER_POS_TOP:
+                if (m_pageInsets.top > height)
+                    height = m_pageInsets.top;
+                break;
+            case PAGE_HEADER_POS_BOTTOM:
+                if (m_pageInsets.bottom > height)
+                    height = m_pageInsets.bottom;
+                break;
+        }
+    }
+    return height;
 }
 
 /// calculate page header rectangle
@@ -1434,10 +1500,14 @@ void LVDocView::getPageHeaderRectangle(int pageIndex, lvRect& headerRc) const {
         switch (m_pageHeaderPos) {
             case PAGE_HEADER_POS_TOP:
                 // header/status at page header
+                if (!m_allowPageHeaderOverlap && m_pageInsets.top > 0)
+                    headerRc.top += m_pageInsets.top;
                 headerRc.bottom = headerRc.top + h;
                 break;
             case PAGE_HEADER_POS_BOTTOM:
                 // header/status at page footer
+                if (!m_allowPageHeaderOverlap && m_pageInsets.bottom > 0)
+                    headerRc.bottom -= m_pageInsets.bottom;
                 headerRc.top = headerRc.bottom - h;
                 break;
             default:
@@ -1445,6 +1515,10 @@ void LVDocView::getPageHeaderRectangle(int pageIndex, lvRect& headerRc) const {
         }
         headerRc.left += HEADER_MARGIN;
         headerRc.right -= HEADER_MARGIN;
+        if (!m_allowPageHeaderOverlap) {
+            headerRc.left += m_pageInsets.left;
+            headerRc.right -= m_pageInsets.right;
+        }
     }
 }
 
