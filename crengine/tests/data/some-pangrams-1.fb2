@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">
+ <description>
+  <title-info>
+   <genre>comp_programming</genre>
+   <author>
+    <first-name>First Name</first-name>
+    <last-name>Last Name</last-name>
+   </author>
+   <book-title>Some pangrams</book-title>
+   <keywords>fb2, minimal, test, pangram</keywords>
+   <lang>en</lang>
+  </title-info>
+  <document-info>
+   <author>
+    <first-name>First Name</first-name>
+    <last-name>Last Name</last-name>
+   </author>
+   <program-used>Generic Text Editor</program-used>
+   <date value="2024-08-11">11 August 2024</date>
+   <id>D2646980-7CE2-47AB-BCf7-8ADE1954E651</id>
+   <version>1.0</version>
+  </document-info>
+ </description>
+ <body>
+  <section>
+   <p>The quick brown fox jumps over the lazy dog.</p>
+   <p>Waltz, bad nymph, for quick jigs vex.</p>
+   <p>Glib jocks quiz nymph to vex dwarf.</p>
+   <p>Sphinx of black quartz, judge my vow.</p>
+   <p>How quickly daft jumping zebras vex!</p>
+   <p>The five boxing wizards jump quickly.</p>
+   <p>Jackdaws love my big sphinx of quartz.</p>
+   <p>Pack my box with five dozen liquor jugs.</p>
+  </section>
+ </body>
+</FictionBook>

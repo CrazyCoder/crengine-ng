@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng, unit testing                                             *
- *   Copyright (C) 2022,2023 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2022-2024 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -859,6 +859,227 @@ TEST_F(TextRenderTests, RenderTestsGenericFontFamilies) {
 
     CRLog::info("Finished RenderTestsGenericFontFamilies");
     CRLog::info("=======================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsPageInsetsNoPageHeader) {
+    CRLog::info("==========================================");
+    CRLog::info("Starting RenderTestsPageInsetsNoPageHeader");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "30"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_LINE, "0"));
+
+    // Set page insets
+    m_view->setPageInsets(lvInsets(50, 50, 50, 50), false);
+
+    // open document & render into drawbuf
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "some-pangrams-1.fb2")); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    ASSERT_FALSE(image.isNull());
+    // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("01-insets50-test-no-page-header.bmp", image->getDrawBufRef());
+
+    // open reference image
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "page-insets/01-insets50-test-no-page-header.png");
+    ASSERT_FALSE(refDrawBuf.isNull());
+
+    // calc difference drawbuf
+    LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
+    ASSERT_FALSE(diffBuf.isNull());
+    // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("01-insets50-test-no-page-header-diff.bmp", diffBuf);
+
+    // Validate diff drawbuf
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+
+    CRLog::info("Finished RenderTestsPageInsetsNoPageHeader");
+    CRLog::info("==========================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsPageInsetsPageHeaderNoOverlap) {
+    CRLog::info("=================================================");
+    CRLog::info("Starting RenderTestsPageInsetsPageHeaderNoOverlap");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "30"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_LINE, "1"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_FONT_SIZE, "14"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_TITLE, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_TIME, "0"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_CHAPTER_MARKS, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_BATTERY, "0"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_PAGE_NUMBER, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_PAGE_COUNT, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_POS_PERCENT, "1"));
+
+    // Set page insets
+    m_view->setPageInsets(lvInsets(50, 50, 50, 50), false);
+
+    // open document & render into drawbuf
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "some-pangrams-1.fb2")); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    ASSERT_FALSE(image.isNull());
+    // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("02-insets50-test-page-header-no-overlap.bmp", image->getDrawBufRef());
+
+    // open reference image
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "page-insets/02-insets50-test-page-header-no-overlap.png");
+    ASSERT_FALSE(refDrawBuf.isNull());
+
+    // calc difference drawbuf
+    LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
+    ASSERT_FALSE(diffBuf.isNull());
+    // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("02-insets50-test-page-header-no-overlap-diff.bmp", diffBuf);
+
+    // Validate diff drawbuf
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+
+    CRLog::info("Finished RenderTestsPageInsetsPageHeaderNoOverlap");
+    CRLog::info("=================================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsPageInsetsPageHeaderOverlap) {
+    CRLog::info("===============================================");
+    CRLog::info("Starting RenderTestsPageInsetsPageHeaderOverlap");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "30"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_LINE, "1"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_FONT_SIZE, "14"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_TITLE, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_TIME, "0"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_CHAPTER_MARKS, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_BATTERY, "0"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_PAGE_NUMBER, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_PAGE_COUNT, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_POS_PERCENT, "1"));
+
+    // Set page insets
+    m_view->setPageInsets(lvInsets(50, 50, 50, 50), true);
+
+    // open document & render into drawbuf
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "some-pangrams-1.fb2")); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    ASSERT_FALSE(image.isNull());
+    // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("03-insets50-test-page-header-overlap.bmp", image->getDrawBufRef());
+
+    // open reference image
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "page-insets/03-insets50-test-page-header-overlap.png");
+    ASSERT_FALSE(refDrawBuf.isNull());
+
+    // calc difference drawbuf
+    LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
+    ASSERT_FALSE(diffBuf.isNull());
+    // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("03-insets50-test-page-header-overlap-diff.bmp", diffBuf);
+
+    // Validate diff drawbuf
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+
+    CRLog::info("Finished RenderTestsPageInsetsPageHeaderOverlap");
+    CRLog::info("===============================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsPageInsetsBottomPageHeaderNoOverlap) {
+    CRLog::info("=======================================================");
+    CRLog::info("Starting RenderTestsPageInsetsBottomPageHeaderNoOverlap");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "30"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_LINE, "2"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_FONT_SIZE, "14"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_TITLE, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_TIME, "0"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_CHAPTER_MARKS, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_BATTERY, "0"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_PAGE_NUMBER, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_PAGE_COUNT, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_POS_PERCENT, "1"));
+
+    // Set page insets
+    m_view->setPageInsets(lvInsets(50, 50, 50, 50), false);
+
+    // open document & render into drawbuf
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "some-pangrams-1.fb2")); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    ASSERT_FALSE(image.isNull());
+    // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("04-insets50-test-bottom-page-header-no-overlap.bmp", image->getDrawBufRef());
+
+    // open reference image
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "page-insets/04-insets50-test-bottom-page-header-no-overlap.png");
+    ASSERT_FALSE(refDrawBuf.isNull());
+
+    // calc difference drawbuf
+    LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
+    ASSERT_FALSE(diffBuf.isNull());
+    // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("04-insets50-test-bottom-page-header-no-overlap-diff.bmp", diffBuf);
+
+    // Validate diff drawbuf
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+
+    CRLog::info("Finished RenderTestsPageInsetsBottomPageHeaderNoOverlap");
+    CRLog::info("=======================================================");
+}
+
+TEST_F(TextRenderTests, RenderTestsPageInsetsBottomPageHeaderOverlap) {
+    CRLog::info("=====================================================");
+    CRLog::info("Starting RenderTestsPageInsetsBottomPageHeaderOverlap");
+    ASSERT_TRUE(m_initOK);
+
+    // set properties
+    ASSERT_TRUE(setProperty(PROP_FONT_FACE, "FreeSans"));
+    ASSERT_TRUE(setProperty(PROP_FONT_SIZE, "30"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_LINE, "2"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_FONT_FACE, "FreeSerif"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_FONT_SIZE, "14"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_TITLE, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_TIME, "0"));
+    ASSERT_TRUE(setProperty(PROP_STATUS_CHAPTER_MARKS, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_BATTERY, "0"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_PAGE_NUMBER, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_PAGE_COUNT, "1"));
+    ASSERT_TRUE(setProperty(PROP_SHOW_POS_PERCENT, "1"));
+
+    // Set page insets
+    m_view->setPageInsets(lvInsets(50, 50, 50, 50), true);
+
+    // open document & render into drawbuf
+    ASSERT_TRUE(m_view->LoadDocument(TESTS_DATADIR "some-pangrams-1.fb2")); // load document
+    LVDocImageRef image = m_view->getPageImage(0);
+    ASSERT_FALSE(image.isNull());
+    // To save this drawbuf as image reference use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("05-insets50-test-bottom-page-header-overlap.bmp", image->getDrawBufRef());
+
+    // open reference image
+    LVDrawBufRef refDrawBuf = s_loadRefImage(RENDER_REFERENCE_DIR "page-insets/05-insets50-test-bottom-page-header-overlap.png");
+    ASSERT_FALSE(refDrawBuf.isNull());
+
+    // calc difference drawbuf
+    LVDrawBufRef diffBuf = crengine_ng::unittesting::calcDrawBufDiff(image->getDrawBufRef(), refDrawBuf);
+    ASSERT_FALSE(diffBuf.isNull());
+    // To save diff drawbuff use crengine_ng::unittesting::saveToBMP() function:
+    //crengine_ng::unittesting::saveToBMP("05-insets50-test-bottom-page-header-overlap-diff.bmp", diffBuf);
+
+    // Validate diff drawbuf
+    EXPECT_TRUE(crengine_ng::unittesting::validateDrawBufDiff(diffBuf, MAX_COLOR_DEVI, MAX_TOLERANCE_POINTS_COUNT, MAX_ERRORS_POINTS_COUNT));
+
+    CRLog::info("Finished RenderTestsPageInsetsBottomPageHeaderOverlap");
+    CRLog::info("=====================================================");
 }
 
 #endif // USE_FREETYPE == 1
