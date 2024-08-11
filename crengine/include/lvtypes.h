@@ -3,7 +3,7 @@
  *   Copyright (C) 2007-2009,2011-2013,2015 Vadim Lopatin <coolreader.org@gmail.com>
  *   Copyright (C) 2011 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
- *   Copyright (C) 2018,2020-2022 Aleksey Chernov <valexlin@gmail.com>     *
+ *   Copyright (C) 2018,2020-2022,2024 Aleksey Chernov <valexlin@gmail.com>*
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -290,6 +290,45 @@ public:
         if (!ret)
             clear();
         return ret;
+    }
+};
+
+class lvInsets
+{
+public:
+    int left;
+    int top;
+    int right;
+    int bottom;
+    lvInsets()
+            : left(0)
+            , top(0)
+            , right(0)
+            , bottom(0) { }
+    lvInsets(int l, int t, int r, int b)
+            : left(l)
+            , top(t)
+            , right(r)
+            , bottom(b) { }
+    lvInsets(const lvInsets& other)
+            : left(other.left)
+            , top(other.top)
+            , right(other.right)
+            , bottom(other.bottom) { }
+    lvInsets& operator=(const lvInsets& other) {
+        left = other.left;
+        top = other.top;
+        right = other.right;
+        bottom = other.bottom;
+        return *this;
+    }
+    /// returns true if two insets are equal
+    bool operator==(const lvInsets& insets) const {
+        return insets.left == left && insets.right == right && insets.top == top && insets.bottom == bottom;
+    }
+    /// returns true if two insets are not equal
+    bool operator!=(const lvInsets& insets) const {
+        return !(insets.left == left && insets.right == right && insets.top == top && insets.bottom == bottom);
     }
 };
 
