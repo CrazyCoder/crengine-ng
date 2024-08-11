@@ -2,7 +2,7 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2007-2009,2011-2015 Vadim Lopatin <coolreader.org@gmail.com>
  *   Copyright (C) 2020 poire-z <poire-z@users.noreply.github.com>         *
- *   Copyright (C) 2020,2021 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020,2021,2024 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -47,10 +47,19 @@
 #include <string>
 #endif
 
-static char file_to_remove_on_crash[2048] = "";
+#define MAX_FILENANE_LEN 2048
+static char file_to_remove_on_crash[MAX_FILENANE_LEN] = "";
 
 void crSetFileToRemoveOnFatalError(const char* filename) {
-    strcpy(file_to_remove_on_crash, filename == NULL ? "" : filename); // NOLINT
+    if (NULL == filename) {
+        file_to_remove_on_crash[0] = 0;
+    } else {
+        size_t len = strlen(filename);
+        if (len < MAX_FILENANE_LEN)
+            strncpy(file_to_remove_on_crash, filename, MAX_FILENANE_LEN);
+        else
+            file_to_remove_on_crash[0] = 0;
+    }
 }
 
 #ifdef _LINUX
@@ -71,7 +80,8 @@ void crSetSignalHandler() {
     if (signals_are_set)
         return;
     signals_are_set = true;
-    struct sigaction handler = { 0 };
+    struct sigaction handler;
+    memset(&handler, 0, sizeof(handler));
     handler.sa_sigaction = cr_sigaction;
     handler.sa_flags = SA_RESETHAND;
 #define CATCHSIG(X) sigaction(X, &handler, &old_sa[X])
@@ -87,8 +97,8 @@ void crSetSignalHandler() {
 
 /// default fatal error handler: uses exit()
 void lvDefFatalErrorHandler(int errorCode, const char* errorText) {
-    char strbuff[10];
-    sprintf(strbuff, "%d", errorCode);
+    char strbuff[16];
+    snprintf(strbuff, 16, "%d", errorCode);
     fprintf(stderr, "FATAL ERROR #%s: %s\n", strbuff, errorText);
 #ifdef _DEBUG
     std::string errstr = std::string("FATAL ERROR #") + std::string(strbuff) + std::string(": ") + std::string(errorText);

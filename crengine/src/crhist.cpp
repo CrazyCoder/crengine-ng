@@ -315,9 +315,9 @@ static void putBookmark(LVStream* stream, CRBookmark* bmk) {
     static const char* tnames[] = { "lastpos", "position", "comment", "correction" };
     const char* tname = bmk->getType() >= bmkt_lastpos && bmk->getType() <= bmkt_correction ? tnames[bmk->getType()] : "unknown";
     char bmktag[256];
-    sprintf(bmktag, "bookmark type=\"%s\" percent=\"%d.%02d%%\" timestamp=\"%d\" shortcut=\"%d\" page=\"%d\"", tname,
-            bmk->getPercent() / 100, bmk->getPercent() % 100,
-            (int)bmk->getTimestamp(), (int)bmk->getShortcut(), (int)bmk->getBookmarkPage());
+    snprintf(bmktag, 256, "bookmark type=\"%s\" percent=\"%d.%02d%%\" timestamp=\"%d\" shortcut=\"%d\" page=\"%d\"", tname,
+             bmk->getPercent() / 100, bmk->getPercent() % 100,
+             (int)bmk->getTimestamp(), (int)bmk->getShortcut(), (int)bmk->getBookmarkPage());
     putTag(stream, 3, bmktag);
     putTagValue(stream, 4, "start-point", bmk->getStartPos());
     putTagValue(stream, 4, "end-point", bmk->getEndPos());
@@ -624,9 +624,9 @@ lString32 CRFileHistRecord::getLastTimeString(bool longFormat) {
     tm* bt = localtime(&t);
     char str[22];
     if (!longFormat)
-        sprintf(str, "%02u.%02u.%04u", (uint8_t)bt->tm_mday, (uint8_t)(1 + bt->tm_mon), (uint16_t)(1900 + bt->tm_year));
+        snprintf(str, 22, "%02u.%02u.%04u", (uint8_t)bt->tm_mday, (uint8_t)(1 + bt->tm_mon), (uint16_t)(1900 + bt->tm_year));
     else
-        sprintf(str, "%02u.%02u.%04u %02u:%02u", (uint8_t)bt->tm_mday, (uint8_t)(1 + bt->tm_mon), (uint16_t)(1900 + bt->tm_year), (uint8_t)bt->tm_hour, (uint8_t)bt->tm_min);
+        snprintf(str, 22, "%02u.%02u.%04u %02u:%02u", (uint8_t)bt->tm_mday, (uint8_t)(1 + bt->tm_mon), (uint16_t)(1900 + bt->tm_year), (uint8_t)bt->tm_hour, (uint8_t)bt->tm_min);
     return Utf8ToUnicode(lString8(str));
 }
 

@@ -387,7 +387,7 @@ int LVZipArc::ReadContents() {
             memset(extra_buff, 0, EXTRA_DEC_MAX);
             char* ptr = &extra_buff[0];
             for (lvsize_t i = 0; i < extraSizeToRead; i++) {
-                sprintf(ptr, ":%02X", extra[i]);
+                snprintf(ptr, 4, ":%02X", extra[i]);
                 ptr += 3;
             }
             *ptr = 0;

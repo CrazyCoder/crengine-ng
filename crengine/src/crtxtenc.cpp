@@ -2005,7 +2005,7 @@ void MakeStatsForFile(const char* fname, const char* cp_name, const char* lang_n
         fprintf(f, "// %d..%d\n", i * 16, i * 16 + 15);
     }
     char str[100];
-    sprintf(str, "{ch_stat_%s_%s%d,dbl_ch_stat_%s_%s%d,\"%s\",\"%s\"}, \n", cp_name, lang_name, index, cp_name, lang_name, index, cp_name, lang_name);
+    snprintf(str, 100, "{ch_stat_%s_%s%d,dbl_ch_stat_%s_%s%d,\"%s\",\"%s\"}, \n", cp_name, lang_name, index, cp_name, lang_name, index, cp_name, lang_name);
     list += str;
     fprintf(f, "};\n\n");
     delete[] buf;

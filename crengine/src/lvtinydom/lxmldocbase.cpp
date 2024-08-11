@@ -434,11 +434,11 @@ bool lxmlDocBase::DocFileHeader::serialize(SerialBuf& hdrbuf) {
 #if 0
     {
         lString8 s;
-        s<<"SERIALIZED HDR BUF: ";
-        for ( int i=0; i<hdrbuf.pos(); i++ ) {
-            char tmp[20];
-            sprintf(tmp, "%02x ", hdrbuf.buf()[i]);
-            s<<tmp;
+        s << "SERIALIZED HDR BUF: ";
+        for (int i = 0; i < hdrbuf.pos(); i++) {
+            char tmp[5];
+            snprintf(tmp, 5, "%02x ", hdrbuf.buf()[i]);
+            s << tmp;
         }
         CRLog::trace(s.c_str());
     }

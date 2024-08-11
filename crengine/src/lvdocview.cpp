@@ -1526,11 +1526,11 @@ void LVDocView::getPageHeaderRectangle(int pageIndex, lvRect& headerRc) const {
 lString32 LVDocView::getTimeString() const {
     time_t t = (time_t)time(0);
     tm* bt = localtime(&t);
-    char str[12];
+    char str[8];
     if (m_props->getBoolDef(PROP_SHOW_TIME_12HOURS, false)) {
-        sprintf(str, "%d:%02d", bt->tm_hour > 12 ? bt->tm_hour % 12 : bt->tm_hour, bt->tm_min);
+        snprintf(str, 6, "%d:%02d", bt->tm_hour > 12 ? bt->tm_hour % 12 : bt->tm_hour, bt->tm_min & 0x3F);
     } else {
-        sprintf(str, "%02d:%02d", bt->tm_hour, bt->tm_min);
+        snprintf(str, 6, "%02d:%02d", bt->tm_hour & 0x1F, bt->tm_min & 0x3F);
     }
     return Utf8ToUnicode(lString8(str));
 }
@@ -5671,8 +5671,8 @@ void LVDocView::updateScroll() {
         m_scrollinfo.maxpos = fh - npage;
         m_scrollinfo.pagesize = npage;
         m_scrollinfo.scale = shift;
-        char str[32];
-        sprintf(str, "%d%%", (int)(fh > 0 ? (100 * npos / fh) : 0));
+        char str[8];
+        snprintf(str, 8, "%d%%", (int)(fh > 0 ? (100 * npos / fh) : 0));
         m_scrollinfo.posText = lString32(str);
     } else {
         int page = getCurPage();
@@ -5683,7 +5683,7 @@ void LVDocView::updateScroll() {
         m_scrollinfo.scale = 0;
         char str[32] = { 0 };
         if (m_pages.length() > 1)
-            sprintf(str, "%d / %d", page + 1, m_pages.length());
+            snprintf(str, 32, "%d / %d", page + 1, m_pages.length());
         m_scrollinfo.posText = lString32(str);
     }
 }
@@ -6059,10 +6059,10 @@ bool LVDocView::exportBookmarks(lString32 filename) {
                            << "\r\n";
             newContent << "\r\n";
         }
-        char pos[16];
+        char pos[8];
         int percent = bmk->getPercent();
         lString32 title = bmk->getTitleText();
-        sprintf(pos, "%d.%02d%%", percent / 100, percent % 100);
+        snprintf(pos, 8, "%d.%02d%%", percent / 100, percent % 100);
         newContent << "## " << pos << " - "
                    << (bmk->getType() == bmkt_comment ? "comment" : "correction")
                    << "\r\n";

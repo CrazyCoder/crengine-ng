@@ -276,7 +276,7 @@ lString32 ldomDocCacheImpl::makeFileName(lString32 filename, lUInt32 crc, lUInt3
     if (fn.length() > 25)
         fn = fn.substr(0, 12) + "-" + fn.substr(fn.length() - 12, 12);
     char s[16];
-    sprintf(s, ".%08x.%d.cr3", (unsigned)crc, (int)docFlags);
+    snprintf(s, 16, ".%08x.%d.cr3", (unsigned)crc, (int)docFlags);
     return fn + lString32(s); //_cacheDir +
 }
 
