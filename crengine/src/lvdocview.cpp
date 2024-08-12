@@ -1445,7 +1445,8 @@ int LVDocView::GetFullHeight() {
     if (NULL == m_doc)
         return 0;
     RenderRectAccessor rd(m_doc->getRootNode());
-    return (rd.getHeight() + rd.getY());
+    int vertInsets = (DVM_SCROLL == m_view_mode) ? (m_pageInsets.top + m_pageInsets.bottom) : 0;
+    return (rd.getHeight() + rd.getY() + vertInsets);
 }
 
 /// calculate page header height
@@ -2570,8 +2571,17 @@ void LVDocView::Draw(LVDrawBuf& drawbuf, int position, int page, bool rotate, bo
             rc.right -= m_pageMargins.right;
             drawCoverTo(&drawbuf, rc);
         }
-        DrawDocument(drawbuf, m_doc->getRootNode(), m_pageMargins.left, 0, drawbuf.GetWidth() - m_pageMargins.left - m_pageMargins.right, drawbuf.GetHeight(), 0, -position,
-                     drawbuf.GetHeight(), &m_markRanges, &m_bmkRanges);
+        DrawDocument(drawbuf,
+                     m_doc->getRootNode(),
+                     m_pageMargins.left,
+                     0,
+                     drawbuf.GetWidth() - m_pageMargins.left - m_pageMargins.right,
+                     drawbuf.GetHeight(),
+                     0,
+                     m_pageInsets.top - position,
+                     drawbuf.GetHeight(),
+                     &m_markRanges,
+                     &m_bmkRanges);
     } else {
         int pc = getVisiblePageCount();
         //CRLog::trace("searching for page with offset=%d", position);
@@ -2611,7 +2621,7 @@ bool LVDocView::windowToDocPoint(lvPoint& pt) {
 #endif
     if (getViewMode() == DVM_SCROLL) {
         // SCROLL mode
-        pt.y += _pos;
+        pt.y += _pos - m_pageInsets.top;
         pt.x -= m_pageMargins.left;
         return true;
     } else {
@@ -2659,7 +2669,7 @@ bool LVDocView::docToWindowPoint(lvPoint& pt, bool isRectBottom, bool fitToPage)
     // TODO: implement coordinate conversion here
     if (getViewMode() == DVM_SCROLL) {
         // SCROLL mode
-        pt.y -= _pos;
+        pt.y += m_pageInsets.top - _pos;
         pt.x += m_pageMargins.left;
         return true;
     } else {
