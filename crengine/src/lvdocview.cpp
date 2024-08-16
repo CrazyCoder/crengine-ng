@@ -522,8 +522,17 @@ void LVDocView::setPageMargins(lvRect rc) {
 }
 
 void LVDocView::setPageInsets(lvInsets insets, bool allowPageHeaderOverlap) {
-    if (m_pageInsets != insets) {
-        // TODO: Limit min/max
+    int maxhinset = m_dx / 5;
+    int maxvinset = m_dy / 5;
+    if (insets.left > maxhinset)
+        insets.left = maxhinset;
+    if (insets.top > maxvinset)
+        insets.top = maxvinset;
+    if (insets.right > maxhinset)
+        insets.right = maxhinset;
+    if (insets.bottom > maxvinset)
+        insets.bottom = maxvinset;
+    if (m_pageInsets != insets || m_allowPageHeaderOverlap != allowPageHeaderOverlap) {
         m_pageInsets = insets;
         m_allowPageHeaderOverlap = allowPageHeaderOverlap;
         int pageHeaderHeight = getPageHeaderHeight();
