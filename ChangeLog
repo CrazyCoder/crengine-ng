@@ -1,3 +1,149 @@
+2024-08-23  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.12 released.
+	==========================
+
+	Tag sources with `0.9.12'.
+
+	  Main changes:
+	Optimization of working with strings.
+	Fixed compilation errors on FreeBSD.
+	LVDocView: Added functions to set and get the decimal point character.
+	Parsing of Markdown files has been implemented using the MD4C library.
+	Added the ability to specify page insets so that they do not overlap text.
+	Updating thirdparty/nanosvg from upstream to the latest version.
+
+	See below for other changes.
+
+2024-08-23  Aleksey Chernov  <valexlin@gmail.com>
+
+	thirdparty/nanosvg: updated upstream.txt: last applied commit from upstream
+
+	thirdparty/nanosvg: updated to latest version from upstream
+
+2024-08-16  Aleksey Chernov  <valexlin@gmail.com>
+
+	LVDocView::setPageInsets(): define limits for insets values; allowPageHeaderOverlap
+	argument is not ignored when the value of insets is unchanged.
+
+2024-08-12  Aleksey Chernov  <valexlin@gmail.com>
+
+	In the "scroll" view mode, indents have been added at the beginning and end of the
+	document so that the text is not overlapped by the vertical part of the page insets.
+
+2024-08-11  Aleksey Chernov  <valexlin@gmail.com>
+
+	Deprecated use of unsafe `sprintf()` function, using `snprintf()` instead.
+	Excluding third party sources.
+
+	Added rendering tests to check the page insets feature.
+
+	Added the ability to specify page insets so that they do not overlap text.
+	This can be used, for example, to specify display cutouts on mobile devices
+	in full-screen mode.
+
+	Added lvInsets class to allow specifying insets for a page.
+
+2024-08-07  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update .gitlab-ci.yml: use md4c instead of cmark_gfm
+
+	Update README.md: added information about using the MD4C library.
+
+	Parsing of Markdown files has been implemented using the MD4C library.
+	MD4C is now used by default to process Markdown files.
+
+	md4c thirdparty has been added to the crengine-ng build system
+
+	thirdparty/md4c: added label-file to track updates in upstream
+
+	Added new thirdparty 'MD4C'.
+	MD4C stands for "Markdown for C" and that's exactly what this project is about.
+	Origin: https://github.com/mity/md4c
+	Last commit: Sun Feb 25 20:51:06 2024 +0100
+
+2024-08-06  Aleksey Chernov  <valexlin@gmail.com>
+
+	Removed disabled code for backtrace output for Android platform.
+	If necessary, this can be implemented directly in the Android application.
+
+2024-06-22  Aleksey Chernov  <valexlin@gmail.com>
+
+	Bump GoogleTest to 1.14.0
+
+2024-06-21  Aleksey Chernov  <valexlin@gmail.com>
+
+	Added unit test to check lString32::atod() function (new test suite
+	'StringFuncsTests' added).
+	Unit test `WTF8EncodinsTests.WTF8ConversionTests` moved to test suite 'StringFuncsTests'.
+
+	lString32::atod() fixes: correct processing of strings starting with a decimal point.
+
+2024-06-20  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update crengine/src/lvimg/lvsvgimagesource.cpp: use CRLog instead of printf().
+
+2024-05-30  Aleksey Chernov  <valexlin@gmail.com>
+
+	Since new public methods of the LVDocView class have been added,
+	the API version of the library has been increased.
+
+	LVDocView: Added functions to set and get the decimal point character.
+	They can be used when selecting a specific locale.
+	This character is then used to display read percentage in the page header/footer.
+
+2024-05-27  Aleksey Chernov  <valexlin@gmail.com>
+
+	Bump version to 0.9.12-beta1
+
+	Added flag to the DCMD_SELECT_* commands family parameter to prevent the view
+	position from changing when text selection changes.
+
+2024-04-21  Aleksey Chernov  <valexlin@gmail.com>
+
+	crengine/tests/tests_props.cpp: closing the file descriptor before comparing
+	with the reference file.
+
+	crengine/Tools/zip-test/: fixed a bug due to which the last piece of data
+	was not written to the output file.
+
+	cmake: check for lseek64() function instead of checking OS type.
+
+2024-04-15  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update README.md
+
+2024-04-14  Aleksey Chernov  <valexlin@gmail.com>
+
+	Don't try to use libintl on MacOS.
+
+	cmake: allow sanitizer to be used on BSD OS family
+
+	cmake: check libintl library
+
+	Don't use lseek64() function on FreeBSD
+
+2024-04-06  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update ChangeLog: typo fixed
+
+2024-03-19  Aleksey Chernov  <valexlin@gmail.com>
+
+	Optimization of working with strings: when allocating a memory buffer for an array
+	of characters, the actual size of the array is the smallest number that is greater
+	than the required and a multiple of STR_BLOCK_SZ.
+	This significantly reduces the number of memory allocations required when adding
+	characters to a string character by character.
+	This is relevant when parsing files with long strings (tens and hundreds of
+	thousands of characters).
+	Speeds up the work of a debug build several times with the sanitizer enabled
+	(using gcc on Linux). The release build also works faster, but only by ~4%.
+
+2024-03-08  Aleksey Chernov  <valexlin@gmail.com>
+
+	The compilation flags are configured not to interfere with the "RelWithDebInfo" build type.
+
+
 2024-03-03  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.11 released.
