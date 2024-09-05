@@ -6078,10 +6078,10 @@ bool LVDocView::exportBookmarks(lString32 filename) {
                            << "\r\n";
             newContent << "\r\n";
         }
-        char pos[8];
-        int percent = bmk->getPercent();
+        char pos[9];
+        unsigned int percent = (unsigned int)bmk->getPercent();
         lString32 title = bmk->getTitleText();
-        snprintf(pos, 8, "%d.%02d%%", percent / 100, percent % 100);
+        snprintf(pos, 9, "%u.%02u%%", (lUInt8)(percent / 100), (lUInt8)(percent % 100));
         newContent << "## " << pos << " - "
                    << (bmk->getType() == bmkt_comment ? "comment" : "correction")
                    << "\r\n";
