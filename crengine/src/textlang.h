@@ -202,8 +202,7 @@ public:
     lb_char_sub_func_t getLBCharSubFunc() const {
         return _lb_char_sub_func;
     }
-    struct LineBreakProperties* getLBProps() const
-    {
+    struct LineBreakProperties* getLBProps() const {
         return (struct LineBreakProperties*)_lb_props;
     }
     lChar32 getCssLbCharSub(css_line_break_t css_linebreak, css_word_break_t css_wordbreak,

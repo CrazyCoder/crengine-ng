@@ -546,7 +546,7 @@ bool LVFreeTypeFontManager::initSystemFonts() {
                     //case FC_WEIGHT_ULTRALIGHT        FC_WEIGHT_EXTRALIGHT
                     weight = 200;
                     break;
-                case FC_WEIGHT_LIGHT:     //    50
+                case FC_WEIGHT_LIGHT: //    50
 #ifdef FC_WEIGHT_DEMILIGHT
                 case FC_WEIGHT_DEMILIGHT: //    55
 #endif

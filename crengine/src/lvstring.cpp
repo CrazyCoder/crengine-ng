@@ -3678,16 +3678,16 @@ lString8 UnicodeToUtf8(const lChar32* s, int count) {
                 *buf++ = ((lUInt8)ch);
             } else if (!(ch & ~0x7FF)) {
                 *buf++ = ((lUInt8)(((ch >> 6) & 0x1F) | 0xC0));
-                *buf++ = ((lUInt8)(((ch)&0x3F) | 0x80));
+                *buf++ = ((lUInt8)(((ch) & 0x3F) | 0x80));
             } else if (!(ch & ~0xFFFF)) {
                 *buf++ = ((lUInt8)(((ch >> 12) & 0x0F) | 0xE0));
                 *buf++ = ((lUInt8)(((ch >> 6) & 0x3F) | 0x80));
-                *buf++ = ((lUInt8)(((ch)&0x3F) | 0x80));
+                *buf++ = ((lUInt8)(((ch) & 0x3F) | 0x80));
             } else if (!(ch & ~0x1FFFFF)) {
                 *buf++ = ((lUInt8)(((ch >> 18) & 0x07) | 0xF0));
                 *buf++ = ((lUInt8)(((ch >> 12) & 0x3F) | 0x80));
                 *buf++ = ((lUInt8)(((ch >> 6) & 0x3F) | 0x80));
-                *buf++ = ((lUInt8)(((ch)&0x3F) | 0x80));
+                *buf++ = ((lUInt8)(((ch) & 0x3F) | 0x80));
             } else {
                 // invalid codepoint
                 // In Unicode Standard codepoint must be in range U+0000 .. U+10FFFF
@@ -3756,11 +3756,11 @@ lString8 UnicodeToWtf8(const lChar32* s, int count) {
                 *buf++ = ((lUInt8)ch);
             } else if (!(ch & ~0x7FF)) {
                 *buf++ = ((lUInt8)(((ch >> 6) & 0x1F) | 0xC0));
-                *buf++ = ((lUInt8)(((ch)&0x3F) | 0x80));
+                *buf++ = ((lUInt8)(((ch) & 0x3F) | 0x80));
             } else if (!(ch & ~0xFFFF)) {
                 *buf++ = ((lUInt8)(((ch >> 12) & 0x0F) | 0xE0));
                 *buf++ = ((lUInt8)(((ch >> 6) & 0x3F) | 0x80));
-                *buf++ = ((lUInt8)(((ch)&0x3F) | 0x80));
+                *buf++ = ((lUInt8)(((ch) & 0x3F) | 0x80));
             } else if (!(ch & ~0x1FFFFF)) {
                 //   UTF-16 Scalar Value
                 // 000uuuuu xxxxxxxxxxxxxxxx
@@ -3773,10 +3773,10 @@ lString8 UnicodeToWtf8(const lChar32* s, int count) {
                 lUInt32 lowSurr = 0xDC00 | (low & 0x3FF);            // low surrogate
                 *buf++ = ((lUInt8)(((hiSurr >> 12) & 0x0F) | 0xE0));
                 *buf++ = ((lUInt8)(((hiSurr >> 6) & 0x3F) | 0x80));
-                *buf++ = ((lUInt8)(((hiSurr)&0x3F) | 0x80));
+                *buf++ = ((lUInt8)(((hiSurr) & 0x3F) | 0x80));
                 *buf++ = ((lUInt8)(((lowSurr >> 12) & 0x0F) | 0xE0));
                 *buf++ = ((lUInt8)(((lowSurr >> 6) & 0x3F) | 0x80));
-                *buf++ = ((lUInt8)(((lowSurr)&0x3F) | 0x80));
+                *buf++ = ((lUInt8)(((lowSurr) & 0x3F) | 0x80));
             } else {
                 // invalid codepoint
                 // In Unicode Standard codepoint must be in range U+0000 .. U+10FFFF

@@ -79,7 +79,7 @@ LVXPMImageSource::LVXPMImageSource(const char** data)
 LVXPMImageSource::~LVXPMImageSource() {
     if (_rows) {
         for (int i = 0; i < _height; i++) {
-            delete[](_rows[i]);
+            delete[] (_rows[i]);
         }
         delete[] _rows;
     }

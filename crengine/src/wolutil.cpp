@@ -305,7 +305,7 @@ bool LZSSUtil::Encode(
             if (--len)
                 InsertNode(r); /* buffer may not be empty. */
         }
-    } while (len > 0);      /* until length of string to be processed is zero */
+    } while (len > 0); /* until length of string to be processed is zero */
     if (code_buf_ptr > 1) { /* Send remaining code. */
         for (i = 0; i < code_buf_ptr; i++)
             out.put(code_buf[i]);
@@ -388,7 +388,7 @@ bool LZSSUtil::Decode(
             if (!in.get(c))
                 break;
             flags = c | 0xff00; /* uses higher byte cleverly */
-        }                       /* to count eight */
+        } /* to count eight */
         if (flags & 1) {
             if (!in.get(c))
                 break;
@@ -694,7 +694,7 @@ void WOLWriter::writeToc() {
         *_stream << names;
         // SubcatalogSize = 26 + CountOfAllTOCItems * 80 + Length(NamesInAllTOCLevels)
         *_stream << "\x08</subcatalog>";
-        delete[](toc);
+        delete[] (toc);
     }
     // finalize
     lUInt32 cat_end = (lUInt32)_stream->GetPos();

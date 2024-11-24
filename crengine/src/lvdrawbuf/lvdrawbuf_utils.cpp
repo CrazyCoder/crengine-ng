@@ -48,7 +48,7 @@ static const short dither_2bpp_8x8[] = {
 // clang-format on
 
 lUInt32 Dither1BitColor(lUInt32 color, lUInt32 x, lUInt32 y) {
-    int cl = ((((color >> 16) & 255) + ((color >> 8) & 255) + ((color)&255)) * (256 / 3)) >> 8;
+    int cl = ((((color >> 16) & 255) + ((color >> 8) & 255) + ((color) & 255)) * (256 / 3)) >> 8;
     if (cl < 16)
         return 0;
     else if (cl >= 240)
@@ -65,7 +65,7 @@ lUInt32 Dither1BitColor(lUInt32 color, lUInt32 x, lUInt32 y) {
 }
 
 lUInt32 Dither2BitColor(lUInt32 color, lUInt32 x, lUInt32 y) {
-    int cl = ((((color >> 16) & 255) + ((color >> 8) & 255) + ((color)&255)) * (256 / 3)) >> 8;
+    int cl = ((((color >> 16) & 255) + ((color >> 8) & 255) + ((color) & 255)) * (256 / 3)) >> 8;
     if (cl < 5)
         return 0;
     else if (cl >= 250)
@@ -86,7 +86,7 @@ lUInt32 DitherNBitColor(lUInt32 color, lUInt32 x, lUInt32 y, int bits) {
     int mask = ((1 << bits) - 1) << (8 - bits);
     // gray = (r + 2*g + b)>>2
     //int cl = ((((color>>16) & 255) + ((color>>(8-1)) & (255<<1)) + ((color) & 255)) >> 2) & 255;
-    int cl = ((((color >> 16) & 255) + ((color >> (8 - 1)) & (255 << 1)) + ((color)&255)) >> 2) & 255;
+    int cl = ((((color >> 16) & 255) + ((color >> (8 - 1)) & (255 << 1)) + ((color) & 255)) >> 2) & 255;
     int white = (1 << bits) - 1;
     int precision = white;
     if (cl < precision)

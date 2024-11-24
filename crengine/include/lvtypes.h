@@ -48,7 +48,7 @@ typedef char lChar8;      ///< 8 bit char
 #ifdef _WIN32
 typedef wchar_t lChar16; ///< 16 bit char, only for Windows
 #else
-typedef char16_t lChar16;               ///< 16 bit char
+typedef char16_t lChar16; ///< 16 bit char
 #endif
 
 #if defined(_WIN32) && defined(_MSC_VER)
@@ -73,9 +73,9 @@ typedef lUInt64 lvsize_t;  ///< file size type
 typedef lInt64 lvoffset_t; ///< file offset type
 typedef lUInt64 lvpos_t;   ///< file position type
 #else
-typedef lUInt32 lvsize_t;               ///< file size type
-typedef lInt32 lvoffset_t;              ///< file offset type
-typedef lUInt32 lvpos_t;                ///< file position type
+typedef lUInt32 lvsize_t;  ///< file size type
+typedef lInt32 lvoffset_t; ///< file offset type
+typedef lUInt32 lvpos_t;   ///< file position type
 #endif
 
 #define LV_INVALID_SIZE ((lvsize_t)(-1))
@@ -355,7 +355,7 @@ public:
         return (lUInt8)(value >> 8) & 255;
     }
     lUInt8 b() const {
-        return (lUInt8)(value)&255;
+        return (lUInt8)(value) & 255;
     }
     lUInt8 a() const {
         return (lUInt8)(value >> 24) & 255;
