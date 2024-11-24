@@ -14,7 +14,7 @@ variables:
   LIBUNIBREAK_SRCDIR: libunibreak-6.1
 
 default:
-  image: ubuntu:22.04
+  image: ubuntu:24.04
 
 stages:
   - test
@@ -31,7 +31,7 @@ style-check-diff:
     # install required tools
     - export DEBIAN_FRONTEND=noninteractive
     - apt update
-    - apt install -qq -y git clang-format
+    - apt install -qq -y git clang-format-18
   script:
     - .ci/run-style-check-diff.sh
 
@@ -51,7 +51,7 @@ unittests-ubuntu-debug-asan:
     - tar -xzf $LIBUNIBREAK_PKG
     - cd $LIBUNIBREAK_SRCDIR
     - ./configure --prefix=$DEPLOY_PATH --enable-static --disable-shared
-    - make -j5
+    - make -j`nproc`
     - make install
     # build crengine-ng
     - cd $BUILD_WORKDIR/debug
@@ -81,7 +81,7 @@ unittests-ubuntu-release:
     - tar -xzf $LIBUNIBREAK_PKG
     - cd $LIBUNIBREAK_SRCDIR
     - ./configure --prefix=$DEPLOY_PATH --enable-static --disable-shared
-    - make -j5
+    - make -j`nproc`
     - make install
     # build crengine-ng
     - cd $BUILD_WORKDIR/release

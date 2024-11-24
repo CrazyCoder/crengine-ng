@@ -12,7 +12,9 @@ AlignConsecutiveBitFields: Consecutive
 AlignConsecutiveDeclarations: None
 AlignEscapedNewlines: Left
 AlignOperands:   Align
-AlignTrailingComments: true
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -31,6 +33,7 @@ AttributeMacros:
   - __capability
 BinPackArguments: true
 BinPackParameters: true
+BreakAdjacentStringLiterals: true
 #BreakBeforeBraces: Attach
 BreakBeforeBraces: Custom
 BraceWrapping:
@@ -104,10 +107,12 @@ IndentExternBlock: AfterExternBlock
 IndentRequires:  false
 IndentWidth:     4
 IndentWrappedFunctionNames: false
+InsertNewlineAtEOF: true
 InsertTrailingCommas: None
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
+LineEnding: DeriveLF
 MacroBlockBegin: '^XS_BEGIN_NS|XS_BEGIN_TAGS|XS_BEGIN_ATTRS$'
 MacroBlockEnd:   '^XS_END_NS|XS_END_TAGS|XS_END_ATTRS$'
 MaxEmptyLinesToKeep: 1
@@ -117,12 +122,12 @@ ObjCBlockIndentWidth: 2
 ObjCBreakBeforeNestedBlockParam: true
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
-#PackConstructorInitializers: Never
+PackConstructorInitializers: Never
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
 PenaltyBreakFirstLessLess: 120
-#PenaltyBreakOpenParenthesis: 500
+PenaltyBreakOpenParenthesis: 500
 PenaltyBreakString: 1000
 PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 1000000
@@ -130,6 +135,7 @@ PenaltyReturnTypeOnItsOwnLine: 60
 PenaltyIndentedWhitespace: 0
 PointerAlignment: Left
 ReflowComments:  false
+SeparateDefinitionBlocks: Leave
 SortIncludes:    false
 SortJavaStaticImport: Before
 SortUsingDeclarations: false
@@ -152,7 +158,7 @@ SpacesInAngles:  false
 SpacesInCStyleCastParentheses: false
 SpacesInConditionalStatement: false
 SpacesInContainerLiterals: true
-SpacesInParentheses: false
+SpacesInParens: Never
 SpacesInSquareBrackets: false
 BitFieldColonSpacing: None
 Standard:        c++11
