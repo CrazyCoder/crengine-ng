@@ -31,7 +31,7 @@ style-check-diff:
     # install required tools
     - export DEBIAN_FRONTEND=noninteractive
     - apt update
-    - apt install -qq -y git clang-format-18
+    - apt install -qq -y git clang-format
   script:
     - .ci/run-style-check-diff.sh
 
