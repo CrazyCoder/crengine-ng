@@ -1534,11 +1534,11 @@ void LVDocView::getPageHeaderRectangle(int pageIndex, lvRect& headerRc) const {
 
 /// returns current time representation string
 lString32 LVDocView::getTimeString() const {
-    time_t t = (time_t)time(0);
+    time_t t = time(0);
     tm* bt = localtime(&t);
     char str[8];
     if (m_props->getBoolDef(PROP_SHOW_TIME_12HOURS, false)) {
-        snprintf(str, 6, "%d:%02d", bt->tm_hour > 12 ? bt->tm_hour % 12 : bt->tm_hour, bt->tm_min & 0x3F);
+        snprintf(str, 6, "%d:%02d", (bt->tm_hour > 12 ? bt->tm_hour % 12 : bt->tm_hour) & 0x0F, bt->tm_min & 0x3F);
     } else {
         snprintf(str, 6, "%02d:%02d", bt->tm_hour & 0x1F, bt->tm_min & 0x3F);
     }
