@@ -6,8 +6,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 include(CheckIncludeFile)
 include(CheckSymbolExists)
 
-include(project_checks)
-
 #  VERSION_DEV_A/CODE description:
 # alphaX - 0X; beta X - 1X; rcX - 2X; releaseX - 3X (or empty)
 set(VERSION_MAJOR 0)
@@ -124,6 +122,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -Wall -pedantic -Wno-comment -Wno-reorder -fomit-frame-pointer")
 endif()
 
+include(project_checks)
 
 if(MACOS)
     list(APPEND PUBLIC_COMPILE_DEFINITIONS -DMACOS=1 -DLINUX=1 -D_LINUX=1)

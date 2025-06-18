@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2021,2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2021,2022,2025 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -25,6 +25,13 @@
 #include <sys/time.h>
 #include <time.h>
 #include <limits.h>
+
+#ifndef HAVE_SRANDOM
+#define srandom srand
+#endif
+#ifndef HAVE_RANDOM
+#define random rand
+#endif
 
 struct rgb_triplet
 {
@@ -150,9 +157,14 @@ int64_t my_timevalcmp(const struct timeval* t1, const struct timeval* t2);
 void calc_rgb_diff(struct rgb_triplet* diff, uint32_t color1, uint32_t color2);
 int rgb_diff_to_weight(const struct rgb_triplet* rgb);
 
-int main() {
-    //int mode = TEST_MODE_PRECISION;
+int main(int argc, char* argv[]) {
     int mode = TEST_MODE_PERFORMANCE;
+    if (argc > 1) {
+        if (argv[1][0] == 'p')
+            mode = TEST_MODE_PRECISION;
+        else if (argv[1][0] == 's')
+            mode = TEST_MODE_PERFORMANCE;
+    }
 
     const uint32_t color_step = 31;
 
@@ -223,11 +235,7 @@ int main() {
         // build input test file
         printf("Preparing data (random)... ");
         fflush(stdout);
-#ifdef _WIN32
-        srand(time(0));
-#else
         srandom(time(0));
-#endif
         uint32_t* test_inp_data = (uint32_t*)malloc(TEST_POINTS_COUNT * sizeof(int));
         uint32_t* test_color_data = (uint32_t*)malloc(TEST_POINTS_COUNT * sizeof(int));
         int* test_alpha_r_data = (int*)malloc(TEST_POINTS_COUNT * sizeof(int));
@@ -240,21 +248,12 @@ int main() {
         long j;
         long r, g, b;
         for (j = 0; j < TEST_POINTS_COUNT; j++) {
-#ifdef _WIN32
-            r = 300L * rand() / RAND_MAX;
-            g = 300L * rand() / RAND_MAX;
-            b = 300L * rand() / RAND_MAX;
-            test_alpha_r_data[j] = (int)(300L * rand() / RAND_MAX);
-            test_alpha_g_data[j] = (int)(300L * rand() / RAND_MAX);
-            test_alpha_b_data[j] = (int)(300L * rand() / RAND_MAX);
-#else
             r = 300L * random() / RAND_MAX;
             g = 300L * random() / RAND_MAX;
             b = 300L * random() / RAND_MAX;
             test_alpha_r_data[j] = (int)(300L * random() / RAND_MAX);
             test_alpha_g_data[j] = (int)(300L * random() / RAND_MAX);
             test_alpha_b_data[j] = (int)(300L * random() / RAND_MAX);
-#endif
             if (r > 255)
                 r = 255;
             if (g > 255)
@@ -269,16 +268,9 @@ int main() {
                 test_alpha_g_data[j] = 255;
             if (test_alpha_b_data[j] > 255)
                 test_alpha_b_data[j] = 255;
-
-#ifdef _WIN32
-            r = 300L * rand() / RAND_MAX;
-            g = 300L * rand() / RAND_MAX;
-            b = 300L * rand() / RAND_MAX;
-#else
             r = 300L * random() / RAND_MAX;
             g = 300L * random() / RAND_MAX;
             b = 300L * random() / RAND_MAX;
-#endif
             if (r > 255)
                 r = 255;
             if (g > 255)

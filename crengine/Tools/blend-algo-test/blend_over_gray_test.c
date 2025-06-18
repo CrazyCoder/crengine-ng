@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2021,2022 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2021,2022,2025 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -25,6 +25,13 @@
 #include <sys/time.h>
 #include <time.h>
 #include <limits.h>
+
+#ifndef HAVE_SRANDOM
+#define srandom srand
+#endif
+#ifndef HAVE_RANDOM
+#define random rand
+#endif
 
 typedef void (*foo_func)(uint8_t* dst, uint8_t color, uint8_t alpha);
 
@@ -128,10 +135,14 @@ const char* funcs_name[FUNCS_COUNT] = {
   */
 int64_t my_timevalcmp(const struct timeval* t1, const struct timeval* t2);
 
-int main() {
-    //int mode = TEST_MODE_PRECISION;
+int main(int argc, char* argv[]) {
     int mode = TEST_MODE_PERFORMANCE;
-
+    if (argc > 1) {
+        if (argv[1][0] == 'p')
+            mode = TEST_MODE_PRECISION;
+        else if (argv[1][0] == 's')
+            mode = TEST_MODE_PERFORMANCE;
+    }
     int i;
     unsigned int dst;
     unsigned int color;
@@ -185,11 +196,7 @@ int main() {
         // build input test file
         printf("Preparing data (random)... ");
         fflush(stdout);
-#ifdef _WIN32
-        srand(time(0));
-#else
         srandom(time(0));
-#endif
         int* test_inp_data = (int*)malloc(TEST_POINTS_COUNT * sizeof(int));
         int* test_alpha_data = (int*)malloc(TEST_POINTS_COUNT * sizeof(int));
         int* test_color_data = (int*)malloc(TEST_POINTS_COUNT * sizeof(int));
@@ -199,15 +206,9 @@ int main() {
         }
         long j;
         for (j = 0; j < TEST_POINTS_COUNT; j++) {
-#ifdef _WIN32
-            test_inp_data[j] = (int)(300L * rand() / RAND_MAX);
-            test_alpha_data[j] = (int)(300L * rand() / RAND_MAX);
-            test_color_data[j] = (int)(300L * rand() / RAND_MAX);
-#else
             test_inp_data[j] = (int)(300L * random() / RAND_MAX);
             test_alpha_data[j] = (int)(300L * random() / RAND_MAX);
             test_color_data[j] = (int)(300L * random() / RAND_MAX);
-#endif
             if (test_inp_data[j] > 255)
                 test_inp_data[j] = 255;
             if (test_alpha_data[j] > 255)

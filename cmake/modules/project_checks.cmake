@@ -1,5 +1,11 @@
 
 set(CMAKE_REQUIRED_DEFINITIONS_BACKUP ${CMAKE_REQUIRED_DEFINITIONS})
+
 set(CMAKE_REQUIRED_DEFINITIONS "-D_LARGEFILE64_SOURCE")
 check_symbol_exists(lseek64 "sys/types.h;unistd.h" HAVE_LSEEK64)
+
+set(CMAKE_REQUIRED_DEFINITIONS "")
+check_symbol_exists(srandom "stdlib.h" HAVE_SRANDOM)
+check_symbol_exists(random "stdlib.h" HAVE_RANDOM)
+
 set(CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS_BACKUP})
