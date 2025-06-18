@@ -4725,8 +4725,8 @@ bool LVDocView::loadDocumentInt(LVStreamRef stream, bool metadataOnly) {
             int eligibleCount = 0;
             lString32 defHtml;
             lString32 firstGood;
-            lvsize_t defHtmlPackSize;
-            lvsize_t firstGoodPackSize;
+            lvsize_t defHtmlPackSize = 0;
+            lvsize_t firstGoodPackSize = 0;
             for (int i = 0; i < m_arc->GetObjectCount(); i++) {
                 const LVContainerItemInfo* item = m_arc->GetObjectInfo(i);
                 if (item) {
