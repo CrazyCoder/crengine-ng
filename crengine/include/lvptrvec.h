@@ -282,7 +282,7 @@ protected:
     int numrows;
     _Ty** rows;
 public:
-    LVMatrix<_Ty>()
+    LVMatrix()
             : numcols(0)
             , numrows(0)
             , rows(NULL) { }
@@ -298,7 +298,7 @@ public:
         numrows = 0;
         numcols = 0;
     }
-    ~LVMatrix<_Ty>() {
+    ~LVMatrix() {
         Clear();
     }
 
