@@ -2,6 +2,16 @@ project(blend-algo-test C)
 
 include_directories(${CMAKE_BINARY_DIR})
 
+check_symbol_exists(srandom "stdlib.h" HAVE_SRANDOM)
+check_symbol_exists(random "stdlib.h" HAVE_RANDOM)
+
+if(HAVE_SRANDOM)
+    add_definitions(-DHAVE_SRANDOM)
+endif (HAVE_SRANDOM)
+if(HAVE_RANDOM)
+    add_definitions(-DHAVE_RANDOM)
+endif (HAVE_RANDOM)
+
 set(BLEND_GRAY_SRC_LIST
     blend_over_gray_test.c
 )
