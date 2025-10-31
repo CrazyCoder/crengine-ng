@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng, unit testing                                             *
- *   Copyright (C) 2022-2024 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2022-2025 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -58,7 +58,7 @@
 // Image comparison constants: the maximum allowable deviation of one color component
 #define MAX_COLOR_DEVI 2
 // Image comparison constants: the maximum allowed number of dots with a color deviation allowed
-#define MAX_TOLERANCE_POINTS_COUNT 100
+#define MAX_TOLERANCE_POINTS_COUNT 30
 // Image comparison constants: the maximum allowed number of points with non-permissible color deviation
 #define MAX_ERRORS_POINTS_COUNT 30
 
