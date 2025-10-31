@@ -35,6 +35,7 @@ This library can use other libraries (links to licenses point to official websit
  * ZSTD - compressing library (cache compression) ([BSD](https://github.com/facebook/zstd/blob/dev/LICENSE) and [GPLv2](https://github.com/facebook/zstd/blob/dev/COPYING))
  * libpng - PNG image format support ([libpng](http://www.libpng.org/pub/png/src/libpng-LICENSE.txt))
  * libjpeg - JPEG image format support ([libjpeg](https://jpegclub.org/reference/libjpeg-license/))
+ * libwebp - WebP image format support ([BSD-3-Clause](https://chromium.googlesource.com/webm/libwebp/+/HEAD/COPYING))
  * FriBiDi - RTL writing support ([LGPL-2.1](https://github.com/fribidi/fribidi/blob/master/COPYING))
  * libunibreak - line breaking and word breaking algorithms ([Zlib](https://github.com/adah1972/libunibreak/blob/master/LICENCE))
  * utf8proc - for unicode string comparision ([utf8proc (MIT-like) + Unicode data license](https://github.com/JuliaStrings/utf8proc/blob/master/LICENSE.md))
@@ -86,6 +87,7 @@ This library can use other libraries (links to licenses point to official websit
 
    * WITH_LIBPNG - Use libpng library for png image support; default AUTO; variants: AUTO, ON, OFF
    * WITH_LIBJPEG - Use libjpeg library for jpeg image support; default AUTO; variants: AUTO, ON, OFF
+   * WITH_LIBWEBP - Use libwebp library for webp image support; default AUTO; variants: AUTO, ON, OFF
    * WITH_FREETYPE - Use FreeType library for font rendering; default AUTO; variants: AUTO, ON, OFF
    * WITH_HARFBUZZ - Use HarfBuzz library for text shaping; default AUTO; variants: AUTO, ON, OFF
    * WITH_LIBUNIBREAK - Use libunibreak library; default AUTO; variants: AUTO, ON, OFF
