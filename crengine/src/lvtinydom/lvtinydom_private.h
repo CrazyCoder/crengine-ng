@@ -2,7 +2,7 @@
  *   crengine-ng                                                           *
  *   Copyright (C) 2010-2015,2018 Vadim Lopatin <coolreader.org@gmail.com> *
  *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2020-2024 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020-2025 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -27,7 +27,7 @@
 #define CACHE_FILE_FORMAT_VERSION "3.12.83"
 
 /// increment following value to force re-formatting of old book after load
-#define FORMATTING_VERSION_ID 0x0030
+#define FORMATTING_VERSION_ID 0x0031
 
 #define COMPRESS_NODE_DATA         true
 #define COMPRESS_NODE_STORAGE_DATA true
