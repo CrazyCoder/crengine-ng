@@ -2,6 +2,9 @@
 set(FONTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/fonts)
 file(MAKE_DIRECTORY ${FONTS_DIR})
 
+# GoogleTest 1.17+ requires at least C++17
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+
 if(OFFLINE_BUILD_MODE)
     find_package(GTest 1.11.0 REQUIRED)
     # Check fonts availability in ${FONTS_DIR}
@@ -125,10 +128,6 @@ endif(WIN32)
 add_executable(unittests ${SRC_LIST})
 target_link_libraries(unittests ${CRE_NG} GTest::gtest_main)
 target_include_directories(unittests PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
-# GoogleTest 1.17+ requires at least C++14
-set_property(TARGET unittests PROPERTY CXX_STANDARD 17)
-set_property(TARGET unittests PROPERTY CXX_STANDARD_REQUIRED True)
-set_property(TARGET unittests PROPERTY CXX_EXTENSIONS Off)
 
 include(GoogleTest)
 gtest_discover_tests(unittests)
