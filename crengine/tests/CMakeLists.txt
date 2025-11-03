@@ -2,9 +2,6 @@
 set(FONTS_DIR ${CMAKE_CURRENT_BINARY_DIR}/fonts)
 file(MAKE_DIRECTORY ${FONTS_DIR})
 
-# GoogleTest 1.13+ requires at least C++14
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-
 if(OFFLINE_BUILD_MODE)
     find_package(GTest 1.11.0 REQUIRED)
     # Check fonts availability in ${FONTS_DIR}
@@ -46,8 +43,8 @@ else(OFFLINE_BUILD_MODE)
     FetchContent_Declare(
         googletest
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-        URL_HASH_MD5=c8340a482851ef6a3fe618a082304cfc
-        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+        URL_HASH_MD5=b6f100bc2a5853a48046aa168ececf84
+        URL https://github.com/google/googletest/releases/download/v1.17.0/googletest-1.17.0.tar.gz
     )
     FetchContent_Declare(
         freefont
@@ -62,7 +59,7 @@ else(OFFLINE_BUILD_MODE)
     # add_subdirectory() for googletest sources
     # is called automatically as cmake is also used
 
-    FetchContent_Populate(freefont)
+    FetchContent_MakeAvailable(freefont)
 
     file(GLOB FREEFONT_OTF_FILES ${freefont_SOURCE_DIR}/*.otf)
     file(COPY ${FREEFONT_OTF_FILES} DESTINATION ${FONTS_DIR})
@@ -128,6 +125,10 @@ endif(WIN32)
 add_executable(unittests ${SRC_LIST})
 target_link_libraries(unittests ${CRE_NG} GTest::gtest_main)
 target_include_directories(unittests PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
+# GoogleTest 1.17+ requires at least C++14
+set_property(TARGET unittests PROPERTY CXX_STANDARD 17)
+set_property(TARGET unittests PROPERTY CXX_STANDARD_REQUIRED True)
+set_property(TARGET unittests PROPERTY CXX_EXTENSIONS Off)
 
 include(GoogleTest)
 gtest_discover_tests(unittests)
