@@ -46,7 +46,7 @@ This library can use other libraries (links to licenses point to official websit
 
    To install these libraries for Ubuntu you can use the following command:
 ```sh
-   $ sudo apt install zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libunibreak-dev libutf8proc-dev libzstd-dev
+   $ sudo apt install zlib1g-dev libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libunibreak-dev libutf8proc-dev libzstd-dev
 ```
    You may also need to install the main packages necessary for development:
 ```sh
