@@ -13,6 +13,7 @@
 #cmakedefine01 USE_ZLIB
 #cmakedefine01 USE_LIBPNG
 #cmakedefine01 USE_LIBJPEG
+#cmakedefine01 USE_LIBWEBP
 #cmakedefine01 USE_GIF
 #cmakedefine01 USE_FREETYPE
 #cmakedefine01 USE_HARFBUZZ

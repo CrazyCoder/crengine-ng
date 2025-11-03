@@ -63,6 +63,7 @@ set(CRENGINE_NG_SOURCES
     src/lvimg/crninepatchdecoder.cpp
     src/lvimg/lvjpegimagesource.cpp
     src/lvimg/lvpngimagesource.cpp
+    src/lvimg/lvwebpimagesource.cpp
     src/lvimg/lvxpmimagesource.cpp
     src/lvimg/lvgifimagesource.cpp
     src/lvimg/lvgifframe.cpp

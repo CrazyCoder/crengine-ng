@@ -1,8 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2010-2015,2018 Vadim Lopatin <coolreader.org@gmail.com> *
- *   Copyright (C) 2018-2021 poire-z <poire-z@users.noreply.github.com>    *
- *   Copyright (C) 2020-2025 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2025 Aleksey Chernov <valexlin@gmail.com>               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -20,32 +18,25 @@
  *   MA 02110-1301, USA.                                                   *
  ***************************************************************************/
 
-#ifndef __LV_TINYDOM_PRIVATE_H_INCLUDED__
-#define __LV_TINYDOM_PRIVATE_H_INCLUDED__
+#ifndef LVWEBPIMAGESOURCE_H_INCLUDED
+#define LVWEBPIMAGESOURCE_H_INCLUDED
 
-/// change in case of incompatible changes in swap/cache file format to avoid using incompatible swap file
-#define CACHE_FILE_FORMAT_VERSION "3.12.83"
+#include <crsetup.h>
 
-/// increment following value to force re-formatting of old book after load
-#define FORMATTING_VERSION_ID 0x0031
+#if (USE_LIBWEBP == 1)
 
-#define COMPRESS_NODE_DATA         true
-#define COMPRESS_NODE_STORAGE_DATA true
-#define COMPRESS_MISC_DATA         true
-#define COMPRESS_PAGES_DATA        true
-#define COMPRESS_TOC_DATA          true
-#define COMPRESS_PAGEMAP_DATA      true
-#define COMPRESS_STYLE_DATA        true
+#include "lvnodeimagesource.h"
 
-/// set t 1 to log storage reads/writes
-#define DEBUG_DOM_STORAGE 0
+class LVWebPImageSource: public LVNodeImageSource
+{
+public:
+    LVWebPImageSource(ldomNode* node, LVStreamRef stream);
+    virtual ~LVWebPImageSource();
+    virtual void Compact();
+    virtual bool Decode(LVImageDecoderCallback* callback);
+    static bool CheckPattern(const lUInt8* buf, int len);
+};
 
-#ifndef DOC_BUFFER_SIZE
-#define DOC_BUFFER_SIZE 0x00A00000UL // default buffer size
-#endif
+#endif // (USE_LIBWEBP == 1)
 
-#if DOC_BUFFER_SIZE >= 0x7FFFFFFFUL
-#error DOC_BUFFER_SIZE value is too large. This results in integer overflow.
-#endif
-
-#endif // __LV_TINYDOM_PRIVATE_H_INCLUDED__
+#endif // LVWEBPIMAGESOURCE_H_INCLUDED

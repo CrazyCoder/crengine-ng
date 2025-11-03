@@ -1,5 +1,4 @@
 
-cmake_minimum_required(VERSION 3.5)
 project(MD4C C)
 
 set(MD_VERSION_MAJOR 0)

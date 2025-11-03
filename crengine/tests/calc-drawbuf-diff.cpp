@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng, unit testing                                             *
- *   Copyright (C) 2022 Aleksey Chernov <valexlin@gmail.com>               *
+ *   Copyright (C) 2022,2025 Aleksey Chernov <valexlin@gmail.com>          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -97,34 +97,40 @@ bool validateDrawBufDiff(LVDrawBufRef buf, lUInt8 maxColorDiff, lUInt32 maxToler
             lUInt8 c_2 = (c >> 16) & 0x00FF;
             lUInt8 c_3 = (c >> 8) & 0x00FF;
             lUInt8 c_4 = c & 0x00FF;
+            bool colorError = false;
+            bool colorWarn = false;
             if (c_1 > maxColorDiff)
-                errorsCount++;
+                colorError = true;
             else if (c_1 > 0) {
-                toleranceCount++;
+                colorWarn = true;
                 if (maxToleranceVal < c_1)
                     maxToleranceVal = c_1;
             }
             if (c_2 > maxColorDiff)
-                errorsCount++;
+                colorError = true;
             else if (c_2 > 0) {
-                toleranceCount++;
+                colorWarn = true;
                 if (maxToleranceVal < c_2)
                     maxToleranceVal = c_2;
             }
             if (c_3 > maxColorDiff)
-                errorsCount++;
+                colorError = true;
             else if (c_3 > 0) {
-                toleranceCount++;
+                colorWarn = true;
                 if (maxToleranceVal < c_3)
                     maxToleranceVal = c_3;
             }
             if (c_4 > maxColorDiff)
-                errorsCount++;
+                colorError = true;
             else if (c_4 > 0) {
-                toleranceCount++;
+                colorWarn = true;
                 if (maxToleranceVal < c_4)
                     maxToleranceVal = c_4;
             }
+            if (colorError)
+                errorsCount++;
+            if (colorWarn)
+                toleranceCount++;
         }
     }
     if (errorsCount > maxErrorsCount)
