@@ -1,3 +1,87 @@
+2025-11-03  Aleksey Chernov  <valexlin@gmail.com>
+
+	* Version 0.9.13 released.
+	==========================
+
+	Tag sources with `0.9.13'.
+
+	  Main changes:
+	Support for the WebP image format has been implemented.
+	Bug fixes.
+
+	See below for other changes.
+
+2025-11-03  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update README.md: updated dependency installation command on Ubuntu (libwebp).
+
+	Update crengine/tests/CMakeLists.txt: the old way of specifying the C++ standard has been returned.
+
+	Bump GoogleTest to 1.17.0
+
+	Update .gitlab-ci.yml: use libwebp library.
+
+2025-11-02  Aleksey Chernov  <valexlin@gmail.com>
+
+	cmake: move all used external libraries from the public section to the private link libraries section.
+
+	Update CMakeLists.txt: use CMAKE_PREFIX_PATH for library search path.
+
+2025-11-01  Aleksey Chernov  <valexlin@gmail.com>
+
+	thirdparty/nanosvg: update upstream.txt: last applied commit from upstream
+
+	thirdparty/nanosvg: updated to latest version from upstream
+
+	Increased FORMATTING_VERSION_ID to force reformatting of books that exists in the cache (webp support added).
+
+2025-10-31  Aleksey Chernov  <valexlin@gmail.com>
+
+	Update README.md: added information about WebP image format support.
+
+	unittests: fixed a bug in calculating the number of different image pixels when comparing two images.
+
+	Support for the webp image format has been implemented using the libwebp library.
+
+2025-10-30  Aleksey Chernov  <valexlin@gmail.com>
+
+	cmake: find libwebp library.
+
+	cmake: remove cmake_minimum_required() instruction from child subprojects.
+
+2025-06-19  Aleksey Chernov  <valexlin@gmail.com>
+
+	Moved availability check for srandom() and random() functions from main CMakeLists.txt to crengine/Tools/blend-algo-test/ and added missing relevant compiler defines.
+
+2025-06-18  Aleksey Chernov  <valexlin@gmail.com>
+
+	Fixed warning in LVDocView:getTimeString(): output between 5 and 15 bytes into a destination of size 6.
+
+	Fixed warning in LVDocView:loadDocumentInt(): «packSize» may be used uninitialized.
+
+	Fixed warnings in thirdparty/rfc6234-shas: mismatched functions declaration.
+
+	Fixed compiler warning in lvptrvec.h: template-id not allowed for destructor in C++20.
+
+	Fixes in crengine/Tools/blend-algo-test: checking the availability of the srandom() and random() functions, adding program arguments for selecting the operating mode.
+
+2025-03-10  Aleksey Chernov  <valexlin@gmail.com>
+
+	thirdparty/nanosvg: update upstream.txt: last applied commit from upstream
+
+	thirdparty/nanosvg: updated to latest version from upstream
+
+2024-11-24  Aleksey Chernov  <valexlin@gmail.com>
+
+	Reformat source using clang-format-18
+
+	Update .gitlab-ci.yml: use Ubuntu 24.04 LTS, update clang-format configuration, don't specify clang-format version.
+
+2024-09-05  Aleksey Chernov  <valexlin@gmail.com>
+
+	Fixed potential buffer overflow in LVDocView::exportBookmarks.
+
+
 2024-08-23  Aleksey Chernov  <valexlin@gmail.com>
 
 	* Version 0.9.12 released.
