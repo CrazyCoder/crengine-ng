@@ -126,7 +126,12 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(unittests ${SRC_LIST})
-target_link_libraries(unittests ${CRE_NG} GTest::gtest_main)
+if (USE_ZLIB)
+    set(ADD_LIBS "${ZLIB_LIBRARIES}")
+else()
+    set(ADD_LIBS)
+endif()
+target_link_libraries(unittests ${CRE_NG} ${ADD_LIBS} GTest::gtest_main)
 target_include_directories(unittests PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES})
 
 include(GoogleTest)
