@@ -173,7 +173,7 @@ static const css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 #define DEFAULT_PAGE_MARGIN 12
 #endif
 
-#define HEADER_MARGIN          4
+#define HEADER_MARGIN          3
 #define HEADER_NAVBAR_H        5 // marks on navigation bar, scaled by DPI
 #define PAGE_HEADER_POS_NONE   0
 #define PAGE_HEADER_POS_TOP    1
@@ -2209,6 +2209,9 @@ void LVDocView::setPageHeaderOverride(lString32 s) {
 /// draw page header to buffer
 void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
                                int pageIndex, lUInt32 phi, int pageCount) {
+    // Early exit if info font is not available (can happen during export before render)
+    if (!m_infoFont)
+        return;
     int w = GetWidth();
     int h = GetHeight();
     if (w > h)
@@ -2398,8 +2401,10 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
 
         int piw = 0;
         if (!pageinfo.empty()) {
+            // pageinfo << " ";
             piw = m_infoFont->getTextWidth(pageinfo.c_str(), pageinfo.length());
-            m_infoFont->DrawTextString(drawbuf, info.right - piw, texty,
+            // TODO: adjustable margins from bottom right corner
+            m_infoFont->DrawTextString(drawbuf, info.right - piw - 5, texty + 2,
                                        pageinfo.c_str(), pageinfo.length(), U' ', NULL, false);
             info.right -= piw + info.height() / 2;
         }
