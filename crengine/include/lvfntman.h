@@ -169,6 +169,8 @@ public:
 
     /// sets current hinting mode
     virtual void SetHintingMode(hinting_mode_t /*mode*/) { }
+    
+    virtual void SetTrueTypeInterpreterVersion(int) { }
 
     /// constructor
     LVFontManager();

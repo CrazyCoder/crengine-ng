@@ -1367,11 +1367,14 @@ void LVGrayDrawBuf::DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, i
                             else
                                 *dst = (*dst) & ~(0x80 >> shift);
                         } else if (_bpp == 2) {
+                            // Correct per-pixel nibble addressing for 2bpp.
+                            // Pixels are packed 4 per byte, MSB-first: bits 6..7, 4..5, 2..3, 0..1.
+                            // Use (x + xx) to select the current pixel position within the destination byte.
                             lUInt8* dst = dst0 + ((x + xx) >> 2);
-                            int shift = x & 3;
+                            int shift = ((x + xx) & 3) * 2;
                             lUInt32 dithered = Dither2BitColor(cl, xx, yy) << 6;
-                            lUInt8 b = *dst & ~(0xC0 >> shift);
-                            *dst = (lUInt8)(b | (dithered >> (shift * 2)));
+                            lUInt8 b = (lUInt8)(*dst & ~(0xC0 >> shift));
+                            *dst = (lUInt8)(b | (dithered >> shift));
                         } else {
                             lUInt8* dst = dst0 + x + xx;
                             lUInt32 dithered;
@@ -1395,4 +1398,6 @@ void LVGrayDrawBuf::DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, i
         }
     }
     CHECK_GUARD_BYTE;
+    _drawnImagesCount += ((LVBaseDrawBuf*)src)->getDrawnImagesCount();
+    _drawnImagesSurface += dx*dy;
 }

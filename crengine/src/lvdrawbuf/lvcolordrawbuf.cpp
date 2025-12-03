@@ -1279,6 +1279,8 @@ void LVColorDrawBuf::DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, 
             }
         }
     }
+    _drawnImagesCount += ((LVBaseDrawBuf*)src)->getDrawnImagesCount();
+    _drawnImagesSurface += dx*dy;
 }
 
 /// returns scanline pointer

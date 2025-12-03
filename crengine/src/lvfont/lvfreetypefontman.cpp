@@ -433,6 +433,17 @@ void LVFreeTypeFontManager::SetHintingMode(hinting_mode_t mode) {
     }
 }
 
+void LVFreeTypeFontManager::SetTrueTypeInterpreterVersion(int version) {
+    FONT_MAN_GUARD
+    CRLog::debug("TrueType Interpreter version changed to: %d", version);
+    FT_UInt interpreter_version = version;
+    FT_Property_Set(_library, "truetype", "interpreter-version",
+                    &interpreter_version);
+    gc();
+    clearGlyphCache();
+}
+
+
 void LVFreeTypeFontManager::SetKerning(bool kerningEnabled) {
     FONT_MAN_GUARD
     CRLog::debug("Kerning mode is changed: %d", (int)kerningEnabled);
@@ -747,6 +758,10 @@ LVFreeTypeFontManager::LVFreeTypeFontManager()
     if (error) {
         // error
         CRLog::error("Error while initializing freetype library");
+    } else {
+        FT_UInt interpreter_version = TT_INTERPRETER_VERSION_40;
+        FT_Property_Set(_library, "truetype", "interpreter-version",
+                        &interpreter_version);
     }
 #if (DEBUG_FONT_MAN == 1)
     _log = fopen(DEBUG_FONT_MAN_LOG_FILE, "at");

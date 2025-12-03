@@ -264,7 +264,7 @@ else()
     set(USE_LIBWEBP OFF)
 endif()
 
-if (MACOS)
+if (MACOS OR WIN32)
     list(APPEND PUBLIC_COMPILE_DEFINITIONS -DCR_EMULATE_GETTEXT=1)
 else()
     # libintl (gettext)

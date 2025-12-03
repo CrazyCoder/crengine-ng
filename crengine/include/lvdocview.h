@@ -55,6 +55,7 @@
 #include <lvdocprops.h>
 #include <lvdocviewcmd.h>
 #include <lvdocviewprops.h>
+#include <xtcexport.h>
 
 const lChar32* getDocFormatName(doc_format_t fmt);
 
@@ -952,6 +953,15 @@ public:
     bool exportWolFile(const lChar32* fname, bool flgGray, int levels);
     /// export to WOL format
     bool exportWolFile(LVStream* stream, bool flgGray, int levels);
+
+    /// export to XTB format (stub - saves pages as BMP files)
+    bool exportXtbFile(const lChar32 *fname, int width, int height, int bits, int levels, bool dump);
+
+    /// export to XTC/XTCH format
+    bool exportXtcFile(const lChar32* fname, XtcExportFormat format, int width, int height);
+
+    /// get XTC exporter for advanced configuration
+    XtcExporter createXtcExporter();
 
     /// get a stream for reading to document internal file (path inside the ZIP for EPUBs,
     /// path relative to document directory for non-container documents like HTML)

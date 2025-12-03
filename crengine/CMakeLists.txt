@@ -128,6 +128,7 @@ set(CRENGINE_NG_SOURCES
     src/lvtinydom/ldomwordexlist.cpp
     src/lvtinydom/lstridmap.cpp
     src/mdfmt.cpp
+    src/xtcexport.cpp
 )
 
 if(USE_LOCALE_DATA)

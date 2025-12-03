@@ -46,6 +46,7 @@
 #include <ldomdocument.h>
 #include <lvdocviewcallback.h>
 #include <lvtinydomutils.h>
+#include <freetype/ftdriver.h>
 
 #include "textlang.h"
 #include "lvdrawbuf/lvdrawstatesaver.h"
@@ -65,6 +66,7 @@
 #include "pdbfmt.h"
 #include "fb3fmt.h"
 #include "docxfmt.h"
+#include "lvbyteorder.h"
 #include "odtfmt.h"
 #include "mdfmt.h"
 
@@ -1266,9 +1268,9 @@ void LVDocView::drawCoverTo(LVDrawBuf* drawBuf, lvRect& rc) {
             scale_x = scale_y;
         int dst_dx = (src_dx * scale_x) >> 16;
         int dst_dy = (src_dy * scale_y) >> 16;
-        if (dst_dx > rc.width() * 6 / 8)
+        if (dst_dx > rc.width())
             dst_dx = imgrc.width();
-        if (dst_dy > rc.height() * 6 / 8)
+        if (dst_dy > rc.height())
             dst_dy = imgrc.height();
         //CRLog::trace("drawCoverTo() - drawing image");
         LVColorDrawBuf buf2(src_dx, src_dy, 32);
@@ -1446,6 +1448,324 @@ bool LVDocView::exportWolFile(LVStream* stream, bool flgGray, int levels) {
     clearImageCache();
 
     return true;
+}
+
+// Helper function to write a 32-bit little-endian value to a buffer
+static inline void writeLittleEndian32(unsigned char* buf, int offset, lUInt32 value) {
+    buf[offset + 0] = value & 0xFF;
+    buf[offset + 1] = (value >> 8) & 0xFF;
+    buf[offset + 2] = (value >> 16) & 0xFF;
+    buf[offset + 3] = (value >> 24) & 0xFF;
+}
+
+// Helper function to write a 16-bit little-endian value to a buffer
+static inline void writeLittleEndian16(unsigned char* buf, int offset, lUInt16 value) {
+    buf[offset + 0] = value & 0xFF;
+    buf[offset + 1] = (value >> 8) & 0xFF;
+}
+
+// GrayToMonoPolicy enum is now defined in xtcexport.h (included via lvdocview.h)
+
+/// helper function to save LVGrayDrawBuf as BMP file
+/// desiredBpp: 0 = use buf bpp; otherwise force output bpp (currently supports 1 or buf bpp/4bpp path)
+/// grayPolicy: used only when converting 2bpp -> 1bpp
+static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp = 0, GrayToMonoPolicy grayPolicy = GRAY_SPLIT_LIGHT_DARK) {
+    int width = buf.GetWidth();
+    int height = buf.GetHeight();
+    int bpp = buf.GetBitsPerPixel();
+    
+    // For 2-bit images, use 4-bit indexed BMP for broad compatibility (BMP doesn't support true 2-bpp)
+    int outputBpp;
+    if (desiredBpp == 1) {
+        outputBpp = 1;
+    } else {
+        outputBpp = (bpp == 2) ? 4 : bpp;
+    }
+    
+    // Calculate row size (must be multiple of 4 bytes)
+    int rowSize = ((width * outputBpp + 31) / 32) * 4;
+    int imageSize = rowSize * height;
+    
+    // Calculate palette size for grayscale images
+    int paletteSize = 0;
+    if (outputBpp <= 8) {
+        paletteSize = (1 << outputBpp) * 4; // 4 bytes per color (BGRA)
+    }
+    
+    int fileSize = 54 + paletteSize + imageSize;
+    int pixelDataOffset = 54 + paletteSize;
+    
+    // BMP file header (14 bytes)
+    unsigned char fileHeader[14] = {
+        'B', 'M',           // Signature
+        0, 0, 0, 0,         // File size (filled below)
+        0, 0, 0, 0,         // Reserved
+        0, 0, 0, 0          // Offset to pixel data (filled below)
+    };
+    
+    // BMP info header (40 bytes)
+    unsigned char infoHeader[40] = {
+        40, 0, 0, 0,        // Info header size
+        0, 0, 0, 0,         // Width (filled below)
+        0, 0, 0, 0,         // Height (filled below)
+        1, 0,               // Planes
+        0, 0,               // Bits per pixel (filled below)
+        0, 0, 0, 0,         // Compression (0 = none)
+        0, 0, 0, 0,         // Image size (0 for uncompressed)
+        0, 0, 0, 0,         // X pixels per meter
+        0, 0, 0, 0,         // Y pixels per meter
+        0, 0, 0, 0,         // Colors used
+        0, 0, 0, 0          // Important colors
+    };
+    
+    // Fill in file header fields
+    writeLittleEndian32(fileHeader, 2, fileSize);
+    writeLittleEndian32(fileHeader, 10, pixelDataOffset);
+    
+    // Fill in info header fields
+    writeLittleEndian32(infoHeader, 4, width);
+    writeLittleEndian32(infoHeader, 8, height);
+    writeLittleEndian16(infoHeader, 14, outputBpp);
+    
+    // Open file for writing
+    LVStreamRef stream = LVOpenFileStream(filename, LVOM_WRITE);
+    if (!stream)
+        return false;
+    
+    // Write headers
+    if (stream->Write(fileHeader, 14, NULL) != LVERR_OK)
+        return false;
+    if (stream->Write(infoHeader, 40, NULL) != LVERR_OK)
+        return false;
+    
+    // Write palette for grayscale images
+    if (paletteSize > 0) {
+        int numColors = 1 << outputBpp;
+        unsigned char palette[1024] = {0}; // Max 256 colors * 4 bytes
+        for (int i = 0; i < numColors; i++) {
+            int gray = (i * 255) / (numColors - 1);
+            palette[i * 4 + 0] = gray; // Blue
+            palette[i * 4 + 1] = gray; // Green
+            palette[i * 4 + 2] = gray; // Red
+            palette[i * 4 + 3] = 0;    // Reserved
+        }
+        if (stream->Write(palette, paletteSize, NULL) != LVERR_OK)
+            return false;
+    }
+    
+    // Write pixel data (BMP stores rows bottom-to-top)
+    unsigned char* rowBuffer = new unsigned char[rowSize];
+    for (int y = height - 1; y >= 0; y--) {
+        // Clear destination row to avoid carrying over nibbles from previous rows
+        memset(rowBuffer, 0, rowSize);
+        const unsigned char* srcRow = buf.GetScanLine(y);
+        
+        if (bpp == 2 && outputBpp == 1) {
+            // Convert 2-bit packed row to 1-bit packed row, with policy handling
+            // 2-bit pixels packed MSB-first: x-> shift2bit = 6 - ((x & 3) * 2)
+            // 1-bit pixels packed MSB-first: set bit (7 - (x & 7)) in destination byte
+            for (int x = 0; x < width; x++) {
+                int shift2bit = 6 - ((x & 3) << 1);
+                lUInt8 v2 = (srcRow[x >> 2] >> shift2bit) & 0x03; // 0..3
+                int mono = 0;
+                switch (grayPolicy) {
+                    case GRAY_SPLIT_LIGHT_DARK:
+                        // light gray + white -> 1 (white), dark gray + black -> 0 (black)
+                        mono = (v2 >= 2) ? 1 : 0;
+                        break;
+                    case GRAY_ALL_TO_WHITE:
+                        // everything except pure black becomes white
+                        mono = (v2 != 0) ? 1 : 0;
+                        break;
+                    case GRAY_ALL_TO_BLACK:
+                        // only pure white becomes white
+                        mono = (v2 == 3) ? 1 : 0;
+                        break;
+                }
+                if (mono) {
+                    rowBuffer[x >> 3] |= (lUInt8)(0x80 >> (x & 7));
+                }
+            }
+        } else if (bpp == 2 && outputBpp == 4) {
+            // Convert 2-bit to 4-bit: expand each 2-bit pixel to 4-bit
+            // 2-bit pixels are packed 4 per byte: pixel 0 at bits 6-7, pixel 1 at bits 4-5, etc.
+            // 4-bit pixels are packed 2 per byte: pixel 0 at bits 4-7, pixel 1 at bits 0-3
+            for (int x = 0; x < width; x++) {
+                int shift2bit = 6 - ((x & 3) << 1);  // shift: 6, 4, 2, 0 for pixels 0, 1, 2, 3
+                lUInt8 pixel2bit = (srcRow[x >> 2] >> shift2bit) & 0x03;
+                
+                // Expand 2-bit (0-3) to 4-bit (0-15) by duplicating bits
+                // 0b00 -> 0b0000, 0b01 -> 0b0101, 0b10 -> 0b1010, 0b11 -> 0b1111
+                lUInt8 pixel4bit = pixel2bit | (pixel2bit << 2);
+                
+                // Pack into 4-bit format
+                int shift4bit = (x & 1) ? 0 : 4;
+                unsigned char& dstByte = rowBuffer[x >> 1];
+                if (shift4bit == 4) {
+                    // Set high nibble, preserve low nibble written by previous pixel in this row
+                    dstByte = (unsigned char)((dstByte & 0x0F) | (pixel4bit << 4));
+                } else {
+                    // Set low nibble, preserve high nibble
+                    dstByte = (unsigned char)((dstByte & 0xF0) | pixel4bit);
+                }
+            }
+        } else if (bpp == 4 && outputBpp == 4) {
+            // Source buffer stores one byte per pixel with the meaningful value in the high nibble (0xF0)
+            // BMP 4bpp expects two pixels per byte: first pixel in high nibble, second in low nibble.
+            // So, repack two source pixels (high nibbles) into one destination byte.
+            int dstIndex = 0;
+            int x = 0;
+            for (; x + 1 < width; x += 2) {
+                // Extract high nibbles and combine
+                lUInt8 hi = (lUInt8)(srcRow[x] & 0xF0);          // already high nibble
+                lUInt8 lo = (lUInt8)((srcRow[x + 1] & 0xF0) >> 4); // move to low nibble
+                rowBuffer[dstIndex++] = (lUInt8)(hi | lo);
+            }
+            if (x < width) {
+                // Odd width: last pixel goes to high nibble, low nibble stays 0
+                rowBuffer[dstIndex] = (lUInt8)(srcRow[x] & 0xF0);
+            }
+        } else {
+            // For other bit depths, copy directly
+            int srcRowBytes = (bpp <= 2) ? (width * bpp + 7) / 8 : width;
+            memcpy(rowBuffer, srcRow, srcRowBytes);
+        }
+        
+        if (stream->Write(rowBuffer, rowSize, NULL) != LVERR_OK) {
+            delete[] rowBuffer;
+            return false;
+        }
+    }
+    
+    delete[] rowBuffer;
+    return true;
+}
+
+/// export to XTB format (stub implementation - saves pages as BMP files)
+bool LVDocView::exportXtbFile(const lChar32* fname, int width, int height, int bits, int levels, bool dump) {
+    checkRender();
+    int save_m_dx = m_dx;
+    int save_m_dy = m_dy;
+    lUInt32 old_flags = m_pageHeaderInfo;
+    int save_pos = _pos;
+    int save_page = _page;
+    bool showCover = getShowCover();
+    m_pageHeaderInfo &= ~(PGHDR_CLOCK | PGHDR_BATTERY);
+    
+    // Resize to target dimensions
+    Resize(width, height);
+    
+    LVRendPageList& pages = m_pages;
+    
+    // Extract directory path from output filename
+    lString8 outPath(fname);
+    int pathEnd = -1;
+    for (int i = outPath.length() - 1; i >= 0; i--) {
+        if (outPath[i] == '/' || outPath[i] == '\\') {
+            pathEnd = i;
+            break;
+        }
+    }
+    lString8 dirPath;
+    if (pathEnd >= 0) {
+        dirPath = outPath.substr(0, pathEnd + 1);
+    }
+    
+    int pageNum = 0;
+    
+    // Interpret 'levels' as policy for 1bpp: 2/0 -> split (default), 1 -> all gray->white, 3 -> all gray->black
+    GrayToMonoPolicy policy = GRAY_SPLIT_LIGHT_DARK;
+    if (bits == 1) {
+        if (levels == 1) policy = GRAY_ALL_TO_WHITE;
+        else if (levels == 3) policy = GRAY_ALL_TO_BLACK;
+        else policy = GRAY_SPLIT_LIGHT_DARK;
+    }
+    
+    // Save cover if present
+    if (showCover) {
+        // Render cover into 2bpp when exporting to 1bpp, to allow AA glyphs to draw correctly
+        int renderBpp = (bits == 1) ? 2 : bits;
+        LVGrayDrawBuf cover(width, height, renderBpp);
+        lvRect coverRc(0, 0, width, height);
+        cover.Clear(0xFFFFFF);
+        drawCoverTo(&cover, coverRc);
+        
+        if (dump) {
+            char filename[256];
+            snprintf(filename, sizeof(filename), "%s%04d.bmp", dirPath.c_str(), pageNum);
+            saveBmpFile(filename, cover, bits, policy);
+            // saveToBMP(filename, cover);
+        }
+        pageNum++;
+    }
+    
+    // Iterate through pages and save as BMP
+    int lastPercent = 0;
+    for (int i = showCover ? 1 : 0; i < pages.length(); i += getVisiblePageCount()) {
+        int percent = i * 100 / pages.length();
+        percent -= percent % 5;
+        if (percent != lastPercent) {
+            lastPercent = percent;
+            if (m_callback != NULL)
+                m_callback->OnExportProgress(percent);
+        }
+        
+        // Render into 2bpp when exporting to 1bpp so that antialiased (2-bit) glyphs can be blended
+        int renderBpp = (bits == 1) ? 2 : bits;
+        LVGrayDrawBuf drawbuf(width, height, renderBpp);
+        drawbuf.Clear(0xFFFFFF);
+        drawPageTo(&drawbuf, *pages[i], NULL, pages.length(), 0);
+        _pos = pages[i]->start;
+        _page = i;
+        Draw(drawbuf, -1, _page, true);
+        
+        if (dump) {
+            char filename[256];
+            snprintf(filename, sizeof(filename), "%s%04d.bmp", dirPath.c_str(), pageNum);
+            saveBmpFile(filename, drawbuf, bits, policy);
+            // saveToBMP(filename, drawbuf);
+        }
+        pageNum++;
+        // TODO: remove
+        if (pageNum > 10) break;
+    }
+    
+    // Restore original view state
+    m_pageHeaderInfo = old_flags;
+    _pos = save_pos;
+    _page = save_page;
+    bool rotated =
+#if CR_INTERNAL_PAGE_ORIENTATION == 1
+            (GetRotateAngle() & 1);
+#else
+            false;
+#endif
+    int ndx = rotated ? save_m_dy : save_m_dx;
+    int ndy = rotated ? save_m_dx : save_m_dy;
+    Resize(ndx, ndy);
+    clearImageCache();
+
+    return true;
+}
+
+/// export to XTC/XTCH format
+bool LVDocView::exportXtcFile(const lChar32* fname, XtcExportFormat format, int width, int height) {
+    XtcExporter exporter;
+    exporter.setFormat(format)
+            .setDimensions((uint16_t)width, (uint16_t)height)
+            .setMetadata(UnicodeToUtf8(getTitle()), UnicodeToUtf8(getAuthors()))
+            .setReadingDirection(XTC_DIR_LTR);
+
+    return exporter.exportDocument(this, fname);
+}
+
+/// get XTC exporter for advanced configuration
+XtcExporter LVDocView::createXtcExporter() {
+    XtcExporter exporter;
+    // Pre-populate with document metadata
+    exporter.setMetadata(UnicodeToUtf8(getTitle()), UnicodeToUtf8(getAuthors()),
+                         lString8::empty_str, UnicodeToUtf8(getLanguage()));
+    return exporter;
 }
 
 int LVDocView::GetFullHeight() {
@@ -6873,6 +7193,8 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->setBoolDef(PROP_TXT_OPTION_PREFORMATTED, false);
 #endif
     props->limitValueMinMax(PROP_FONT_HINTING, 0, 2, 0);
+    static int int_option_interpreter[] = {TT_INTERPRETER_VERSION_40, TT_INTERPRETER_VERSION_38, TT_INTERPRETER_VERSION_35};
+    props->limitValueList(PROP_FONT_INTERPRETER, int_option_interpreter, sizeof(int_option_interpreter) / sizeof(int), 0);
     props->limitValueMinMax(PROP_FONT_SHAPING, 0, 2, 1);
     props->limitValueMinMax(PROP_LANDSCAPE_PAGES, 1, 2, 2);
     props->setBoolDef(PROP_PAGE_VIEW_MODE, true);
@@ -7015,6 +7337,10 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
                 // requestRender() does m_doc->clearRendBlockCache(), which is needed
                 // on hinting mode change
             }
+        } else if (name == PROP_FONT_INTERPRETER) {
+            int ver = props->getIntDef(PROP_FONT_INTERPRETER, TT_INTERPRETER_VERSION_40);
+            fontMan->SetTrueTypeInterpreterVersion(ver);
+            REQUEST_RENDER("propsApply - interpreter")
         } else if (name == PROP_HIGHLIGHT_SELECTION_COLOR || name == PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT || name == PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION) {
             REQUEST_RENDER("propsApply - highlight")
         } else if (name == PROP_LANDSCAPE_PAGES) {

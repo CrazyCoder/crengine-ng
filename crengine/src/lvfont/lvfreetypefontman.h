@@ -55,6 +55,8 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_MODULE_H
+#include FT_TRUETYPE_DRIVER_H
 
 class LVFreeTypeFontManager: public LVFontManager
 {
@@ -105,6 +107,8 @@ public:
 
     /// sets current gamma level
     virtual void SetHintingMode(hinting_mode_t mode);
+
+    virtual void SetTrueTypeInterpreterVersion(int version);
 
     /// sets current gamma level
     virtual hinting_mode_t GetHintingMode() {

@@ -29,6 +29,7 @@
 #define PROP_FONT_GAMMA              "font.gamma" // currently supported: 0.30..4.00, see crengine/src/lvfont/lvgammatbl.c
 #define PROP_FONT_ANTIALIASING       "font.antialiasing.mode"
 #define PROP_FONT_HINTING            "font.hinting.mode"
+#define PROP_FONT_INTERPRETER        "font.interpeter"
 #define PROP_FONT_SHAPING            "font.shaping.mode"
 #define PROP_FONT_KERNING_ENABLED    "font.kerning.enabled"
 #define PROP_FONT_COLOR              "font.color.default"
