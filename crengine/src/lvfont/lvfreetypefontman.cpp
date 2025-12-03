@@ -759,7 +759,7 @@ LVFreeTypeFontManager::LVFreeTypeFontManager()
         // error
         CRLog::error("Error while initializing freetype library");
     } else {
-        FT_UInt interpreter_version = TT_INTERPRETER_VERSION_40;
+        FT_UInt interpreter_version = TT_INTERPRETER_VERSION_35;
         FT_Property_Set(_library, "truetype", "interpreter-version",
                         &interpreter_version);
     }
