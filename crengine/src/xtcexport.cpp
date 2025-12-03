@@ -316,6 +316,8 @@ XtcExporter::XtcExporter()
     , m_thumbWidth(120)
     , m_thumbHeight(160)
     , m_grayPolicy(GRAY_SPLIT_LIGHT_DARK)
+    , m_startPage(-1)
+    , m_endPage(-1)
     , m_callback(nullptr) {
 }
 
@@ -372,6 +374,12 @@ XtcExporter& XtcExporter::enableThumbnails(bool enable, uint16_t thumbWidth, uin
 
 XtcExporter& XtcExporter::setGrayPolicy(GrayToMonoPolicy policy) {
     m_grayPolicy = policy;
+    return *this;
+}
+
+XtcExporter& XtcExporter::setPageRange(int startPage, int endPage) {
+    m_startPage = startPage;
+    m_endPage = endPage;
     return *this;
 }
 
@@ -547,6 +555,8 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     if (!docView || !stream) {
         return false;
     }
+    // Ensure document is rendered after resize (initializes fonts for page headers)
+    docView->checkRender();
 
     // Save current view state
     int save_dx = docView->GetWidth();
@@ -563,8 +573,26 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         return false;
     }
 
-    int pageCount = pages->length();
+    int totalPageCount = pages->length();
+
+    // Calculate actual page range (0-based)
+    int actualStartPage = (m_startPage >= 0) ? m_startPage : 0;
+    int actualEndPage = (m_endPage >= 0) ? m_endPage : totalPageCount - 1;
+
+    // Clamp to valid range
+    if (actualStartPage < 0) actualStartPage = 0;
+    if (actualEndPage >= totalPageCount) actualEndPage = totalPageCount - 1;
+    if (actualStartPage > actualEndPage) {
+        CRLog::error("XtcExporter: Invalid page range [%d, %d]", actualStartPage, actualEndPage);
+        docView->Resize(save_dx, save_dy);
+        return false;
+    }
+
+    int exportPageCount = actualEndPage - actualStartPage + 1;
     bool hasMetadata = !m_title.empty() || !m_author.empty();
+
+    CRLog::info("XtcExporter: Exporting pages %d-%d (total %d pages)",
+                actualStartPage, actualEndPage, exportPageCount);
 
     // Collect chapters if enabled
     LVArray<xtc_chapter_t> chapters;
@@ -575,9 +603,27 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
             // Ensure page numbers are updated
             docView->updatePageNumbers(toc);
             collectChapters(toc, chapters, m_chapterDepth, 1);
+
+            // Filter chapters to only include those within the exported page range
+            // and adjust page numbers to be relative to the export start
+            LVArray<xtc_chapter_t> filteredChapters;
+            for (int i = 0; i < chapters.length(); i++) {
+                int chapterPage = chapters[i].startPage;
+                // Include chapter if its start page is within the exported range
+                if (chapterPage >= actualStartPage && chapterPage <= actualEndPage) {
+                    xtc_chapter_t adjustedChapter = chapters[i];
+                    // Adjust page numbers to be relative to exported range (0-based in output)
+                    adjustedChapter.startPage = (uint16_t)(chapterPage - actualStartPage);
+                    adjustedChapter.endPage = (uint16_t)(chapterPage - actualStartPage);
+                    filteredChapters.add(adjustedChapter);
+                }
+            }
+            chapters = filteredChapters;
+
             hasChapters = chapters.length() > 0;
             if (hasChapters) {
-                CRLog::info("XtcExporter: Collected %d chapters from TOC", chapters.length());
+                CRLog::info("XtcExporter: Collected %d chapters from TOC (filtered for page range)",
+                            chapters.length());
             }
         }
     }
@@ -586,14 +632,14 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     uint64_t headerSize = sizeof(xtc_header_t);
     uint64_t metadataSize = hasMetadata ? sizeof(xtc_metadata_t) : 0;
     uint64_t chapterSize = hasChapters ? chapters.length() * sizeof(xtc_chapter_t) : 0;
-    uint64_t indexSize = pageCount * sizeof(xtc_page_index_t);
+    uint64_t indexSize = exportPageCount * sizeof(xtc_page_index_t);
 
     // Write placeholder header (will be updated at the end)
     xtc_header_t header;
     memset(&header, 0, sizeof(header));
     header.magic = (m_format == XTC_FORMAT_XTC) ? XTC_MAGIC : XTCH_MAGIC;
     header.version = XTC_VERSION;
-    header.pageCount = (uint16_t)pageCount;
+    header.pageCount = (uint16_t)exportPageCount;
     header.readDirection = m_readDirection;
     header.hasMetadata = hasMetadata ? 1 : 0;
     header.hasThumbnails = 0;
@@ -630,9 +676,9 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     }
 
     // Write placeholder page index (will be updated after pages are written)
-    LVArray<xtc_page_index_t> pageIndex(pageCount, xtc_page_index_t());
+    LVArray<xtc_page_index_t> pageIndex(exportPageCount, xtc_page_index_t());
     uint64_t indexPos = stream->GetPos();
-    for (int i = 0; i < pageCount; i++) {
+    for (int i = 0; i < exportPageCount; i++) {
         xtc_page_index_t entry;
         memset(&entry, 0, sizeof(entry));
         if (stream->Write(&entry, sizeof(entry), NULL) != LVERR_OK) {
@@ -647,22 +693,25 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     // For 1-bit output, render at 2-bit for antialiasing, then convert
     int renderBpp = (bpp == 1) ? 2 : bpp;
 
-    for (int i = 0; i < pageCount; i++) {
+    for (int i = 0; i < exportPageCount; i++) {
         // Progress callback
-        int percent = (i * 100) / pageCount;
+        int percent = (i * 100) / exportPageCount;
         if (percent != lastPercent && m_callback) {
             m_callback->onProgress(percent);
             lastPercent = percent;
         }
 
+        // Calculate source page index
+        int srcPageIdx = actualStartPage + i;
+
         // Render page
         LVGrayDrawBuf drawbuf(m_width, m_height, renderBpp);
         drawbuf.Clear(0xFFFFFF);
-        docView->drawPageTo(&drawbuf, *(*pages)[i], NULL, pageCount, 0);
+        docView->drawPageTo(&drawbuf, *(*pages)[srcPageIdx], NULL, exportPageCount, 0);
 
         // Write page data and record index entry
         if (!writePage(stream.get(), drawbuf, pageIndex[i])) {
-            CRLog::error("XtcExporter: Failed to write page %d", i);
+            CRLog::error("XtcExporter: Failed to write page %d (source page %d)", i, srcPageIdx);
             docView->Resize(save_dx, save_dy);
             return false;
         }
@@ -670,7 +719,7 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
 
     // Update page index with actual offsets
     stream->SetPos(indexPos);
-    for (int i = 0; i < pageCount; i++) {
+    for (int i = 0; i < exportPageCount; i++) {
         if (stream->Write(&pageIndex[i], sizeof(xtc_page_index_t), NULL) != LVERR_OK) {
             docView->Resize(save_dx, save_dy);
             return false;
@@ -684,8 +733,10 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
 
     // Restore view state
     docView->Resize(save_dx, save_dy);
+    docView->clearImageCache();
     docView->goToPage(save_page);
 
-    CRLog::info("XtcExporter: Successfully exported %d pages, %d chapters", pageCount, chapters.length());
+    CRLog::info("XtcExporter: Successfully exported %d pages (source pages %d-%d), %d chapters",
+                exportPageCount, actualStartPage, actualEndPage, chapters.length());
     return true;
 }

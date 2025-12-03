@@ -198,6 +198,10 @@ public:
     /// Set grayscale to monochrome conversion policy (only affects XTC/XTG output)
     XtcExporter& setGrayPolicy(GrayToMonoPolicy policy);
 
+    /// Set page range to export (0-based page numbers, -1 means no limit)
+    /// Exported file will have pages numbered from 0 to (endPage - startPage)
+    XtcExporter& setPageRange(int startPage, int endPage = -1);
+
     /// Set progress callback
     XtcExporter& setProgressCallback(XtcExportCallback* callback);
 
@@ -241,6 +245,8 @@ private:
     uint16_t m_thumbWidth;
     uint16_t m_thumbHeight;
     GrayToMonoPolicy m_grayPolicy;
+    int m_startPage;  ///< First page to export (0-based, -1 = from beginning)
+    int m_endPage;    ///< Last page to export (0-based, inclusive, -1 = to end)
 
     // Metadata
     lString8 m_title;
