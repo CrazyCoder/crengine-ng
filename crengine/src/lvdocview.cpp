@@ -1654,9 +1654,16 @@ bool LVDocView::exportXtbFile(const lChar32* fname, int width, int height, int b
     
     // Resize to target dimensions
     Resize(width, height);
-    
+
+    // CRITICAL: Re-render document for new size before accessing pages.
+    // Resize() marks document as needing re-render but doesn't render immediately.
+    // If we access pages without re-rendering, and something triggers checkRender()
+    // during drawing (e.g., GetFullHeight() called from drawPageHeader when status
+    // bar is enabled), the page list will be cleared mid-iteration, causing crashes.
+    checkRender();
+
     LVRendPageList& pages = m_pages;
-    
+
     // Extract directory path from output filename
     lString8 outPath(fname);
     int pathEnd = -1;
@@ -1688,6 +1695,7 @@ bool LVDocView::exportXtbFile(const lChar32* fname, int width, int height, int b
         LVGrayDrawBuf cover(width, height, renderBpp);
         lvRect coverRc(0, 0, width, height);
         cover.Clear(0xFFFFFF);
+        cover.setDitherImages(true);
         drawCoverTo(&cover, coverRc);
         
         if (dump) {
@@ -1714,11 +1722,11 @@ bool LVDocView::exportXtbFile(const lChar32* fname, int width, int height, int b
         int renderBpp = (bits == 1) ? 2 : bits;
         LVGrayDrawBuf drawbuf(width, height, renderBpp);
         drawbuf.Clear(0xFFFFFF);
+        drawbuf.setDitherImages(true);
         drawPageTo(&drawbuf, *pages[i], NULL, pages.length(), 0);
         _pos = pages[i]->start;
         _page = i;
-        Draw(drawbuf, -1, _page, true);
-        
+
         if (dump) {
             char filename[256];
             snprintf(filename, sizeof(filename), "%s%04d.bmp", dirPath.c_str(), pageNum);
@@ -2306,7 +2314,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
             texty = text_top + (gpos - thinw - text_top - m_infoFont->getHeight() + 1) / 2;
             break;
         case PAGE_HEADER_POS_BOTTOM:
-            text_top = gpos + thinw;
+            text_top = gpos + thinw + 2; // TODO: adjustable margin from bottom
             texty = text_top + (info.bottom - HEADER_MARGIN - text_top - m_infoFont->getHeight() + 1) / 2;
             break;
         default:
@@ -2404,7 +2412,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
             // pageinfo << " ";
             piw = m_infoFont->getTextWidth(pageinfo.c_str(), pageinfo.length());
             // TODO: adjustable margins from bottom right corner
-            m_infoFont->DrawTextString(drawbuf, info.right - piw - 5, texty + 2,
+            m_infoFont->DrawTextString(drawbuf, info.right - piw - 5, texty,
                                        pageinfo.c_str(), pageinfo.length(), U' ', NULL, false);
             info.right -= piw + info.height() / 2;
         }

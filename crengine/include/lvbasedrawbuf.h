@@ -120,7 +120,7 @@ public:
             , _data(NULL)
             , _hidePartialGlyphs(true)
             , _invertImages(false)
-            , _ditherImages(false)
+            , _ditherImages(true) // for 1-bit and 2-bit e-ink displays
             , _smoothImages(false)
             , _drawnImagesCount(0)
             , _drawnImagesSurface(0) { }
