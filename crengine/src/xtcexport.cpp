@@ -491,7 +491,7 @@ int XtcExporter::collectChapters(LVTocItem* item, LVArray<xtc_chapter_t>& chapte
 
         // Get page number (already calculated by LVDocView)
         chapter.startPage = (uint16_t)item->getPage();
-        chapter.endPage = chapter.startPage;  // Simplified: same page for start/end
+        chapter.endPage = chapter.startPage + 1;  // Simplified: +1 page
 
         chapters.add(chapter);
         count++;
@@ -555,16 +555,22 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     if (!docView || !stream) {
         return false;
     }
-    // Ensure document is rendered after resize (initializes fonts for page headers)
-    docView->checkRender();
-
     // Save current view state
     int save_dx = docView->GetWidth();
     int save_dy = docView->GetHeight();
     int save_page = docView->getCurPage();
+    lUInt32 old_flags = docView->getPageHeaderInfo();
+    docView->setPageHeaderInfo(old_flags & ~(PGHDR_CLOCK | PGHDR_BATTERY));
 
     // Resize to target dimensions
     docView->Resize(m_width, m_height);
+
+    // CRITICAL: Re-render document for new size before accessing pages.
+    // Resize() marks document as needing re-render but doesn't render immediately.
+    // If we access pages without re-rendering, and something triggers checkRender()
+    // during drawing (e.g., GetFullHeight() called from drawPageHeader when status
+    // bar is enabled), the page list will be cleared mid-iteration, causing crashes.
+    docView->checkRender();
 
     // Get page list
     LVRendPageList* pages = docView->getPageList();
@@ -707,6 +713,7 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         // Render page
         LVGrayDrawBuf drawbuf(m_width, m_height, renderBpp);
         drawbuf.Clear(0xFFFFFF);
+        drawbuf.setDitherImages(true);
         docView->drawPageTo(&drawbuf, *(*pages)[srcPageIdx], NULL, exportPageCount, 0);
 
         // Write page data and record index entry
@@ -732,6 +739,7 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     }
 
     // Restore view state
+    docView->setPageHeaderInfo(old_flags);
     docView->Resize(save_dx, save_dy);
     docView->clearImageCache();
     docView->goToPage(save_page);

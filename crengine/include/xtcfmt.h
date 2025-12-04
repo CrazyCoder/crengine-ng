@@ -158,10 +158,12 @@ typedef struct
     char chapterName[80];  ///< Chapter name (UTF-8, null-terminated)
     uint16_t startPage;    ///< Start page (0-based)
     uint16_t endPage;      ///< End page (0-based, inclusive)
-    uint32_t reserved;     ///< Reserved (zero-filled)
+    uint32_t reserved1;    ///< Reserved 1 (zero-filled)
+    uint32_t reserved2;    ///< Reserved 2 (zero-filled)
+    uint32_t reserved3;    ///< Reserved 3 (zero-filled)
 } XTC_PACKED xtc_chapter_t;
 
-static_assert(sizeof(xtc_chapter_t) == 88, "xtc_chapter_t must be 88 bytes");
+static_assert(sizeof(xtc_chapter_t) == 96, "xtc_chapter_t must be 96 bytes");
 
 // =============================================================================
 // XTC Page Index Entry (16 bytes per page)
