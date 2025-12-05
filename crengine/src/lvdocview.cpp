@@ -2214,6 +2214,9 @@ void LVDocView::setPageHeaderOverride(lString32 s) {
     clearImageCache();
 }
 
+// a gap from the corners of the screeen when the device has rounded screen corners
+#define CORNER_GAP 5
+
 /// draw page header to buffer
 void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
                                int pageIndex, lUInt32 phi, int pageCount) {
@@ -2412,7 +2415,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
             // pageinfo << " ";
             piw = m_infoFont->getTextWidth(pageinfo.c_str(), pageinfo.length());
             // TODO: adjustable margins from bottom right corner
-            m_infoFont->DrawTextString(drawbuf, info.right - piw - 5, texty,
+            m_infoFont->DrawTextString(drawbuf, info.right - piw - CORNER_GAP, texty,
                                        pageinfo.c_str(), pageinfo.length(), U' ', NULL, false);
             info.right -= piw + info.height() / 2;
         }
@@ -2462,7 +2465,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     drawbuf->SetClipRect(&newcr);
     text = fitTextWidthWithEllipsis(text, m_infoFont, newcr.width());
     if (!text.empty()) {
-        m_infoFont->DrawTextString(drawbuf, info.left, texty, text.c_str(),
+        m_infoFont->DrawTextString(drawbuf, info.left + CORNER_GAP, texty, text.c_str(),
                                    text.length(), U' ', NULL, false);
     }
     drawbuf->SetClipRect(&oldcr);
