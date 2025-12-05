@@ -75,7 +75,7 @@ bool XtgWriter::write(LVStream* stream, LVGrayDrawBuf& buf, GrayToMonoPolicy gra
     header.colorMode = 0;
     header.compression = 0;
     header.dataSize = dataSize;
-    header.md5 = 0;  // Optional, not computed
+    header.md5 = 0; // Optional, not computed
 
     if (stream->Write(&header, sizeof(header), NULL) != LVERR_OK)
         return false;
@@ -223,7 +223,7 @@ bool XthWriter::write(LVStream* stream, LVGrayDrawBuf& buf) {
     // This matches the JavaScript reference implementation in XthSample.html
     // LVGrayDrawBuf: 0=black, 1=dark, 2=light, 3=white
     // Mapping: 0->3, 1->1, 2->2, 3->0
-    static const uint8_t grayToXth[4] = {3, 1, 2, 0};
+    static const uint8_t grayToXth[4] = { 3, 1, 2, 0 };
 
     // Helper lambda to get 2-bit XTH pixel value at (x, y)
     auto getPixelValue = [&](int x, int y) -> uint8_t {
@@ -244,16 +244,21 @@ bool XthWriter::write(LVStream* stream, LVGrayDrawBuf& buf) {
             // 4-bit: quantize to 4 levels then apply LUT
             uint8_t v4 = (srcRow[x] >> 4) & 0x0F;
             uint8_t gray4;
-            if (v4 < 4) gray4 = 0;       // black
-            else if (v4 < 8) gray4 = 1;  // dark gray
-            else if (v4 < 12) gray4 = 2; // light gray
-            else gray4 = 3;              // white
+            if (v4 < 4)
+                gray4 = 0; // black
+            else if (v4 < 8)
+                gray4 = 1; // dark gray
+            else if (v4 < 12)
+                gray4 = 2; // light gray
+            else
+                gray4 = 3; // white
             v2 = grayToXth[gray4];
         } else if (srcBpp == 8) {
             // 8-bit: quantize to 4 levels then apply LUT
             uint8_t v8 = srcRow[x];
             uint8_t gray4;
-            if (v8 < 64)                gray4 = 0; // black
+            if (v8 < 64)
+                gray4 = 0; // black
             else if (v8 < 128)
                 gray4 = 1; // dark gray
             else if (v8 < 192)
@@ -450,25 +455,25 @@ static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp
 
     // BMP file header (14 bytes)
     unsigned char fileHeader[14] = {
-        'B', 'M',           // Signature
-        0, 0, 0, 0,         // File size (filled below)
-        0, 0, 0, 0,         // Reserved
-        0, 0, 0, 0          // Offset to pixel data (filled below)
+        'B', 'M',   // Signature
+        0, 0, 0, 0, // File size (filled below)
+        0, 0, 0, 0, // Reserved
+        0, 0, 0, 0  // Offset to pixel data (filled below)
     };
 
     // BMP info header (40 bytes)
     unsigned char infoHeader[40] = {
-        40, 0, 0, 0,        // Info header size
-        0, 0, 0, 0,         // Width (filled below)
-        0, 0, 0, 0,         // Height (filled below)
-        1, 0,               // Planes
-        0, 0,               // Bits per pixel (filled below)
-        0, 0, 0, 0,         // Compression (0 = none)
-        0, 0, 0, 0,         // Image size (0 for uncompressed)
-        0, 0, 0, 0,         // X pixels per meter
-        0, 0, 0, 0,         // Y pixels per meter
-        0, 0, 0, 0,         // Colors used
-        0, 0, 0, 0          // Important colors
+        40, 0, 0, 0, // Info header size
+        0, 0, 0, 0,  // Width (filled below)
+        0, 0, 0, 0,  // Height (filled below)
+        1, 0,        // Planes
+        0, 0,        // Bits per pixel (filled below)
+        0, 0, 0, 0,  // Compression (0 = none)
+        0, 0, 0, 0,  // Image size (0 for uncompressed)
+        0, 0, 0, 0,  // X pixels per meter
+        0, 0, 0, 0,  // Y pixels per meter
+        0, 0, 0, 0,  // Colors used
+        0, 0, 0, 0   // Important colors
     };
 
     // Fill in file header fields
@@ -494,7 +499,7 @@ static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp
     // Write palette for grayscale images
     if (paletteSize > 0) {
         int numColors = 1 << outputBpp;
-        unsigned char palette[1024] = {0}; // Max 256 colors * 4 bytes
+        unsigned char palette[1024] = { 0 }; // Max 256 colors * 4 bytes
         for (int i = 0; i < numColors; i++) {
             int gray = (i * 255) / (numColors - 1);
             palette[i * 4 + 0] = gray; // Blue
@@ -544,7 +549,7 @@ static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp
             // 2-bit pixels are packed 4 per byte: pixel 0 at bits 6-7, pixel 1 at bits 4-5, etc.
             // 4-bit pixels are packed 2 per byte: pixel 0 at bits 4-7, pixel 1 at bits 0-3
             for (int x = 0; x < width; x++) {
-                int shift2bit = 6 - ((x & 3) << 1);  // shift: 6, 4, 2, 0 for pixels 0, 1, 2, 3
+                int shift2bit = 6 - ((x & 3) << 1); // shift: 6, 4, 2, 0 for pixels 0, 1, 2, 3
                 uint8_t pixel2bit = (srcRow[x >> 2] >> shift2bit) & 0x03;
 
                 // Expand 2-bit (0-3) to 4-bit (0-15) by duplicating bits
@@ -570,7 +575,7 @@ static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp
             int x = 0;
             for (; x + 1 < width; x += 2) {
                 // Extract high nibbles and combine
-                uint8_t hi = (uint8_t)(srcRow[x] & 0xF0);          // already high nibble
+                uint8_t hi = (uint8_t)(srcRow[x] & 0xF0);            // already high nibble
                 uint8_t lo = (uint8_t)((srcRow[x + 1] & 0xF0) >> 4); // move to low nibble
                 rowBuffer[dstIndex++] = (uint8_t)(hi | lo);
             }
@@ -767,9 +772,9 @@ bool XtcExporter::exportDocument(LVDocView* docView, const lChar32* filename) {
             }
         }
         if (pathEnd >= 0) {
-            m_dumpDir = outPath.substr(0, pathEnd + 1);  // Include trailing separator
+            m_dumpDir = outPath.substr(0, pathEnd + 1); // Include trailing separator
         } else {
-            m_dumpDir = lString8("./");  // Use current directory
+            m_dumpDir = lString8("./"); // Use current directory
         }
     }
 
@@ -928,7 +933,19 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     int bpp = (m_format == XTC_FORMAT_XTC) ? 1 : 2;
     // For 1-bit output, render at 2-bit for antialiasing, then convert
     int renderBpp = (bpp == 1) ? 2 : bpp;
-    int dumpedCount = 0;  // Track number of BMP images dumped
+    int dumpedCount = 0; // Track number of BMP images dumped
+
+    // Render page - account for rotation swapping internal dimensions
+    // When rotation is 90/270, Resize() swaps m_dx/m_dy internally,
+    // so we need to create the buffer at the swapped dimensions to match
+#if CR_INTERNAL_PAGE_ORIENTATION == 1
+    cr_rotate_angle_t angle = docView->GetRotateAngle();
+    bool isLandscape = (angle == CR_ROTATE_ANGLE_90 || angle == CR_ROTATE_ANGLE_270);
+    bool showCover = docView->getShowCover();
+#else
+    int bufWidth = m_width;
+    int bufHeight = m_height;
+#endif
 
     for (int i = 0; i < exportPageCount; i++) {
         // Progress callback
@@ -941,22 +958,13 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         // Calculate source page index
         int srcPageIdx = actualStartPage + i;
 
-        // Render page - account for rotation swapping internal dimensions
-        // When rotation is 90/270, Resize() swaps m_dx/m_dy internally,
-        // so we need to create the buffer at the swapped dimensions to match
-#if CR_INTERNAL_PAGE_ORIENTATION == 1
-        cr_rotate_angle_t angle = docView->GetRotateAngle();
-        bool swapped = (angle == CR_ROTATE_ANGLE_90 || angle == CR_ROTATE_ANGLE_270);
         // Skip rotation for cover page (srcPageIdx==0) at 90/270 angles
         // to preserve portrait cover images at full screen size
-        bool isCoverPage = (srcPageIdx == 0 && docView->getShowCover());
-        bool skipRotation = isCoverPage && swapped;
-        int bufWidth = (swapped && !skipRotation) ? m_height : m_width;
-        int bufHeight = (swapped && !skipRotation) ? m_width : m_height;
-#else
-        int bufWidth = m_width;
-        int bufHeight = m_height;
-#endif
+        bool isCoverPage = (srcPageIdx == 0 && showCover);
+        bool skipRotation = isCoverPage && isLandscape;
+        int bufWidth = (isLandscape && !skipRotation) ? m_height : m_width;
+        int bufHeight = (isLandscape && !skipRotation) ? m_width : m_height;
+
         LVGrayDrawBuf drawbuf(bufWidth, bufHeight, renderBpp);
         drawbuf.Clear(0xFFFFFF);
         drawbuf.setDitherImages(true);
