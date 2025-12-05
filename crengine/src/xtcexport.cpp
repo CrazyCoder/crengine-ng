@@ -887,7 +887,8 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     header.hasChapters = hasChapters ? 1 : 0;
     header.currentPage = 0;
     header.metadataOffset = hasMetadata ? headerSize : 0;
-    // Chapters are stored after metadata (chapter offset is in metadata.chapterCount as count)
+    // Chapters are stored after metadata, location defined by chapterOffset
+    header.chapterOffset = hasChapters ? (headerSize + metadataSize) : 0;
     // Page index follows metadata and chapters
     header.indexOffset = headerSize + metadataSize + chapterSize;
     header.dataOffset = headerSize + metadataSize + chapterSize + indexSize;

@@ -95,7 +95,7 @@ typedef struct
 static_assert(sizeof(xtg_header_t) == 22, "xtg_header_t must be 22 bytes");
 
 // =============================================================================
-// XTC Container Header (48 bytes)
+// XTC Container Header (56 bytes)
 // =============================================================================
 
 /**
@@ -119,9 +119,10 @@ typedef struct
     uint64_t indexOffset;     ///< Offset to page index table
     uint64_t dataOffset;      ///< Offset to page data area
     uint64_t thumbOffset;     ///< Offset to thumbnail area
+    uint64_t chapterOffset;   ///< Offset to chapter section
 } XTC_PACKED xtc_header_t;
 
-static_assert(sizeof(xtc_header_t) == 48, "xtc_header_t must be 48 bytes");
+static_assert(sizeof(xtc_header_t) == 56, "xtc_header_t must be 56 bytes");
 
 // =============================================================================
 // XTC Metadata Structure (256 bytes)
