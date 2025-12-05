@@ -306,7 +306,7 @@ bool XthWriter::write(LVStream* stream, LVGrayDrawBuf& buf) {
 // =============================================================================
 
 XtcExporter::XtcExporter()
-    : m_format(XTC_FORMAT_XTCH)
+    : m_format(XTC_FORMAT_XTC)
     , m_width(480)
     , m_height(800)
     , m_readDirection(XTC_DIR_LTR)
@@ -491,7 +491,7 @@ int XtcExporter::collectChapters(LVTocItem* item, LVArray<xtc_chapter_t>& chapte
 
         // Get page number (already calculated by LVDocView)
         chapter.startPage = (uint16_t)item->getPage();
-        chapter.endPage = chapter.startPage + 1;  // Simplified: +1 page
+        chapter.endPage = chapter.startPage;  // Simplified: same as startPage
 
         chapters.add(chapter);
         count++;
