@@ -24,6 +24,7 @@
 #include <lvtocitem.h>
 #include <crlog.h>
 #include <cstring>
+#include <cstdio>
 #include <ctime>
 
 // =============================================================================
@@ -252,10 +253,13 @@ bool XthWriter::write(LVStream* stream, LVGrayDrawBuf& buf) {
             // 8-bit: quantize to 4 levels then apply LUT
             uint8_t v8 = srcRow[x];
             uint8_t gray4;
-            if (v8 < 64) gray4 = 0;       // black
-            else if (v8 < 128) gray4 = 1; // dark gray
-            else if (v8 < 192) gray4 = 2; // light gray
-            else gray4 = 3;               // white
+            if (v8 < 64)                gray4 = 0; // black
+            else if (v8 < 128)
+                gray4 = 1; // dark gray
+            else if (v8 < 192)
+                gray4 = 2; // light gray
+            else
+                gray4 = 3; // white
             v2 = grayToXth[gray4];
         }
         return v2;
@@ -318,6 +322,7 @@ XtcExporter::XtcExporter()
     , m_grayPolicy(GRAY_SPLIT_LIGHT_DARK)
     , m_startPage(-1)
     , m_endPage(-1)
+    , m_dumpImagesLimit(0)
     , m_callback(nullptr) {
 }
 
@@ -342,7 +347,7 @@ XtcExporter& XtcExporter::setMetadata(const lString8& title, const lString8& aut
 }
 
 XtcExporter& XtcExporter::setMetadata(const lString8& title, const lString8& author,
-                                       const lString8& publisher, const lString8& language) {
+                                      const lString8& publisher, const lString8& language) {
     m_title = title;
     m_author = author;
     m_publisher = publisher;
@@ -388,6 +393,207 @@ XtcExporter& XtcExporter::setProgressCallback(XtcExportCallback* callback) {
     return *this;
 }
 
+XtcExporter& XtcExporter::dumpImages(int limit) {
+    m_dumpImagesLimit = limit;
+    return *this;
+}
+
+// =============================================================================
+// BMP Debug Dump Helper
+// =============================================================================
+
+/// Helper function to write a 32-bit little-endian value to a buffer at offset
+static inline void writeBmpLE32(unsigned char* buf, int offset, uint32_t value) {
+    buf[offset + 0] = value & 0xFF;
+    buf[offset + 1] = (value >> 8) & 0xFF;
+    buf[offset + 2] = (value >> 16) & 0xFF;
+    buf[offset + 3] = (value >> 24) & 0xFF;
+}
+
+/// Helper function to write a 16-bit little-endian value to a buffer at offset
+static inline void writeBmpLE16(unsigned char* buf, int offset, uint16_t value) {
+    buf[offset + 0] = value & 0xFF;
+    buf[offset + 1] = (value >> 8) & 0xFF;
+}
+
+/// Save LVGrayDrawBuf as BMP file for debugging
+/// @param filename Output filename (UTF-8)
+/// @param buf Source grayscale buffer
+/// @param desiredBpp 0 = use buf bpp; otherwise force output bpp (1 or buf bpp/4bpp)
+/// @param grayPolicy Used only when converting 2bpp -> 1bpp
+static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp = 0,
+                        GrayToMonoPolicy grayPolicy = GRAY_SPLIT_LIGHT_DARK) {
+    int width = buf.GetWidth();
+    int height = buf.GetHeight();
+    int bpp = buf.GetBitsPerPixel();
+
+    // For 2-bit images, use 4-bit indexed BMP for broad compatibility (BMP doesn't support true 2-bpp)
+    int outputBpp;
+    if (desiredBpp == 1) {
+        outputBpp = 1;
+    } else {
+        outputBpp = (bpp == 2) ? 4 : bpp;
+    }
+
+    // Calculate row size (must be multiple of 4 bytes)
+    int rowSize = ((width * outputBpp + 31) / 32) * 4;
+    int imageSize = rowSize * height;
+
+    // Calculate palette size for grayscale images
+    int paletteSize = 0;
+    if (outputBpp <= 8) {
+        paletteSize = (1 << outputBpp) * 4; // 4 bytes per color (BGRA)
+    }
+
+    int fileSize = 54 + paletteSize + imageSize;
+    int pixelDataOffset = 54 + paletteSize;
+
+    // BMP file header (14 bytes)
+    unsigned char fileHeader[14] = {
+        'B', 'M',           // Signature
+        0, 0, 0, 0,         // File size (filled below)
+        0, 0, 0, 0,         // Reserved
+        0, 0, 0, 0          // Offset to pixel data (filled below)
+    };
+
+    // BMP info header (40 bytes)
+    unsigned char infoHeader[40] = {
+        40, 0, 0, 0,        // Info header size
+        0, 0, 0, 0,         // Width (filled below)
+        0, 0, 0, 0,         // Height (filled below)
+        1, 0,               // Planes
+        0, 0,               // Bits per pixel (filled below)
+        0, 0, 0, 0,         // Compression (0 = none)
+        0, 0, 0, 0,         // Image size (0 for uncompressed)
+        0, 0, 0, 0,         // X pixels per meter
+        0, 0, 0, 0,         // Y pixels per meter
+        0, 0, 0, 0,         // Colors used
+        0, 0, 0, 0          // Important colors
+    };
+
+    // Fill in file header fields
+    writeBmpLE32(fileHeader, 2, fileSize);
+    writeBmpLE32(fileHeader, 10, pixelDataOffset);
+
+    // Fill in info header fields
+    writeBmpLE32(infoHeader, 4, width);
+    writeBmpLE32(infoHeader, 8, height);
+    writeBmpLE16(infoHeader, 14, outputBpp);
+
+    // Open file for writing
+    LVStreamRef stream = LVOpenFileStream(filename, LVOM_WRITE);
+    if (!stream)
+        return false;
+
+    // Write headers
+    if (stream->Write(fileHeader, 14, NULL) != LVERR_OK)
+        return false;
+    if (stream->Write(infoHeader, 40, NULL) != LVERR_OK)
+        return false;
+
+    // Write palette for grayscale images
+    if (paletteSize > 0) {
+        int numColors = 1 << outputBpp;
+        unsigned char palette[1024] = {0}; // Max 256 colors * 4 bytes
+        for (int i = 0; i < numColors; i++) {
+            int gray = (i * 255) / (numColors - 1);
+            palette[i * 4 + 0] = gray; // Blue
+            palette[i * 4 + 1] = gray; // Green
+            palette[i * 4 + 2] = gray; // Red
+            palette[i * 4 + 3] = 0;    // Reserved
+        }
+        if (stream->Write(palette, paletteSize, NULL) != LVERR_OK)
+            return false;
+    }
+
+    // Write pixel data (BMP stores rows bottom-to-top)
+    unsigned char* rowBuffer = new unsigned char[rowSize];
+    for (int y = height - 1; y >= 0; y--) {
+        // Clear destination row to avoid carrying over nibbles from previous rows
+        memset(rowBuffer, 0, rowSize);
+        const unsigned char* srcRow = buf.GetScanLine(y);
+
+        if (bpp == 2 && outputBpp == 1) {
+            // Convert 2-bit packed row to 1-bit packed row, with policy handling
+            // 2-bit pixels packed MSB-first: x-> shift2bit = 6 - ((x & 3) * 2)
+            // 1-bit pixels packed MSB-first: set bit (7 - (x & 7)) in destination byte
+            for (int x = 0; x < width; x++) {
+                int shift2bit = 6 - ((x & 3) << 1);
+                uint8_t v2 = (srcRow[x >> 2] >> shift2bit) & 0x03; // 0..3
+                int mono = 0;
+                switch (grayPolicy) {
+                    case GRAY_SPLIT_LIGHT_DARK:
+                        // light gray + white -> 1 (white), dark gray + black -> 0 (black)
+                        mono = (v2 >= 2) ? 1 : 0;
+                        break;
+                    case GRAY_ALL_TO_WHITE:
+                        // everything except pure black becomes white
+                        mono = (v2 != 0) ? 1 : 0;
+                        break;
+                    case GRAY_ALL_TO_BLACK:
+                        // only pure white becomes white
+                        mono = (v2 == 3) ? 1 : 0;
+                        break;
+                }
+                if (mono) {
+                    rowBuffer[x >> 3] |= (uint8_t)(0x80 >> (x & 7));
+                }
+            }
+        } else if (bpp == 2 && outputBpp == 4) {
+            // Convert 2-bit to 4-bit: expand each 2-bit pixel to 4-bit
+            // 2-bit pixels are packed 4 per byte: pixel 0 at bits 6-7, pixel 1 at bits 4-5, etc.
+            // 4-bit pixels are packed 2 per byte: pixel 0 at bits 4-7, pixel 1 at bits 0-3
+            for (int x = 0; x < width; x++) {
+                int shift2bit = 6 - ((x & 3) << 1);  // shift: 6, 4, 2, 0 for pixels 0, 1, 2, 3
+                uint8_t pixel2bit = (srcRow[x >> 2] >> shift2bit) & 0x03;
+
+                // Expand 2-bit (0-3) to 4-bit (0-15) by duplicating bits
+                // 0b00 -> 0b0000, 0b01 -> 0b0101, 0b10 -> 0b1010, 0b11 -> 0b1111
+                uint8_t pixel4bit = pixel2bit | (pixel2bit << 2);
+
+                // Pack into 4-bit format
+                int shift4bit = (x & 1) ? 0 : 4;
+                unsigned char& dstByte = rowBuffer[x >> 1];
+                if (shift4bit == 4) {
+                    // Set high nibble, preserve low nibble written by previous pixel in this row
+                    dstByte = (unsigned char)((dstByte & 0x0F) | (pixel4bit << 4));
+                } else {
+                    // Set low nibble, preserve high nibble
+                    dstByte = (unsigned char)((dstByte & 0xF0) | pixel4bit);
+                }
+            }
+        } else if (bpp == 4 && outputBpp == 4) {
+            // Source buffer stores one byte per pixel with the meaningful value in the high nibble (0xF0)
+            // BMP 4bpp expects two pixels per byte: first pixel in high nibble, second in low nibble.
+            // So, repack two source pixels (high nibbles) into one destination byte.
+            int dstIndex = 0;
+            int x = 0;
+            for (; x + 1 < width; x += 2) {
+                // Extract high nibbles and combine
+                uint8_t hi = (uint8_t)(srcRow[x] & 0xF0);          // already high nibble
+                uint8_t lo = (uint8_t)((srcRow[x + 1] & 0xF0) >> 4); // move to low nibble
+                rowBuffer[dstIndex++] = (uint8_t)(hi | lo);
+            }
+            if (x < width) {
+                // Odd width: last pixel goes to high nibble, low nibble stays 0
+                rowBuffer[dstIndex] = (uint8_t)(srcRow[x] & 0xF0);
+            }
+        } else {
+            // For other bit depths, copy directly
+            int srcRowBytes = (bpp <= 2) ? (width * bpp + 7) / 8 : width;
+            memcpy(rowBuffer, srcRow, srcRowBytes);
+        }
+
+        if (stream->Write(rowBuffer, rowSize, NULL) != LVERR_OK) {
+            delete[] rowBuffer;
+            return false;
+        }
+    }
+
+    delete[] rowBuffer;
+    return true;
+}
+
 bool XtcExporter::exportSinglePage(LVGrayDrawBuf& buf, const lChar32* filename) {
     LVStreamRef stream = LVOpenFileStream(filename, LVOM_WRITE);
     if (!stream)
@@ -409,7 +615,7 @@ bool XtcExporter::writeHeader(LVStream* stream, uint16_t pageCount, bool hasChap
     header.pageCount = pageCount;
     header.readDirection = m_readDirection;
     header.hasMetadata = (!m_title.empty() || !m_author.empty()) ? 1 : 0;
-    header.hasThumbnails = 0;  // Not implemented yet
+    header.hasThumbnails = 0; // Not implemented yet
     header.hasChapters = hasChapters ? 1 : 0;
     header.currentPage = 0;
 
@@ -491,7 +697,7 @@ int XtcExporter::collectChapters(LVTocItem* item, LVArray<xtc_chapter_t>& chapte
 
         // Get page number (already calculated by LVDocView)
         chapter.startPage = (uint16_t)item->getPage();
-        chapter.endPage = chapter.startPage;  // Simplified: same as startPage
+        chapter.endPage = chapter.startPage; // Simplified: same as startPage
 
         chapters.add(chapter);
         count++;
@@ -548,6 +754,25 @@ bool XtcExporter::exportDocument(LVDocView* docView, const lChar32* filename) {
         CRLog::error("XtcExporter: Failed to open file for writing");
         return false;
     }
+
+    // Extract directory path from output filename for BMP dumps
+    if (m_dumpImagesLimit != 0) {
+        lString8 outPath = UnicodeToUtf8(lString32(filename));
+        int pathEnd = -1;
+        for (int i = outPath.length() - 1; i >= 0; i--) {
+            char c = outPath[i];
+            if (c == '/' || c == '\\') {
+                pathEnd = i;
+                break;
+            }
+        }
+        if (pathEnd >= 0) {
+            m_dumpDir = outPath.substr(0, pathEnd + 1);  // Include trailing separator
+        } else {
+            m_dumpDir = lString8("./");  // Use current directory
+        }
+    }
+
     return exportDocument(docView, stream);
 }
 
@@ -558,6 +783,9 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     // Save current view state
     int save_dx = docView->GetWidth();
     int save_dy = docView->GetHeight();
+
+    CRLog::info("XtcExporter: Sawing original width/height [%d, %d]", save_dx, save_dy);
+
     int save_page = docView->getCurPage();
     lUInt32 old_flags = docView->getPageHeaderInfo();
     docView->setPageHeaderInfo(old_flags & ~(PGHDR_CLOCK | PGHDR_BATTERY));
@@ -586,8 +814,10 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     int actualEndPage = (m_endPage >= 0) ? m_endPage : totalPageCount - 1;
 
     // Clamp to valid range
-    if (actualStartPage < 0) actualStartPage = 0;
-    if (actualEndPage >= totalPageCount) actualEndPage = totalPageCount - 1;
+    if (actualStartPage < 0)
+        actualStartPage = 0;
+    if (actualEndPage >= totalPageCount)
+        actualEndPage = totalPageCount - 1;
     if (actualStartPage > actualEndPage) {
         CRLog::error("XtcExporter: Invalid page range [%d, %d]", actualStartPage, actualEndPage);
         docView->Resize(save_dx, save_dy);
@@ -698,6 +928,7 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     int bpp = (m_format == XTC_FORMAT_XTC) ? 1 : 2;
     // For 1-bit output, render at 2-bit for antialiasing, then convert
     int renderBpp = (bpp == 1) ? 2 : bpp;
+    int dumpedCount = 0;  // Track number of BMP images dumped
 
     for (int i = 0; i < exportPageCount; i++) {
         // Progress callback
@@ -710,11 +941,48 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         // Calculate source page index
         int srcPageIdx = actualStartPage + i;
 
-        // Render page
-        LVGrayDrawBuf drawbuf(m_width, m_height, renderBpp);
+        // Render page - account for rotation swapping internal dimensions
+        // When rotation is 90/270, Resize() swaps m_dx/m_dy internally,
+        // so we need to create the buffer at the swapped dimensions to match
+#if CR_INTERNAL_PAGE_ORIENTATION == 1
+        cr_rotate_angle_t angle = docView->GetRotateAngle();
+        bool swapped = (angle == CR_ROTATE_ANGLE_90 || angle == CR_ROTATE_ANGLE_270);
+        // Skip rotation for cover page (srcPageIdx==0) at 90/270 angles
+        // to preserve portrait cover images at full screen size
+        bool isCoverPage = (srcPageIdx == 0 && docView->getShowCover());
+        bool skipRotation = isCoverPage && swapped;
+        int bufWidth = (swapped && !skipRotation) ? m_height : m_width;
+        int bufHeight = (swapped && !skipRotation) ? m_width : m_height;
+#else
+        int bufWidth = m_width;
+        int bufHeight = m_height;
+#endif
+        LVGrayDrawBuf drawbuf(bufWidth, bufHeight, renderBpp);
         drawbuf.Clear(0xFFFFFF);
         drawbuf.setDitherImages(true);
+        // Set position for correct page header progress bar
+        docView->SetPos((*pages)[srcPageIdx]->start, false);
         docView->drawPageTo(&drawbuf, *(*pages)[srcPageIdx], NULL, exportPageCount, 0);
+
+        // Apply rotation to get final target dimensions
+#if CR_INTERNAL_PAGE_ORIENTATION == 1
+        if (angle != CR_ROTATE_ANGLE_0 && !skipRotation) {
+            drawbuf.Rotate(angle);
+        }
+#endif
+
+        // Debug: dump page as BMP if enabled
+        if (m_dumpImagesLimit != 0 && (m_dumpImagesLimit < 0 || dumpedCount < m_dumpImagesLimit)) {
+            // Generate filename: page_000.bmp, page_001.bmp, etc.
+            char bmpFilename[512];
+            snprintf(bmpFilename, sizeof(bmpFilename), "%spage_%03d.bmp", m_dumpDir.c_str(), i);
+            if (saveBmpFile(bmpFilename, drawbuf, bpp, m_grayPolicy)) {
+                CRLog::info("XtcExporter: Dumped page %d to %s", i, bmpFilename);
+                dumpedCount++;
+            } else {
+                CRLog::warn("XtcExporter: Failed to dump page %d to %s", i, bmpFilename);
+            }
+        }
 
         // Write page data and record index entry
         if (!writePage(stream.get(), drawbuf, pageIndex[i])) {

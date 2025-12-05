@@ -205,6 +205,10 @@ public:
     /// Set progress callback
     XtcExporter& setProgressCallback(XtcExportCallback* callback);
 
+    /// Enable debug image dumping (saves pages as BMP files alongside export)
+    /// @param limit Number of pages to dump: 0 = disabled (default), -1 = all pages, N = first N pages
+    XtcExporter& dumpImages(int limit);
+
     // =========================================================================
     // Export methods
     // =========================================================================
@@ -247,6 +251,8 @@ private:
     GrayToMonoPolicy m_grayPolicy;
     int m_startPage;  ///< First page to export (0-based, -1 = from beginning)
     int m_endPage;    ///< Last page to export (0-based, inclusive, -1 = to end)
+    int m_dumpImagesLimit;  ///< Number of pages to dump as BMP: 0 = disabled, -1 = all, N = first N
+    lString8 m_dumpDir;     ///< Directory for BMP dump files (set from output filename)
 
     // Metadata
     lString8 m_title;

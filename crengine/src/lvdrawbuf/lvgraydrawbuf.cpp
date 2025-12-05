@@ -343,7 +343,7 @@ void LVGrayDrawBuf::Rotate(cr_rotate_angle_t angle) {
     }
     int newrowsize = _bpp <= 2 ? (_dy * _bpp + 7) / 8 : _dy;
     sz = (newrowsize * _dx);
-    lUInt8* dst = (lUInt8*)calloc(sz, sizeof(*dst));
+    lUInt8* dst = (lUInt8*)calloc(sz + 1, sizeof(*dst));  // +1 for guard byte
     for (int y = 0; y < _dy; y++) {
         lUInt8* src = _data + _rowsize * y;
         int dstx, dsty;
@@ -375,6 +375,9 @@ void LVGrayDrawBuf::Rotate(cr_rotate_angle_t angle) {
     _dx = _dy;
     _dy = tmp;
     _rowsize = newrowsize;
+    // Set guard byte for the rotated buffer
+    if (_ownData)
+        _data[_rowsize * _dy] = GUARD_BYTE;
 }
 
 void LVGrayDrawBuf::Draw(LVImageSourceRef img, int x, int y, int width, int height, bool dither) {
