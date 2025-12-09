@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2025 Xteink                                             *
+ *   Copyright (C) 2025 Serge Baranov                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -27,27 +27,8 @@
 #include <cstdio>
 #include <ctime>
 
-// =============================================================================
-// Helper: Write little-endian values
-// =============================================================================
-
-static inline void writeLE16(uint8_t* buf, uint16_t val) {
-    buf[0] = (uint8_t)(val & 0xFF);
-    buf[1] = (uint8_t)((val >> 8) & 0xFF);
-}
-
-static inline void writeLE32(uint8_t* buf, uint32_t val) {
-    buf[0] = (uint8_t)(val & 0xFF);
-    buf[1] = (uint8_t)((val >> 8) & 0xFF);
-    buf[2] = (uint8_t)((val >> 16) & 0xFF);
-    buf[3] = (uint8_t)((val >> 24) & 0xFF);
-}
-
-static inline void writeLE64(uint8_t* buf, uint64_t val) {
-    for (int i = 0; i < 8; i++) {
-        buf[i] = (uint8_t)((val >> (i * 8)) & 0xFF);
-    }
-}
+// Include for applyFloydSteinbergDither and other dithering utilities
+#include "lvdrawbuf/lvdrawbuf_utils.h"
 
 // =============================================================================
 // XtgWriter Implementation
@@ -325,6 +306,8 @@ XtcExporter::XtcExporter()
     , m_thumbWidth(120)
     , m_thumbHeight(160)
     , m_grayPolicy(GRAY_SPLIT_LIGHT_DARK)
+    , m_imageDitherMode(IMAGE_DITHER_ORDERED)
+    , m_ditheringOptions(nullptr)
     , m_startPage(-1)
     , m_endPage(-1)
     , m_dumpImagesLimit(0)
@@ -332,6 +315,7 @@ XtcExporter::XtcExporter()
 }
 
 XtcExporter::~XtcExporter() {
+    delete m_ditheringOptions;
 }
 
 XtcExporter& XtcExporter::setFormat(XtcExportFormat format) {
@@ -384,6 +368,17 @@ XtcExporter& XtcExporter::enableThumbnails(bool enable, uint16_t thumbWidth, uin
 
 XtcExporter& XtcExporter::setGrayPolicy(GrayToMonoPolicy policy) {
     m_grayPolicy = policy;
+    return *this;
+}
+
+XtcExporter& XtcExporter::setImageDitherMode(ImageDitherMode mode) {
+    m_imageDitherMode = mode;
+    return *this;
+}
+
+XtcExporter& XtcExporter::setDitheringOptions(const DitheringOptions& options) {
+    delete m_ditheringOptions;
+    m_ditheringOptions = new DitheringOptions(options);
     return *this;
 }
 
@@ -788,10 +783,10 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     // Save current view state
     int save_dx = docView->GetWidth();
     int save_dy = docView->GetHeight();
+    int save_pos = docView->GetPos();
 
-    CRLog::info("XtcExporter: Sawing original width/height [%d, %d]", save_dx, save_dy);
-
-    int save_page = docView->getCurPage();
+    CRLog::info("XtcExporter: Saving original width/height [%d, %d]", save_dx, save_dy);
+    
     lUInt32 old_flags = docView->getPageHeaderInfo();
     docView->setPageHeaderInfo(old_flags & ~(PGHDR_CLOCK | PGHDR_BATTERY));
 
@@ -968,7 +963,8 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
 
         LVGrayDrawBuf drawbuf(bufWidth, bufHeight, renderBpp);
         drawbuf.Clear(0xFFFFFF);
-        drawbuf.setDitherImages(true);
+        drawbuf.setImageDitherMode(m_imageDitherMode);
+        drawbuf.setDitheringOptions(m_ditheringOptions);
         // Set position for correct page header progress bar
         docView->SetPos((*pages)[srcPageIdx]->start, false);
         docView->drawPageTo(&drawbuf, *(*pages)[srcPageIdx], NULL, exportPageCount, 0);
@@ -1019,7 +1015,7 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     docView->setPageHeaderInfo(old_flags);
     docView->Resize(save_dx, save_dy);
     docView->clearImageCache();
-    docView->goToPage(save_page);
+    docView->SetPos(save_pos);
 
     CRLog::info("XtcExporter: Successfully exported %d pages (source pages %d-%d), %d chapters",
                 exportPageCount, actualStartPage, actualEndPage, chapters.length());

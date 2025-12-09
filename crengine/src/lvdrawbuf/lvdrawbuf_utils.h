@@ -29,6 +29,7 @@
 #define __LVDRAWBUF_UTILS_H_INCLUDED__
 
 #include <lvtypes.h>
+#include <lvbasedrawbuf.h>  // For DitheringOptions
 
 #define GUARD_BYTE 0xa5
 #define CHECK_GUARD_BYTE                                                                               \
@@ -83,5 +84,26 @@ void ApplyAlphaRGB565(lUInt16& dst, lUInt16 src, lUInt32 alpha);
 void ApplyAlphaGray(lUInt8& dst, lUInt8 src, lUInt32 alpha, int bpp);
 
 //void ApplyAlphaGray8( lUInt8 &dst, lUInt8 src, lUInt8 alpha );
+
+/// Get default dithering options for 1-bit mode
+/// Tuned for e-ink displays: slightly darker, reduced noise
+DitheringOptions getDefault1BitDitheringOptions();
+
+/// Get default dithering options for 2-bit mode
+/// More levels need less aggressive noise reduction
+DitheringOptions getDefault2BitDitheringOptions();
+
+/// Apply Floyd-Steinberg dithering to grayscale buffer and render to destination
+/// @param dst Destination draw buffer
+/// @param dst_x X offset in destination buffer
+/// @param dst_y Y offset in destination buffer
+/// @param grayBuf Input grayscale buffer (1 byte per pixel, 0-255, modified in place)
+/// @param width Image width
+/// @param height Image height
+/// @param targetBpp Target bits per pixel for quantization (1 or 2)
+/// @param options Dithering options (nullptr = use defaults for targetBpp)
+void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
+                               lUInt8* grayBuf, int width, int height, int targetBpp,
+                               const DitheringOptions* options = nullptr);
 
 #endif // __LVDRAWBUF_UTILS_H_INCLUDED__

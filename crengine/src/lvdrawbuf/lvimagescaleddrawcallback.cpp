@@ -114,7 +114,7 @@ int* LVImageScaledDrawCallback::GenNinePatchMap(int src_len, int dst_len, int fr
     return map;
 }
 
-LVImageScaledDrawCallback::LVImageScaledDrawCallback(LVBaseDrawBuf* dstbuf, LVImageSourceRef img, int x, int y, int width, int height, bool dith, bool inv, bool smooth)
+LVImageScaledDrawCallback::LVImageScaledDrawCallback(LVBaseDrawBuf* dstbuf, LVImageSourceRef img, int x, int y, int width, int height, ImageDitherMode dithMode, bool inv, bool smooth)
         : src(img)
         , dst(dstbuf)
         , dst_x(x)
@@ -123,10 +123,12 @@ LVImageScaledDrawCallback::LVImageScaledDrawCallback(LVBaseDrawBuf* dstbuf, LVIm
         , dst_dy(height)
         , xmap(0)
         , ymap(0)
-        , dither(dith)
+        , ditherMode(dithMode)
         , invert(inv)
         , smoothscale(smooth)
-        , decoded(0) {
+        , decoded(0)
+        , fsDecoded(0)
+        , ditheringOptions(nullptr) {
     src_dx = img->GetWidth();
     src_dy = img->GetHeight();
     const CR9PatchInfo* np = img->GetNinePatchInfo();
@@ -158,6 +160,12 @@ LVImageScaledDrawCallback::LVImageScaledDrawCallback(LVBaseDrawBuf* dstbuf, LVIm
         // Byte-sized buffer, we're 32bpp, so, 4 bytes per pixel.
         decoded = new lUInt8[src_dy * (src_dx * 4)];
     }
+    // If Floyd-Steinberg dithering is requested (and not smoothscale which handles its own buffer),
+    // we need to accumulate the full image before applying error diffusion.
+    // fsDecoded stores grayscale values (1 byte per pixel) at destination dimensions.
+    if ((ditherMode == IMAGE_DITHER_FS_1BIT || ditherMode == IMAGE_DITHER_FS_2BIT) && !smoothscale) {
+        fsDecoded = new lUInt8[dst_dy * dst_dx];
+    }
 }
 
 LVImageScaledDrawCallback::~LVImageScaledDrawCallback() {
@@ -167,6 +175,8 @@ LVImageScaledDrawCallback::~LVImageScaledDrawCallback() {
         delete[] ymap;
     if (decoded)
         delete[] decoded;
+    if (fsDecoded)
+        delete[] fsDecoded;
 }
 
 void LVImageScaledDrawCallback::OnStartDecode(LVImageSource*) {
@@ -182,6 +192,46 @@ bool LVImageScaledDrawCallback::OnLineDecoded(LVImageSource*, int y, lUInt32* da
     if (smoothscale) {
         //fprintf( stderr, "Smoothscale l_%d pass\n", y );
         memcpy(decoded + (y * (src_dx * 4)), data, (src_dx * 4));
+        return true;
+    }
+    // For Floyd-Steinberg dithering, we accumulate grayscale values and defer rendering to OnEndDecode
+    if (fsDecoded) {
+        int yy = -1;
+        int yy2 = -1;
+        const lUInt32 rgba_invert = invert ? 0x00FFFFFF : 0;
+        if (ymap) {
+            for (int i = 0; i < dst_dy; i++) {
+                if (ymap[i] == y) {
+                    if (yy == -1)
+                        yy = i;
+                    yy2 = i + 1;
+                }
+            }
+            if (yy == -1)
+                return true;
+        } else {
+            yy = y;
+            yy2 = y + 1;
+        }
+        // Convert RGBA to grayscale and store in fsDecoded buffer
+        for (; yy < yy2; yy++) {
+            lUInt8* fsRow = fsDecoded + (yy * dst_dx);
+            for (int x = 0; x < dst_dx; x++) {
+                lUInt32 cl = data[xmap ? xmap[x] : x];
+                lUInt32 alpha = (cl >> 24) & 0xFF;
+                // Handle transparency: use white background
+                if (alpha == 0xFF) {
+                    cl = invert ? 0x00000000 : 0x00FFFFFF;
+                } else if (alpha != 0) {
+                    // Blend with white background
+                    lUInt32 bg = invert ? 0x00000000 : 0x00FFFFFF;
+                    ApplyAlphaRGB(bg, cl, alpha);
+                    cl = bg;
+                }
+                cl ^= rgba_invert;
+                fsRow[x] = rgbToGray(cl);
+            }
+        }
         return true;
     }
     int yy = -1;
@@ -333,13 +383,13 @@ bool LVImageScaledDrawCallback::OnLineDecoded(LVImageSource*, int y, lUInt32* da
                 }
 
                 lUInt8 dcl;
-                if (dither && bpp < 8) {
+                if (ditherMode == IMAGE_DITHER_ORDERED && bpp < 8) {
 #if (GRAY_INVERSE == 1)
                     dcl = (lUInt8)DitherNBitColor(cl ^ 0xFFFFFF, x, yy, bpp);
 #else
                     dcl = (lUInt8)DitherNBitColor(cl, x, yy, bpp);
 #endif
-                } else if (dither && bpp == 8) {
+                } else if (ditherMode == IMAGE_DITHER_ORDERED && bpp == 8) {
                     dcl = rgbToGray(cl);
                     dcl = dither_o8x8(x, yy, dcl);
                 } else {
@@ -384,7 +434,7 @@ bool LVImageScaledDrawCallback::OnLineDecoded(LVImageSource*, int y, lUInt32* da
                 }
 
                 lUInt32 dcl = 0;
-                if (dither) {
+                if (ditherMode == IMAGE_DITHER_ORDERED) {
 #if (GRAY_INVERSE == 1)
                     dcl = Dither2BitColor(cl ^ rgba_invert, x, yy) ^ 3;
 #else
@@ -421,7 +471,7 @@ bool LVImageScaledDrawCallback::OnLineDecoded(LVImageSource*, int y, lUInt32* da
                 }
 
                 lUInt32 dcl = 0;
-                if (dither) {
+                if (ditherMode == IMAGE_DITHER_ORDERED) {
 #if (GRAY_INVERSE == 1)
                     dcl = Dither1BitColor(cl ^ rgba_invert, x, yy) ^ 1;
 #else
@@ -444,38 +494,58 @@ bool LVImageScaledDrawCallback::OnLineDecoded(LVImageSource*, int y, lUInt32* da
 }
 
 void LVImageScaledDrawCallback::OnEndDecode(LVImageSource* obj, bool) {
-    // If we're not smooth scaling, we're done!
 #ifndef ANDROID
-    if (!smoothscale) {
-        return;
-    }
-
-    // Scale our decoded data...
-    lUInt8* sdata = nullptr;
-    //fprintf( stderr, "Requesting smooth scaling (%dx%d -> %dx%d)\n", src_dx, src_dy, dst_dx, dst_dy );
-    sdata = CRe::qSmoothScaleImage(decoded, src_dx, src_dy, false, dst_dx, dst_dy);
-    if (sdata == nullptr) {
-        // Hu oh... Scaling failed! Return *without* drawing anything!
-        // We skipped map generation, so we can't easily fallback to nearest-neighbor...
-        //fprintf( stderr, "Smooth scaling failed :(\n" );
-        return;
-    }
-
-    // Process as usual, with a bit of a hack to avoid code duplication...
-    smoothscale = false;
-    for (int y = 0; y < dst_dy; y++) {
-        lUInt8* row = sdata + (y * (dst_dx * 4));
-        this->OnLineDecoded(obj, y, (lUInt32*)row);
-    }
-
-    // This prints the unscaled decoded buffer, for debugging purposes ;).
-    /*
-        for (int y=0; y < src_dy; y++) {
-            lUInt8 * row = decoded + (y * (src_dx * 4));
-            this->OnLineDecoded( obj, y, (lUInt32 *) row );
+    // Handle smoothscale post-processing
+    if (smoothscale) {
+        // Scale our decoded data...
+        lUInt8* sdata = nullptr;
+        sdata = CRe::qSmoothScaleImage(decoded, src_dx, src_dy, false, dst_dx, dst_dy);
+        if (sdata == nullptr) {
+            return;
         }
-        */
-    // And now that it's been rendered we can free the scaled buffer (it was allocated by CRe::qSmoothScaleImage).
-    CRe::qSmoothScaleImageFree(sdata);
+        // Check if we need Floyd-Steinberg dithering on the scaled result
+        if (ditherMode == IMAGE_DITHER_FS_1BIT || ditherMode == IMAGE_DITHER_FS_2BIT) {
+            // Convert scaled RGBA to grayscale for F-S processing
+            const lUInt32 rgba_invert = invert ? 0x00FFFFFF : 0;
+            lUInt8* grayBuf = new lUInt8[dst_dy * dst_dx];
+            for (int y = 0; y < dst_dy; y++) {
+                lUInt32* srcRow = (lUInt32*)(sdata + (y * (dst_dx * 4)));
+                lUInt8* dstRow = grayBuf + (y * dst_dx);
+                for (int x = 0; x < dst_dx; x++) {
+                    lUInt32 cl = srcRow[x];
+                    lUInt32 alpha = (cl >> 24) & 0xFF;
+                    if (alpha == 0xFF) {
+                        cl = invert ? 0x00000000 : 0x00FFFFFF;
+                    } else if (alpha != 0) {
+                        lUInt32 bg = invert ? 0x00000000 : 0x00FFFFFF;
+                        ApplyAlphaRGB(bg, cl, alpha);
+                        cl = bg;
+                    }
+                    cl ^= rgba_invert;
+                    dstRow[x] = rgbToGray(cl);
+                }
+            }
+            // Apply F-S and render
+            int targetBpp = (ditherMode == IMAGE_DITHER_FS_1BIT) ? 1 : 2;
+            applyFloydSteinbergDither(dst, dst_x, dst_y, grayBuf, dst_dx, dst_dy, targetBpp, ditheringOptions);
+            delete[] grayBuf;
+        } else {
+            // Process as usual without F-S
+            smoothscale = false;
+            for (int y = 0; y < dst_dy; y++) {
+                lUInt8* row = sdata + (y * (dst_dx * 4));
+                this->OnLineDecoded(obj, y, (lUInt32*)row);
+            }
+        }
+
+        CRe::qSmoothScaleImageFree(sdata);
+        return;
+    }
 #endif
+
+    // Handle Floyd-Steinberg dithering for non-smoothscale case
+    if (fsDecoded) {
+        int targetBpp = (ditherMode == IMAGE_DITHER_FS_1BIT) ? 1 : 2;
+        applyFloydSteinbergDither(dst, dst_x, dst_y, fsDecoded, dst_dx, dst_dy, targetBpp, ditheringOptions);
+    }
 }

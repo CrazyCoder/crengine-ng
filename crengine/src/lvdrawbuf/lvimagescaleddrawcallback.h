@@ -25,6 +25,7 @@
 #include <lvbasedrawbuf.h>
 
 #include "../lvimg/lvimagedecodercallback.h"
+#include "lvdrawbuf_utils.h"
 
 class LVImageScaledDrawCallback: public LVImageDecoderCallback
 {
@@ -39,19 +40,26 @@ private:
     int src_dy;
     int* xmap;
     int* ymap;
-    bool dither;
+    ImageDitherMode ditherMode;
     bool invert;
     bool smoothscale;
     lUInt8* decoded;
+    lUInt8* fsDecoded;      // Buffer for Floyd-Steinberg dithering
     bool isNinePatch;
+    const DitheringOptions* ditheringOptions;  // Optional custom dithering options
 public:
     static int* GenMap(int src_len, int dst_len);
     static int* GenNinePatchMap(int src_len, int dst_len, int frame1, int frame2);
-    LVImageScaledDrawCallback(LVBaseDrawBuf* dstbuf, LVImageSourceRef img, int x, int y, int width, int height, bool dith, bool inv, bool smooth);
+    LVImageScaledDrawCallback(LVBaseDrawBuf* dstbuf, LVImageSourceRef img, int x, int y, int width, int height, ImageDitherMode dithMode, bool inv, bool smooth);
     virtual ~LVImageScaledDrawCallback();
     virtual void OnStartDecode(LVImageSource*);
     virtual bool OnLineDecoded(LVImageSource*, int y, lUInt32* data);
     virtual void OnEndDecode(LVImageSource* obj, bool);
+
+    /// Set custom dithering options for Floyd-Steinberg modes
+    /// @param options Pointer to options (caller owns memory, must remain valid during decode)
+    ///                Pass nullptr to use defaults
+    void setDitheringOptions(const DitheringOptions* options) { ditheringOptions = options; }
 };
 
 #endif // __LVIMAGESCALEDDRAWCALLBACK_H_INCLUDED__

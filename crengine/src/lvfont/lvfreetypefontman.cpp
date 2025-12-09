@@ -676,7 +676,7 @@ bool LVFreeTypeFontManager::initSystemFonts() {
                     fontFamily,
                     face,
                     index);
-            CRLog::debug("FONTCONFIG: Font family:%s style:%s weight:%d slant:%d spacing:%d file:%s", family, style, weight, slant, spacing, s);
+            CRLog::trace("FONTCONFIG: Font family:%s style:%s weight:%d slant:%d spacing:%d file:%s", family, style, weight, slant, spacing, s);
             if (_cache.findDuplicate(&def)) {
                 CRLog::debug("is duplicate, skipping");
                 continue;

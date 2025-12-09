@@ -384,7 +384,8 @@ void LVGrayDrawBuf::Draw(LVImageSourceRef img, int x, int y, int width, int heig
     //fprintf( stderr, "LVGrayDrawBuf::Draw( img(%d, %d), %d, %d, %d, %d\n", img->GetWidth(), img->GetHeight(), x, y, width, height );
     if (width <= 0 || height <= 0)
         return;
-    LVImageScaledDrawCallback drawcb(this, img, x, y, width, height, _ditherImages, _invertImages, _smoothImages);
+    LVImageScaledDrawCallback drawcb(this, img, x, y, width, height, _imageDitherMode, _invertImages, _smoothImages);
+    drawcb.setDitheringOptions(_ditheringOptions);
     img->Decode(&drawcb);
 
     _drawnImagesCount++;
@@ -1293,6 +1294,16 @@ void LVGrayDrawBuf::DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, i
     bool linearInterpolation = (srcdx <= dx || srcdy <= dy);
     //CRLog::trace("LVGrayDrawBuf::DrawRescaled bpp=%d %dx%d srcbpp=%d (%d,%d) (%d,%d)", _bpp, GetWidth(), GetHeight(), src->GetBitsPerPixel(), x, y, dx, dy);
     CHECK_GUARD_BYTE;
+
+    // Check if Floyd-Steinberg dithering is requested for 1bpp or 2bpp
+    bool useFloydSteinberg = (_bpp <= 2) &&
+                             (_imageDitherMode == IMAGE_DITHER_FS_1BIT || _imageDitherMode == IMAGE_DITHER_FS_2BIT);
+    lUInt8* grayBuf = nullptr;
+    if (useFloydSteinberg) {
+        grayBuf = new lUInt8[dx * dy];
+        memset(grayBuf, 0xFF, dx * dy);  // Initialize to white
+    }
+
     for (int yy = 0; yy < dy; yy++) {
         if (y + yy >= clip.top && y + yy < clip.bottom) {
             lUInt8* dst0 = (lUInt8*)GetScanLine(y + yy);
@@ -1307,21 +1318,31 @@ void LVGrayDrawBuf::DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, i
                         if (_bpp == 1) {
                             if (alpha >= 128)
                                 continue;
-                            int shift = (xx + x) & 7;
-                            lUInt8* dst = dst0 + ((x + xx) >> 3);
-                            lUInt32 dithered = Dither1BitColor(cl, xx, yy);
-                            if (dithered)
-                                *dst = (*dst) | (0x80 >> shift);
-                            else
-                                *dst = (*dst) & ~(0x80 >> shift);
+                            if (useFloydSteinberg) {
+                                // Collect grayscale for F-S post-processing
+                                grayBuf[yy * dx + xx] = rgbToGray(cl);
+                            } else {
+                                int shift = (xx + x) & 7;
+                                lUInt8* dst = dst0 + ((x + xx) >> 3);
+                                lUInt32 dithered = Dither1BitColor(cl, xx, yy);
+                                if (dithered)
+                                    *dst = (*dst) | (0x80 >> shift);
+                                else
+                                    *dst = (*dst) & ~(0x80 >> shift);
+                            }
                         } else if (_bpp == 2) {
                             if (alpha >= 128)
                                 continue;
-                            lUInt8* dst = dst0 + ((x + xx) >> 2);
-                            int shift = ((x + xx) & 3) * 2;
-                            lUInt32 dithered = Dither2BitColor(cl, xx, yy) << 6;
-                            lUInt8 b = *dst & ~(0xC0 >> shift);
-                            *dst = (lUInt8)(b | (dithered >> shift));
+                            if (useFloydSteinberg) {
+                                // Collect grayscale for F-S post-processing
+                                grayBuf[yy * dx + xx] = rgbToGray(cl);
+                            } else {
+                                lUInt8* dst = dst0 + ((x + xx) >> 2);
+                                int shift = ((x + xx) & 3) * 2;
+                                lUInt32 dithered = Dither2BitColor(cl, xx, yy) << 6;
+                                lUInt8 b = *dst & ~(0xC0 >> shift);
+                                *dst = (lUInt8)(b | (dithered >> shift));
+                            }
                         } else {
                             lUInt8* dst = dst0 + x + xx;
                             lUInt32 dithered;
@@ -1362,22 +1383,32 @@ void LVGrayDrawBuf::DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, i
                         srcRect.right = srcdx * (xx + 1) * 16 / dx;
                         lUInt32 cl = src->GetAvgColor(srcRect);
                         if (_bpp == 1) {
-                            int shift = (x + xx) & 7;
-                            lUInt8* dst = dst0 + ((x + xx) >> 3);
-                            lUInt32 dithered = Dither1BitColor(cl, xx, yy);
-                            if (dithered)
-                                *dst = (*dst) | (0x80 >> shift);
-                            else
-                                *dst = (*dst) & ~(0x80 >> shift);
+                            if (useFloydSteinberg) {
+                                // Collect grayscale for F-S post-processing
+                                grayBuf[yy * dx + xx] = rgbToGray(cl);
+                            } else {
+                                int shift = (x + xx) & 7;
+                                lUInt8* dst = dst0 + ((x + xx) >> 3);
+                                lUInt32 dithered = Dither1BitColor(cl, xx, yy);
+                                if (dithered)
+                                    *dst = (*dst) | (0x80 >> shift);
+                                else
+                                    *dst = (*dst) & ~(0x80 >> shift);
+                            }
                         } else if (_bpp == 2) {
-                            // Correct per-pixel nibble addressing for 2bpp.
-                            // Pixels are packed 4 per byte, MSB-first: bits 6..7, 4..5, 2..3, 0..1.
-                            // Use (x + xx) to select the current pixel position within the destination byte.
-                            lUInt8* dst = dst0 + ((x + xx) >> 2);
-                            int shift = ((x + xx) & 3) * 2;
-                            lUInt32 dithered = Dither2BitColor(cl, xx, yy) << 6;
-                            lUInt8 b = (lUInt8)(*dst & ~(0xC0 >> shift));
-                            *dst = (lUInt8)(b | (dithered >> shift));
+                            if (useFloydSteinberg) {
+                                // Collect grayscale for F-S post-processing
+                                grayBuf[yy * dx + xx] = rgbToGray(cl);
+                            } else {
+                                // Correct per-pixel nibble addressing for 2bpp.
+                                // Pixels are packed 4 per byte, MSB-first: bits 6..7, 4..5, 2..3, 0..1.
+                                // Use (x + xx) to select the current pixel position within the destination byte.
+                                lUInt8* dst = dst0 + ((x + xx) >> 2);
+                                int shift = ((x + xx) & 3) * 2;
+                                lUInt32 dithered = Dither2BitColor(cl, xx, yy) << 6;
+                                lUInt8 b = (lUInt8)(*dst & ~(0xC0 >> shift));
+                                *dst = (lUInt8)(b | (dithered >> shift));
+                            }
                         } else {
                             lUInt8* dst = dst0 + x + xx;
                             lUInt32 dithered;
@@ -1400,6 +1431,14 @@ void LVGrayDrawBuf::DrawRescaled(LVDrawBuf* src, int x, int y, int dx, int dy, i
             }
         }
     }
+
+    // Apply Floyd-Steinberg dithering if enabled
+    if (grayBuf) {
+        int targetBpp = (_imageDitherMode == IMAGE_DITHER_FS_1BIT) ? 1 : 2;
+        applyFloydSteinbergDither(this, x, y, grayBuf, dx, dy, targetBpp, _ditheringOptions);
+        delete[] grayBuf;
+    }
+
     CHECK_GUARD_BYTE;
     _drawnImagesCount += ((LVBaseDrawBuf*)src)->getDrawnImagesCount();
     _drawnImagesSurface += dx*dy;

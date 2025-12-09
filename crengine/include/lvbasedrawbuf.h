@@ -31,6 +31,65 @@
 
 #include <lvdrawbuf.h>
 
+/// Options for Floyd-Steinberg dithering algorithm
+struct DitheringOptions {
+    /// Threshold for black/white decision (0.0-1.0, default 0.5)
+    /// Higher values produce darker output, lower values produce brighter output
+    /// For 1-bit: pixels >= threshold*255 become white
+    /// For 2-bit: affects quantization boundaries proportionally
+    float threshold;
+
+    /// Error diffusion strength (0.0-1.0, default 1.0)
+    /// 1.0 = full Floyd-Steinberg error propagation
+    /// Lower values reduce noise but may lose tonal accuracy in gradients
+    /// 0.0 = no error diffusion (simple threshold)
+    float errorDiffusion;
+
+    /// Input gamma correction (0.5-2.5, default 1.0)
+    /// Applied to input grayscale values before dithering
+    /// >1.0 darkens midtones, <1.0 brightens midtones
+    float gamma;
+
+    /// Serpentine scanning (default true)
+    /// Alternates scan direction each row to reduce directional artifacts
+    bool serpentine;
+
+    /// Default constructor with sensible defaults
+    DitheringOptions()
+        : threshold(0.5f)
+        , errorDiffusion(1.0f)
+        , gamma(1.0f)
+        , serpentine(true) {}
+
+    /// Constructor with all parameters
+    DitheringOptions(float thresh, float errDiff, float gam, bool serp)
+        : threshold(thresh)
+        , errorDiffusion(errDiff)
+        , gamma(gam)
+        , serpentine(serp) {}
+};
+
+/**
+ * @brief Image dithering mode for grayscale conversion
+ *
+ * Controls how images are dithered when drawn to low bit-depth buffers.
+ * Text rendering is unaffected by this setting.
+ */
+enum ImageDitherMode {
+    IMAGE_DITHER_NONE = 0,      ///< No dithering, simple quantization
+    IMAGE_DITHER_ORDERED = 1,   ///< Ordered (Bayer 8x8) dithering - default
+    IMAGE_DITHER_FS_2BIT = 2,   ///< Floyd-Steinberg dithering to 2-bit (4 levels)
+    IMAGE_DITHER_FS_1BIT = 3    ///< Floyd-Steinberg dithering to 1-bit (2 levels)
+};
+
+/// Get default dithering options for 1-bit mode
+/// Tuned for e-ink displays: slightly darker (threshold=0.55), reduced noise (errorDiffusion=0.875)
+DitheringOptions getDefault1BitDitheringOptions();
+
+/// Get default dithering options for 2-bit mode
+/// More levels need less aggressive noise reduction (threshold=0.5, errorDiffusion=0.95)
+DitheringOptions getDefault2BitDitheringOptions();
+
 /// LVDrawBufferBase
 class LVBaseDrawBuf: public LVDrawBuf
 {
@@ -44,7 +103,8 @@ protected:
     lUInt32 _textColor;
     bool _hidePartialGlyphs;
     bool _invertImages;
-    bool _ditherImages;
+    ImageDitherMode _imageDitherMode;
+    const DitheringOptions* _ditheringOptions;
     bool _smoothImages;
     int _drawnImagesCount;
     int _drawnImagesSurface;
@@ -58,8 +118,27 @@ public:
         _invertImages = invert;
     }
     /// set to true to enforce dithering (only relevant for 8bpp Gray drawBuf)
+    /// @deprecated Use setImageDitherMode() instead
     virtual void setDitherImages(bool dither) {
-        _ditherImages = dither;
+        _imageDitherMode = dither ? IMAGE_DITHER_ORDERED : IMAGE_DITHER_NONE;
+    }
+    /// set image dithering mode for grayscale conversion
+    virtual void setImageDitherMode(ImageDitherMode mode) {
+        _imageDitherMode = mode;
+    }
+    /// get current image dithering mode
+    virtual ImageDitherMode getImageDitherMode() const {
+        return _imageDitherMode;
+    }
+    /// set custom dithering options for Floyd-Steinberg modes
+    /// @param options Pointer to options (caller owns memory, must remain valid during drawing)
+    ///                Pass nullptr to use defaults
+    virtual void setDitheringOptions(const DitheringOptions* options) {
+        _ditheringOptions = options;
+    }
+    /// get current dithering options (may be nullptr for defaults)
+    virtual const DitheringOptions* getDitheringOptions() const {
+        return _ditheringOptions;
     }
     /// set to true to switch to a more costly smooth scaler instead of nearest neighbor
     virtual void setSmoothScalingImages(bool smooth) {
@@ -120,7 +199,8 @@ public:
             , _data(NULL)
             , _hidePartialGlyphs(true)
             , _invertImages(false)
-            , _ditherImages(true) // for 1-bit and 2-bit e-ink displays
+            , _imageDitherMode(IMAGE_DITHER_ORDERED) // for 1-bit and 2-bit e-ink displays
+            , _ditheringOptions(nullptr)
             , _smoothImages(false)
             , _drawnImagesCount(0)
             , _drawnImagesSurface(0) { }

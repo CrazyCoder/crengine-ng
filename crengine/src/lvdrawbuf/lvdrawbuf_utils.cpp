@@ -196,3 +196,213 @@ void ApplyAlphaGray8( lUInt8 &dst, lUInt8 src, lUInt8 alpha )
     }
 }
 */
+
+#include <lvbasedrawbuf.h>
+#include <crsetup.h>
+#include <string.h>
+#include <math.h>
+
+DitheringOptions getDefault1BitDitheringOptions() {
+    // Tuned for 1-bit e-ink: slightly higher threshold for darker output,
+    // reduced error diffusion to minimize noise
+    return DitheringOptions(0.70f, 0.85f, 1.0f, true);
+}
+
+DitheringOptions getDefault2BitDitheringOptions() {
+    // 2-bit has more levels, needs less aggressive adjustments
+    return DitheringOptions(0.5f, 0.95f, 1.0f, true);
+}
+
+void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
+                               lUInt8* grayBuf, int width, int height, int targetBpp,
+                               const DitheringOptions* options) {
+    if (!grayBuf || width <= 0 || height <= 0)
+        return;
+
+    // Use provided options or defaults based on targetBpp
+    DitheringOptions opts;
+    if (options) {
+        opts = *options;
+    } else {
+        opts = (targetBpp == 1) ? getDefault1BitDitheringOptions() : getDefault2BitDitheringOptions();
+    }
+
+    // Clamp options to valid ranges
+    if (opts.threshold < 0.0f) opts.threshold = 0.0f;
+    if (opts.threshold > 1.0f) opts.threshold = 1.0f;
+    if (opts.errorDiffusion < 0.0f) opts.errorDiffusion = 0.0f;
+    if (opts.errorDiffusion > 1.0f) opts.errorDiffusion = 1.0f;
+    if (opts.gamma < 0.1f) opts.gamma = 0.1f;
+    if (opts.gamma > 3.0f) opts.gamma = 3.0f;
+
+    // Build gamma lookup table (only if gamma != 1.0)
+    lUInt8 gammaLUT[256];
+    bool useGamma = (opts.gamma < 0.99f || opts.gamma > 1.01f);
+    if (useGamma) {
+        float invGamma = 1.0f / opts.gamma;
+        for (int i = 0; i < 256; i++) {
+            float normalized = i / 255.0f;
+            float corrected = powf(normalized, invGamma);
+            int val = (int)(corrected * 255.0f + 0.5f);
+            gammaLUT[i] = (lUInt8)(val < 0 ? 0 : (val > 255 ? 255 : val));
+        }
+    }
+
+    // Determine number of output levels
+    const int numLevels = (1 << targetBpp);
+    const int maxLevel = numLevels - 1;
+
+    // Calculate threshold value (0-255 scale)
+    const int threshold1bit = (int)(opts.threshold * 255.0f + 0.5f);
+
+    // Error diffusion multiplier (fixed-point: 256 = 1.0)
+    const int errMult = (int)(opts.errorDiffusion * 256.0f + 0.5f);
+
+    // Quantize value to target level with configurable threshold
+    auto quantize = [targetBpp, maxLevel, threshold1bit, &opts](int val8) -> int {
+        if (val8 < 0) val8 = 0;
+        if (val8 > 255) val8 = 255;
+        int quantized;
+        if (targetBpp == 1) {
+            // Use configurable threshold for 1-bit
+            quantized = (val8 >= threshold1bit) ? 255 : 0;
+        } else {
+            // For 2-bit, adjust quantization boundaries based on threshold
+            // threshold=0.5 gives even spacing, other values shift boundaries
+            float thresholdShift = (opts.threshold - 0.5f) * 2.0f; // -1.0 to +1.0
+            int adjusted = val8 - (int)(thresholdShift * 42.5f);   // ~1/6 of 255
+            if (adjusted < 0) adjusted = 0;
+            if (adjusted > 255) adjusted = 255;
+            int level = (adjusted * maxLevel + 128) / 256;
+            if (level > maxLevel) level = maxLevel;
+            quantized = level * 255 / maxLevel;
+        }
+        return quantized;
+    };
+
+    // Allocate error buffers for current and next row
+    short* errorCur = new short[width + 2]();
+    short* errorNext = new short[width + 2]();
+    errorCur++;
+    errorNext++;
+
+    lvRect clip;
+    dst->GetClipRect(&clip);
+    int bpp = dst->GetBitsPerPixel();
+
+    // Apply gamma correction to input buffer if needed
+    if (useGamma) {
+        for (int i = 0; i < width * height; i++) {
+            grayBuf[i] = gammaLUT[grayBuf[i]];
+        }
+    }
+
+    // Process each row with Floyd-Steinberg error diffusion
+    for (int y = 0; y < height; y++) {
+        memset(errorNext - 1, 0, (width + 2) * sizeof(short));
+        lUInt8* srcRow = grayBuf + (y * width);
+
+        // Serpentine: alternate direction each row
+        bool leftToRight = !opts.serpentine || ((y & 1) == 0);
+        int xStart = leftToRight ? 0 : (width - 1);
+        int xEnd = leftToRight ? width : -1;
+        int xStep = leftToRight ? 1 : -1;
+
+        for (int x = xStart; x != xEnd; x += xStep) {
+            // Get current pixel value plus accumulated error
+            int oldVal = srcRow[x] + errorCur[x];
+
+            // Quantize and calculate error
+            int newVal = quantize(oldVal);
+            int error = oldVal - newVal;
+
+            // Scale error by diffusion strength (fixed-point math)
+            error = (error * errMult) >> 8;
+
+            // Store dithered value back to buffer for rendering
+            srcRow[x] = (lUInt8)(newVal > 255 ? 255 : (newVal < 0 ? 0 : newVal));
+
+            // Distribute error using Floyd-Steinberg weights
+            // Direction depends on serpentine mode
+            int xForward = leftToRight ? (x + 1) : (x - 1);
+            int xBack = leftToRight ? (x - 1) : (x + 1);
+
+            if (xForward >= 0 && xForward < width)
+                errorCur[xForward] += (short)((error * 7) / 16);
+            if (y + 1 < height) {
+                if (xBack >= 0 && xBack < width)
+                    errorNext[xBack] += (short)((error * 3) / 16);
+                errorNext[x] += (short)((error * 5) / 16);
+                if (xForward >= 0 && xForward < width)
+                    errorNext[xForward] += (short)((error * 1) / 16);
+            }
+        }
+
+        // Render this row to destination buffer
+        int yy = y + dst_y;
+        if (yy >= clip.top && yy < clip.bottom) {
+            if (bpp == 2) {
+                lUInt8* dstRow = (lUInt8*)dst->GetScanLine(yy);
+                for (int x = 0; x < width; x++) {
+                    int xx = x + dst_x;
+                    if (xx < clip.left || xx >= clip.right)
+                        continue;
+
+                    lUInt32 dcl;
+                    if (targetBpp == 1) {
+                        // For F-S 1-bit, srcRow should contain only 0 or 255
+                        // Force to black (0) or white (3) in 2-bit buffer
+                        // This ensures no intermediate grays slip through
+                        dcl = (srcRow[x] >= 128) ? 3 : 0;
+                    } else {
+                        // Convert 0-255 grayscale to 2-bit (0-3)
+                        dcl = (srcRow[x] * 3 + 128) / 256;
+                    }
+#if (GRAY_INVERSE == 1)
+                    dcl = 3 - dcl;
+#endif
+                    int byteindex = (xx >> 2);
+                    int bitindex = (3 - (xx & 3)) << 1;
+                    lUInt8 mask = 0xC0 >> (6 - bitindex);
+                    dcl = dcl << bitindex;
+                    dstRow[byteindex] = (lUInt8)((dstRow[byteindex] & (~mask)) | dcl);
+                }
+            } else if (bpp == 1) {
+                lUInt8* dstRow = (lUInt8*)dst->GetScanLine(yy);
+                for (int x = 0; x < width; x++) {
+                    int xx = x + dst_x;
+                    if (xx < clip.left || xx >= clip.right)
+                        continue;
+
+                    // Convert to 1-bit (threshold already applied by F-S)
+                    lUInt32 dcl = srcRow[x] >= 128 ? 1 : 0;
+#if (GRAY_INVERSE == 1)
+                    dcl = 1 - dcl;
+#endif
+                    int byteindex = (xx >> 3);
+                    int bitindex = ((xx & 7));
+                    lUInt8 mask = 0x80 >> (bitindex);
+                    dcl = dcl << (7 - bitindex);
+                    dstRow[byteindex] = (lUInt8)((dstRow[byteindex] & (~mask)) | dcl);
+                }
+            } else {
+                // For other bit depths, just write grayscale value
+                lUInt8* dstRow = (lUInt8*)dst->GetScanLine(yy) + dst_x;
+                for (int x = 0; x < width; x++) {
+                    int xx = x + dst_x;
+                    if (xx < clip.left || xx >= clip.right)
+                        continue;
+                    dstRow[x] = srcRow[x];
+                }
+            }
+        }
+
+        // Swap error buffers
+        short* temp = errorCur;
+        errorCur = errorNext;
+        errorNext = temp;
+    }
+
+    delete[] (errorCur - 1);
+    delete[] (errorNext - 1);
+}

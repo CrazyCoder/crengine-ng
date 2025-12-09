@@ -589,7 +589,9 @@ int LVColorDrawBuf::GetBitsPerPixel() const {
 
 void LVColorDrawBuf::Draw(LVImageSourceRef img, int x, int y, int width, int height, bool dither) {
     //fprintf( stderr, "LVColorDrawBuf::Draw( img(%d, %d), %d, %d, %d, %d\n", img->GetWidth(), img->GetHeight(), x, y, width, height );
-    LVImageScaledDrawCallback drawcb(this, img, x, y, width, height, dither, _invertImages, _smoothImages);
+    // Convert bool dither to ImageDitherMode (ordered dithering for color buffers)
+    ImageDitherMode ditherMode = dither ? IMAGE_DITHER_ORDERED : IMAGE_DITHER_NONE;
+    LVImageScaledDrawCallback drawcb(this, img, x, y, width, height, ditherMode, _invertImages, _smoothImages);
     img->Decode(&drawcb);
     _drawnImagesCount++;
     _drawnImagesSurface += width * height;

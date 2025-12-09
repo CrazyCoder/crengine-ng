@@ -1,6 +1,6 @@
 /***************************************************************************
  *   crengine-ng                                                           *
- *   Copyright (C) 2025 Xteink                                             *
+ *   Copyright (C) 2025 Serge Baranov                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -34,6 +34,7 @@
 #include <lvstream.h>
 #include <lvstring.h>
 #include <lvptrvec.h>
+
 
 class LVDocView;
 class LVTocItem;
@@ -198,6 +199,14 @@ public:
     /// Set grayscale to monochrome conversion policy (only affects XTC/XTG output)
     XtcExporter& setGrayPolicy(GrayToMonoPolicy policy);
 
+    /// Set image dithering mode for rendering
+    XtcExporter& setImageDitherMode(ImageDitherMode mode);
+
+    /// Set custom dithering options for Floyd-Steinberg modes
+    /// @param options Dithering parameters (threshold, errorDiffusion, gamma, serpentine)
+    ///                Pass default DitheringOptions() to use built-in defaults
+    XtcExporter& setDitheringOptions(const DitheringOptions& options);
+
     /// Set page range to export (0-based page numbers, -1 means no limit)
     /// Exported file will have pages numbered from 0 to (endPage - startPage)
     XtcExporter& setPageRange(int startPage, int endPage = -1);
@@ -249,6 +258,8 @@ private:
     uint16_t m_thumbWidth;
     uint16_t m_thumbHeight;
     GrayToMonoPolicy m_grayPolicy;
+    ImageDitherMode m_imageDitherMode;  ///< Image dithering mode for rendering
+    DitheringOptions* m_ditheringOptions;  ///< Custom dithering options (nullptr = use defaults)
     int m_startPage;  ///< First page to export (0-based, -1 = from beginning)
     int m_endPage;    ///< Last page to export (0-based, inclusive, -1 = to end)
     int m_dumpImagesLimit;  ///< Number of pages to dump as BMP: 0 = disabled, -1 = all, N = first N
