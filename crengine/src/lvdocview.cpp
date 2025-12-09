@@ -188,8 +188,8 @@ static inline int myabs(int n) {
 
 LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
         : m_bitsPerPixel(bitsPerPixel)
-        , m_dx(400)
-        , m_dy(200)
+        , m_dx(480)
+        , m_dy(800)
         , _pos(0)
         , _page(0)
         , _posIsSet(false)
