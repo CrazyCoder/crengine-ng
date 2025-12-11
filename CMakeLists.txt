@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(crengine-ng)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
 
 include(CheckIncludeFile)
 include(CheckSymbolExists)
