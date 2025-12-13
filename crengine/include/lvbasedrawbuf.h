@@ -83,11 +83,11 @@ enum ImageDitherMode {
 };
 
 /// Get default dithering options for 1-bit mode
-/// Tuned for e-ink displays: slightly darker (threshold=0.55), reduced noise (errorDiffusion=0.875)
+/// Tuned for e-ink displays: slightly darker
 DitheringOptions getDefault1BitDitheringOptions();
 
 /// Get default dithering options for 2-bit mode
-/// More levels need less aggressive noise reduction (threshold=0.5, errorDiffusion=0.95)
+/// More levels need less aggressive noise reduction
 DitheringOptions getDefault2BitDitheringOptions();
 
 /// LVDrawBufferBase
