@@ -254,6 +254,17 @@ public:
      */
     bool isPreviewMode() const { return m_previewPage >= 0; }
 
+    /**
+     * @brief Get total page count from last export/preview operation
+     *
+     * Returns the total number of pages at the configured export resolution.
+     * This value is computed during exportDocument() after re-rendering
+     * the document at the target dimensions.
+     *
+     * @return Total page count, or 0 if no export has been performed yet
+     */
+    int getLastTotalPageCount() const { return m_lastTotalPageCount; }
+
     // =========================================================================
     // Export methods
     // =========================================================================
@@ -304,6 +315,9 @@ private:
     // Preview mode
     int m_previewPage;              ///< Preview page number (-1 = normal export, >= 0 = preview mode)
     LVArray<lUInt8> m_previewBmp;   ///< Preview result (BMP data)
+
+    // Page count from last export
+    int m_lastTotalPageCount;       ///< Total page count at export resolution (set by exportDocument)
 
     // Metadata
     lString8 m_title;

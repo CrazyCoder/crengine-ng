@@ -312,6 +312,7 @@ XtcExporter::XtcExporter()
     , m_endPage(-1)
     , m_dumpImagesLimit(0)
     , m_previewPage(-1)
+    , m_lastTotalPageCount(0)
     , m_callback(nullptr) {
 }
 
@@ -863,6 +864,9 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     }
 
     int totalPageCount = pages->length();
+
+    // Store total page count for later retrieval (used by dialog to update page range)
+    m_lastTotalPageCount = totalPageCount;
 
     // Calculate actual page range (0-based)
     int actualStartPage, actualEndPage;
