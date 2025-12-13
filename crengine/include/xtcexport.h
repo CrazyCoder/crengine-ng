@@ -78,6 +78,9 @@ public:
     virtual ~XtcExportCallback() {}
     /// Called during export with progress percentage (0-100)
     virtual void onProgress(int percent) = 0;
+    /// Called to check if export should be cancelled
+    /// Override this to implement cancellation support
+    virtual bool isCancelled() { return false; }
 };
 
 // =============================================================================
@@ -219,6 +222,39 @@ public:
     XtcExporter& dumpImages(int limit);
 
     // =========================================================================
+    // Preview mode methods
+    // =========================================================================
+
+    /**
+     * @brief Enable preview mode for single-page rendering
+     *
+     * In preview mode, exportDocument() renders only the specified page
+     * and stores the result as BMP data instead of writing files.
+     * Call getPreviewBmp() to retrieve the rendered preview.
+     *
+     * @param pageNumber Page to render (0-based), or -1 to disable preview mode
+     *                   If pageNumber exceeds document page count, it is clamped.
+     * @return Reference to this exporter for method chaining
+     */
+    XtcExporter& setPreviewPage(int pageNumber);
+
+    /**
+     * @brief Get the rendered preview BMP data
+     *
+     * Only valid after calling exportDocument() in preview mode.
+     * The buffer remains valid until the next exportDocument() call.
+     *
+     * @return BMP file data, or empty array if not in preview mode or render failed
+     */
+    const LVArray<lUInt8>& getPreviewBmp() const { return m_previewBmp; }
+
+    /**
+     * @brief Check if in preview mode
+     * @return true if preview mode is enabled (preview page >= 0)
+     */
+    bool isPreviewMode() const { return m_previewPage >= 0; }
+
+    // =========================================================================
     // Export methods
     // =========================================================================
 
@@ -264,6 +300,10 @@ private:
     int m_endPage;    ///< Last page to export (0-based, inclusive, -1 = to end)
     int m_dumpImagesLimit;  ///< Number of pages to dump as BMP: 0 = disabled, -1 = all, N = first N
     lString8 m_dumpDir;     ///< Directory for BMP dump files (set from output filename)
+
+    // Preview mode
+    int m_previewPage;              ///< Preview page number (-1 = normal export, >= 0 = preview mode)
+    LVArray<lUInt8> m_previewBmp;   ///< Preview result (BMP data)
 
     // Metadata
     lString8 m_title;

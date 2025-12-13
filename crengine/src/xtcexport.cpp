@@ -311,6 +311,7 @@ XtcExporter::XtcExporter()
     , m_startPage(-1)
     , m_endPage(-1)
     , m_dumpImagesLimit(0)
+    , m_previewPage(-1)
     , m_callback(nullptr) {
 }
 
@@ -398,6 +399,15 @@ XtcExporter& XtcExporter::dumpImages(int limit) {
     return *this;
 }
 
+XtcExporter& XtcExporter::setPreviewPage(int pageNumber) {
+    m_previewPage = pageNumber;
+    // Clear previous preview data when mode changes
+    if (pageNumber < 0) {
+        m_previewBmp.clear();
+    }
+    return *this;
+}
+
 // =============================================================================
 // BMP Debug Dump Helper
 // =============================================================================
@@ -416,13 +426,13 @@ static inline void writeBmpLE16(unsigned char* buf, int offset, uint16_t value) 
     buf[offset + 1] = (value >> 8) & 0xFF;
 }
 
-/// Save LVGrayDrawBuf as BMP file for debugging
-/// @param filename Output filename (UTF-8)
+/// Render LVGrayDrawBuf to BMP format in memory buffer
 /// @param buf Source grayscale buffer
 /// @param desiredBpp 0 = use buf bpp; otherwise force output bpp (1 or buf bpp/4bpp)
 /// @param grayPolicy Used only when converting 2bpp -> 1bpp
-static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp = 0,
-                        GrayToMonoPolicy grayPolicy = GRAY_SPLIT_LIGHT_DARK) {
+/// @return BMP file data as byte array, empty on error
+static LVArray<lUInt8> renderToBmpBuffer(LVGrayDrawBuf& buf, int desiredBpp = 0,
+                                          GrayToMonoPolicy grayPolicy = GRAY_SPLIT_LIGHT_DARK) {
     int width = buf.GetWidth();
     int height = buf.GetHeight();
     int bpp = buf.GetBitsPerPixel();
@@ -448,67 +458,64 @@ static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp
     int fileSize = 54 + paletteSize + imageSize;
     int pixelDataOffset = 54 + paletteSize;
 
+    // Allocate output buffer
+    LVArray<lUInt8> result(fileSize, 0);
+    if (result.length() != fileSize) {
+        return LVArray<lUInt8>(); // Allocation failed
+    }
+
+    lUInt8* data = result.get();
+    int offset = 0;
+
     // BMP file header (14 bytes)
-    unsigned char fileHeader[14] = {
-        'B', 'M',   // Signature
-        0, 0, 0, 0, // File size (filled below)
-        0, 0, 0, 0, // Reserved
-        0, 0, 0, 0  // Offset to pixel data (filled below)
-    };
+    data[offset++] = 'B';
+    data[offset++] = 'M';
+    writeBmpLE32(data, offset, fileSize);
+    offset += 4;
+    writeBmpLE32(data, offset, 0); // Reserved
+    offset += 4;
+    writeBmpLE32(data, offset, pixelDataOffset);
+    offset += 4;
 
     // BMP info header (40 bytes)
-    unsigned char infoHeader[40] = {
-        40, 0, 0, 0, // Info header size
-        0, 0, 0, 0,  // Width (filled below)
-        0, 0, 0, 0,  // Height (filled below)
-        1, 0,        // Planes
-        0, 0,        // Bits per pixel (filled below)
-        0, 0, 0, 0,  // Compression (0 = none)
-        0, 0, 0, 0,  // Image size (0 for uncompressed)
-        0, 0, 0, 0,  // X pixels per meter
-        0, 0, 0, 0,  // Y pixels per meter
-        0, 0, 0, 0,  // Colors used
-        0, 0, 0, 0   // Important colors
-    };
-
-    // Fill in file header fields
-    writeBmpLE32(fileHeader, 2, fileSize);
-    writeBmpLE32(fileHeader, 10, pixelDataOffset);
-
-    // Fill in info header fields
-    writeBmpLE32(infoHeader, 4, width);
-    writeBmpLE32(infoHeader, 8, height);
-    writeBmpLE16(infoHeader, 14, outputBpp);
-
-    // Open file for writing
-    LVStreamRef stream = LVOpenFileStream(filename, LVOM_WRITE);
-    if (!stream)
-        return false;
-
-    // Write headers
-    if (stream->Write(fileHeader, 14, NULL) != LVERR_OK)
-        return false;
-    if (stream->Write(infoHeader, 40, NULL) != LVERR_OK)
-        return false;
+    writeBmpLE32(data, offset, 40); // Info header size
+    offset += 4;
+    writeBmpLE32(data, offset, width);
+    offset += 4;
+    writeBmpLE32(data, offset, height);
+    offset += 4;
+    writeBmpLE16(data, offset, 1); // Planes
+    offset += 2;
+    writeBmpLE16(data, offset, outputBpp);
+    offset += 2;
+    writeBmpLE32(data, offset, 0); // Compression
+    offset += 4;
+    writeBmpLE32(data, offset, 0); // Image size (0 for uncompressed)
+    offset += 4;
+    writeBmpLE32(data, offset, 0); // X pixels per meter
+    offset += 4;
+    writeBmpLE32(data, offset, 0); // Y pixels per meter
+    offset += 4;
+    writeBmpLE32(data, offset, 0); // Colors used
+    offset += 4;
+    writeBmpLE32(data, offset, 0); // Important colors
+    offset += 4;
 
     // Write palette for grayscale images
     if (paletteSize > 0) {
         int numColors = 1 << outputBpp;
-        unsigned char palette[1024] = { 0 }; // Max 256 colors * 4 bytes
         for (int i = 0; i < numColors; i++) {
             int gray = (i * 255) / (numColors - 1);
-            palette[i * 4 + 0] = gray; // Blue
-            palette[i * 4 + 1] = gray; // Green
-            palette[i * 4 + 2] = gray; // Red
-            palette[i * 4 + 3] = 0;    // Reserved
+            data[offset++] = (lUInt8)gray; // Blue
+            data[offset++] = (lUInt8)gray; // Green
+            data[offset++] = (lUInt8)gray; // Red
+            data[offset++] = 0;            // Reserved
         }
-        if (stream->Write(palette, paletteSize, NULL) != LVERR_OK)
-            return false;
     }
 
     // Write pixel data (BMP stores rows bottom-to-top)
-    unsigned char* rowBuffer = new unsigned char[rowSize];
     for (int y = height - 1; y >= 0; y--) {
+        unsigned char* rowBuffer = data + offset;
         // Clear destination row to avoid carrying over nibbles from previous rows
         memset(rowBuffer, 0, rowSize);
         const unsigned char* srcRow = buf.GetScanLine(y);
@@ -584,14 +591,28 @@ static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp
             memcpy(rowBuffer, srcRow, srcRowBytes);
         }
 
-        if (stream->Write(rowBuffer, rowSize, NULL) != LVERR_OK) {
-            delete[] rowBuffer;
-            return false;
-        }
+        offset += rowSize;
     }
 
-    delete[] rowBuffer;
-    return true;
+    return result;
+}
+
+/// Save LVGrayDrawBuf as BMP file (calls renderToBmpBuffer internally)
+/// @param filename Output filename (UTF-8)
+/// @param buf Source grayscale buffer
+/// @param desiredBpp 0 = use buf bpp; otherwise force output bpp (1 or buf bpp/4bpp)
+/// @param grayPolicy Used only when converting 2bpp -> 1bpp
+static bool saveBmpFile(const char* filename, LVGrayDrawBuf& buf, int desiredBpp = 0,
+                        GrayToMonoPolicy grayPolicy = GRAY_SPLIT_LIGHT_DARK) {
+    LVArray<lUInt8> bmpData = renderToBmpBuffer(buf, desiredBpp, grayPolicy);
+    if (bmpData.empty())
+        return false;
+
+    LVStreamRef stream = LVOpenFileStream(filename, LVOM_WRITE);
+    if (!stream)
+        return false;
+
+    return stream->Write(bmpData.get(), bmpData.length(), NULL) == LVERR_OK;
 }
 
 bool XtcExporter::exportSinglePage(LVGrayDrawBuf& buf, const lChar32* filename) {
@@ -749,6 +770,11 @@ bool XtcExporter::writePage(LVStream* stream, LVGrayDrawBuf& buf, xtc_page_index
 }
 
 bool XtcExporter::exportDocument(LVDocView* docView, const lChar32* filename) {
+    // In preview mode, filename can be null - we don't create any files
+    if (isPreviewMode()) {
+        return exportDocument(docView, LVStreamRef());
+    }
+
     LVStreamRef stream = LVOpenFileStream(filename, LVOM_WRITE);
     if (!stream) {
         CRLog::error("XtcExporter: Failed to open file for writing");
@@ -777,17 +803,47 @@ bool XtcExporter::exportDocument(LVDocView* docView, const lChar32* filename) {
 }
 
 bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
-    if (!docView || !stream) {
+    // In normal mode, stream is required; in preview mode, stream should be null
+    if (!docView) {
         return false;
     }
-    // Save current view state
+    if (!isPreviewMode() && !stream) {
+        return false;
+    }
+
+    // Clear preview buffer at start
+    m_previewBmp.clear();
+
+    // Save current view state and set up RAII guard for automatic restoration
     int save_dx = docView->GetWidth();
     int save_dy = docView->GetHeight();
     int save_pos = docView->GetPos();
+    lUInt32 old_flags = docView->getPageHeaderInfo();
 
     CRLog::info("XtcExporter: Saving original width/height [%d, %d]", save_dx, save_dy);
-    
-    lUInt32 old_flags = docView->getPageHeaderInfo();
+
+    // RAII guard to restore view state on any exit path
+    class ViewStateGuard {
+    public:
+        LVDocView* view;
+        int dx, dy, pos;
+        lUInt32 flags;
+        bool dismissed;
+
+        ViewStateGuard(LVDocView* v, int w, int h, int p, lUInt32 f)
+            : view(v), dx(w), dy(h), pos(p), flags(f), dismissed(false) {}
+        ~ViewStateGuard() {
+            if (!dismissed) restore();
+        }
+        void restore() {
+            view->setPageHeaderInfo(flags);
+            view->Resize(dx, dy);
+            view->clearImageCache();
+            view->SetPos(pos);
+        }
+        void dismiss() { dismissed = true; }
+    } viewGuard(docView, save_dx, save_dy, save_pos, old_flags);
+
     docView->setPageHeaderInfo(old_flags & ~(PGHDR_CLOCK | PGHDR_BATTERY));
 
     // Resize to target dimensions
@@ -803,15 +859,26 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     // Get page list
     LVRendPageList* pages = docView->getPageList();
     if (!pages) {
-        docView->Resize(save_dx, save_dy);
         return false;
     }
 
     int totalPageCount = pages->length();
 
     // Calculate actual page range (0-based)
-    int actualStartPage = (m_startPage >= 0) ? m_startPage : 0;
-    int actualEndPage = (m_endPage >= 0) ? m_endPage : totalPageCount - 1;
+    int actualStartPage, actualEndPage;
+    if (isPreviewMode()) {
+        // Preview mode: render only the specified page
+        actualStartPage = actualEndPage = m_previewPage;
+        // Clamp to valid range
+        if (m_previewPage >= totalPageCount)
+            actualStartPage = actualEndPage = totalPageCount - 1;
+        if (m_previewPage < 0)
+            actualStartPage = actualEndPage = 0;
+    } else {
+        // Normal mode: use configured page range
+        actualStartPage = (m_startPage >= 0) ? m_startPage : 0;
+        actualEndPage = (m_endPage >= 0) ? m_endPage : totalPageCount - 1;
+    }
 
     // Clamp to valid range
     if (actualStartPage < 0)
@@ -820,107 +887,111 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         actualEndPage = totalPageCount - 1;
     if (actualStartPage > actualEndPage) {
         CRLog::error("XtcExporter: Invalid page range [%d, %d]", actualStartPage, actualEndPage);
-        docView->Resize(save_dx, save_dy);
         return false;
     }
 
     int exportPageCount = actualEndPage - actualStartPage + 1;
     bool hasMetadata = !m_title.empty() || !m_author.empty();
 
-    CRLog::info("XtcExporter: Exporting pages %d-%d (total %d pages)",
-                actualStartPage, actualEndPage, exportPageCount);
+    if (isPreviewMode()) {
+        CRLog::info("XtcExporter: Preview mode, rendering page %d", m_previewPage);
+    } else {
+        CRLog::info("XtcExporter: Exporting pages %d-%d (total %d pages)",
+                    actualStartPage, actualEndPage, exportPageCount);
+    }
 
-    // Collect chapters if enabled
+    // Skip header/metadata/chapters/index writing in preview mode
     LVArray<xtc_chapter_t> chapters;
     bool hasChapters = false;
-    if (m_enableChapters) {
-        LVTocItem* toc = docView->getToc();
-        if (toc && toc->getChildCount() > 0) {
-            // Ensure page numbers are updated
-            docView->updatePageNumbers(toc);
-            collectChapters(toc, chapters, m_chapterDepth, 1);
+    LVArray<xtc_page_index_t> pageIndex(exportPageCount, xtc_page_index_t());
+    uint64_t indexPos = 0;
 
-            // Filter chapters to only include those within the exported page range
-            // and adjust page numbers to be relative to the export start
-            LVArray<xtc_chapter_t> filteredChapters;
-            for (int i = 0; i < chapters.length(); i++) {
-                int chapterPage = chapters[i].startPage;
-                // Include chapter if its start page is within the exported range
-                if (chapterPage >= actualStartPage && chapterPage <= actualEndPage) {
-                    xtc_chapter_t adjustedChapter = chapters[i];
-                    // Adjust page numbers to be relative to exported range (0-based in output)
-                    adjustedChapter.startPage = (uint16_t)(chapterPage - actualStartPage);
-                    adjustedChapter.endPage = (uint16_t)(chapterPage - actualStartPage);
-                    filteredChapters.add(adjustedChapter);
+    if (!isPreviewMode()) {
+        // Collect chapters if enabled
+        if (m_enableChapters) {
+            LVTocItem* toc = docView->getToc();
+            if (toc && toc->getChildCount() > 0) {
+                // Ensure page numbers are updated
+                docView->updatePageNumbers(toc);
+                collectChapters(toc, chapters, m_chapterDepth, 1);
+
+                // Filter chapters to only include those within the exported page range
+                // and adjust page numbers to be relative to the export start
+                LVArray<xtc_chapter_t> filteredChapters;
+                for (int i = 0; i < chapters.length(); i++) {
+                    int chapterPage = chapters[i].startPage;
+                    // Include chapter if its start page is within the exported range
+                    if (chapterPage >= actualStartPage && chapterPage <= actualEndPage) {
+                        xtc_chapter_t adjustedChapter = chapters[i];
+                        // Adjust page numbers to be relative to exported range (0-based in output)
+                        adjustedChapter.startPage = (uint16_t)(chapterPage - actualStartPage);
+                        adjustedChapter.endPage = (uint16_t)(chapterPage - actualStartPage);
+                        filteredChapters.add(adjustedChapter);
+                    }
+                }
+                chapters = filteredChapters;
+
+                hasChapters = chapters.length() > 0;
+                if (hasChapters) {
+                    CRLog::info("XtcExporter: Collected %d chapters from TOC (filtered for page range)",
+                                chapters.length());
                 }
             }
-            chapters = filteredChapters;
+        }
 
-            hasChapters = chapters.length() > 0;
-            if (hasChapters) {
-                CRLog::info("XtcExporter: Collected %d chapters from TOC (filtered for page range)",
-                            chapters.length());
+        // Calculate offsets
+        uint64_t headerSize = sizeof(xtc_header_t);
+        uint64_t metadataSize = hasMetadata ? sizeof(xtc_metadata_t) : 0;
+        uint64_t chapterSize = hasChapters ? chapters.length() * sizeof(xtc_chapter_t) : 0;
+        uint64_t indexSize = exportPageCount * sizeof(xtc_page_index_t);
+
+        // Write placeholder header (will be updated at the end)
+        xtc_header_t header;
+        memset(&header, 0, sizeof(header));
+        header.magic = (m_format == XTC_FORMAT_XTC) ? XTC_MAGIC : XTCH_MAGIC;
+        header.version = XTC_VERSION;
+        header.pageCount = (uint16_t)exportPageCount;
+        header.readDirection = m_readDirection;
+        header.hasMetadata = hasMetadata ? 1 : 0;
+        header.hasThumbnails = 0;
+        header.hasChapters = hasChapters ? 1 : 0;
+        header.currentPage = 0;
+        header.metadataOffset = hasMetadata ? headerSize : 0;
+        // Chapters are stored after metadata, location defined by chapterOffset
+        header.chapterOffset = hasChapters ? (headerSize + metadataSize) : 0;
+        // Page index follows metadata and chapters
+        header.indexOffset = headerSize + metadataSize + chapterSize;
+        header.dataOffset = headerSize + metadataSize + chapterSize + indexSize;
+        header.thumbOffset = 0;
+
+        if (stream->Write(&header, sizeof(header), NULL) != LVERR_OK) {
+            return false;
+        }
+
+        // Write metadata if present
+        if (hasMetadata) {
+            uint16_t chapterCount = hasChapters ? (uint16_t)chapters.length() : 0;
+            if (!writeMetadata(stream.get(), docView, chapterCount)) {
+                return false;
             }
         }
-    }
 
-    // Calculate offsets
-    uint64_t headerSize = sizeof(xtc_header_t);
-    uint64_t metadataSize = hasMetadata ? sizeof(xtc_metadata_t) : 0;
-    uint64_t chapterSize = hasChapters ? chapters.length() * sizeof(xtc_chapter_t) : 0;
-    uint64_t indexSize = exportPageCount * sizeof(xtc_page_index_t);
-
-    // Write placeholder header (will be updated at the end)
-    xtc_header_t header;
-    memset(&header, 0, sizeof(header));
-    header.magic = (m_format == XTC_FORMAT_XTC) ? XTC_MAGIC : XTCH_MAGIC;
-    header.version = XTC_VERSION;
-    header.pageCount = (uint16_t)exportPageCount;
-    header.readDirection = m_readDirection;
-    header.hasMetadata = hasMetadata ? 1 : 0;
-    header.hasThumbnails = 0;
-    header.hasChapters = hasChapters ? 1 : 0;
-    header.currentPage = 0;
-    header.metadataOffset = hasMetadata ? headerSize : 0;
-    // Chapters are stored after metadata, location defined by chapterOffset
-    header.chapterOffset = hasChapters ? (headerSize + metadataSize) : 0;
-    // Page index follows metadata and chapters
-    header.indexOffset = headerSize + metadataSize + chapterSize;
-    header.dataOffset = headerSize + metadataSize + chapterSize + indexSize;
-    header.thumbOffset = 0;
-
-    if (stream->Write(&header, sizeof(header), NULL) != LVERR_OK) {
-        docView->Resize(save_dx, save_dy);
-        return false;
-    }
-
-    // Write metadata if present
-    if (hasMetadata) {
-        uint16_t chapterCount = hasChapters ? (uint16_t)chapters.length() : 0;
-        if (!writeMetadata(stream.get(), docView, chapterCount)) {
-            docView->Resize(save_dx, save_dy);
-            return false;
+        // Write chapters if present
+        if (hasChapters) {
+            if (!writeChapters(stream.get(), chapters)) {
+                CRLog::error("XtcExporter: Failed to write chapters");
+                return false;
+            }
         }
-    }
 
-    // Write chapters if present
-    if (hasChapters) {
-        if (!writeChapters(stream.get(), chapters)) {
-            CRLog::error("XtcExporter: Failed to write chapters");
-            docView->Resize(save_dx, save_dy);
-            return false;
-        }
-    }
-
-    // Write placeholder page index (will be updated after pages are written)
-    LVArray<xtc_page_index_t> pageIndex(exportPageCount, xtc_page_index_t());
-    uint64_t indexPos = stream->GetPos();
-    for (int i = 0; i < exportPageCount; i++) {
-        xtc_page_index_t entry;
-        memset(&entry, 0, sizeof(entry));
-        if (stream->Write(&entry, sizeof(entry), NULL) != LVERR_OK) {
-            docView->Resize(save_dx, save_dy);
-            return false;
+        // Write placeholder page index (will be updated after pages are written)
+        indexPos = stream->GetPos();
+        for (int i = 0; i < exportPageCount; i++) {
+            xtc_page_index_t entry;
+            memset(&entry, 0, sizeof(entry));
+            if (stream->Write(&entry, sizeof(entry), NULL) != LVERR_OK) {
+                return false;
+            }
         }
     }
 
@@ -944,6 +1015,12 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
 #endif
 
     for (int i = 0; i < exportPageCount; i++) {
+        // Check for cancellation before each page
+        if (m_callback && m_callback->isCancelled()) {
+            CRLog::info("XtcExporter: Export cancelled by user at page %d", i);
+            return false;
+        }
+
         // Progress callback
         int percent = (i * 100) / exportPageCount;
         if (percent != lastPercent && m_callback) {
@@ -976,33 +1053,43 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         }
 #endif
 
-        // Debug: dump page as BMP if enabled
-        if (m_dumpImagesLimit != 0 && (m_dumpImagesLimit < 0 || dumpedCount < m_dumpImagesLimit)) {
-            // Generate filename: page_000.bmp, page_001.bmp, etc.
-            char bmpFilename[512];
-            snprintf(bmpFilename, sizeof(bmpFilename), "%spage_%03d.bmp", m_dumpDir.c_str(), i);
-            if (saveBmpFile(bmpFilename, drawbuf, bpp, m_grayPolicy)) {
-                CRLog::info("XtcExporter: Dumped page %d to %s", i, bmpFilename);
-                dumpedCount++;
-            } else {
-                CRLog::warn("XtcExporter: Failed to dump page %d to %s", i, bmpFilename);
+        if (isPreviewMode()) {
+            // Preview mode: store BMP in member variable instead of writing to file
+            m_previewBmp = renderToBmpBuffer(drawbuf, bpp, m_grayPolicy);
+            if (m_previewBmp.empty()) {
+                CRLog::error("XtcExporter: Failed to render preview for page %d", srcPageIdx);
+                return false;
             }
-        }
+        } else {
+            // Normal export mode
+            // Debug: dump page as BMP if enabled
+            if (m_dumpImagesLimit != 0 && (m_dumpImagesLimit < 0 || dumpedCount < m_dumpImagesLimit)) {
+                // Generate filename: page_000.bmp, page_001.bmp, etc.
+                char bmpFilename[512];
+                snprintf(bmpFilename, sizeof(bmpFilename), "%spage_%03d.bmp", m_dumpDir.c_str(), i);
+                if (saveBmpFile(bmpFilename, drawbuf, bpp, m_grayPolicy)) {
+                    CRLog::info("XtcExporter: Dumped page %d to %s", i, bmpFilename);
+                    dumpedCount++;
+                } else {
+                    CRLog::warn("XtcExporter: Failed to dump page %d to %s", i, bmpFilename);
+                }
+            }
 
-        // Write page data and record index entry
-        if (!writePage(stream.get(), drawbuf, pageIndex[i])) {
-            CRLog::error("XtcExporter: Failed to write page %d (source page %d)", i, srcPageIdx);
-            docView->Resize(save_dx, save_dy);
-            return false;
+            // Write page data and record index entry
+            if (!writePage(stream.get(), drawbuf, pageIndex[i])) {
+                CRLog::error("XtcExporter: Failed to write page %d (source page %d)", i, srcPageIdx);
+                return false;
+            }
         }
     }
 
-    // Update page index with actual offsets
-    stream->SetPos(indexPos);
-    for (int i = 0; i < exportPageCount; i++) {
-        if (stream->Write(&pageIndex[i], sizeof(xtc_page_index_t), NULL) != LVERR_OK) {
-            docView->Resize(save_dx, save_dy);
-            return false;
+    // Update page index with actual offsets (skip in preview mode)
+    if (!isPreviewMode()) {
+        stream->SetPos(indexPos);
+        for (int i = 0; i < exportPageCount; i++) {
+            if (stream->Write(&pageIndex[i], sizeof(xtc_page_index_t), NULL) != LVERR_OK) {
+                return false;
+            }
         }
     }
 
@@ -1011,13 +1098,12 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         m_callback->onProgress(100);
     }
 
-    // Restore view state
-    docView->setPageHeaderInfo(old_flags);
-    docView->Resize(save_dx, save_dy);
-    docView->clearImageCache();
-    docView->SetPos(save_pos);
-
-    CRLog::info("XtcExporter: Successfully exported %d pages (source pages %d-%d), %d chapters",
-                exportPageCount, actualStartPage, actualEndPage, chapters.length());
+    // View state will be restored by viewGuard destructor
+    if (isPreviewMode()) {
+        CRLog::info("XtcExporter: Successfully rendered preview for page %d", m_previewPage);
+    } else {
+        CRLog::info("XtcExporter: Successfully exported %d pages (source pages %d-%d), %d chapters",
+                    exportPageCount, actualStartPage, actualEndPage, chapters.length());
+    }
     return true;
 }
