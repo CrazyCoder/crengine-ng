@@ -48,7 +48,7 @@ static const short dither_2bpp_8x8[] = {
 // clang-format on
 
 lUInt32 Dither1BitColor(lUInt32 color, lUInt32 x, lUInt32 y) {
-    int cl = ((((color >> 16) & 255) + ((color >> 8) & 255) + ((color) & 255)) * (256 / 3)) >> 8;
+    int cl = static_cast<int>(((((color >> 16) & 255) + ((color >> 8) & 255) + ((color) & 255)) * (256 / 3)) >> 8);
     if (cl < 16)
         return 0;
     else if (cl >= 240)
@@ -65,7 +65,7 @@ lUInt32 Dither1BitColor(lUInt32 color, lUInt32 x, lUInt32 y) {
 }
 
 lUInt32 Dither2BitColor(lUInt32 color, lUInt32 x, lUInt32 y) {
-    int cl = ((((color >> 16) & 255) + ((color >> 8) & 255) + ((color) & 255)) * (256 / 3)) >> 8;
+    int cl = static_cast<int>(((((color >> 16) & 255) + ((color >> 8) & 255) + ((color) & 255)) * (256 / 3)) >> 8);
     if (cl < 5)
         return 0;
     else if (cl >= 250)
@@ -86,7 +86,7 @@ lUInt32 DitherNBitColor(lUInt32 color, lUInt32 x, lUInt32 y, int bits) {
     int mask = ((1 << bits) - 1) << (8 - bits);
     // gray = (r + 2*g + b)>>2
     //int cl = ((((color>>16) & 255) + ((color>>(8-1)) & (255<<1)) + ((color) & 255)) >> 2) & 255;
-    int cl = ((((color >> 16) & 255) + ((color >> (8 - 1)) & (255 << 1)) + ((color) & 255)) >> 2) & 255;
+    int cl = static_cast<int>(((((color >> 16) & 255) + ((color >> (8 - 1)) & (255 << 1)) + ((color) & 255)) >> 2) & 255);
     int white = (1 << bits) - 1;
     int precision = white;
     if (cl < precision)
@@ -199,18 +199,18 @@ void ApplyAlphaGray8( lUInt8 &dst, lUInt8 src, lUInt8 alpha )
 
 #include <lvbasedrawbuf.h>
 #include <crsetup.h>
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 
 DitheringOptions getDefault1BitDitheringOptions() {
     // Tuned for 1-bit e-ink: slightly higher threshold for darker output,
     // reduced error diffusion to minimize noise
-    return DitheringOptions(0.70f, 0.85f, 1.0f, true);
+    return {0.70f, 0.85f, 1.0f, true};
 }
 
 DitheringOptions getDefault2BitDitheringOptions() {
     // 2-bit has more levels, needs less aggressive adjustments
-    return DitheringOptions(0.5f, 0.95f, 1.0f, true);
+    return {0.50f, 0.95f, 1.0f, true};
 }
 
 void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
@@ -241,10 +241,10 @@ void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
     if (useGamma) {
         float invGamma = 1.0f / opts.gamma;
         for (int i = 0; i < 256; i++) {
-            float normalized = i / 255.0f;
+            float normalized = static_cast<float>(i) / 255.0f;
             float corrected = powf(normalized, invGamma);
-            int val = (int)(corrected * 255.0f + 0.5f);
-            gammaLUT[i] = (lUInt8)(val < 0 ? 0 : (val > 255 ? 255 : val));
+            int val = std::lround(corrected * 255.0f);
+            gammaLUT[i] = static_cast<lUInt8>(val < 0 ? 0 : (val > 255 ? 255 : val));
         }
     }
 
@@ -253,10 +253,10 @@ void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
     const int maxLevel = numLevels - 1;
 
     // Calculate threshold value (0-255 scale)
-    const int threshold1bit = (int)(opts.threshold * 255.0f + 0.5f);
+    const int threshold1bit = std::lround(opts.threshold * 255.0f);
 
     // Error diffusion multiplier (fixed-point: 256 = 1.0)
-    const int errMult = (int)(opts.errorDiffusion * 256.0f + 0.5f);
+    const int errMult = std::lround(opts.errorDiffusion * 256.0f);
 
     // Quantize value to target level with configurable threshold
     auto quantize = [targetBpp, maxLevel, threshold1bit, &opts](int val8) -> int {
@@ -281,8 +281,8 @@ void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
     };
 
     // Allocate error buffers for current and next row
-    short* errorCur = new short[width + 2]();
-    short* errorNext = new short[width + 2]();
+    auto* errorCur = new short[width + 2]();
+    auto* errorNext = new short[width + 2]();
     errorCur++;
     errorNext++;
 
@@ -342,7 +342,7 @@ void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
         int yy = y + dst_y;
         if (yy >= clip.top && yy < clip.bottom) {
             if (bpp == 2) {
-                lUInt8* dstRow = (lUInt8*)dst->GetScanLine(yy);
+                auto* dstRow = dst->GetScanLine(yy);
                 for (int x = 0; x < width; x++) {
                     int xx = x + dst_x;
                     if (xx < clip.left || xx >= clip.right)
@@ -365,10 +365,10 @@ void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
                     int bitindex = (3 - (xx & 3)) << 1;
                     lUInt8 mask = 0xC0 >> (6 - bitindex);
                     dcl = dcl << bitindex;
-                    dstRow[byteindex] = (lUInt8)((dstRow[byteindex] & (~mask)) | dcl);
+                    dstRow[byteindex] = static_cast<lUInt8>((dstRow[byteindex] & (~mask)) | dcl);
                 }
             } else if (bpp == 1) {
-                lUInt8* dstRow = (lUInt8*)dst->GetScanLine(yy);
+                auto* dstRow = dst->GetScanLine(yy);
                 for (int x = 0; x < width; x++) {
                     int xx = x + dst_x;
                     if (xx < clip.left || xx >= clip.right)
@@ -387,7 +387,7 @@ void applyFloydSteinbergDither(LVBaseDrawBuf* dst, int dst_x, int dst_y,
                 }
             } else {
                 // For other bit depths, just write grayscale value
-                lUInt8* dstRow = (lUInt8*)dst->GetScanLine(yy) + dst_x;
+                lUInt8* dstRow = dst->GetScanLine(yy) + dst_x;
                 for (int x = 0; x < width; x++) {
                     int xx = x + dst_x;
                     if (xx < clip.left || xx >= clip.right)
