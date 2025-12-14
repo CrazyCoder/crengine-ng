@@ -1952,49 +1952,51 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     lUInt32 cl1 = m_statusColor != 0xFF000000 ? m_statusColor : getTextColor();
     int percent = getPosPercent();
 
-    // draw navbar
-    bool leftPage = (getVisiblePageCount() == 2 && !(pageIndex & 1));
-    if (leftPage)
-        percent = 10000;
-    int percent_pos = percent * info.width() / 10000;
-    LVArray<int>& sbounds = getSectionBounds(info.width() / 3, 3);
-    int sbound_index = 0;
-    bool enableMarks = !leftPage && (phi & PGHDR_CHAPTER_MARKS);
-    for (int x = info.left; x < info.right; x++) {
-        lUInt32 cl = 0xFFFFFFFF;
-        int sz = thinw;
-        int boundCategory = 0;
-        while (enableMarks && sbound_index < sbounds.length()) {
-            int sx = info.left + sbounds[sbound_index] * (info.width() - 1) / 10000;
-            if (sx < x) {
-                sbound_index++;
-                continue;
-            }
-            if (myabs(sx - x) < thinw) {
-                boundCategory = 1;
-            }
-            break;
-        }
-        if (leftPage) {
-            cl = cl1;
-            sz = thinw;
-        } else {
-            if (x < info.left + percent_pos) {
-                sz = boldw;
-                if (boundCategory == 0)
-                    cl = cl1;
-                else {
-                    sz = 0;
-                    x += markw - 1;
+    // draw navbar (if enabled)
+    if (phi & PGHDR_NAVBAR) {
+        bool leftPage = (getVisiblePageCount() == 2 && !(pageIndex & 1));
+        if (leftPage)
+            percent = 10000;
+        int percent_pos = percent * info.width() / 10000;
+        LVArray<int>& sbounds = getSectionBounds(info.width() / 3, 3);
+        int sbound_index = 0;
+        bool enableMarks = !leftPage && (phi & PGHDR_CHAPTER_MARKS);
+        for (int x = info.left; x < info.right; x++) {
+            lUInt32 cl = 0xFFFFFFFF;
+            int sz = thinw;
+            int boundCategory = 0;
+            while (enableMarks && sbound_index < sbounds.length()) {
+                int sx = info.left + sbounds[sbound_index] * (info.width() - 1) / 10000;
+                if (sx < x) {
+                    sbound_index++;
+                    continue;
                 }
-            } else {
-                if (boundCategory != 0)
-                    sz = markh;
-                cl = cl1;
+                if (myabs(sx - x) < thinw) {
+                    boundCategory = 1;
+                }
+                break;
             }
-        }
-        if (cl != 0xFFFFFFFF && sz > 0) {
-            drawbuf->FillRect(x, gpos - sz / 2, x + 1, gpos + sz / 2 + 1, cl);
+            if (leftPage) {
+                cl = cl1;
+                sz = thinw;
+            } else {
+                if (x < info.left + percent_pos) {
+                    sz = boldw;
+                    if (boundCategory == 0)
+                        cl = cl1;
+                    else {
+                        sz = 0;
+                        x += markw - 1;
+                    }
+                } else {
+                    if (boundCategory != 0)
+                        sz = markh;
+                    cl = cl1;
+                }
+            }
+            if (cl != 0xFFFFFFFF && sz > 0) {
+                drawbuf->FillRect(x, gpos - sz / 2, x + 1, gpos + sz / 2 + 1, cl);
+            }
         }
     }
 
@@ -6927,6 +6929,7 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->setBoolDef(PROP_SHOW_PAGE_NUMBER, true);
     props->setBoolDef(PROP_SHOW_POS_PERCENT, false);
     props->setBoolDef(PROP_STATUS_CHAPTER_MARKS, true);
+    props->setBoolDef(PROP_STATUS_NAVBAR, true);
 
     static int margin_options[] = { 0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 40, 50, 60, 80, 100, 130, 150, 200, 300 };
     props->limitValueList(PROP_PAGE_MARGIN_TOP, margin_options, sizeof(margin_options) / sizeof(int), 6);
@@ -6975,10 +6978,10 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
 }
 
 void LVDocView::setStatusMode(int pos, bool showClock, bool showTitle,
-                              bool showBattery, bool showBatteryPercent, bool showChapterMarks, bool showPosPercent, bool showPageNumber, bool showPageCount) {
-    CRLog::debug("LVDocView::setStatusMode(%d, %s %s %s %s)", pos,
+                              bool showBattery, bool showBatteryPercent, bool showNavbar, bool showChapterMarks, bool showPosPercent, bool showPageNumber, bool showPageCount) {
+    CRLog::debug("LVDocView::setStatusMode(%d, %s %s %s %s %s)", pos,
                  showClock ? "clock" : "", showTitle ? "title" : "",
-                 showBattery ? "battery" : "", showChapterMarks ? "marks" : "");
+                 showBattery ? "battery" : "", showNavbar ? "navbar" : "", showChapterMarks ? "marks" : "");
     setPageHeaderPosition(pos);
     lUInt32 phi = 0;
     if (showClock)
@@ -6989,7 +6992,9 @@ void LVDocView::setStatusMode(int pos, bool showClock, bool showTitle,
         phi |= PGHDR_BATTERY;
     if (showBatteryPercent)
         phi |= PGHDR_BATTERY_PERCENT;
-    if (showChapterMarks)
+    if (showNavbar)
+        phi |= PGHDR_NAVBAR;
+    if (showNavbar && showChapterMarks)
         phi |= PGHDR_CHAPTER_MARKS;
     if (showPosPercent)
         phi |= PGHDR_PERCENT;
@@ -7146,13 +7151,14 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
             }
         } else if (name == PROP_STATUS_FONT_FACE) {
             setStatusFontFace(UnicodeToUtf8(value));
-        } else if (name == PROP_STATUS_LINE || name == PROP_SHOW_TIME || name == PROP_SHOW_TITLE || name == PROP_SHOW_BATTERY || name == PROP_SHOW_BATTERY_PERCENT || name == PROP_STATUS_CHAPTER_MARKS || name == PROP_SHOW_POS_PERCENT || name == PROP_SHOW_PAGE_COUNT || name == PROP_SHOW_PAGE_NUMBER) {
+        } else if (name == PROP_STATUS_LINE || name == PROP_SHOW_TIME || name == PROP_SHOW_TITLE || name == PROP_SHOW_BATTERY || name == PROP_SHOW_BATTERY_PERCENT || name == PROP_STATUS_NAVBAR || name == PROP_STATUS_CHAPTER_MARKS || name == PROP_SHOW_POS_PERCENT || name == PROP_SHOW_PAGE_COUNT || name == PROP_SHOW_PAGE_NUMBER) {
             m_props->setString(name.c_str(), value);
             setStatusMode(m_props->getIntDef(PROP_STATUS_LINE, 1),
                           m_props->getBoolDef(PROP_SHOW_TIME, false),
                           m_props->getBoolDef(PROP_SHOW_TITLE, true),
                           m_props->getBoolDef(PROP_SHOW_BATTERY, true),
                           m_props->getBoolDef(PROP_SHOW_BATTERY_PERCENT, true),
+                          m_props->getBoolDef(PROP_STATUS_NAVBAR, true),
                           m_props->getBoolDef(PROP_STATUS_CHAPTER_MARKS, true),
                           m_props->getBoolDef(PROP_SHOW_POS_PERCENT, false),
                           m_props->getBoolDef(PROP_SHOW_PAGE_NUMBER, true),

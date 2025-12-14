@@ -61,6 +61,7 @@
 #define PROP_SHOW_TIME_12HOURS    "window.status.clock.12hours"
 #define PROP_SHOW_TITLE           "window.status.title"
 #define PROP_STATUS_CHAPTER_MARKS "crengine.page.header.chapter.marks"
+#define PROP_STATUS_NAVBAR        "crengine.page.header.navbar"
 #define PROP_SHOW_BATTERY         "window.status.battery"
 #define PROP_SHOW_POS_PERCENT     "window.status.pos.percent"
 #define PROP_SHOW_PAGE_COUNT      "window.status.pos.page.count"

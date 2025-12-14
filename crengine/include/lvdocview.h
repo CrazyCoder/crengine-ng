@@ -277,7 +277,8 @@ enum
     PGHDR_BATTERY = 32,         // show current battery charge
     PGHDR_CHAPTER_MARKS = 64,   // show chapter marks
     PGHDR_PERCENT = 128,        // show current posistion in percent
-    PGHDR_BATTERY_PERCENT = 256 // show current battery charge in percent
+    PGHDR_BATTERY_PERCENT = 256, // show current battery charge in percent
+    PGHDR_NAVBAR = 512           // show navigation bar (progress indicator)
 };
 
 //typedef lUInt64 LVPosBookmark;
@@ -466,7 +467,7 @@ public:
     /// get screen rectangle for specified cursor position, returns false if not visible
     bool getCursorRect(ldomXPointer ptr, lvRect& rc, bool scrollToCursor = false);
     /// set status bar and clock mode
-    void setStatusMode(int pos, bool showClock, bool showTitle, bool showBattery, bool showBatteryPercent, bool showChapterMarks, bool showPosPercent, bool showPageNumber, bool showPageCount);
+    void setStatusMode(int pos, bool showClock, bool showTitle, bool showBattery, bool showBatteryPercent, bool showNavbar, bool showChapterMarks, bool showPosPercent, bool showPageNumber, bool showPageCount);
     /// draw to specified buffer by either Y pos or page number (unused param should be -1)
     void Draw(LVDrawBuf& drawbuf, int pageTopPosition, int pageNumber, bool rotate, bool autoresize = true);
     /// ensure current position is set to current bookmark value
