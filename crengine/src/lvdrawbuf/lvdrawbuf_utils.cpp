@@ -203,9 +203,8 @@ void ApplyAlphaGray8( lUInt8 &dst, lUInt8 src, lUInt8 alpha )
 #include <cmath>
 
 DitheringOptions getDefault1BitDitheringOptions() {
-    // Tuned for 1-bit e-ink: slightly higher threshold for darker output,
-    // reduced error diffusion to minimize noise
-    return {0.70f, 0.85f, 1.0f, true};
+    // Tuned for 1-bit e-ink
+    return {0.50f, 0.70f, 1.0f, true};
 }
 
 DitheringOptions getDefault2BitDitheringOptions() {
