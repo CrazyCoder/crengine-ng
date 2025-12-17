@@ -1048,7 +1048,9 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         drawbuf.setDitheringOptions(m_ditheringOptions);
         // Set position for correct page header progress bar
         docView->SetPos((*pages)[srcPageIdx]->start, false);
-        docView->drawPageTo(&drawbuf, *(*pages)[srcPageIdx], NULL, exportPageCount, 0);
+        // Use totalPageCount for header display so page numbers show correctly
+        // (exportPageCount=1 in preview mode would cause header to show 0 total pages)
+        docView->drawPageTo(&drawbuf, *(*pages)[srcPageIdx], NULL, totalPageCount, 0);
 
         // Apply rotation to get final target dimensions
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
