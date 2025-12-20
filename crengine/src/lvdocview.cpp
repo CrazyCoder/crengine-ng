@@ -175,6 +175,7 @@ static const css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 
 #define HEADER_MARGIN          3
 #define HEADER_NAVBAR_H        5 // marks on navigation bar, scaled by DPI
+#define HEADER_PROGRESS_H      2 // progress bar without chapter marks, scaled by DPI
 #define PAGE_HEADER_POS_NONE   0
 #define PAGE_HEADER_POS_TOP    1
 #define PAGE_HEADER_POS_BOTTOM 2
@@ -1480,6 +1481,10 @@ int LVDocView::GetFullHeight() {
     return (rd.getHeight() + rd.getY() + vertInsets);
 }
 
+/// Flags that require text/icon display area (all except NAVBAR and CHAPTER_MARKS)
+#define PGHDR_TEXT_ICONS_MASK (PGHDR_PAGE_NUMBER | PGHDR_PAGE_COUNT | PGHDR_AUTHOR | PGHDR_TITLE | \
+                               PGHDR_CLOCK | PGHDR_BATTERY | PGHDR_PERCENT | PGHDR_BATTERY_PERCENT)
+
 /// calculate page header height
 int LVDocView::getPageHeaderHeight() const {
     if (PAGE_HEADER_POS_NONE == m_pageHeaderPos)
@@ -1488,7 +1493,40 @@ int LVDocView::getPageHeaderHeight() const {
         return 0;
     if (!m_infoFont)
         return 0;
-    // Page header layout
+
+    int navbarh = scaleForRenderDPI(HEADER_NAVBAR_H);
+
+    // Check if we have any text/icons to display (flags other than NAVBAR and CHAPTER_MARKS)
+    bool hasTextOrIcons = (m_pageHeaderInfo & PGHDR_TEXT_ICONS_MASK) != 0;
+
+    if (!hasTextOrIcons) {
+        // Navbar-only mode: reduced height with just the progress bar
+        // Use smaller height if chapter marks are not displayed
+        bool hasChapterMarks = (m_pageHeaderInfo & PGHDR_CHAPTER_MARKS) != 0;
+        int barh = hasChapterMarks ? navbarh : scaleForRenderDPI(HEADER_PROGRESS_H);
+        // Page header layout (navbar only):
+        //---------------------------------------
+        //                                      |    reduced margin
+        //======================================    navbar/progress bar
+        //---------------------------------------
+        int height = barh + 2 * HEADER_MARGIN;
+        if (m_allowPageHeaderOverlap) {
+            switch (m_pageHeaderPos) {
+                case PAGE_HEADER_POS_TOP:
+                    if (m_pageInsets.top > height)
+                        height = m_pageInsets.top;
+                    break;
+                case PAGE_HEADER_POS_BOTTOM:
+                    if (m_pageInsets.bottom > height)
+                        height = m_pageInsets.bottom;
+                    break;
+            }
+        }
+        return height;
+    }
+
+    // Full header with text/icons
+    // Page header layout:
     //---------------------------------------------------------------------------------------
     //                                                                                      |    header margin
     //   Author    Title                                                         9,78% [67%]|    text
@@ -1498,7 +1536,6 @@ int LVDocView::getPageHeaderHeight() const {
     //---------------------------------------------------------------------------------------
     // Slightly reduce the height of the text at the expense of part of ascender and descender
     int textH = (9 * getInfoFont()->getHeight() + 5) / 10;
-    int navbarh = scaleForRenderDPI(HEADER_NAVBAR_H);
     int bh = 0;
     if (((m_pageHeaderInfo & (PGHDR_BATTERY | PGHDR_BATTERY_PERCENT)) == PGHDR_BATTERY) && (m_batteryIcons.length() > 0))
         bh = m_batteryIcons[0]->GetHeight();
@@ -1933,13 +1970,20 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     drawbuf->GetClipRect(&oldcr);
     drawbuf->SetClipRect(&headerRc);
     lvRect info = headerRc;
+
+    // Determine bar height for gpos calculation
+    // In navbar-only mode without chapter marks, use smaller progress bar height
+    bool hasTextOrIcons = (phi & PGHDR_TEXT_ICONS_MASK) != 0;
+    bool hasChapterMarks = (phi & PGHDR_CHAPTER_MARKS) != 0;
+    int barh = (!hasTextOrIcons && !hasChapterMarks) ? scaleForRenderDPI(HEADER_PROGRESS_H) : markh;
+
     int gpos = 0;
     switch (m_pageHeaderPos) {
         case PAGE_HEADER_POS_TOP:
-            gpos = info.bottom - (markh + 1) / 2;
+            gpos = info.bottom - (barh + 1) / 2;
             break;
         case PAGE_HEADER_POS_BOTTOM:
-            gpos = info.top + markh / 2;
+            gpos = info.top + barh / 2;
             break;
         default:
             break;
