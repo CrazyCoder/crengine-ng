@@ -374,6 +374,9 @@ private:
     int m_pagesVisibleOverride;
     int m_pageHeaderPos;
     lUInt32 m_pageHeaderInfo;
+    int m_headerMarginH;      // horizontal margin (left/right gap from screen corners)
+    int m_headerMarginV;      // vertical margin (top/bottom padding)
+    int m_headerNavbarH;      // navbar mark height (scaled by DPI)
     bool m_showCover;
     LVRefVec<LVImageSource> m_headerIcons;
     LVRefVec<LVImageSource> m_batteryIcons;

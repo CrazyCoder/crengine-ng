@@ -62,6 +62,9 @@
 #define PROP_SHOW_TITLE           "window.status.title"
 #define PROP_STATUS_CHAPTER_MARKS "crengine.page.header.chapter.marks"
 #define PROP_STATUS_NAVBAR        "crengine.page.header.navbar"
+#define PROP_PAGE_HEADER_MARGIN_H "crengine.page.header.margin.horizontal" // horizontal margin (left/right gap)
+#define PROP_PAGE_HEADER_MARGIN_V "crengine.page.header.margin.vertical"   // vertical margin (top/bottom)
+#define PROP_PAGE_HEADER_NAVBAR_H "crengine.page.header.navbar.height"     // navbar mark height (scaled by DPI)
 #define PROP_SHOW_BATTERY         "window.status.battery"
 #define PROP_SHOW_POS_PERCENT     "window.status.pos.percent"
 #define PROP_SHOW_PAGE_COUNT      "window.status.pos.page.count"

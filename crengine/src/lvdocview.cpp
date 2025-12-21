@@ -173,8 +173,7 @@ static const css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 #define DEFAULT_PAGE_MARGIN 12
 #endif
 
-#define HEADER_MARGIN          3
-#define HEADER_NAVBAR_H        5 // marks on navigation bar, scaled by DPI
+// HEADER_MARGIN and HEADER_NAVBAR_H are now configurable via m_headerMarginV and m_headerNavbarH
 #define HEADER_PROGRESS_H      2 // progress bar without chapter marks, scaled by DPI
 #define PAGE_HEADER_POS_NONE   0
 #define PAGE_HEADER_POS_TOP    1
@@ -228,6 +227,9 @@ LVDocView::LVDocView(int bitsPerPixel, bool noDefaultDocument)
         , m_pagesVisibleOverride(0)
         , m_pageHeaderPos(PAGE_HEADER_POS_TOP)
         , m_pageHeaderInfo(PGHDR_PAGE_NUMBER | PGHDR_CLOCK | PGHDR_BATTERY | PGHDR_PAGE_COUNT | PGHDR_AUTHOR | PGHDR_TITLE)
+        , m_headerMarginH(5)  // horizontal margin (left/right gap from screen corners)
+        , m_headerMarginV(3)  // vertical margin (top/bottom padding)
+        , m_headerNavbarH(5)  // navbar mark height (scaled by DPI)
         , m_showCover(true)
         , m_decimalPointChar('.')
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
@@ -1494,7 +1496,7 @@ int LVDocView::getPageHeaderHeight() const {
     if (!m_infoFont)
         return 0;
 
-    int navbarh = scaleForRenderDPI(HEADER_NAVBAR_H);
+    int navbarh = scaleForRenderDPI(m_headerNavbarH);
 
     // Check if we have any text/icons to display (flags other than NAVBAR and CHAPTER_MARKS)
     bool hasTextOrIcons = (m_pageHeaderInfo & PGHDR_TEXT_ICONS_MASK) != 0;
@@ -1509,7 +1511,7 @@ int LVDocView::getPageHeaderHeight() const {
         //                                      |    reduced margin
         //======================================    navbar/progress bar
         //---------------------------------------
-        int height = barh + 2 * HEADER_MARGIN;
+        int height = barh + 2 * m_headerMarginV;
         if (m_allowPageHeaderOverlap) {
             switch (m_pageHeaderPos) {
                 case PAGE_HEADER_POS_TOP:
@@ -1541,7 +1543,7 @@ int LVDocView::getPageHeaderHeight() const {
         bh = m_batteryIcons[0]->GetHeight();
     if (bh + 2 > textH)
         textH = bh + 2;
-    int height = textH + HEADER_MARGIN + navbarh + 1;
+    int height = textH + m_headerMarginV + navbarh + 1;
     if (m_allowPageHeaderOverlap) {
         switch (m_pageHeaderPos) {
             case PAGE_HEADER_POS_TOP:
@@ -1582,8 +1584,8 @@ void LVDocView::getPageHeaderRectangle(int pageIndex, lvRect& headerRc) const {
             default:
                 break;
         }
-        headerRc.left += HEADER_MARGIN;
-        headerRc.right -= HEADER_MARGIN;
+        headerRc.left += m_headerMarginH;
+        headerRc.right -= m_headerMarginH;
         if (!m_allowPageHeaderOverlap) {
             headerRc.left += m_pageInsets.left;
             headerRc.right -= m_pageInsets.right;
@@ -1945,8 +1947,7 @@ void LVDocView::setPageHeaderOverride(lString32 s) {
     clearImageCache();
 }
 
-// a gap from the corners of the screeen when the device has rounded screen corners
-#define CORNER_GAP 5
+// CORNER_GAP is now configurable via m_headerMarginH
 
 /// draw page header to buffer
 void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
@@ -1958,7 +1959,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     int h = GetHeight();
     if (w > h)
         w = h;
-    int markh = scaleForRenderDPI(HEADER_NAVBAR_H);
+    int markh = scaleForRenderDPI(m_headerNavbarH);
     int markw = scaleForRenderDPI(7) / 10;
     int thinw = scaleForRenderDPI(7) / 10;
     int boldw = scaleForRenderDPI(2);
@@ -1983,7 +1984,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
             gpos = info.bottom - (barh + 1) / 2;
             break;
         case PAGE_HEADER_POS_BOTTOM:
-            gpos = info.top + barh / 2;
+            gpos = info.top + (barh - 1) / 2;
             break;
         default:
             break;
@@ -2001,16 +2002,20 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
         bool leftPage = (getVisiblePageCount() == 2 && !(pageIndex & 1));
         if (leftPage)
             percent = 10000;
-        int percent_pos = percent * info.width() / 10000;
-        LVArray<int>& sbounds = getSectionBounds(info.width() / 3, 3);
+        // Apply horizontal margins to navbar (same as text margins)
+        int navLeft = info.left + m_headerMarginH;
+        int navRight = info.right - m_headerMarginH;
+        int navWidth = navRight - navLeft;
+        int percent_pos = percent * navWidth / 10000;
+        LVArray<int>& sbounds = getSectionBounds(navWidth / 3, 3);
         int sbound_index = 0;
         bool enableMarks = !leftPage && (phi & PGHDR_CHAPTER_MARKS);
-        for (int x = info.left; x < info.right; x++) {
+        for (int x = navLeft; x < navRight; x++) {
             lUInt32 cl = 0xFFFFFFFF;
             int sz = thinw;
             int boundCategory = 0;
             while (enableMarks && sbound_index < sbounds.length()) {
-                int sx = info.left + sbounds[sbound_index] * (info.width() - 1) / 10000;
+                int sx = navLeft + sbounds[sbound_index] * (navWidth - 1) / 10000;
                 if (sx < x) {
                     sbound_index++;
                     continue;
@@ -2024,7 +2029,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
                 cl = cl1;
                 sz = thinw;
             } else {
-                if (x < info.left + percent_pos) {
+                if (x < navLeft + percent_pos) {
                     sz = boldw;
                     if (boundCategory == 0)
                         cl = cl1;
@@ -2053,12 +2058,12 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     //  texty = <text_bounding_rect_top> + (<text_bounding_rect_bottom> - <text_bounding_rect_top> - <text_height>)/2
     switch (m_pageHeaderPos) {
         case PAGE_HEADER_POS_TOP:
-            text_top = info.top + HEADER_MARGIN;
+            text_top = info.top + m_headerMarginV;
             texty = text_top + (gpos - thinw - text_top - m_infoFont->getHeight() + 1) / 2;
             break;
         case PAGE_HEADER_POS_BOTTOM:
             text_top = gpos + thinw + 2; // TODO: adjustable margin from bottom
-            texty = text_top + (info.bottom - HEADER_MARGIN - text_top - m_infoFont->getHeight() + 1) / 2;
+            texty = text_top + (info.bottom - m_headerMarginV - text_top - m_infoFont->getHeight() + 1) / 2;
             break;
         default:
             break;
@@ -2087,12 +2092,12 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
                 switch (m_pageHeaderPos) {
                     default:
                     case PAGE_HEADER_POS_TOP:
-                        brc.top += HEADER_MARGIN;
+                        brc.top += m_headerMarginV;
                         brc.bottom = gpos - thinw;
                         break;
                     case PAGE_HEADER_POS_BOTTOM:
                         brc.top = gpos + thinw + 1;
-                        brc.bottom -= HEADER_MARGIN;
+                        brc.bottom -= m_headerMarginV;
                         break;
                 }
                 int batteryIconWidth = 28;
@@ -2154,8 +2159,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
         if (!pageinfo.empty()) {
             // pageinfo << " ";
             piw = m_infoFont->getTextWidth(pageinfo.c_str(), pageinfo.length());
-            // TODO: adjustable margins from bottom right corner
-            m_infoFont->DrawTextString(drawbuf, info.right - piw - CORNER_GAP, texty,
+            m_infoFont->DrawTextString(drawbuf, info.right - piw - m_headerMarginH, texty,
                                        pageinfo.c_str(), pageinfo.length(), U' ', NULL, false);
             info.right -= piw + info.height() / 2;
         }
@@ -2205,7 +2209,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     drawbuf->SetClipRect(&newcr);
     text = fitTextWidthWithEllipsis(text, m_infoFont, newcr.width());
     if (!text.empty()) {
-        m_infoFont->DrawTextString(drawbuf, info.left + CORNER_GAP, texty, text.c_str(),
+        m_infoFont->DrawTextString(drawbuf, info.left + m_headerMarginH, texty, text.c_str(),
                                    text.length(), U' ', NULL, false);
     }
     drawbuf->SetClipRect(&oldcr);
@@ -6974,6 +6978,9 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->setBoolDef(PROP_SHOW_POS_PERCENT, false);
     props->setBoolDef(PROP_STATUS_CHAPTER_MARKS, true);
     props->setBoolDef(PROP_STATUS_NAVBAR, true);
+    props->setIntDef(PROP_PAGE_HEADER_MARGIN_H, 5); // horizontal margin (left/right gap)
+    props->setIntDef(PROP_PAGE_HEADER_MARGIN_V, 3); // vertical margin (top/bottom)
+    props->setIntDef(PROP_PAGE_HEADER_NAVBAR_H, 5); // navbar mark height (scaled by DPI)
 
     static int margin_options[] = { 0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 40, 50, 60, 80, 100, 130, 150, 200, 300 };
     props->limitValueList(PROP_PAGE_MARGIN_TOP, margin_options, sizeof(margin_options) / sizeof(int), 6);
@@ -7321,6 +7328,15 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
         } else if (name == PROP_CACHE_VALIDATION_ENABLED) {
             bool value = props->getBoolDef(PROP_CACHE_VALIDATION_ENABLED, true);
             enableCacheFileContentsValidation(value);
+        } else if (name == PROP_PAGE_HEADER_MARGIN_H) {
+            m_headerMarginH = props->getIntDef(PROP_PAGE_HEADER_MARGIN_H, 5);
+            clearImageCache();
+        } else if (name == PROP_PAGE_HEADER_MARGIN_V) {
+            m_headerMarginV = props->getIntDef(PROP_PAGE_HEADER_MARGIN_V, 3);
+            clearImageCache();
+        } else if (name == PROP_PAGE_HEADER_NAVBAR_H) {
+            m_headerNavbarH = props->getIntDef(PROP_PAGE_HEADER_NAVBAR_H, 5);
+            clearImageCache();
         } else {
             // unknown property, adding to list of unknown properties
             unknown->setString(name.c_str(), value);
