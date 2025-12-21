@@ -174,7 +174,7 @@ static const css_font_family_t DEFAULT_FONT_FAMILY = css_ff_sans_serif;
 #endif
 
 // HEADER_MARGIN and HEADER_NAVBAR_H are now configurable via m_headerMarginV and m_headerNavbarH
-#define HEADER_PROGRESS_H      2 // progress bar without chapter marks, scaled by DPI
+#define HEADER_PROGRESS_H      3 // progress bar without chapter marks, scaled by DPI
 #define PAGE_HEADER_POS_NONE   0
 #define PAGE_HEADER_POS_TOP    1
 #define PAGE_HEADER_POS_BOTTOM 2
@@ -1981,10 +1981,10 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
     int gpos = 0;
     switch (m_pageHeaderPos) {
         case PAGE_HEADER_POS_TOP:
-            gpos = info.bottom - (barh + 1) / 2;
+            gpos = info.bottom - (barh + 2) / 2;
             break;
         case PAGE_HEADER_POS_BOTTOM:
-            gpos = info.top + (barh - 1) / 2;
+            gpos = info.top + barh / 2;
             break;
         default:
             break;
@@ -2062,7 +2062,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
             texty = text_top + (gpos - thinw - text_top - m_infoFont->getHeight() + 1) / 2;
             break;
         case PAGE_HEADER_POS_BOTTOM:
-            text_top = gpos + thinw + 2; // TODO: adjustable margin from bottom
+            text_top = gpos + thinw;
             texty = text_top + (info.bottom - m_headerMarginV - text_top - m_infoFont->getHeight() + 1) / 2;
             break;
         default:
