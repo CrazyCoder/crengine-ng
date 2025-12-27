@@ -621,9 +621,10 @@ lString32 mergeCssMacros(CRPropRef props) {
 }
 
 /// Merge all CSS macro properties into a formatted multi-line string with proper indentation.
-/// Each property is placed on its own line with the specified indent.
+/// First property appears inline (no leading indent/newline), subsequent properties start on new lines with indent.
 lString32 mergeCssMacrosFormatted(CRPropRef props, const lString8& indent) {
     lString8 res = lString8::empty_str;
+    bool firstProperty = true;
     for (int i = 0; i < props->getCount(); i++) {
         lString8 n(props->getName(i));
         if (n.endsWith(".day") || n.endsWith(".night"))
@@ -632,10 +633,16 @@ lString32 mergeCssMacrosFormatted(CRPropRef props, const lString8& indent) {
         if (!v.empty()) {
             if (v.lastChar() != ';')
                 v.append(1, ';');
-            // Add indent + value + newline
-            res.append(indent);
-            res.append(UnicodeToUtf8(v));
-            res.append(1, '\n');
+            if (firstProperty) {
+                // First property: inline, no leading indent/newline
+                res.append(UnicodeToUtf8(v));
+                firstProperty = false;
+            } else {
+                // Subsequent properties: newline + indent + value
+                res.append(1, '\n');
+                res.append(indent);
+                res.append(UnicodeToUtf8(v));
+            }
         }
     }
     return Utf8ToUnicode(res);
@@ -733,12 +740,11 @@ lString8 substituteCssMacrosFormatted(lString8 src, CRPropRef props) {
                     // merge whole branch with formatting
                     v = mergeCssMacrosFormatted(props->getSubProps(prop.substr(0, prop.length() - 3).c_str()), indent);
                 } else {
-                    // single property - just add semicolon and newline
+                    // single property - just add semicolon (no newline, template has proper structure)
                     props->getString(prop.c_str(), v);
                     if (!v.empty()) {
                         if (v.lastChar() != ';')
                             v.append(1, ';');
-                        v.append(1, '\n');
                     }
                 }
                 if (!v.empty()) {
