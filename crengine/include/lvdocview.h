@@ -1155,4 +1155,23 @@ LVStreamRef LVGetBookCoverStream(const lChar8* filepath);
 /// draw book cover, either from image, or generated from title/authors
 void LVDrawBookCover(LVDrawBuf& buf, LVImageSourceRef image, bool respectAspectRatio, lString8 fontFace, lString32 title, lString32 authors, lString32 seriesName, int seriesNumber);
 
+//=============================================================================
+// CSS Macro Expansion Utilities
+//=============================================================================
+
+/// Generate CSS with all $variables substituted from properties.
+/// Returns formatted CSS string suitable for human editing.
+/// @param cssTemplate CSS text containing $macro placeholders
+/// @param props Properties containing styles.* values for substitution
+/// @return Expanded CSS with proper formatting
+lString8 generateExpandedCSS(const lString8& cssTemplate, CRPropRef props);
+
+/// Save expanded CSS to file.
+/// Loads CSS template (with @import support), expands all $variables, and saves to output file.
+/// @param templatePath Path to CSS template file (e.g., fb2.css)
+/// @param outputPath Path for output file with expanded CSS
+/// @param props Properties containing styles.* values for substitution
+/// @return true on success, false on failure
+bool saveExpandedCSS(const lChar32* templatePath, const lChar32* outputPath, CRPropRef props);
+
 #endif

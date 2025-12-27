@@ -620,9 +620,49 @@ lString32 mergeCssMacros(CRPropRef props) {
     return Utf8ToUnicode(res);
 }
 
+/// Merge all CSS macro properties into a formatted multi-line string with proper indentation.
+/// Each property is placed on its own line with the specified indent.
+lString32 mergeCssMacrosFormatted(CRPropRef props, const lString8& indent) {
+    lString8 res = lString8::empty_str;
+    for (int i = 0; i < props->getCount(); i++) {
+        lString8 n(props->getName(i));
+        if (n.endsWith(".day") || n.endsWith(".night"))
+            continue;
+        lString32 v = props->getValue(i);
+        if (!v.empty()) {
+            if (v.lastChar() != ';')
+                v.append(1, ';');
+            // Add indent + value + newline
+            res.append(indent);
+            res.append(UnicodeToUtf8(v));
+            res.append(1, '\n');
+        }
+    }
+    return Utf8ToUnicode(res);
+}
+
+/// Detect the indentation at the current position in CSS source.
+/// Looks backward from position to find whitespace at line start.
+static lString8 detectIndent(const char* src, const char* pos) {
+    // Find the start of the current line
+    const char* lineStart = pos;
+    while (lineStart > src && *(lineStart - 1) != '\n')
+        lineStart--;
+
+    // Extract whitespace from lineStart to the first non-whitespace
+    lString8 indent;
+    const char* p = lineStart;
+    while (p < pos && (*p == ' ' || *p == '\t')) {
+        indent.append(1, *p);
+        p++;
+    }
+    return indent;
+}
+
 lString8 substituteCssMacros(lString8 src, CRPropRef props) {
     lString8 res = lString8(src.length());
-    const char* s = src.c_str();
+    const char* srcStart = src.c_str();
+    const char* s = srcStart;
     for (; *s; s++) {
         if (*s == '$') {
             const char* s2 = s + 1;
@@ -664,6 +704,82 @@ lString8 substituteCssMacros(lString8 src, CRPropRef props) {
         }
     }
     return res;
+}
+
+/// Substitute CSS macros with formatted output for human readability.
+/// Uses proper indentation for multi-property merges ($stylename.all).
+lString8 substituteCssMacrosFormatted(lString8 src, CRPropRef props) {
+    lString8 res = lString8(src.length());
+    const char* srcStart = src.c_str();
+    const char* s = srcStart;
+    for (; *s; s++) {
+        if (*s == '$') {
+            const char* s2 = s + 1;
+            bool err = false;
+            for (; *s2 && *s2 != ';' && *s2 != '}' && *s2 != ' ' && *s2 != '\r' && *s2 != '\n' && *s2 != '\t'; s2++) {
+                char ch = *s2;
+                if (ch != '.' && ch != '-' && (ch < 'a' || ch > 'z')) {
+                    err = true;
+                }
+            }
+            if (!err) {
+                // substitute variable
+                lString8 prop(s + 1, (lvsize_t)(s2 - s - 1));
+                lString32 v;
+                // $styles.stylename.all will merge all properties like styles.stylename.*
+                if (prop.endsWith(".all")) {
+                    // Detect indentation at the macro position
+                    lString8 indent = detectIndent(srcStart, s);
+                    // merge whole branch with formatting
+                    v = mergeCssMacrosFormatted(props->getSubProps(prop.substr(0, prop.length() - 3).c_str()), indent);
+                } else {
+                    // single property - just add semicolon and newline
+                    props->getString(prop.c_str(), v);
+                    if (!v.empty()) {
+                        if (v.lastChar() != ';')
+                            v.append(1, ';');
+                        v.append(1, '\n');
+                    }
+                }
+                if (!v.empty()) {
+                    res.append(UnicodeToUtf8(v));
+                }
+            }
+            s = s2;
+        } else {
+            res.append(1, *s);
+        }
+    }
+    return res;
+}
+
+/// Generate CSS with all $variables substituted from properties.
+/// Returns formatted CSS string suitable for human editing.
+lString8 generateExpandedCSS(const lString8& cssTemplate, CRPropRef props) {
+    CRPropRef styleProps = props->getSubProps("styles.");
+    return substituteCssMacrosFormatted(cssTemplate, styleProps);
+}
+
+/// Save expanded CSS to file.
+/// Loads CSS template (with @import support), expands all $variables, and saves to output file.
+/// @param templatePath Path to CSS template file (e.g., fb2.css)
+/// @param outputPath Path for output file with expanded CSS
+/// @param props Properties containing styles.* values for substitution
+/// @return true on success, false on failure
+bool saveExpandedCSS(const lChar32* templatePath, const lChar32* outputPath, CRPropRef props) {
+    lString8 css;
+    if (!LVLoadStylesheetFile(lString32(templatePath), css))
+        return false;
+
+    lString8 expanded = generateExpandedCSS(css, props);
+
+    LVStreamRef out = LVOpenFileStream(outputPath, LVOM_WRITE);
+    if (out.isNull())
+        return false;
+
+    lvsize_t bytesWritten = 0;
+    lverror_t result = out->Write(expanded.c_str(), expanded.length(), &bytesWritten);
+    return result == LVERR_OK && bytesWritten == (lvsize_t)expanded.length();
 }
 
 /// set document stylesheet text
