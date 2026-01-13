@@ -15,6 +15,7 @@
 #cmakedefine01 USE_LIBJPEG
 #cmakedefine01 USE_LIBWEBP
 #cmakedefine01 USE_GIF
+#cmakedefine01 USE_LIBJXL
 #cmakedefine01 USE_FREETYPE
 #cmakedefine01 USE_HARFBUZZ
 #cmakedefine01 USE_LIBUNIBREAK
