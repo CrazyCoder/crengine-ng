@@ -3,7 +3,7 @@
  *   Copyright (C) 2007-2013 Vadim Lopatin <coolreader.org@gmail.com>      *
  *   Copyright (C) 2011 Konstantin Potapov <pkbo@users.sourceforge.net>    *
  *   Copyright (C) 2017 poire-z <poire-z@users.noreply.github.com>         *
- *   Copyright (C) 2020,2025 Aleksey Chernov <valexlin@gmail.com>          *
+ *   Copyright (C) 2020,2025,2026 Aleksey Chernov <valexlin@gmail.com>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License           *
@@ -35,6 +35,9 @@
 #endif
 #if (USE_LIBWEBP == 1)
 #include "lvwebpimagesource.h"
+#endif
+#if (USE_LIBJXL == 1)
+#include "lvjpegxlimagesource.h"
 #endif
 #include "lvdummyimagesource.h"
 #if (USE_GIF == 1)
@@ -85,6 +88,11 @@ LVImageSourceRef LVCreateStreamImageSource(ldomNode* node, LVStreamRef stream) {
 #if (USE_LIBWEBP == 1)
             if (LVWebPImageSource::CheckPattern(hdr, (lUInt32)bytesRead))
         img = new LVWebPImageSource(node, stream);
+    else
+#endif
+#if (USE_LIBJXL == 1)
+            if (LVJpegXLImageSource::CheckPattern(hdr, (lUInt32)bytesRead))
+        img = new LVJpegXLImageSource(node, stream);
     else
 #endif
 #if (USE_GIF == 1)
