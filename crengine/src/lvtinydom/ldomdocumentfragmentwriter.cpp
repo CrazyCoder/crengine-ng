@@ -107,7 +107,9 @@ lString32 ldomDocumentFragmentWriter::convertHref(lString32 href) {
 void ldomDocumentFragmentWriter::setCodeBase(lString32 fileName) {
     filePathName = fileName;
     codeBasePrefix = pathSubstitutions.get(fileName);
-    codeBase = LVExtractPath(filePathName);
+    // Use 'false' to avoid './' prefix on Windows when file is at root level,
+    // keeping paths consistent with how they were stored in pathSubstitutions
+    codeBase = LVExtractPath(filePathName, false);
     if (codeBasePrefix.empty()) {
         CRLog::trace("codeBasePrefix is empty for path %s", LCSTR(fileName));
         codeBasePrefix = pathSubstitutions.get(fileName);

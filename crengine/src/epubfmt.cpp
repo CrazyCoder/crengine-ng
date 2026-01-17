@@ -1425,10 +1425,7 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
         // http://idpf.org/epub/30/spec/epub30-contentdocs.html#sec-xhtml-nav-def
         navHref = LVCombinePaths(codeBase, navHref);
         LVStreamRef stream = m_arc->OpenStream(navHref.c_str(), LVOM_READ);
-        lString32 codeBase = LVExtractPath(navHref);
-        if (codeBase.length() > 0 && codeBase.lastChar() != '/')
-            codeBase.append(1, U'/');
-        appender.setCodeBase(codeBase);
+        appender.setCodeBase(navHref);
         if (!stream.isNull()) {
             ldomDocument* navDoc = LVParseXMLStream(stream);
             if (navDoc != NULL) {
@@ -1510,10 +1507,8 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
     // We may also find in the ncx a <pageList> list
     if ((!has_toc || !has_pagemap) && !ncxHref.empty()) {
         LVStreamRef stream = m_arc->OpenStream(ncxHref.c_str(), LVOM_READ);
-        lString32 codeBase = LVExtractPath(ncxHref);
-        if (codeBase.length() > 0 && codeBase.lastChar() != '/')
-            codeBase.append(1, U'/');
-        appender.setCodeBase(codeBase);
+        // Pass full file path to setCodeBase, which will extract the directory internally
+        appender.setCodeBase(ncxHref);
         if (!stream.isNull()) {
             ldomDocument* ncxdoc = LVParseXMLStream(stream);
             if (ncxdoc != NULL) {
@@ -1558,10 +1553,7 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
     // https://wiki.mobileread.com/wiki/Adobe_Digital_Editions#Page-map
     if (!has_pagemap && !pageMapHref.empty()) {
         LVStreamRef stream = m_arc->OpenStream(pageMapHref.c_str(), LVOM_READ);
-        lString32 codeBase = LVExtractPath(pageMapHref);
-        if (codeBase.length() > 0 && codeBase.lastChar() != '/')
-            codeBase.append(1, U'/');
-        appender.setCodeBase(codeBase);
+        appender.setCodeBase(pageMapHref);
         if (!stream.isNull()) {
             ldomDocument* pagemapdoc = LVParseXMLStream(stream);
             if (pagemapdoc != NULL) {
