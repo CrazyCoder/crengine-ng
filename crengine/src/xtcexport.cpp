@@ -1051,7 +1051,7 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         int bufHeight = (isLandscape && !skipRotation) ? m_width : m_height;
 
         LVGrayDrawBuf drawbuf(bufWidth, bufHeight, renderBpp);
-        drawbuf.Clear(0xFFFFFF);
+        drawbuf.Clear(docView->getBackgroundColor());
         drawbuf.setImageDitherMode(m_imageDitherMode);
         drawbuf.setDitheringOptions(m_ditheringOptions);
         // Set position for correct page header progress bar
