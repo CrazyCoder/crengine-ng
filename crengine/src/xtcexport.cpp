@@ -737,6 +737,8 @@ int XtcExporter::collectChapters(LVTocItem* item, LVArray<xtc_chapter_t>& chapte
 bool XtcExporter::writeChapters(LVStream* stream, const LVArray<xtc_chapter_t>& chapters) {
     for (int i = 0; i < chapters.length(); i++) {
         xtc_chapter_t chapter = chapters[i];
+        CRLog::debug("XtcExporter: Writing chapter %d: \"%s\" -> page %d",
+                     i, chapter.chapterName, chapter.startPage);
         if (stream->Write(&chapter, sizeof(xtc_chapter_t), NULL) != LVERR_OK)
             return false;
     }
@@ -910,6 +912,9 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     LVArray<xtc_page_index_t> pageIndex(exportPageCount, xtc_page_index_t());
     uint64_t indexPos = 0;
 
+    // Check if document has a cover page (affects chapter page numbering)
+    bool showCover = docView->getShowCover();
+
     if (!isPreviewMode()) {
         // Collect chapters if enabled
         if (m_enableChapters) {
@@ -924,6 +929,10 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
                 LVArray<xtc_chapter_t> filteredChapters;
                 for (int i = 0; i < chapters.length(); i++) {
                     int chapterPage = chapters[i].startPage;
+                    // When there's a cover, CREngine's TOC page numbers don't include it
+                    // (cover is page 0 in export), so add 1 to get correct page index
+                    if (showCover)
+                        chapterPage++;
                     // Include chapter if its start page is within the exported range
                     if (chapterPage >= actualStartPage && chapterPage <= actualEndPage) {
                         xtc_chapter_t adjustedChapter = chapters[i];
@@ -1012,7 +1021,6 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
     cr_rotate_angle_t angle = docView->GetRotateAngle();
     bool isLandscape = (angle == CR_ROTATE_ANGLE_90 || angle == CR_ROTATE_ANGLE_270);
-    bool showCover = docView->getShowCover();
 #else
     int bufWidth = m_width;
     int bufHeight = m_height;
