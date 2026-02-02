@@ -169,6 +169,7 @@ protected:
     int _mapSavingStage;
 
     img_scaling_options_t _imgScalingOptions;
+    bool _imgAutoRotate;
     int _spaceWidthScalePercent;
     int _minSpaceCondensingPercent;
     int _unusedSpaceThresholdPercent;

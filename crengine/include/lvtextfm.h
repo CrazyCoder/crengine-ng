@@ -187,10 +187,10 @@ typedef struct
 #define LTEXT_WORD_CAN_HYPH_BREAK_LINE_AFTER 0x0004 /// can break with hyphenation after this word
 #define LTEXT_WORD_MUST_BREAK_LINE_AFTER     0x0008 /// must break line after this word (not used anywhere)
 
-#define LTEXT_WORD_IS_LINK_START       0x0010 /// first word of link flag
-#define LTEXT_WORD_IS_OBJECT           0x0020 /// word is an image
-#define LTEXT_WORD_IS_INLINE_BOX       0x0040 /// word is a inline-block or inline-table wrapping box
-#define LTEXT_WORD__AVAILABLE_BIT_08__ 0x0080
+#define LTEXT_WORD_IS_LINK_START    0x0010 /// first word of link flag
+#define LTEXT_WORD_IS_OBJECT        0x0020 /// word is an image
+#define LTEXT_WORD_IS_INLINE_BOX    0x0040 /// word is a inline-block or inline-table wrapping box
+#define LTEXT_WORD_IS_ROTATED_CW    0x0080 /// image rotated 90° clockwise
 
 #define LTEXT_WORD_DIRECTION_KNOWN  0x0100 /// word has been thru bidi: if next flag is unset, it is LTR.
 #define LTEXT_WORD_DIRECTION_IS_RTL 0x0200 /// word is RTL
@@ -202,11 +202,11 @@ typedef struct
 #define LTEXT_WORD_DIRECTION_PARA_TO_LFNT_SHIFT 8
 #define WORD_FLAGS_TO_FNT_FLAGS(f)              ((f & LTEXT_WORD_DIRECTION_PARA_MASK) >> LTEXT_WORD_DIRECTION_PARA_TO_LFNT_SHIFT)
 
-#define LTEXT_WORD_VALIGN_TOP          0x1000 /// word is to be vertical-align: top
-#define LTEXT_WORD_VALIGN_BOTTOM       0x2000 /// word is to be vertical-align: bottom
-#define LTEXT_WORD_STRUT_CONFINED      0x4000 /// word is to be fully contained into strut bounds \
+#define LTEXT_WORD_VALIGN_TOP      0x1000 /// word is to be vertical-align: top
+#define LTEXT_WORD_VALIGN_BOTTOM   0x2000 /// word is to be vertical-align: bottom
+#define LTEXT_WORD_STRUT_CONFINED  0x4000 /// word is to be fully contained into strut bounds \
                                          /// (used only when one of the 2 previous is set)
-#define LTEXT_WORD__AVAILABLE_BIT_16__ 0x8000
+#define LTEXT_WORD_IS_ROTATED_CCW  0x8000 /// image rotated 90° counter-clockwise
 
 //#define LTEXT_BACKGROUND_MARK_FLAGS 0xFFFF0000l
 
@@ -305,6 +305,7 @@ typedef struct
     lInt32 img_zoom_out_scale_block;  /**< max scale for block images zoom out: 1, 2, 3 */
     lInt32 img_zoom_out_mode_inline;  /**< can zoom out inline images: 0=disabled, 1=integer scale, 2=free scale */
     lInt32 img_zoom_out_scale_inline; /**< max scale for inline images zoom out: 1, 2, 3 */
+    bool img_auto_rotate;             /**< auto-rotate images for better fit */
 
     // Space width
     lInt32 space_width_scale_percent;    /**< scale the normal width of all spaces in all fonts by this percent */
@@ -406,6 +407,9 @@ public:
 
     /// set image scaling options
     void setImageScalingOptions(img_scaling_options_t* options);
+
+    /// set image auto-rotate option
+    void setImageAutoRotate(bool autoRotate);
 
     /// set space glyph width scaling percent option (10..500%)
     // (scale the normal width of all spaces in all fonts by this percent)

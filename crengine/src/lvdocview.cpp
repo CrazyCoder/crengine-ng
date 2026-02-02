@@ -7134,6 +7134,7 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->setIntDef(PROP_IMG_SCALING_ZOOMOUT_INLINE_MODE, defImgScaling.mode);
     props->setIntDef(PROP_IMG_SCALING_ZOOMIN_BLOCK_MODE, defImgScaling.mode);
     props->setIntDef(PROP_IMG_SCALING_ZOOMIN_INLINE_MODE, defImgScaling.mode);
+    props->setIntDef(PROP_IMG_AUTO_ROTATE, 0); // disabled by default
 
     props->limitValueMinMax(PROP_FORMAT_SPACE_WIDTH_SCALE_PERCENT, 10, 500, DEF_SPACE_WIDTH_SCALE_PERCENT);
     props->limitValueMinMax(PROP_FORMAT_MIN_SPACE_CONDENSING_PERCENT, 25, 100, DEF_MIN_SPACE_CONDENSING_PERCENT);
@@ -7259,6 +7260,9 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
         } else if (name == PROP_IMG_SCALING_ZOOMIN_INLINE_SCALE || name == PROP_IMG_SCALING_ZOOMIN_INLINE_MODE || name == PROP_IMG_SCALING_ZOOMOUT_INLINE_SCALE || name == PROP_IMG_SCALING_ZOOMOUT_INLINE_MODE || name == PROP_IMG_SCALING_ZOOMIN_BLOCK_SCALE || name == PROP_IMG_SCALING_ZOOMIN_BLOCK_MODE || name == PROP_IMG_SCALING_ZOOMOUT_BLOCK_SCALE || name == PROP_IMG_SCALING_ZOOMOUT_BLOCK_MODE) {
             m_props->setString(name.c_str(), value);
             REQUEST_RENDER("propsApply -img scale")
+        } else if (name == PROP_IMG_AUTO_ROTATE) {
+            m_props->setString(name.c_str(), value);
+            REQUEST_RENDER("propsApply -img auto rotate")
         } else if (name == PROP_FONT_COLOR || name == PROP_BACKGROUND_COLOR || name == PROP_DISPLAY_INVERSE || name == PROP_STATUS_FONT_COLOR) {
             // update current value in properties
             m_props->setString(name.c_str(), value);

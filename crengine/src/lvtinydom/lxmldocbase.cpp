@@ -157,6 +157,7 @@ lUInt16 lxmlDocBase::getElementNameIndex(const lChar8* name) {
 LFormattedText* lxmlDocBase::createFormattedText() {
     LFormattedText* p = new LFormattedText();
     p->setImageScalingOptions(&_imgScalingOptions);
+    p->setImageAutoRotate(_imgAutoRotate);
     p->setSpaceWidthScalePercent(_spaceWidthScalePercent);
     p->setMinSpaceCondensingPercent(_minSpaceCondensingPercent);
     p->setUnusedSpaceThresholdPercent(_unusedSpaceThresholdPercent);

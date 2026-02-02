@@ -129,5 +129,6 @@
 #define PROP_IMG_SCALING_ZOOMIN_BLOCK_SCALE   "crengine.image.scaling.zoomin.block.scale"
 #define PROP_IMG_SCALING_ZOOMOUT_BLOCK_MODE   "crengine.image.scaling.zoomout.block.mode"
 #define PROP_IMG_SCALING_ZOOMOUT_BLOCK_SCALE  "crengine.image.scaling.zoomout.block.scale"
+#define PROP_IMG_AUTO_ROTATE                  "crengine.image.auto.rotate"
 
 #endif // LVDOCVIEWPROPS_H

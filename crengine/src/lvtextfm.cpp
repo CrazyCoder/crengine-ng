@@ -2065,7 +2065,56 @@ public:
                         // Ensure they are constrained to this paragraph width and page height
                         // Note: resizeImage() may do some additional scaling depending on image_scaling_options,
                         // use mode=0 scale=1 for these if this is not desirable.
-                        resizeImage(width, height, m_pbuffer->width, m_max_img_height, m_length > 1);
+                        bool isBlockImage = (m_length == 1); // Single item means block image (no text around)
+                        resizeImage(width, height, m_pbuffer->width, m_max_img_height, !isBlockImage);
+
+                        // Check if auto-rotate would improve fit (only for block images)
+                        lUInt16 rotationFlag = 0;
+                        if (m_pbuffer->img_auto_rotate && isBlockImage) {
+                            // Get original dimensions before resizing
+                            int origW = 0, origH = 0;
+                            getStyledImageSize(node, origW, origH, m_pbuffer->width, -1);
+
+                            // Calculate area without rotation (current width/height)
+                            double scale = 1.0;
+                            if (origW > 0 && origH > 0) {
+                                double scaleW = (double)m_pbuffer->width / origW;
+                                double scaleH = (double)m_max_img_height / origH;
+                                scale = (scaleW < scaleH) ? scaleW : scaleH;
+                                if (scale > 1.0)
+                                    scale = 1.0; // Don't scale up for area comparison
+                            }
+                            int areaNoRotate = (int)(origW * scale) * (int)(origH * scale);
+
+                            // Calculate area with rotation (swapped dimensions)
+                            double scaleRot = 1.0;
+                            if (origH > 0 && origW > 0) {
+                                double scaleW = (double)m_pbuffer->width / origH;  // Note: swapped
+                                double scaleH = (double)m_max_img_height / origW;
+                                scaleRot = (scaleW < scaleH) ? scaleW : scaleH;
+                                if (scaleRot > 1.0)
+                                    scaleRot = 1.0;
+                            }
+                            int areaWithRotate = (int)(origH * scaleRot) * (int)(origW * scaleRot);
+
+                            // Only rotate if area improves by at least 5% (avoid borderline rotations)
+                            if (areaWithRotate > areaNoRotate * 105 / 100) {
+                                // Rotation improves fit - recompute with swapped dimensions
+                                int rotW = 0, rotH = 0;
+                                getStyledImageSize(node, rotW, rotH, m_pbuffer->width, -1);
+                                // Swap for rotation
+                                int tmp = rotW;
+                                rotW = rotH;
+                                rotH = tmp;
+                                resizeImage(rotW, rotH, m_pbuffer->width, m_max_img_height, false);
+                                width = rotW;
+                                height = rotH;
+                                // Set rotation flag: 1 = CW, 2 = CCW
+                                // CCW rotation puts the image top on the left, more natural for L-to-R reading
+                                rotationFlag = 2;
+                            }
+                        }
+
                         if ((m_srcs[start]->flags & LTEXT_STRUT_CONFINED) && m_allow_strut_confining) {
                             // Text with "-cr-hint: strut-confined" might just be vertically shifted,
                             // but won't change widths. But images who will change height must also
@@ -2080,6 +2129,8 @@ public:
                         // Store the computed image dimensions
                         m_srcs[start]->u.o.width = width;
                         m_srcs[start]->u.o.height = height;
+                        // Store rotation flag in baseline (not used for images)
+                        m_srcs[start]->u.o.baseline = rotationFlag;
                         lastWidth += width;
                         m_widths[start] = lastWidth;
                         /*
@@ -2938,6 +2989,11 @@ public:
                         // or we could miss content (it would be overwritten by next lines)
                     } else { // image
                         word->flags = LTEXT_WORD_IS_OBJECT;
+                        // Check if image should be rotated (rotation flag stored in baseline)
+                        if (srcline->u.o.baseline == 1)
+                            word->flags |= LTEXT_WORD_IS_ROTATED_CW;
+                        else if (srcline->u.o.baseline == 2)
+                            word->flags |= LTEXT_WORD_IS_ROTATED_CCW;
                         // The image dimensions have already been resized to fit
                         // into m_pbuffer->width (and strut confining if requested.
                         // Note: it can happen when there is some text-indent than
@@ -4539,6 +4595,10 @@ void LFormattedText::setImageScalingOptions(img_scaling_options_t* options) {
     m_pbuffer->img_zoom_out_scale_inline = options->zoom_out_inline.max_scale;
 }
 
+void LFormattedText::setImageAutoRotate(bool autoRotate) {
+    m_pbuffer->img_auto_rotate = autoRotate;
+}
+
 void LFormattedText::setSpaceWidthScalePercent(int spaceWidthScalePercent) {
     if (spaceWidthScalePercent >= 10 && spaceWidthScalePercent <= 500)
         m_pbuffer->space_width_scale_percent = spaceWidthScalePercent;
@@ -4794,7 +4854,13 @@ void LFormattedText::Draw(LVDrawBuf* buf, int x, int y, ldomMarkedRangeList* mar
                             img = LVCreateDummyImageSource(node, word->width, word->u.o.height);
                         int xx = x + frmline->x + word->x;
                         int yy = line_y + frmline->baseline - word->u.o.height + word->y;
-                        buf->Draw(img, xx, yy, word->width, word->u.o.height);
+                        if (word->flags & LTEXT_WORD_IS_ROTATED_CW) {
+                            buf->DrawRotated(img, xx, yy, word->width, word->u.o.height, 90);
+                        } else if (word->flags & LTEXT_WORD_IS_ROTATED_CCW) {
+                            buf->DrawRotated(img, xx, yy, word->width, word->u.o.height, 270);
+                        } else {
+                            buf->Draw(img, xx, yy, word->width, word->u.o.height);
+                        }
                         //buf->FillRect( xx, yy, xx+word->width, yy+word->height, 1 );
                     }
                 } else if (word->flags & LTEXT_WORD_IS_INLINE_BOX) {

@@ -78,6 +78,8 @@ public:
     virtual void Resize(int dx, int dy);
     /// draws image
     virtual void Draw(LVImageSourceRef img, int x, int y, int width, int height, bool dither);
+    /// draws rotated image (90 or 270 degrees)
+    virtual void DrawRotated(LVImageSourceRef img, int x, int y, int width, int height, int rotationAngle) override;
     /// blend font bitmap using specified palette
     virtual void BlendBitmap(int x, int y, const lUInt8* bitmap, FontBmpPixelFormat bitmap_fmt, int width, int height, int bmp_pitch, const lUInt32* palette);
     /// constructor

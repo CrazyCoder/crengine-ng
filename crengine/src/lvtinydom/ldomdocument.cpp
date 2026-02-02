@@ -331,6 +331,11 @@ bool ldomDocument::setRenderProps(int width, int dy, bool /*showCover*/, int /*y
     // render props don't change.
     //   _renderedBlockCache.clear();
     changed = _imgScalingOptions.update(props, def_font->getSize()) || changed;
+    bool imgAutoRotate = props->getBoolDef(PROP_IMG_AUTO_ROTATE, false);
+    if (_imgAutoRotate != imgAutoRotate) {
+        _imgAutoRotate = imgAutoRotate;
+        changed = true;
+    }
     css_style_ref_t s(new css_style_rec_t);
     s->display = css_d_block;
     s->white_space = css_ws_normal;

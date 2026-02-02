@@ -597,6 +597,44 @@ void LVColorDrawBuf::Draw(LVImageSourceRef img, int x, int y, int width, int hei
     _drawnImagesSurface += width * height;
 }
 
+void LVColorDrawBuf::DrawRotated(LVImageSourceRef img, int x, int y, int width, int height, int rotationAngle) {
+    if (rotationAngle == 0) {
+        Draw(img, x, y, width, height, true);
+        return;
+    }
+
+    // Convert angle to cr_rotate_angle_t
+    cr_rotate_angle_t angle;
+    if (rotationAngle == 90)
+        angle = CR_ROTATE_ANGLE_90;
+    else if (rotationAngle == 180)
+        angle = CR_ROTATE_ANGLE_180;
+    else if (rotationAngle == 270)
+        angle = CR_ROTATE_ANGLE_270;
+    else {
+        Draw(img, x, y, width, height, true);
+        return;
+    }
+
+    // For 90/270 rotation, we need to draw the image with swapped dimensions first
+    // then rotate it
+    int tempW = (angle == CR_ROTATE_ANGLE_90 || angle == CR_ROTATE_ANGLE_270) ? height : width;
+    int tempH = (angle == CR_ROTATE_ANGLE_90 || angle == CR_ROTATE_ANGLE_270) ? width : height;
+
+    // Create temporary buffer to draw the image in original orientation
+    LVColorDrawBuf tempBuf(tempW, tempH, _bpp);
+    tempBuf.Clear(GetBackgroundColor());
+    tempBuf.setInvertImages(_invertImages);
+    tempBuf.setSmoothScalingImages(_smoothImages);
+    tempBuf.setImageDitherMode(_imageDitherMode);
+    tempBuf.setDitheringOptions(_ditheringOptions);
+    tempBuf.Draw(img, 0, 0, tempW, tempH, true);
+    tempBuf.Rotate(angle);
+
+    // Draw rotated buffer to destination
+    tempBuf.DrawTo(this, x, y, 0, NULL);
+}
+
 /// fills buffer with specified color
 void LVColorDrawBuf::Clear(lUInt32 color) {
     if (_bpp == 16) {
