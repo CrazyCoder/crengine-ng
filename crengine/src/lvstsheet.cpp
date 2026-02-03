@@ -160,6 +160,8 @@ enum css_decl_code
     cssd_cr_ignore_if_dom_version_greater_or_equal,
     cssd_cr_hint,
     cssd_cr_only_if,
+    cssd_cr_footnote_before,
+    cssd_cr_footnote_after,
     cssd_stop
 };
 
@@ -267,6 +269,8 @@ static const char* css_decl_name[] = {
     "-cr-ignore-if-dom-version-greater-or-equal",
     "-cr-hint",
     "-cr-only-if",
+    "-cr-footnote-before",
+    "-cr-footnote-after",
     NULL
 };
 
@@ -1996,6 +2000,8 @@ bool LVCssDeclaration::parse(const char*& decl, lUInt32 domVersionRequested, boo
                             hints |= CSS_CR_HINT_FOOTNOTE;
                         else if (substr_icompare("footnote-ignore", decl))
                             hints |= CSS_CR_HINT_FOOTNOTE_IGNORE;
+                        else if (substr_icompare("footnote-inline", decl))
+                            hints |= CSS_CR_HINT_FOOTNOTE_INLINE;
                         //
                         else if (parse_important(decl)) {
                             parsed_important = IMPORTANT_DECL_SET;
@@ -3011,6 +3017,60 @@ bool LVCssDeclaration::parse(const char*& decl, lUInt32 domVersionRequested, boo
                         }
                     }
                 } break;
+                case cssd_cr_footnote_before:
+                case cssd_cr_footnote_after: {
+                    // Parse quoted string value for footnote separators (UTF-8 aware)
+                    skip_spaces(decl);
+                    if (*decl == '"' || *decl == '\'') {
+                        char quote_ch = *decl++;
+                        lString8 str8; // Collect as UTF-8 bytes first
+                        while (*decl && *decl != quote_ch) {
+                            if (*decl == '\\') {
+                                decl++;
+                                if (hexDigit(*decl) >= 0) {
+                                    // Unicode escape: \XXXX or \XXXXXX
+                                    lUInt32 codepoint = 0;
+                                    int num_digits = 0;
+                                    while (num_digits < 6) {
+                                        int v = hexDigit(*decl);
+                                        if (v >= 0) {
+                                            codepoint = (codepoint << 4) + v;
+                                            num_digits++;
+                                            decl++;
+                                            continue;
+                                        }
+                                        break;
+                                    }
+                                    if (num_digits < 6 && *decl == ' ')
+                                        decl++; // skip space following non-6-hex-digits
+                                    if (codepoint == 0 || codepoint > 0x10FFFF)
+                                        codepoint = 0xFFFD; // replacement character
+                                    lString32 c;
+                                    c << (lChar32)codepoint;
+                                    str8 << UnicodeToUtf8(c);
+                                } else {
+                                    // Simple escape: \n, \t, or literal character
+                                    if (*decl == 'n') {
+                                        str8 << '\n';
+                                    } else if (*decl == 't') {
+                                        str8 << '\t';
+                                    } else if (*decl) {
+                                        str8 << *decl;
+                                    }
+                                    if (*decl) decl++;
+                                }
+                            } else {
+                                str8 << *decl++;
+                            }
+                        }
+                        if (*decl == quote_ch) decl++;
+                        lString32 str = Utf8ToUnicode(str8);
+                        buf << (lUInt32)(prop_code | importance | parsed_important | parse_important(decl));
+                        buf << (lUInt32)str.length();
+                        for (int i = 0; i < str.length(); i++)
+                            buf << (lUInt32)str[i];
+                    }
+                } break;
                 case cssd_stop:
                 case cssd_unknown:
                 default:
@@ -3333,6 +3393,26 @@ void LVCssDeclaration::apply(css_style_rec_t* style) {
                         content << (lChar32)(*p++);
                 }
                 style->Apply(content, &style->content, imp_bit_content, is_important);
+            } break;
+            case cssd_cr_footnote_before: {
+                int l = *p++;
+                lString32 str;
+                if (l > 0) {
+                    str.reserve(l);
+                    for (int i = 0; i < l; i++)
+                        str << (lChar32)(*p++);
+                }
+                style->Apply(str, &style->cr_footnote_before, imp_bit_cr_footnote_before, is_important);
+            } break;
+            case cssd_cr_footnote_after: {
+                int l = *p++;
+                lString32 str;
+                if (l > 0) {
+                    str.reserve(l);
+                    for (int i = 0; i < l; i++)
+                        str << (lChar32)(*p++);
+                }
+                style->Apply(str, &style->cr_footnote_after, imp_bit_cr_footnote_after, is_important);
             } break;
             case cssd_stop:
                 return;

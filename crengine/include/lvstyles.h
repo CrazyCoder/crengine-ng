@@ -108,9 +108,11 @@ enum css_style_rec_important_bit
     imp_bit_line_break,
     imp_bit_word_break,
     imp_bit_content,
-    imp_bit_cr_hint
+    imp_bit_cr_hint,
+    imp_bit_cr_footnote_before,
+    imp_bit_cr_footnote_after
 };
-#define NB_IMP_BITS 68 // The number of lines in the enum above: KEEP IT UPDATED.
+#define NB_IMP_BITS 70 // The number of lines in the enum above: KEEP IT UPDATED.
 
 #define NB_IMP_SLOTS ((NB_IMP_BITS - 1) >> 5) + 1
 // In lvstyles.cpp, we have hardcoded important[0] ... importance[1]
@@ -192,6 +194,8 @@ struct css_style_rec_tag
     css_word_break_t word_break;
     lString32 content;
     css_length_t cr_hint;
+    lString32 cr_footnote_before;  // -cr-footnote-before: separator before inline footnote
+    lString32 cr_footnote_after;   // -cr-footnote-after: separator after inline footnote
     // The following should only be used when applying stylesheets while in lvend.cpp setNodeStyle(),
     // and cleaned up there, before the style is cached and shared. They are not serialized.
     lInt8 flags; // bitmap of STYLE_REC_FLAG_*

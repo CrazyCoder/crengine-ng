@@ -5145,8 +5145,10 @@ void LVDocView::createEmptyDocument() {
     m_doc->setDocFlags(0);
     m_doc->setDocFlag(DOC_FLAG_PREFORMATTED_TEXT, m_props->getBoolDef(
                                                           PROP_TXT_OPTION_PREFORMATTED, false));
-    m_doc->setDocFlag(DOC_FLAG_ENABLE_FOOTNOTES, m_props->getBoolDef(
-                                                         PROP_FOOTNOTES, true));
+    // Footnotes mode: 0=hidden, 1=page_bottom, 2=inline
+    int footnotesMode = m_props->getIntDef(PROP_FOOTNOTES_MODE, 1);
+    m_doc->setDocFlag(DOC_FLAG_ENABLE_FOOTNOTES, footnotesMode > 0);
+    m_doc->setDocFlag(DOC_FLAG_FOOTNOTES_INLINE, footnotesMode == 2);
     m_doc->setDocFlag(DOC_FLAG_ENABLE_INTERNAL_STYLES, m_props->getBoolDef(
                                                                PROP_EMBEDDED_STYLES, true));
     m_doc->setDocFlag(DOC_FLAG_ENABLE_DOC_FONTS, m_props->getBoolDef(
@@ -7081,6 +7083,13 @@ void LVDocView::propsUpdateDefaults(CRPropRef props) {
     props->limitValueMinMax(PROP_LANDSCAPE_PAGES, 1, 2, 2);
     props->setBoolDef(PROP_PAGE_VIEW_MODE, true);
     props->setBoolDef(PROP_FOOTNOTES, true);
+    // Migrate old PROP_FOOTNOTES boolean to new PROP_FOOTNOTES_MODE
+    if (!props->hasProperty(PROP_FOOTNOTES_MODE) && props->hasProperty(PROP_FOOTNOTES)) {
+        // Convert: true -> 1 (page_bottom), false -> 0 (hidden)
+        bool oldValue = props->getBoolDef(PROP_FOOTNOTES, true);
+        props->setInt(PROP_FOOTNOTES_MODE, oldValue ? 1 : 0);
+    }
+    props->limitValueMinMax(PROP_FOOTNOTES_MODE, 0, 2, 1); // 0=hidden, 1=page_bottom (default), 2=inline
     props->setBoolDef(PROP_DISPLAY_INVERSE, false);
     props->setBoolDef(PROP_FONT_KERNING_ENABLED, false);
     props->setBoolDef(PROP_FLOATING_PUNCTUATION, true);
@@ -7388,6 +7397,17 @@ CRPropRef LVDocView::propsApply(CRPropRef props) {
             if (m_doc) // not when noDefaultDocument=true
                 getDocument()->setDocFlag(DOC_FLAG_ENABLE_FOOTNOTES, value);
             REQUEST_RENDER("propsApply footnotes")
+        } else if (name == PROP_FOOTNOTES_MODE) {
+            int mode = props->getIntDef(PROP_FOOTNOTES_MODE, 1); // 0=hidden, 1=page_bottom, 2=inline
+            if (m_doc) { // not when noDefaultDocument=true
+                // mode 0 = hidden: disable footnotes entirely
+                // mode 1 = page_bottom: enable footnotes at page bottom (traditional)
+                // mode 2 = inline: enable footnotes inline in text flow
+                getDocument()->setDocFlag(DOC_FLAG_ENABLE_FOOTNOTES, mode > 0);
+                getDocument()->setDocFlag(DOC_FLAG_FOOTNOTES_INLINE, mode == 2);
+                m_pages.clear();  // Force full re-pagination to avoid stale page data
+            }
+            REQUEST_RENDER("propsApply footnotes mode")
         } else if (name == PROP_FLOATING_PUNCTUATION) {
             bool value = props->getBoolDef(PROP_FLOATING_PUNCTUATION, true);
             if (m_doc) // not when noDefaultDocument=true

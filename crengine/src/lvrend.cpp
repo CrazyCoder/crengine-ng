@@ -1721,7 +1721,11 @@ public:
 
                         // Gather footnotes links, as done in renderBlockElement() when erm_final/flgSplit
                         // and cell lines when is_single_column:
-                        if (elem->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) || is_single_column) {
+                        // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline
+                        // in the text flow, so we don't need to collect links for page-bottom rendering.
+                        bool collectFootnoteLinks = elem->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
+                                                    !elem->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE);
+                        if (collectFootnoteLinks || is_single_column) {
                             int orphans;
                             int widows;
                             if (is_single_column) {
@@ -1753,7 +1757,7 @@ public:
                                     if (i == count - 1) // add bottom padding
                                         row->single_col_context->AddLine(padding_top + line->y + line->height,
                                                                          padding_top + line->y + line->height + padding_bottom, RN_SPLIT_BEFORE_AVOID);
-                                    if (!elem->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES))
+                                    if (!collectFootnoteLinks)
                                         continue;
                                     if (line->flags & LTEXT_LINE_PARA_IS_RTL)
                                         link_insert_pos = row->single_col_context->getCurrentLinksCount();
@@ -3121,6 +3125,162 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
         lvdom_element_render_method rm = enode->getRendMethod();
         if (rm == erm_invisible)
             return; // don't draw invisible
+
+        // Inline footnotes: render link with its styling, then append footnote content with note body's styling
+        if (enode->getNodeId() == el_a && enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) {
+            lString32 href = enode->getAttributeValue(LXML_NS_ANY, attr_href);
+            if (href.length() > 0 && href.at(0) == '#') {
+                ldomNode* noteBody = enode->getDocument()->getElementById(href.substr(1).c_str());
+                if (noteBody) {
+                    // Verify target is actually a footnote body (has FOOTNOTE_INPAGE hint)
+                    // This prevents TOC links and other internal links from being treated as footnotes
+                    bool isFootnoteTarget = false;
+                    ldomNode* checkNode = noteBody;
+                    while (checkNode && !checkNode->isNull()) {
+                        if (checkNode->isElement()) {
+                            css_style_ref_t checkStyle = checkNode->getStyle();
+                            if (!checkStyle.isNull() && STYLE_HAS_CR_HINT(checkStyle, FOOTNOTE_INPAGE)) {
+                                isFootnoteTarget = true;
+                                break;
+                            }
+                        }
+                        checkNode = checkNode->getParentNode();
+                    }
+
+                    if (isFootnoteTarget) {
+                        lString32 linkText = enode->getText();
+                        linkText.trim();
+
+                        lString32 noteText = noteBody->getText(' ', 4096);
+                        noteText.trim();
+
+                        if (!noteText.empty()) {
+                            // === STEP 1: Remove leading duplicate from footnote body ===
+                            // Only for numeric footnote links (e.g., "[1]", "[23]")
+                            // E.g., link "[1]" and body "1 This is footnote" -> "This is footnote"
+                            // E.g., link "12" and body "12. Footnote text" -> "Footnote text"
+                            lString32 cleanLinkText = linkText;
+                            // Strip common brackets/punctuation from link text for comparison
+                            for (int i = (int)cleanLinkText.length() - 1; i >= 0; i--) {
+                                lChar32 ch = cleanLinkText[i];
+                                if (ch == '[' || ch == ']' || ch == '(' || ch == ')') {
+                                    cleanLinkText.erase(i, 1);
+                                }
+                            }
+                            cleanLinkText.trim();
+
+                            // Check if cleanLinkText is all digits
+                            bool isNumericLink = !cleanLinkText.empty();
+                            for (size_t i = 0; i < cleanLinkText.length() && isNumericLink; i++) {
+                                if (cleanLinkText[i] < '0' || cleanLinkText[i] > '9') {
+                                    isNumericLink = false;
+                                }
+                            }
+
+                            if (isNumericLink && noteText.startsWith(cleanLinkText)) {
+                                // Remove the matching prefix
+                                noteText = noteText.substr(cleanLinkText.length());
+                                // Also remove any following punctuation/whitespace (like ". " or " ")
+                                while (noteText.length() > 0) {
+                                    lChar32 ch = noteText[0];
+                                    if (ch == '.' || ch == ' ' || ch == ':' || ch == ')' || ch == '-') {
+                                        noteText = noteText.substr(1);
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                noteText.trim();
+                            }
+
+                            // === STEP 2: Strip trailing punctuation to avoid duplication ===
+                            // Check what character follows the link element in the parent's text
+                            lChar32 charAfterLink = 0;
+                            // Find text node that follows this link
+                            ldomNode* nextSibling = enode->getNextSibling();
+                            while (nextSibling) {
+                                if (nextSibling->isText()) {
+                                    lString32 nextText = nextSibling->getText();
+                                    if (!nextText.empty()) {
+                                        charAfterLink = nextText[0];
+                                        break;
+                                    }
+                                }
+                                nextSibling = nextSibling->getNextSibling();
+                            }
+
+                            // Strip trailing punctuation if it matches what follows
+                            if (charAfterLink != 0 && !noteText.empty()) {
+                                lChar32 lastChar = noteText[noteText.length() - 1];
+                                // Check if both are the same punctuation
+                                if (lastChar == charAfterLink &&
+                                    (lastChar == '.' || lastChar == ',' || lastChar == ';' ||
+                                     lastChar == ':' || lastChar == '!' || lastChar == '?')) {
+                                    noteText = noteText.substr(0, noteText.length() - 1);
+                                    noteText.trim();
+                                }
+                            }
+
+                            // === STEP 3: Render link text with link's own styling ===
+                            LVFontRef linkFont = enode->getFont();
+                            css_style_ref_t linkStyle = enode->getStyle();
+                            lUInt32 linkColor = getForegroundColor(linkStyle);
+                            lUInt32 linkBgColor = rm == erm_final ? 0xFFFFFFFF : getBackgroundColor(linkStyle);
+
+                            // Calculate link's valign_dy for superscript if applicable
+                            ldomNode* parent = enode->getParentNode();
+                            lInt16 linkValignDy = 0;
+                            if (linkStyle->vertical_align.type == css_val_unspecified &&
+                                linkStyle->vertical_align.value == css_va_super) {
+                                if (parent && !parent->isNull()) {
+                                    int pfh = parent->getFont()->getHeight();
+                                    linkValignDy = -(pfh / 4); // superscript offset (same as css_va_super case)
+                                }
+                            } else if (linkStyle->vertical_align.type == css_val_unspecified &&
+                                       linkStyle->vertical_align.value == css_va_sub) {
+                                if (parent && !parent->isNull()) {
+                                    int pfh = parent->getFont()->getHeight();
+                                    int pfb = parent->getFont()->getBaseline();
+                                    linkValignDy = (pfh - pfb) * 4 / 5; // subscript offset
+                                }
+                            }
+
+                            txform->AddSourceLine(
+                                    linkText.c_str(), linkText.length(),
+                                    linkColor, linkBgColor,
+                                    linkFont.get(), lang_cfg,
+                                    baseflags | LTEXT_FLAG_OWNTEXT,
+                                    line_h, linkValignDy, 0, enode
+                                    );
+
+                            // === STEP 4: Render footnote content with footnote body's styling ===
+                            if (!noteText.empty()) {
+                                LVFontRef noteFont = noteBody->getFont();
+                                css_style_ref_t noteStyle = noteBody->getStyle();
+                                lUInt32 noteColor = getForegroundColor(noteStyle);
+                                lUInt32 noteBgColor = rm == erm_final ? 0xFFFFFFFF : getBackgroundColor(noteStyle);
+
+                                lString32 before = noteStyle->cr_footnote_before.empty() ? U" (" : noteStyle->cr_footnote_before;
+                                lString32 after = noteStyle->cr_footnote_after.empty() ? U")" : noteStyle->cr_footnote_after;
+                                lString32 inlineNote = before + noteText + after;
+
+                                txform->AddSourceLine(
+                                        inlineNote.c_str(), inlineNote.length(),
+                                        noteColor, noteBgColor,
+                                        noteFont.get(), lang_cfg,
+                                        baseflags | LTEXT_FLAG_OWNTEXT,
+                                        line_h,
+                                        0, // valign_dy=0 - NO superscript for footnote content
+                                        0, enode
+                                        );
+                            }
+
+                            baseflags &= ~LTEXT_FLAG_NEWLINE & ~LTEXT_SRC_IS_CLEAR_BOTH;
+                            return; // Skip normal link processing
+                        }
+                    } // if (isFootnoteTarget)
+                }
+            }
+        }
 
         if (enode->hasAttribute(attr_lang)) {
             lString32 lang_tag = enode->getAttributeValue(attr_lang);
@@ -4493,8 +4653,11 @@ int renderBlockElementLegacy(LVRendPageContext& context, ldomNode* enode, int x,
         lString32 footnoteId;
         // Allow displaying footnote content at the bottom of all pages that contain a link
         // to it, when -cr-hint: footnote-inpage is set on the footnote block container.
+        // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline instead,
+        // so we don't mark these as footnote bodies (they won't appear at page bottom).
         if (STYLE_HAS_CR_HINT(style, FOOTNOTE_INPAGE) &&
-            enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES)) {
+            enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
+            !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) {
             footnoteId = enode->getFirstInnerAttributeValue(attr_id);
             if (!footnoteId.empty())
                 isFootNoteBody = true;
@@ -4990,7 +5153,10 @@ int renderBlockElementLegacy(LVRendPageContext& context, ldomNode* enode, int x,
                         context.AddLine(rect.bottom, rect.bottom + margin_bottom, pb_flag);
                     }
                     // footnote links analysis
-                    if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES)) { // disable footnotes for footnotes
+                    // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline
+                    // in the text flow, so we don't need to collect links for page-bottom rendering.
+                    if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
+                        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) { // disable footnotes for footnotes or inline mode
                         // If paragraph is RTL, we are meeting words in the reverse of the reading order:
                         // so, insert each link for this line at the same position, instead of at the end.
                         int link_insert_pos = -1; // append
@@ -5029,7 +5195,10 @@ int renderBlockElementLegacy(LVRendPageContext& context, ldomNode* enode, int x,
                 int count = txform->GetLineCount();
                 for (int i = 0; i < count; i++) {
                     const formatted_line_t* line = txform->GetLineInfo(i);
-                    if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES)) {
+                    // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline
+                    // in the text flow, so we don't need to collect links for page-bottom rendering.
+                    if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
+                        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) {
                         // If paragraph is RTL, we are meeting words in the reverse of the reading order:
                         // so, insert each link for this line at the same position, instead of at the end.
                         int link_insert_pos = -1; // append
@@ -6885,8 +7054,11 @@ void renderBlockElementEnhanced(FlowState* flow, ldomNode* enode, int x, int con
     lString32 footnoteId;
     // Allow displaying footnote content at the bottom of all pages that contain a link
     // to it, when -cr-hint: footnote-inpage is set on the footnote block container.
+    // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline instead,
+    // so we don't mark these as footnote bodies (they won't appear at page bottom).
     if (STYLE_HAS_CR_HINT(style, FOOTNOTE_INPAGE) &&
-        enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES)) {
+        enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
+        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) {
         footnoteId = enode->getFirstInnerAttributeValue(attr_id);
         if (!footnoteId.empty())
             isFootNoteBody = true;
@@ -8295,7 +8467,10 @@ void renderBlockElementEnhanced(FlowState* flow, ldomNode* enode, int x, int con
                 // See if there are links to footnotes in that line, and add
                 // a reference to it so page splitting can bring the footnotes
                 // text on this page, and then decide about page split.
-                if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES)) { // disable footnotes for footnotes
+                // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline
+                // in the text flow, so we don't need to collect links for page-bottom rendering.
+                if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
+                    !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) { // disable footnotes for footnotes or inline mode
                     // If paragraph is RTL, we are meeting words in the reverse of the reading order:
                     // so, insert each link for this line at the same position, instead of at the end.
                     int link_insert_pos = -1; // append

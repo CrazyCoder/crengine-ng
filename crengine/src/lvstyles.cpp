@@ -130,7 +130,9 @@ lUInt32 calcHash(css_style_rec_t& rec) {
          + (lUInt32)rec.cr_hint.pack()) * 31
          + (lUInt32)rec.font_name.getHash()
          + (lUInt32)rec.background_image.getHash()
-         + (lUInt32)rec.content.getHash());
+         + (lUInt32)rec.content.getHash()
+         + (lUInt32)rec.cr_footnote_before.getHash()
+         + (lUInt32)rec.cr_footnote_after.getHash());
     return rec.hash;
 }
 
@@ -205,7 +207,9 @@ bool operator==(const css_style_rec_t& r1, const css_style_rec_t& r2) {
            r1.line_break == r2.line_break &&
            r1.word_break == r2.word_break &&
            r1.content == r2.content &&
-           r1.cr_hint == r2.cr_hint;
+           r1.cr_hint == r2.cr_hint &&
+           r1.cr_footnote_before == r2.cr_footnote_before &&
+           r1.cr_footnote_after == r2.cr_footnote_after;
 }
 
 /// splits string like "Arial", Times New Roman, Courier;  into list
@@ -410,6 +414,8 @@ bool css_style_rec_t::serialize(SerialBuf& buf) {
     ST_PUT_ENUM(word_break);
     buf << content;
     ST_PUT_LEN(cr_hint);
+    buf << cr_footnote_before;
+    buf << cr_footnote_after;
     lUInt32 hash = calcHash(*this);
     buf << hash;
     return !buf.error();
@@ -481,6 +487,8 @@ bool css_style_rec_t::deserialize(SerialBuf& buf) {
     ST_GET_ENUM(css_word_break_t, word_break);
     buf >> content;
     ST_GET_LEN(cr_hint);
+    buf >> cr_footnote_before;
+    buf >> cr_footnote_after;
     lUInt32 hash = 0;
     buf >> hash;
     // printf("imp: %llx oldhash: %lx ", important, hash);
