@@ -1906,6 +1906,23 @@ void LVDocView::drawBatteryState(LVDrawBuf* drawbuf, const lvRect& batteryRc) {
 #endif
 }
 
+/// Calculate position percentage for progress bar (0-10000)
+/// @param p current page index (0-based)
+/// @param pages_cnt total page count (already adjusted for two-page mode)
+/// @param basePage 0 if cover exists, 1 otherwise (from getBasePage)
+static inline int calcPagePercent(int p, int pages_cnt, int basePage) {
+    if (basePage == 0 && pages_cnt > 1) {
+        // Book has cover - exclude cover from progress
+        if (p == 0)
+            return 0;  // Cover page = 0%
+        return (int)(((lInt64)p * 10000) / (pages_cnt - 1));
+    } else if (pages_cnt > 0) {
+        // Book without cover (or single-page book)
+        return (int)(((lInt64)(p + 1) * 10000) / pages_cnt);
+    }
+    return 0;
+}
+
 /// get section bounds for specific root node and specific section depth level, in 1/100 of percent
 void LVDocView::getSectionBoundsInt(LVArray<int>& bounds, ldomNode* node, lUInt16 section_id, int target_level, int level) {
     int pc = getVisiblePageCount();
@@ -1926,8 +1943,8 @@ void LVDocView::getSectionBoundsInt(LVArray<int>& bounds, ldomNode* node, lUInt1
                     if ((pc == 2 && (pages_cnt & 1)))
                         pages_cnt++;
                     int p = m_pages.FindNearestPage(rc.top, 0);
-                    if (pages_cnt > 1)
-                        bounds.add((int)(((lInt64)p * 10000) / pages_cnt));
+                    int basePage = getBasePage(&m_pages);
+                    bounds.add(calcPagePercent(p, pages_cnt, basePage));
                 }
             } else if (level < target_level) {
                 getSectionBoundsInt(bounds, section, section_id, target_level, level + 1);
@@ -2028,14 +2045,10 @@ int LVDocView::getPosPercent() {
     } else {
         int fh = m_pages.length();
         if ((getVisiblePageCount() == 2 && (fh & 1)))
-            fh++;
-        int p = getCurPage(); // + 1;
-                              //        if ( getVisiblePageCount()>1 )
-                              //            p++;
-        if (fh > 0)
-            return (int)(((lInt64)p * 10000) / fh);
-        else
-            return 0;
+            fh++;  // Two-page mode odd adjustment
+        int p = getCurPage();
+        int basePage = getBasePage(&m_pages);
+        return calcPagePercent(p, fh, basePage);
     }
 }
 
@@ -2152,7 +2165,7 @@ void LVDocView::drawPageHeader(LVDrawBuf* drawbuf, const lvRect& headerRc,
             int sz = thinw;
             int boundCategory = 0;
             while (enableMarks && sbound_index < sbounds.length()) {
-                int sx = navLeft + sbounds[sbound_index] * (navWidth - 1) / 10000;
+                int sx = navLeft + sbounds[sbound_index] * navWidth / 10000;
                 if (sx < x) {
                     sbound_index++;
                     continue;
