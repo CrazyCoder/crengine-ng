@@ -2068,9 +2068,30 @@ public:
                         bool isBlockImage = (m_length == 1); // Single item means block image (no text around)
                         resizeImage(width, height, m_pbuffer->width, m_max_img_height, !isBlockImage);
 
-                        // Check if auto-rotate would improve fit (only for block images)
+                        // Check if auto-rotate would improve fit (only for block images, not cover)
                         lUInt16 rotationFlag = 0;
+                        // Skip auto-rotate for coverpage images to preserve their original orientation
+                        // Check for coverpage, description, or title-info ancestors (FB2 metadata sections)
+                        // Also check for EPUB role="doc-cover" attribute
+                        bool isInCoverSection = false;
                         if (m_pbuffer->img_auto_rotate && isBlockImage) {
+                            // Check for EPUB cover image (role="doc-cover" attribute)
+                            lString32 role = node->getAttributeValue("role");
+                            if (role == U"doc-cover") {
+                                isInCoverSection = true;
+                            }
+                            // Check for FB2 cover sections
+                            if (!isInCoverSection) {
+                                for (ldomNode* p = node->getParentNode(); p; p = p->getParentNode()) {
+                                    lUInt16 id = p->getNodeId();
+                                    if (id == el_coverpage || id == el_description || id == el_title_info) {
+                                        isInCoverSection = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (m_pbuffer->img_auto_rotate && isBlockImage && !isInCoverSection) {
                             // Get original dimensions before resizing
                             int origW = 0, origH = 0;
                             getStyledImageSize(node, origW, origH, m_pbuffer->width, -1);
@@ -2110,8 +2131,9 @@ public:
                                 width = rotW;
                                 height = rotH;
                                 // Set rotation flag: 1 = CW, 2 = CCW
-                                // CCW rotation puts the image top on the left, more natural for L-to-R reading
-                                rotationFlag = 2;
+                                // CW rotation puts the image top on the right, matching the standard
+                                // convention for viewing landscape content in portrait orientation
+                                rotationFlag = 1;
                             }
                         }
 

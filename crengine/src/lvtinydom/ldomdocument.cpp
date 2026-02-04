@@ -27,6 +27,7 @@
 
 #include <ldomdocument.h>
 
+#include <lvpagesplitter.h>
 #include <lvrend.h>
 #include <lvdocprops.h>
 #include <lvimg.h>
@@ -577,6 +578,125 @@ bool ldomDocument::render(LVRendPageList* pages, LVDocViewCallback* callback, in
         gc();
         CRLog::trace("finalizing... fonts.length=%d", _fonts.length());
         context.Finalize();
+
+        // Mark/remove EPUB cover pages
+        // coverFragmentIndex is the LAST cover fragment index (EPUBs may have multiple cover pages)
+        int lastCoverFragmentIndex = getProps()->getIntDef(DOC_PROP_COVER_PAGE_INDEX, -1);
+        CRLog::debug("EPUB cover: lastCoverFragmentIndex=%d, showCover=%d, pages=%d",
+                     lastCoverFragmentIndex, showCover ? 1 : 0, pages->length());
+        if (lastCoverFragmentIndex >= 0) {
+            // Helper to find fragment by ID (tries getElementById first, then body iteration)
+            auto findFragment = [this](const lString32& fragmentId) -> ldomNode* {
+                ldomNode* fragment = getElementById(fragmentId.c_str());
+                if (fragment)
+                    return fragment;
+                ldomNode* body = nodeFromXPath(cs32("body"));
+                if (!body)
+                    return nullptr;
+                for (int i = 0; i < body->getChildCount(); i++) {
+                    ldomNode* child = body->getChildNode(i);
+                    if (child && child->isElement() && child->getNodeName() == "DocFragment") {
+                        if (child->getAttributeValue("id") == fragmentId)
+                            return child;
+                    }
+                }
+                return nullptr;
+            };
+
+            // Find y-range covering all cover fragments (from 0 to lastCoverFragmentIndex)
+            int coverStart = -1;
+            int coverEnd = -1;
+            bool isNonLinear = false;
+
+            for (int fragIdx = 0; fragIdx <= lastCoverFragmentIndex; fragIdx++) {
+                lString32 fragmentId = lString32("_doc_fragment_") << fmt::decimal(fragIdx);
+                ldomNode* fragment = findFragment(fragmentId);
+                if (fragment) {
+                    lvRect rc;
+                    fragment->getAbsRect(rc);
+                    if (coverStart < 0 || rc.top < coverStart)
+                        coverStart = rc.top;
+                    if (rc.bottom > coverEnd)
+                        coverEnd = rc.bottom;
+                    if (fragment->hasAttribute(attr_NonLinear))
+                        isNonLinear = true;
+                    CRLog::debug("EPUB cover: fragment %d y-range %d-%d", fragIdx, rc.top, rc.bottom);
+                }
+            }
+
+            if (coverStart >= 0 && coverEnd > coverStart) {
+                CRLog::debug("EPUB cover: combined y-range [%d, %d), isNonLinear=%d",
+                             coverStart, coverEnd, isNonLinear ? 1 : 0);
+
+                bool hasShowCover = (showCover && pages->length() > 0 && ((*pages)[0]->flags & RN_PAGE_TYPE_COVER));
+                int startIdx = hasShowCover ? 1 : 0;
+                CRLog::debug("EPUB cover: hasShowCover=%d, startIdx=%d", hasShowCover ? 1 : 0, startIdx);
+
+                // Debug: log page info
+                if (CRLog::isLogLevelEnabled(CRLog::LL_DEBUG)) {
+                    CRLog::debug("EPUB cover: first %d pages:", (pages->length() < 10) ? pages->length() : 10);
+                    for (int i = 0; i < pages->length() && i < 10; i++) {
+                        LVRendPageInfo* page = (*pages)[i];
+                        CRLog::debug("  page[%d] start=%d, flow=%d, flags=0x%02x, height=%d",
+                                     i, page->start, page->flow, page->flags, page->height);
+                    }
+                }
+
+                // Collect indices of EPUB cover pages to remove (if showCover) or mark
+                LVArray<int> coverPageIndices;
+                if (isNonLinear) {
+                    CRLog::debug("EPUB cover: checking non-linear pages from idx %d", startIdx);
+                    for (int i = startIdx; i < pages->length(); i++) {
+                        LVRendPageInfo* page = (*pages)[i];
+                        bool inYRange = (page->flow > 0 && page->start >= coverStart && page->start < coverEnd);
+                        if (inYRange) {
+                            CRLog::debug("EPUB cover: page[%d] matches (inYRange)", i);
+                            coverPageIndices.add(i);
+                        }
+                    }
+                } else {
+                    CRLog::debug("EPUB cover: checking linear pages from idx %d, y-range [%d, %d)",
+                                 startIdx, coverStart, coverEnd);
+                    for (int i = startIdx; i < pages->length(); i++) {
+                        LVRendPageInfo* page = (*pages)[i];
+                        bool flowMatch = (page->flow == 0);
+                        bool rangeMatch = (page->start >= coverStart && page->start < coverEnd);
+                        if (i < startIdx + 5) {
+                            CRLog::debug("EPUB cover: page[%d] flow=%d flowMatch=%d, start=%d rangeMatch=%d",
+                                         i, page->flow, flowMatch ? 1 : 0, page->start, rangeMatch ? 1 : 0);
+                        }
+                        if (flowMatch && rangeMatch) {
+                            coverPageIndices.add(i);
+                        }
+                    }
+                }
+
+                CRLog::debug("EPUB cover: found %d cover pages to process", coverPageIndices.length());
+                if (hasShowCover) {
+                    int pagesBefore = pages->length();
+                    for (int i = coverPageIndices.length() - 1; i >= 0; i--) {
+                        int idx = coverPageIndices[i];
+                        CRLog::debug("EPUB cover: removing page %d (showCover enabled)", idx);
+                        pages->erase(idx, 1);
+                    }
+                    CRLog::debug("EPUB cover: pages %d -> %d after removal", pagesBefore, pages->length());
+                    // Update index field of all remaining pages to match their array position
+                    // This is needed because page numbers displayed in header use page->index
+                    for (int i = 0; i < pages->length(); i++) {
+                        (*pages)[i]->index = i;
+                    }
+                } else {
+                    for (int i = 0; i < coverPageIndices.length(); i++) {
+                        int idx = coverPageIndices[i];
+                        (*pages)[idx]->flags |= RN_PAGE_NO_ROTATE;
+                        CRLog::debug("EPUB cover: marked page %d with RN_PAGE_NO_ROTATE", idx);
+                    }
+                }
+            } else {
+                CRLog::warn("EPUB cover: no valid y-range found for cover fragments");
+            }
+        }
+
         updateRenderContext();
         _pagesData.reset();
         pages->serialize(_pagesData);

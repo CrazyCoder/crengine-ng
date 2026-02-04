@@ -34,6 +34,7 @@
  ***************************************************************************/
 
 #include <lvdocview.h>
+#include <lvimg.h>
 #include <fb2def.h>
 #include <lvstyles.h>
 #include <lvrend.h>
@@ -1300,13 +1301,27 @@ LVStreamRef LVDocView::getBookCoverImageStream() {
 
 /// returns cover page image source, if any
 LVImageSourceRef LVDocView::getCoverPageImage() {
-    //    LVStreamRef stream = getBookCoverImageStream();
-    //    if ( !stream.isNull() )
-    //        CRLog::trace("Image stream size is %d", (int)stream->GetSize() );
     //CRLog::trace("LVDocView::getCoverPageImage()");
-    //m_doc->dumpStatistics();
+
+    // Try DOC_PROP_COVER_FILE first (works for EPUB, MOBI, etc.)
+    lString32 coverFileName;
+    m_doc_props->getString(DOC_PROP_COVER_FILE, coverFileName);
+    if (!coverFileName.empty()) {
+        LVContainerRef cont = m_doc->getContainer();
+        if (cont.isNull())
+            cont = m_container;
+        if (!cont.isNull()) {
+            LVStreamRef stream = cont->OpenStream(coverFileName.c_str(), LVOM_READ);
+            if (!stream.isNull()) {
+                LVImageSourceRef imgsrc = LVCreateStreamImageSource(stream);
+                if (!imgsrc.isNull())
+                    return imgsrc;
+            }
+        }
+    }
+
+    // FB2 coverpage fallback
     lUInt16 path[] = { el_FictionBook, el_description, el_title_info, el_coverpage, 0 };
-    //lUInt16 path[] = { el_FictionBook, el_description, el_title_info, el_coverpage, el_image, 0 };
     ldomNode* cover_el = 0;
     ldomNode* rootNode = m_doc->getRootNode();
     if (rootNode) {
@@ -2396,14 +2411,6 @@ void LVDocView::drawPageTo(LVDrawBuf* drawbuf, LVRendPageInfo& page,
         if (page.flags & RN_PAGE_TYPE_COVER) {
             lvRect rc = *pageRect;
             drawbuf->SetClipRect(&rc);
-            //if ( m_pageMargins.bottom > m_pageMargins.top )
-            //    rc.bottom -= m_pageMargins.bottom - m_pageMargins.top;
-            /*
-             rc.left += m_pageMargins.left / 2;
-             rc.top += m_pageMargins.bottom / 2;
-             rc.right -= m_pageMargins.right / 2;
-             rc.bottom -= m_pageMargins.bottom / 2;
-             */
             //CRLog::trace("Entering drawCoverTo()");
             drawCoverTo(drawbuf, rc);
         } else {
@@ -2751,9 +2758,56 @@ void LVDocView::Draw(LVDrawBuf& drawbuf, int position, int page, bool rotate, bo
     LVLock lock(getMutex());
     //CRLog::trace("Draw() : calling checkPos()");
     checkPos();
+
+#if CR_INTERNAL_PAGE_ORIENTATION == 1
+    // Detect cover page early to determine rendering mode
+    // Two separate flags:
+    // - skipRotation: skip final buffer rotation (for both RN_PAGE_TYPE_COVER and RN_PAGE_NO_ROTATE)
+    // - usePortraitDimensions: swap buffer dimensions (for both cover types)
+    //
+    // RN_PAGE_TYPE_COVER (generated showCover): rendered via drawCoverTo() with proper scaling
+    // RN_PAGE_NO_ROTATE (EPUB cover page without showCover): rendered normally, just skip rotation
+    bool skipRotation = false;
+    bool usePortraitDimensions = false;
+    bool isLandscape = (m_rotateAngle == CR_ROTATE_ANGLE_90 || m_rotateAngle == CR_ROTATE_ANGLE_270);
+    if (rotate && isLandscape && m_is_rendered && m_doc && !m_font.isNull() && m_pages.length() > 0) {
+        if (isScrollMode()) {
+            // In scroll mode, check if we're viewing the cover page area
+            lUInt16 pageFlags = m_pages[0]->flags;
+            if (pageFlags & (RN_PAGE_TYPE_COVER | RN_PAGE_NO_ROTATE)) {
+                int cover_height = m_pages[0]->height;
+                if (position < cover_height) {
+                    skipRotation = true;
+                    usePortraitDimensions = true;
+                }
+            }
+        } else {
+            // In page mode, check if the current page has cover or no-rotate flag
+            int actualPage = (page == -1) ? m_pages.FindNearestPage(position, 0) : page;
+            if (actualPage >= 0 && actualPage < m_pages.length()) {
+                lUInt16 pageFlags = m_pages[actualPage]->flags;
+                if (pageFlags & (RN_PAGE_TYPE_COVER | RN_PAGE_NO_ROTATE)) {
+                    skipRotation = true;
+                    usePortraitDimensions = true;
+                }
+            }
+        }
+    }
+#endif
+
     //CRLog::trace("Draw() : calling drawbuf.resize(%d, %d)", m_dx, m_dy);
-    if (autoresize)
+    if (autoresize) {
+#if CR_INTERNAL_PAGE_ORIENTATION == 1
+        if (usePortraitDimensions) {
+            // For generated cover (RN_PAGE_TYPE_COVER), use portrait dimensions (swap width/height)
+            drawbuf.Resize(m_dy, m_dx);
+        } else {
+            drawbuf.Resize(m_dx, m_dy);
+        }
+#else
         drawbuf.Resize(m_dx, m_dy);
+#endif
+    }
     drawbuf.SetBackgroundColor(m_backgroundColor);
     drawbuf.SetTextColor(m_textColor);
     //CRLog::trace("Draw() : calling clear()", m_dx, m_dy);
@@ -2803,18 +2857,45 @@ void LVDocView::Draw(LVDrawBuf& drawbuf, int position, int page, bool rotate, bo
         //drawPageBackground(drawbuf, (page * 1356) & 0xFFF, 0x1000 - (page * 1356) & 0xFFF);
         drawPageBackground(drawbuf, 0, 0);
 
+        int basePage = getBasePage(&m_pages);
+
+#if CR_INTERNAL_PAGE_ORIENTATION == 1
+        if (usePortraitDimensions && page >= 0 && page < m_pages.length()) {
+            // For cover page, use full screen with no margins
+            lvRect coverRect;
+            coverRect.left = 0;
+            coverRect.right = drawbuf.GetWidth();
+            coverRect.top = 0;
+            coverRect.bottom = drawbuf.GetHeight();
+            drawPageTo(&drawbuf, *m_pages[page], &coverRect, m_pages.length(), basePage);
+        } else {
+            if (page >= 0 && page < m_pages.length())
+                drawPageTo(&drawbuf, *m_pages[page], &m_pageRects[0],
+                           m_pages.length(), basePage);
+            if (pc == 2 && page >= 0 && page + 1 < m_pages.length())
+                drawPageTo(&drawbuf, *m_pages[page + 1], &m_pageRects[1],
+                           m_pages.length(), basePage);
+        }
+#else
         if (page >= 0 && page < m_pages.length())
             drawPageTo(&drawbuf, *m_pages[page], &m_pageRects[0],
-                       m_pages.length(), 1);
+                       m_pages.length(), basePage);
         if (pc == 2 && page >= 0 && page + 1 < m_pages.length())
             drawPageTo(&drawbuf, *m_pages[page + 1], &m_pageRects[1],
-                       m_pages.length(), 1);
+                       m_pages.length(), basePage);
+#endif
     }
 #if CR_INTERNAL_PAGE_ORIENTATION == 1
     if (rotate) {
-        //CRLog::trace("Rotate drawing buffer. Src size=(%d, %d), angle=%d, buf(%d, %d)", m_dx, m_dy, m_rotateAngle, drawbuf.GetWidth(), drawbuf.GetHeight() );
-        drawbuf.Rotate(m_rotateAngle);
-        //CRLog::trace("Rotate done. buf(%d, %d)", drawbuf.GetWidth(), drawbuf.GetHeight() );
+        if (skipRotation) {
+            // For cover pages with 270° document rotation, apply 180° flip
+            // so cover top appears on the left (matching left-to-right reading direction)
+            if (m_rotateAngle == CR_ROTATE_ANGLE_270) {
+                drawbuf.Rotate(CR_ROTATE_ANGLE_180);
+            }
+        } else if (m_rotateAngle != CR_ROTATE_ANGLE_0) {
+            drawbuf.Rotate(m_rotateAngle);
+        }
     }
 #endif
 }

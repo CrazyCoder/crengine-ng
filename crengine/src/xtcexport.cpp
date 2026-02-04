@@ -1026,6 +1026,8 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
     int bufHeight = m_height;
 #endif
 
+    int basePage = getBasePage(pages);
+
     for (int i = 0; i < exportPageCount; i++) {
         // Check for cancellation before each page
         if (m_callback && m_callback->isCancelled()) {
@@ -1043,9 +1045,9 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         // Calculate source page index
         int srcPageIdx = actualStartPage + i;
 
-        // Skip rotation for cover page (srcPageIdx==0) at 90/270 angles
+        // Skip rotation for cover page at 90/270 angles
         // to preserve portrait cover images at full screen size
-        bool isCoverPage = (srcPageIdx == 0 && showCover);
+        bool isCoverPage = ((*pages)[srcPageIdx]->flags & (RN_PAGE_TYPE_COVER | RN_PAGE_NO_ROTATE));
         bool skipRotation = isCoverPage && isLandscape;
         int bufWidth = (isLandscape && !skipRotation) ? m_height : m_width;
         int bufHeight = (isLandscape && !skipRotation) ? m_width : m_height;
@@ -1058,7 +1060,7 @@ bool XtcExporter::exportDocument(LVDocView* docView, LVStreamRef stream) {
         docView->SetPos((*pages)[srcPageIdx]->start, false);
         // Use totalPageCount for header display so page numbers show correctly
         // (exportPageCount=1 in preview mode would cause header to show 0 total pages)
-        docView->drawPageTo(&drawbuf, *(*pages)[srcPageIdx], NULL, totalPageCount, 0);
+        docView->drawPageTo(&drawbuf, *(*pages)[srcPageIdx], NULL, totalPageCount, basePage);
 
         // Apply rotation to get final target dimensions
 #if CR_INTERNAL_PAGE_ORIENTATION == 1

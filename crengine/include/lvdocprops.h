@@ -46,5 +46,6 @@
 #define DOC_PROP_FILE_HASH      "doc.file.hash"
 #define DOC_PROP_CODE_BASE      "doc.file.code.base"
 #define DOC_PROP_COVER_FILE     "doc.cover.file"
+#define DOC_PROP_COVER_PAGE_INDEX "doc.cover.page.index"
 
 #endif // LVDOCPROPS_H

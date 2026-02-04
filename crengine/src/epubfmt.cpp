@@ -1327,7 +1327,94 @@ bool ImportEpubDocument(LVStreamRef stream, ldomDocument* m_doc, LVDocViewCallba
                     }
                 }
             }
-            CRLog::debug("opf: reading spine done");
+            CRLog::debug("opf: reading spine done, spineItems.length=%d", (int)spineItems.length());
+
+            // Detect EPUB cover page
+            int coverSpineIndex = -1;
+
+            auto isCoverRelatedId = [](const lString32& id) {
+                lString32 lower = id;
+                lower.lowercase();
+                return lower.pos(U"cover") >= 0 || lower.pos(U"titlepage") >= 0;
+            };
+
+            // Method 1: EPUB 2 guide section
+            ldomNode* guide = doc->nodeFromXPath(cs32("package/guide"));
+            if (guide) {
+                CRLog::debug("EPUB: found guide section");
+                for (size_t i = 1; i <= EPUB_ITEM_MAX_ITER; i++) {
+                    ldomNode* ref = doc->nodeFromXPath(lString32("package/guide/reference[") << fmt::decimal(i) << "]");
+                    if (!ref)
+                        break;
+                    lString32 type = ref->getAttributeValue("type");
+                    if (type == "cover") {
+                        lString32 href = DecodeHTMLUrlString(ref->getAttributeValue("href"));
+                        // Remove fragment identifier if present
+                        int hashPos = href.pos('#');
+                        if (hashPos >= 0)
+                            href = href.substr(0, hashPos);
+                        lString32 coverHref = LVCombinePaths(codeBase, href);
+                        // Find corresponding spine item
+                        for (size_t j = 0; j < spineItems.length(); j++) {
+                            lString32 spineHref = LVCombinePaths(codeBase, spineItems[j]->href);
+                            if (spineHref == coverHref) {
+                                coverSpineIndex = (int)j;
+                                CRLog::info("EPUB cover page from guide: index %d (%s)", coverSpineIndex, LCSTR(coverHref));
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Method 2: EPUB 3 - find manifest item with id="cover" in spine (exact match)
+            if (coverSpineIndex < 0) {
+                CRLog::debug("EPUB: checking spine items for id='cover'");
+                for (size_t j = 0; j < spineItems.length(); j++) {
+                    CRLog::trace("EPUB: spine[%d] id='%s' href='%s'", (int)j, LCSTR(spineItems[j]->id), LCSTR(spineItems[j]->href));
+                    if (spineItems[j]->id == U"cover") {
+                        coverSpineIndex = (int)j;
+                        CRLog::info("EPUB cover page from id='cover': index %d", coverSpineIndex);
+                        break;
+                    }
+                }
+            }
+
+            // Method 3: Check if first spine items contain "cover" or "titlepage" in id
+            if (coverSpineIndex < 0) {
+                CRLog::debug("EPUB: checking first spine items for cover-related ids");
+                for (size_t j = 0; j < spineItems.length() && j < 3; j++) {
+                    if (isCoverRelatedId(spineItems[j]->id)) {
+                        coverSpineIndex = (int)j;
+                        CRLog::info("EPUB cover page from id containing 'cover'/'titlepage': index %d (id='%s')",
+                                    coverSpineIndex, LCSTR(spineItems[j]->id));
+                        break;
+                    }
+                }
+            }
+
+            // Find the last consecutive cover-related spine item
+            // Many EPUBs (especially from Calibre) have multiple cover pages at the start
+            int lastCoverIndex = coverSpineIndex;
+            if (coverSpineIndex >= 0) {
+                for (size_t j = coverSpineIndex + 1; j < spineItems.length() && j < 5; j++) {
+                    if (isCoverRelatedId(spineItems[j]->id)) {
+                        lastCoverIndex = (int)j;
+                        CRLog::info("EPUB: additional cover page at index %d (id='%s')", (int)j, LCSTR(spineItems[j]->id));
+                    } else {
+                        break; // Stop at first non-cover item
+                    }
+                }
+            }
+
+            // Store cover spine index if found (use lastCoverIndex to cover all cover pages)
+            if (lastCoverIndex >= 0) {
+                m_doc_props->setInt(DOC_PROP_COVER_PAGE_INDEX, lastCoverIndex);
+                CRLog::info("EPUB: stored cover page index %d (covers spine items 0-%d)", lastCoverIndex, lastCoverIndex);
+            } else {
+                CRLog::debug("EPUB: no cover page detected");
+            }
         }
         delete doc;
         CRLog::debug("opf: closed");

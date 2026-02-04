@@ -76,6 +76,7 @@
 
 #define RN_PAGE_TYPE_NORMAL          0x01
 #define RN_PAGE_TYPE_COVER           0x02
+#define RN_PAGE_NO_ROTATE            0x04  // EPUB cover page: skip rotation but render normally
 #define RN_PAGE_MOSTLY_RTL           0x10
 #define RN_PAGE_FOOTNOTES_MOSTLY_RTL 0x20
 
@@ -263,6 +264,13 @@ public:
     bool serialize(SerialBuf& buf);
     bool deserialize(SerialBuf& buf);
 };
+
+/// Returns base page number for page headers (0 if cover exists, 1 otherwise)
+inline int getBasePage(const LVRendPageList* pages) {
+    if (!pages || pages->length() == 0)
+        return 1;
+    return ((*pages)[0]->flags & RN_PAGE_TYPE_COVER) ? 0 : 1;
+}
 
 class LVFootNote;
 
