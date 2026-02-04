@@ -4150,6 +4150,9 @@ void LVDocView::SetRotateAngle(cr_rotate_angle_t angle) {
     clearImageCache();
     LVLock lock(getMutex());
     m_rotateAngle = angle;
+    // Update document rotation for image auto-rotate direction
+    if (m_doc)
+        m_doc->setDocumentRotation((int)angle);
     font_antialiasing_t rotated_aa_mode = rotateFontAntialiasMode(
             (font_antialiasing_t)m_props->getIntDef(PROP_FONT_ANTIALIASING, (int)font_aa_all),
             m_rotateAngle);

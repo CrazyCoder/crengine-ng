@@ -172,6 +172,7 @@ protected:
 
     img_scaling_options_t _imgScalingOptions;
     bool _imgAutoRotate;
+    lUInt8 _docRotation;  ///< document rotation angle (CR_ROTATE_ANGLE_* value: 0-3)
     int _spaceWidthScalePercent;
     int _minSpaceCondensingPercent;
     int _unusedSpaceThresholdPercent;
@@ -271,6 +272,11 @@ public:
         _renderedBlockCache.clear();
         return true;
     }
+
+    /// set document rotation for image auto-rotate direction selection
+    void setDocumentRotation(int rotation) { _docRotation = (lUInt8)(rotation & 3); }
+    /// get document rotation (CR_ROTATE_ANGLE_* value: 0-3)
+    int getDocumentRotation() const { return _docRotation; }
 
     /// add named BLOB data to document
     bool addBlob(lString32 name, const lUInt8* data, int size);

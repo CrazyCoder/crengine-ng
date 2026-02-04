@@ -2144,10 +2144,13 @@ public:
                                     resizeImage(rotW, rotH, m_pbuffer->width, m_max_img_height, false);
                                     width = rotW;
                                     height = rotH;
-                                    // Set rotation flag: 1 = CW, 2 = CCW
-                                    // CW rotation puts the image top on the right, matching the standard
-                                    // convention for viewing landscape content in portrait orientation
-                                    rotationFlag = 1;
+                                    // Set rotation flag: 1 = CW (90°), 2 = CCW (270°)
+                                    // Choose direction based on document rotation for natural viewing:
+                                    // - Document at 0°: rotate CW (original left→top)
+                                    // - Document at 90°/180°/270°: rotate CCW (original top→left)
+                                    // This ensures original top-to-bottom becomes left-to-right after rotation
+                                    int docRot = node->getDocument()->getDocumentRotation();
+                                    rotationFlag = (docRot == 0) ? 1 : 2;
                                 }
                             }
                         }
