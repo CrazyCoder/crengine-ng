@@ -2119,7 +2119,9 @@ public:
                             int areaWithRotate = (int)(origH * scaleRot) * (int)(origW * scaleRot);
 
                             // Only rotate if area improves by at least 5% (avoid borderline rotations)
-                            if (areaWithRotate > areaNoRotate * 105 / 100) {
+                            // Also skip rotation for very wide/tall images (likely decorative dividers)
+                            double aspectRatio = (origW > origH) ? (double)origW / origH : (double)origH / origW;
+                            if (aspectRatio <= 4.0 && areaWithRotate > areaNoRotate * 105 / 100) {
                                 // Rotation improves fit - recompute with swapped dimensions
                                 int rotW = 0, rotH = 0;
                                 getStyledImageSize(node, rotW, rotH, m_pbuffer->width, -1);
