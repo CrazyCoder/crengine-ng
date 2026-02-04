@@ -2737,10 +2737,10 @@ bool getStyledImageSize(ldomNode* enode, int& img_width, int& img_height, int co
         max_height = lengthToPx(enode, style->max_height, container_height);
 
     if (enforce_page_constraints) {
-        // lvtextfm.cpp, when drawing an image, will resize it so it does not overflow
-        // the paragraph width and page height. If requested, have max_height and
-        // max_width ensure that this resizing will not be needed.
-        int enforced_max_height = enode->getDocument()->getPageHeight() - enode->getSurroundingAddedHeight(true);
+        // Ensure images don't exceed page dimensions
+        int page_height = enode->getDocument()->getPageHeight();
+        int surrounding = capMarginDeduction(page_height, enode->getSurroundingAddedHeight(true));
+        int enforced_max_height = page_height - surrounding;
         if (container_height >= 0 && container_height < enforced_max_height) {
             enforced_max_height = container_height;
         }

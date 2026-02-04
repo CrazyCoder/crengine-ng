@@ -901,6 +901,10 @@ public:
                         if (baseline_to_bottom > 0) {
                             m_max_img_height -= baseline_to_bottom;
                         }
+                        // Cap margin deduction to ensure images get reasonable page coverage
+                        int actual_deduction = m_pbuffer->page_height - m_max_img_height;
+                        int capped_deduction = capMarginDeduction(m_pbuffer->page_height, actual_deduction);
+                        m_max_img_height = m_pbuffer->page_height - capped_deduction;
                         m_has_images = true;
                     }
                 }
@@ -2061,7 +2065,7 @@ public:
                         int height = 0;
                         // We have yet no container height to provide for CSS heights in %,
                         // so they won't apply
-                        getStyledImageSize(node, width, height, m_pbuffer->width, -1);
+                        getStyledImageSize(node, width, height, m_pbuffer->width, -1, true);
                         // Ensure they are constrained to this paragraph width and page height
                         // Note: resizeImage() may do some additional scaling depending on image_scaling_options,
                         // use mode=0 scale=1 for these if this is not desirable.
@@ -2096,46 +2100,55 @@ public:
                             int origW = 0, origH = 0;
                             getStyledImageSize(node, origW, origH, m_pbuffer->width, -1);
 
-                            // Calculate area without rotation (current width/height)
-                            double scale = 1.0;
-                            if (origW > 0 && origH > 0) {
-                                double scaleW = (double)m_pbuffer->width / origW;
-                                double scaleH = (double)m_max_img_height / origH;
-                                scale = (scaleW < scaleH) ? scaleW : scaleH;
-                                if (scale > 1.0)
-                                    scale = 1.0; // Don't scale up for area comparison
-                            }
-                            int areaNoRotate = (int)(origW * scale) * (int)(origH * scale);
+                            // Skip rotation if image orientation matches page orientation
+                            // Portrait image in portrait mode, or landscape in landscape mode
+                            // should never benefit from rotation
+                            bool isPortraitImage = (origH > origW);
+                            bool isPortraitPage = (m_pbuffer->page_height > m_pbuffer->width);
+                            if (isPortraitImage != isPortraitPage) {
+                                // Orientations differ - check if rotation would help
+                                // Calculate area without rotation (current width/height)
+                                double scale = 1.0;
+                                if (origW > 0 && origH > 0) {
+                                    double scaleW = (double)m_pbuffer->width / origW;
+                                    double scaleH = (double)m_max_img_height / origH;
+                                    scale = (scaleW < scaleH) ? scaleW : scaleH;
+                                    if (scale > 1.0)
+                                        scale = 1.0; // Don't scale up for area comparison
+                                }
+                                int areaNoRotate = (int)(origW * scale) * (int)(origH * scale);
 
-                            // Calculate area with rotation (swapped dimensions)
-                            double scaleRot = 1.0;
-                            if (origH > 0 && origW > 0) {
-                                double scaleW = (double)m_pbuffer->width / origH;  // Note: swapped
-                                double scaleH = (double)m_max_img_height / origW;
-                                scaleRot = (scaleW < scaleH) ? scaleW : scaleH;
-                                if (scaleRot > 1.0)
-                                    scaleRot = 1.0;
-                            }
-                            int areaWithRotate = (int)(origH * scaleRot) * (int)(origW * scaleRot);
+                                // Calculate area with rotation (swapped dimensions)
+                                double scaleRot = 1.0;
+                                if (origH > 0 && origW > 0) {
+                                    double scaleW = (double)m_pbuffer->width / origH;  // Note: swapped
+                                    double scaleH = (double)m_max_img_height / origW;
+                                    scaleRot = (scaleW < scaleH) ? scaleW : scaleH;
+                                    if (scaleRot > 1.0)
+                                        scaleRot = 1.0;
+                                }
+                                int areaWithRotate = (int)(origH * scaleRot) * (int)(origW * scaleRot);
 
-                            // Only rotate if area improves by at least 5% (avoid borderline rotations)
-                            // Also skip rotation for very wide/tall images (likely decorative dividers)
-                            double aspectRatio = (origW > origH) ? (double)origW / origH : (double)origH / origW;
-                            if (aspectRatio <= 4.0 && areaWithRotate > areaNoRotate * 105 / 100) {
-                                // Rotation improves fit - recompute with swapped dimensions
-                                int rotW = 0, rotH = 0;
-                                getStyledImageSize(node, rotW, rotH, m_pbuffer->width, -1);
-                                // Swap for rotation
-                                int tmp = rotW;
-                                rotW = rotH;
-                                rotH = tmp;
-                                resizeImage(rotW, rotH, m_pbuffer->width, m_max_img_height, false);
-                                width = rotW;
-                                height = rotH;
-                                // Set rotation flag: 1 = CW, 2 = CCW
-                                // CW rotation puts the image top on the right, matching the standard
-                                // convention for viewing landscape content in portrait orientation
-                                rotationFlag = 1;
+                                // Only rotate if area improves sufficiently (avoid borderline rotations)
+                                // Also skip rotation for very wide/tall images (likely decorative dividers)
+                                double aspectRatio = (origW > origH) ? (double)origW / origH : (double)origH / origW;
+                                int minAreaWithGain = areaNoRotate * (100 + IMG_AUTOROTATE_MIN_AREA_GAIN_PERCENT) / 100;
+                                if (aspectRatio <= IMG_AUTOROTATE_ASPECT_RATIO_LIMIT && areaWithRotate > minAreaWithGain) {
+                                    // Rotation improves fit - recompute with swapped dimensions
+                                    int rotW = 0, rotH = 0;
+                                    getStyledImageSize(node, rotW, rotH, m_pbuffer->width, -1);
+                                    // Swap for rotation
+                                    int tmp = rotW;
+                                    rotW = rotH;
+                                    rotH = tmp;
+                                    resizeImage(rotW, rotH, m_pbuffer->width, m_max_img_height, false);
+                                    width = rotW;
+                                    height = rotH;
+                                    // Set rotation flag: 1 = CW, 2 = CCW
+                                    // CW rotation puts the image top on the right, matching the standard
+                                    // convention for viewing landscape content in portrait orientation
+                                    rotationFlag = 1;
+                                }
                             }
                         }
 

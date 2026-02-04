@@ -229,6 +229,17 @@ extern int gRootFontSize;
 #define INTERLINE_SCALE_FACTOR_NO_SCALE 1024
 #define INTERLINE_SCALE_FACTOR_SHIFT    10
 
+// Image sizing constants
+#define IMG_MAX_MARGIN_DEDUCTION_PERCENT       15  // Cap margin deduction to ensure images get at least 85% of page height
+#define IMG_AUTOROTATE_ASPECT_RATIO_LIMIT      4.0 // Skip auto-rotate for images with extreme aspect ratios (decorative dividers)
+#define IMG_AUTOROTATE_MIN_AREA_GAIN_PERCENT   5   // Minimum area improvement to justify rotation (avoids borderline rotations)
+
+// Helper: cap margin deduction to prevent images from being unreasonably shrunk
+inline int capMarginDeduction(int page_height, int deduction) {
+    int max_deduction = page_height * IMG_MAX_MARGIN_DEDUCTION_PERCENT / 100;
+    return (deduction > max_deduction) ? max_deduction : deduction;
+}
+
 // Enhanced rendering flags
 #define BLOCK_RENDERING_ENHANCED                         0x00000001
 #define BLOCK_RENDERING_ALLOW_PAGE_BREAK_WHEN_NO_CONTENT 0x00000002 // Allow consecutive page breaks when only separated \
