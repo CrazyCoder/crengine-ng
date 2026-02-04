@@ -3156,9 +3156,9 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
 
                         if (!noteText.empty()) {
                             // === STEP 1: Remove leading duplicate from footnote body ===
-                            // Only for numeric footnote links (e.g., "[1]", "[23]")
+                            // For footnote marker links (numbers, asterisks, daggers, etc.)
                             // E.g., link "[1]" and body "1 This is footnote" -> "This is footnote"
-                            // E.g., link "12" and body "12. Footnote text" -> "Footnote text"
+                            // E.g., link "*" and body "* Footnote text" -> "Footnote text"
                             lString32 cleanLinkText = linkText;
                             // Strip common brackets/punctuation from link text for comparison
                             for (int i = (int)cleanLinkText.length() - 1; i >= 0; i--) {
@@ -3169,15 +3169,25 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
                             }
                             cleanLinkText.trim();
 
-                            // Check if cleanLinkText is all digits
-                            bool isNumericLink = !cleanLinkText.empty();
-                            for (size_t i = 0; i < cleanLinkText.length() && isNumericLink; i++) {
-                                if (cleanLinkText[i] < '0' || cleanLinkText[i] > '9') {
-                                    isNumericLink = false;
+                            // Check if cleanLinkText is a valid footnote marker
+                            // Valid markers: digits (1, 23), asterisks (*), daggers (†‡), or combinations
+                            auto isFootnoteMarkerChar = [](lChar32 ch) {
+                                return (ch >= '0' && ch <= '9') ||    // digits
+                                       ch == '*' ||                   // asterisk
+                                       ch == 0x2020 ||                // † dagger
+                                       ch == 0x2021 ||                // ‡ double dagger
+                                       ch == 0x00A7 ||                // § section sign
+                                       ch == 0x00B6 ||                // ¶ pilcrow
+                                       ch == '#';                     // hash
+                            };
+                            bool isFootnoteMarker = !cleanLinkText.empty();
+                            for (size_t i = 0; i < cleanLinkText.length() && isFootnoteMarker; i++) {
+                                if (!isFootnoteMarkerChar(cleanLinkText[i])) {
+                                    isFootnoteMarker = false;
                                 }
                             }
 
-                            if (isNumericLink && noteText.startsWith(cleanLinkText)) {
+                            if (isFootnoteMarker && noteText.startsWith(cleanLinkText)) {
                                 // Remove the matching prefix
                                 noteText = noteText.substr(cleanLinkText.length());
                                 // Also remove any following punctuation/whitespace (like ". " or " ")
