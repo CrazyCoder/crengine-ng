@@ -37,6 +37,10 @@
 
 class SerialBuf;
 
+/// Sentinel value for cr_footnote_before/after indicating "use default"
+/// Using SOH (0x01) control character which won't appear in CSS strings
+#define CR_FOOTNOTE_SEP_UNSET U"\x01"
+
 /* bit position (in 'lUInt32[] important' and 'lUInt32[] importance' bitmaps)
  * of each css_style_rec_tag properties to flag its '!important' status */
 enum css_style_rec_important_bit
@@ -252,6 +256,8 @@ struct css_style_rec_tag
             , line_break(css_lb_inherit)
             , word_break(css_wb_inherit)
             , cr_hint(css_val_inherited, 0)
+            , cr_footnote_before(CR_FOOTNOTE_SEP_UNSET)
+            , cr_footnote_after(CR_FOOTNOTE_SEP_UNSET)
             , flags(0)
             , pseudo_elem_before_style(NULL)
             , pseudo_elem_after_style(NULL) {

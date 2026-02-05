@@ -1721,10 +1721,11 @@ public:
 
                         // Gather footnotes links, as done in renderBlockElement() when erm_final/flgSplit
                         // and cell lines when is_single_column:
-                        // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline
-                        // in the text flow, so we don't need to collect links for page-bottom rendering.
+                        // When DOC_FLAG_FOOTNOTES_INLINE or DOC_FLAG_FOOTNOTES_INLINE_BLOCK is set,
+                        // footnotes are shown inline/inline-block, so we don't need to collect links for page-bottom rendering.
                         bool collectFootnoteLinks = elem->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
-                                                    !elem->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE);
+                                                    !elem->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE) &&
+                                                    !elem->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE_BLOCK);
                         if (collectFootnoteLinks || is_single_column) {
                             int orphans;
                             int widows;
@@ -3127,7 +3128,11 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
             return; // don't draw invisible
 
         // Inline footnotes: render link with its styling, then append footnote content with note body's styling
-        if (enode->getNodeId() == el_a && enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) {
+        // Mode 2 (inline): footnote text flows inline with main text
+        // Mode 3 (inline_block): footnote text starts on next line as a block
+        bool isInlineFootnotes = enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE);
+        bool isInlineBlockFootnotes = enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE_BLOCK);
+        if (enode->getNodeId() == el_a && (isInlineFootnotes || isInlineBlockFootnotes)) {
             lString32 href = enode->getAttributeValue(LXML_NS_ANY, attr_href);
             if (href.length() > 0 && href.at(0) == '#') {
                 ldomNode* noteBody = enode->getDocument()->getElementById(href.substr(1).c_str());
@@ -3269,22 +3274,107 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
                                 lUInt32 noteColor = getForegroundColor(noteStyle);
                                 lUInt32 noteBgColor = rm == erm_final ? 0xFFFFFFFF : getBackgroundColor(noteStyle);
 
-                                lString32 before = noteStyle->cr_footnote_before.empty() ? U" (" : noteStyle->cr_footnote_before;
-                                lString32 after = noteStyle->cr_footnote_after.empty() ? U")" : noteStyle->cr_footnote_after;
-                                lString32 inlineNote = before + noteText + after;
+                                // Use defaults only if property wasn't set (sentinel value)
+                                // Empty string "" is a valid explicit value (no separator)
+                                // Inline mode: default " (" and ")" separators
+                                // Inline-block mode: no separators by default (footnote is on separate line)
+                                lString32 before, after;
+                                if (isInlineBlockFootnotes) {
+                                    before = (noteStyle->cr_footnote_before == CR_FOOTNOTE_SEP_UNSET) ? U"" : noteStyle->cr_footnote_before;
+                                    after = (noteStyle->cr_footnote_after == CR_FOOTNOTE_SEP_UNSET) ? U"" : noteStyle->cr_footnote_after;
+                                } else {
+                                    before = (noteStyle->cr_footnote_before == CR_FOOTNOTE_SEP_UNSET) ? U" (" : noteStyle->cr_footnote_before;
+                                    after = (noteStyle->cr_footnote_after == CR_FOOTNOTE_SEP_UNSET) ? U")" : noteStyle->cr_footnote_after;
+                                }
 
-                                txform->AddSourceLine(
-                                        inlineNote.c_str(), inlineNote.length(),
-                                        noteColor, noteBgColor,
-                                        noteFont.get(), lang_cfg,
-                                        baseflags | LTEXT_FLAG_OWNTEXT,
-                                        line_h,
-                                        0, // valign_dy=0 - NO superscript for footnote content
-                                        0, enode
-                                        );
+                                if (isInlineBlockFootnotes) {
+                                    // INLINE BLOCK MODE: Render footnote as new paragraph on its own line.
+                                    //
+                                    // Supported CSS properties:
+                                    //   - text-indent (first line indent, including hanging)
+                                    //   - text-align (left, right, center, justify)
+                                    //   - line-height
+                                    //   - font properties, color
+                                    //
+                                    // NOT supported (AddSourceLine API limitations):
+                                    //   - margin-left/right (would need per-line width adjustment)
+                                    //   - margin-top/bottom (spacer lines can't be smaller than font height)
+                                    //   - padding
+
+                                    // Get available width for calculations
+                                    int availWidth = fmt->getWidth();
+
+                                    // Calculate note's line-height
+                                    int noteFontSize = noteFont->getSize();
+                                    int noteLineHeight = noteFont->getHeight();
+                                    if (noteStyle->line_height.type == css_val_percent) {
+                                        noteLineHeight = noteFontSize * noteStyle->line_height.value / 100;
+                                    } else if (noteStyle->line_height.type != css_val_inherited &&
+                                               noteStyle->line_height.type != css_val_unspecified) {
+                                        noteLineHeight = lengthToPx(noteBody, noteStyle->line_height, noteFontSize);
+                                    }
+
+                                    // Calculate text-indent for first line
+                                    int noteIndent = 0;
+                                    if (noteStyle->text_indent.type != css_val_unspecified) {
+                                        noteIndent = lengthToPx(noteBody, noteStyle->text_indent, availWidth);
+                                        // Handle "hanging" keyword - lowest bit flag set by lvstsheet
+                                        if (noteStyle->text_indent.value & 0x00000001) {
+                                            noteIndent = -noteIndent;  // Negative = indent all lines but first
+                                        }
+                                    }
+
+                                    // Get text alignment from footnote body style
+                                    // The low 3 bits of flags serve dual purpose: non-zero value means
+                                    // "new paragraph" AND specifies alignment.
+                                    lUInt32 noteFlags = LTEXT_FLAG_OWNTEXT;
+                                    switch (noteStyle->text_align) {
+                                        case css_ta_left:    noteFlags |= LTEXT_ALIGN_LEFT; break;
+                                        case css_ta_right:   noteFlags |= LTEXT_ALIGN_RIGHT; break;
+                                        case css_ta_center:  noteFlags |= LTEXT_ALIGN_CENTER; break;
+                                        case css_ta_justify: noteFlags |= LTEXT_ALIGN_WIDTH; break;
+                                        default:             noteFlags |= LTEXT_ALIGN_LEFT; break;
+                                    }
+
+                                    // Build footnote text with optional separators
+                                    lString32 blockNote = before + noteText + after;
+
+                                    // Add footnote as new paragraph
+                                    txform->AddSourceLine(
+                                            blockNote.c_str(), blockNote.length(),
+                                            noteColor, noteBgColor,
+                                            noteFont.get(), lang_cfg,
+                                            noteFlags,
+                                            noteLineHeight,
+                                            0,  // valign_dy = 0
+                                            noteIndent,
+                                            noteBody
+                                            );
+                                } else {
+                                    // INLINE MODE: footnote flows inline with text (existing behavior)
+                                    lString32 inlineNote = before + noteText + after;
+
+                                    txform->AddSourceLine(
+                                            inlineNote.c_str(), inlineNote.length(),
+                                            noteColor, noteBgColor,
+                                            noteFont.get(), lang_cfg,
+                                            baseflags | LTEXT_FLAG_OWNTEXT,
+                                            line_h,
+                                            0, // valign_dy=0 - NO superscript for footnote content
+                                            0, enode
+                                            );
+                                }
                             }
 
+                            // Clear alignment bits, then set new paragraph flag if needed.
+                            // Low 3 bits (LTEXT_FLAG_NEWLINE mask) serve dual purpose:
+                            // non-zero = new paragraph, value = alignment (1=left, 2=right, etc.)
                             baseflags &= ~LTEXT_FLAG_NEWLINE & ~LTEXT_SRC_IS_CLEAR_BOTH;
+                            if (isInlineBlockFootnotes) {
+                                // Force next content to start on new line (left-aligned)
+                                baseflags |= LTEXT_ALIGN_LEFT;
+                            }
+                            // For inline mode: bits stay 0, content continues on same line
                             return; // Skip normal link processing
                         }
                     } // if (isFootnoteTarget)
@@ -4663,11 +4753,12 @@ int renderBlockElementLegacy(LVRendPageContext& context, ldomNode* enode, int x,
         lString32 footnoteId;
         // Allow displaying footnote content at the bottom of all pages that contain a link
         // to it, when -cr-hint: footnote-inpage is set on the footnote block container.
-        // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline instead,
-        // so we don't mark these as footnote bodies (they won't appear at page bottom).
+        // When DOC_FLAG_FOOTNOTES_INLINE or DOC_FLAG_FOOTNOTES_INLINE_BLOCK is set,
+        // footnotes are shown inline/inline-block instead, so we don't mark these as footnote bodies.
         if (STYLE_HAS_CR_HINT(style, FOOTNOTE_INPAGE) &&
             enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
-            !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) {
+            !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE) &&
+            !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE_BLOCK)) {
             footnoteId = enode->getFirstInnerAttributeValue(attr_id);
             if (!footnoteId.empty())
                 isFootNoteBody = true;
@@ -5163,10 +5254,11 @@ int renderBlockElementLegacy(LVRendPageContext& context, ldomNode* enode, int x,
                         context.AddLine(rect.bottom, rect.bottom + margin_bottom, pb_flag);
                     }
                     // footnote links analysis
-                    // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline
-                    // in the text flow, so we don't need to collect links for page-bottom rendering.
+                    // When DOC_FLAG_FOOTNOTES_INLINE or DOC_FLAG_FOOTNOTES_INLINE_BLOCK is set,
+                    // footnotes are shown inline/inline-block, so we don't collect links for page-bottom rendering.
                     if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
-                        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) { // disable footnotes for footnotes or inline mode
+                        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE) &&
+                        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE_BLOCK)) { // disable for inline modes
                         // If paragraph is RTL, we are meeting words in the reverse of the reading order:
                         // so, insert each link for this line at the same position, instead of at the end.
                         int link_insert_pos = -1; // append
@@ -5205,10 +5297,11 @@ int renderBlockElementLegacy(LVRendPageContext& context, ldomNode* enode, int x,
                 int count = txform->GetLineCount();
                 for (int i = 0; i < count; i++) {
                     const formatted_line_t* line = txform->GetLineInfo(i);
-                    // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline
-                    // in the text flow, so we don't need to collect links for page-bottom rendering.
+                    // When DOC_FLAG_FOOTNOTES_INLINE or DOC_FLAG_FOOTNOTES_INLINE_BLOCK is set,
+                    // footnotes are shown inline/inline-block, so we don't collect links for page-bottom rendering.
                     if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
-                        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) {
+                        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE) &&
+                        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE_BLOCK)) {
                         // If paragraph is RTL, we are meeting words in the reverse of the reading order:
                         // so, insert each link for this line at the same position, instead of at the end.
                         int link_insert_pos = -1; // append
@@ -7064,11 +7157,12 @@ void renderBlockElementEnhanced(FlowState* flow, ldomNode* enode, int x, int con
     lString32 footnoteId;
     // Allow displaying footnote content at the bottom of all pages that contain a link
     // to it, when -cr-hint: footnote-inpage is set on the footnote block container.
-    // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline instead,
-    // so we don't mark these as footnote bodies (they won't appear at page bottom).
+    // When DOC_FLAG_FOOTNOTES_INLINE or DOC_FLAG_FOOTNOTES_INLINE_BLOCK is set,
+    // footnotes are shown inline/inline-block instead, so we don't mark these as footnote bodies.
     if (STYLE_HAS_CR_HINT(style, FOOTNOTE_INPAGE) &&
         enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
-        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) {
+        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE) &&
+        !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE_BLOCK)) {
         footnoteId = enode->getFirstInnerAttributeValue(attr_id);
         if (!footnoteId.empty())
             isFootNoteBody = true;
@@ -8477,10 +8571,11 @@ void renderBlockElementEnhanced(FlowState* flow, ldomNode* enode, int x, int con
                 // See if there are links to footnotes in that line, and add
                 // a reference to it so page splitting can bring the footnotes
                 // text on this page, and then decide about page split.
-                // When DOC_FLAG_FOOTNOTES_INLINE is set, footnotes are shown inline
-                // in the text flow, so we don't need to collect links for page-bottom rendering.
+                // When DOC_FLAG_FOOTNOTES_INLINE or DOC_FLAG_FOOTNOTES_INLINE_BLOCK is set,
+                // footnotes are shown inline/inline-block, so we don't collect links for page-bottom rendering.
                 if (!isFootNoteBody && enode->getDocument()->getDocFlag(DOC_FLAG_ENABLE_FOOTNOTES) &&
-                    !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE)) { // disable footnotes for footnotes or inline mode
+                    !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE) &&
+                    !enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE_BLOCK)) { // disable for inline modes
                     // If paragraph is RTL, we are meeting words in the reverse of the reading order:
                     // so, insert each link for this line at the same position, instead of at the end.
                     int link_insert_pos = -1; // append

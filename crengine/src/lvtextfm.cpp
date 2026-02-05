@@ -3823,6 +3823,18 @@ public:
         // the text alignment to use with all added lines.
         src_text_fragment_t* para = &m_pbuffer->srctext[start];
 
+        // Reset indent for this paragraph based on its first source's indent.
+        // This allows each paragraph to have its own text-indent setting.
+        int indent = para->indent;
+        m_indent_first_line_done = false;
+        if (indent >= 0) { // positive indent affects only first line
+            m_indent_current = indent;
+            m_indent_after_first_line = 0;
+        } else { // negative indent affects all but first lines (hanging indent)
+            m_indent_current = 0;
+            m_indent_after_first_line = -indent;
+        }
+
         // detect case with inline preformatted text inside block with line feeds -- override align=left for this case
         bool preFormattedOnly = true;
         for (int i = start; i < end; i++) {

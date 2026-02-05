@@ -98,6 +98,8 @@ struct img_scaling_options_t
 #define DOC_FLAG_NONLINEAR_PAGEBREAK 16
 /// docFlag mask, show footnotes inline in text flow instead of at page bottom
 #define DOC_FLAG_FOOTNOTES_INLINE 32
+/// docFlag mask, show footnotes as inline blocks (starting on next line after link)
+#define DOC_FLAG_FOOTNOTES_INLINE_BLOCK 64
 /// default docFlag set
 #define DOC_FLAG_DEFAULTS (DOC_FLAG_ENABLE_INTERNAL_STYLES | DOC_FLAG_ENABLE_FOOTNOTES | DOC_FLAG_ENABLE_DOC_FONTS)
 

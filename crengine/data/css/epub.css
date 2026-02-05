@@ -236,8 +236,6 @@ table[align=right i] { float: right; }
 .ntb, .ntb-txt, .ntb-txt-j {
     $footnote.all!;
     -cr-hint: footnote-inpage;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
 }
 
 /* Ensure footnote styling cascades to ALL nested elements */
@@ -250,21 +248,19 @@ table[align=right i] { float: right; }
 /* Footnote reference links */
 *[type~="noteref"],
 .footnoteRef a, .noteref a, .note-ref a {
-    $footnote-link.all!;
+    /*$footnote-link.all!;*/
 }
 
 /* Inline footnote styling (when footnotes mode = inline):
    -cr-footnote-before and -cr-footnote-after customize the separators.
    Default is " (" before and ")" after. Example with square brackets: */
-/*
 *[type~="note"], *[type~="footnote"], *[type~="rearnote"],
 *[role~="doc-note"], *[role~="doc-footnote"], *[role~="doc-rearnote"],
 .footnote, .note, .note1, .note2, .note3 {
     -cr-hint: footnote-inline;
-    -cr-footnote-before: " [";
-    -cr-footnote-after: "]";
+/*    -cr-footnote-before: " [";
+    -cr-footnote-after: "]";*/
 }
-*/
 
 
 /* EPUB3 epub:type="pagebreak" may sometimes have the page number

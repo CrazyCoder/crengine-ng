@@ -57,7 +57,7 @@
 #define PROP_DISPLAY_INVERSE      "crengine.display.inverse"
 #define PROP_STATUS_LINE          "window.status.line"
 #define PROP_FOOTNOTES            "crengine.footnotes"
-#define PROP_FOOTNOTES_MODE       "crengine.footnotes.mode"  // 0=hidden, 1=page_bottom (default), 2=inline
+#define PROP_FOOTNOTES_MODE       "crengine.footnotes.mode"  // 0=hidden, 1=page_bottom (default), 2=inline, 3=inline_block
 #define PROP_SHOW_TIME            "window.status.clock"
 #define PROP_SHOW_TIME_12HOURS    "window.status.clock.12hours"
 #define PROP_SHOW_TITLE           "window.status.title"
