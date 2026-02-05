@@ -3224,11 +3224,9 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
                                 // Calculate note's line-height
                                 int noteFontSize = noteFont->getSize();
                                 int noteLineHeight = noteFont->getHeight();
-                                if (noteStyle->line_height.type == css_val_percent) {
-                                    noteLineHeight = noteFontSize * noteStyle->line_height.value / 100;
-                                } else if (noteStyle->line_height.type != css_val_inherited &&
-                                           noteStyle->line_height.type != css_val_unspecified) {
-                                    noteLineHeight = lengthToPx(noteBody, noteStyle->line_height, noteFontSize);
+                                if (noteStyle->line_height.type != css_val_inherited &&
+                                    noteStyle->line_height.type != css_val_unspecified) {
+                                    noteLineHeight = lengthToPx(noteBody, noteStyle->line_height, noteFontSize, noteFontSize);
                                 }
 
                                 // Calculate text-indent for first line
@@ -3255,6 +3253,10 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
 
                                 // Build footnote text with optional separators
                                 lString32 blockNote = before + noteText + after;
+
+                                // Add LTEXT_SRC_IS_SEPARATE_STRUT to allow line-height < 100%
+                                // (bypasses paragraph's strut minimum)
+                                noteFlags |= LTEXT_SRC_SEPARATE_STRUT;
 
                                 // Add footnote as new paragraph
                                 txform->AddSourceLine(

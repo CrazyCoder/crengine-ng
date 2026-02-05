@@ -98,7 +98,7 @@ extern "C" {
 
 #define LTEXT_HAS_EXTRA           0x10000000 // Has extra properties (see below)
 #define LTEXT_MATH_TRANSFORM      0x20000000 // Text might need to be stretched or tweaked
-#define LTEXT__AVAILABLE_BIT_31__ 0x40000000
+#define LTEXT_SRC_SEPARATE_STRUT  0x40000000 // Source uses its own interval as strut (for inline-block footnotes)
 #define LTEXT_LEGACY_RENDERING    0x80000000 // Legacy text rendering tweaks
 
 class TextLanfCfg;

@@ -2733,8 +2733,20 @@ public:
         // This new line starts with a minimal height and baseline, as set from the
         // paragraph parent node (by lvrend.cpp renderFinalBlock()). These may get
         // increased if some inline elements need more, but not decreased.
-        frmline->height = m_pbuffer->strut_height;
-        frmline->baseline = m_pbuffer->strut_baseline;
+        // Exception: sources with LTEXT_SRC_IS_SEPARATE_STRUT use their own interval as strut.
+        src_text_fragment_t* firstSrc = m_srcs[start];
+        if (firstSrc && (firstSrc->flags & LTEXT_SRC_SEPARATE_STRUT) && firstSrc->interval > 0) {
+            // Use source's interval as strut (for inline-block footnotes with line-height < 100%)
+            LVFont* font = (LVFont*)firstSrc->u.t.font;
+            int fh = font->getHeight();
+            int fb = font->getBaseline();
+            int half_leading = (firstSrc->interval - fh) / 2;
+            frmline->height = firstSrc->interval;
+            frmline->baseline = fb + half_leading;
+        } else {
+            frmline->height = m_pbuffer->strut_height;
+            frmline->baseline = m_pbuffer->strut_baseline;
+        }
         if (m_has_ongoing_float)
             // Avoid page split when some float that started on a previous line
             // still spans this line
