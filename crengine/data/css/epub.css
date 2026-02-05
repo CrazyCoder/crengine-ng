@@ -240,12 +240,17 @@ table[align=right i] { float: right; }
     margin-bottom: 0 !important;
 }
 
+/* Ensure footnote styling cascades to ALL nested elements */
+/**[type~="note"] *, *[type~="footnote"] *, *[type~="rearnote"] *,
+*[role~="doc-note"] *, *[role~="doc-footnote"] *, *[role~="doc-rearnote"] *,
+.footnote *, .note *, .note1 *, .note2 *, .note3 * {
+    $footnote.all!;
+}*/
+
 /* Footnote reference links */
 *[type~="noteref"],
 .footnoteRef a, .noteref a, .note-ref a {
     $footnote-link.all!;
-    vertical-align: super;
-    font-size: 80%;
 }
 
 /* Inline footnote styling (when footnotes mode = inline):
