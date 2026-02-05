@@ -295,6 +295,7 @@ typedef struct
     // the element's font and line height properties:
     lUInt16 strut_height;   /**< strut height */
     lUInt16 strut_baseline; /**< strut baseline */
+    bool separate_strut_first_done; /**< first LTEXT_SRC_SEPARATE_STRUT line processed */
 
     // Image scaling options
     lInt32 img_zoom_in_mode_block;    /**< can zoom in block images: 0=disabled, 1=integer scale, 2=free scale */

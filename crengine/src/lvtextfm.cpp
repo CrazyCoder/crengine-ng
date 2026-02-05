@@ -163,6 +163,7 @@ formatted_text_fragment_t* lvtextAllocFormatter(lUInt16 width) {
     pbuffer->width = width;
     pbuffer->strut_height = 0;
     pbuffer->strut_baseline = 0;
+    pbuffer->separate_strut_first_done = false;
     pbuffer->is_reusable = true;
     pbuffer->light_formatting = false;
     int defMode = MAX_IMAGE_SCALE_MUL > 1 ? (ARBITRARY_IMAGE_SCALE_ENABLED == 1 ? 2 : 1) : 0;
@@ -2733,16 +2734,24 @@ public:
         // This new line starts with a minimal height and baseline, as set from the
         // paragraph parent node (by lvrend.cpp renderFinalBlock()). These may get
         // increased if some inline elements need more, but not decreased.
-        // Exception: sources with LTEXT_SRC_IS_SEPARATE_STRUT use their own interval as strut.
+        // Exception: sources with LTEXT_SRC_SEPARATE_STRUT use their own interval as strut,
+        // but only for lines after the first (to maintain proper spacing from main text).
         src_text_fragment_t* firstSrc = m_srcs[start];
         if (firstSrc && (firstSrc->flags & LTEXT_SRC_SEPARATE_STRUT) && firstSrc->interval > 0) {
-            // Use source's interval as strut (for inline-block footnotes with line-height < 100%)
-            LVFont* font = (LVFont*)firstSrc->u.t.font;
-            int fh = font->getHeight();
-            int fb = font->getBaseline();
-            int half_leading = (firstSrc->interval - fh) / 2;
-            frmline->height = firstSrc->interval;
-            frmline->baseline = fb + half_leading;
+            if (!m_pbuffer->separate_strut_first_done) {
+                // First line: use normal strut for proper spacing from main text
+                frmline->height = m_pbuffer->strut_height;
+                frmline->baseline = m_pbuffer->strut_baseline;
+                m_pbuffer->separate_strut_first_done = true;
+            } else {
+                // Subsequent lines: use source's interval as strut
+                LVFont* font = (LVFont*)firstSrc->u.t.font;
+                int fh = font->getHeight();
+                int fb = font->getBaseline();
+                int half_leading = (firstSrc->interval - fh) / 2;
+                frmline->height = firstSrc->interval;
+                frmline->baseline = fb + half_leading;
+            }
         } else {
             frmline->height = m_pbuffer->strut_height;
             frmline->baseline = m_pbuffer->strut_baseline;
