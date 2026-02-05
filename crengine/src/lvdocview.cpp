@@ -844,6 +844,7 @@ void LVDocView::Clear() {
             m_arc.Clear();
         _posBookmark = ldomXPointer();
         m_is_rendered = false;
+        m_stylesheetNeedsUpdate = true;
         m_swapDone = false;
         _pos = 0;
         _page = 0;
