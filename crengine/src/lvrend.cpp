@@ -3127,7 +3127,7 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
         if (rm == erm_invisible)
             return; // don't draw invisible
 
-        // Inline footnotes: render link with its styling, then append footnote content with note body's styling
+        // Inline footnotes: render footnote content only (link is skipped - no need for reference marker)
         // Mode 2 (inline): footnote text flows inline with main text
         // Mode 3 (inline_block): footnote text starts on next line as a block
         bool isInlineFootnotes = enode->getDocument()->getDocFlag(DOC_FLAG_FOOTNOTES_INLINE);
@@ -3153,230 +3153,146 @@ void renderFinalBlock(ldomNode* enode, LFormattedText* txform, RenderRectAccesso
                     }
 
                     if (isFootnoteTarget) {
-                        lString32 linkText = enode->getText();
-                        linkText.trim();
-
+                        // Render footnote content only (skip link rendering - it's inline, no need for reference marker)
                         lString32 noteText = noteBody->getText(' ', 4096);
                         noteText.trim();
 
                         if (!noteText.empty()) {
-                            // === STEP 1: Remove leading duplicate from footnote body ===
-                            // For footnote marker links (numbers, asterisks, daggers, etc.)
-                            // E.g., link "[1]" and body "1 This is footnote" -> "This is footnote"
-                            // E.g., link "*" and body "* Footnote text" -> "Footnote text"
-                            lString32 cleanLinkText = linkText;
-                            // Strip common brackets/punctuation from link text for comparison
-                            for (int i = (int)cleanLinkText.length() - 1; i >= 0; i--) {
-                                lChar32 ch = cleanLinkText[i];
-                                if (ch == '[' || ch == ']' || ch == '(' || ch == ')') {
-                                    cleanLinkText.erase(i, 1);
-                                }
-                            }
-                            cleanLinkText.trim();
+                            LVFontRef noteFont = noteBody->getFont();
+                            css_style_ref_t noteStyle = noteBody->getStyle();
+                            lUInt32 noteColor = getForegroundColor(noteStyle);
+                            lUInt32 noteBgColor = rm == erm_final ? 0xFFFFFFFF : getBackgroundColor(noteStyle);
 
-                            // Check if cleanLinkText is a valid footnote marker
-                            // Valid markers: digits (1, 23), asterisks (*), daggers (†‡), or combinations
-                            auto isFootnoteMarkerChar = [](lChar32 ch) {
-                                return (ch >= '0' && ch <= '9') ||    // digits
-                                       ch == '*' ||                   // asterisk
-                                       ch == 0x2020 ||                // † dagger
-                                       ch == 0x2021 ||                // ‡ double dagger
-                                       ch == 0x00A7 ||                // § section sign
-                                       ch == 0x00B6 ||                // ¶ pilcrow
-                                       ch == '#';                     // hash
-                            };
-                            bool isFootnoteMarker = !cleanLinkText.empty();
-                            for (size_t i = 0; i < cleanLinkText.length() && isFootnoteMarker; i++) {
-                                if (!isFootnoteMarkerChar(cleanLinkText[i])) {
-                                    isFootnoteMarker = false;
-                                }
-                            }
-
-                            if (isFootnoteMarker && noteText.startsWith(cleanLinkText)) {
-                                // Remove the matching prefix
-                                noteText = noteText.substr(cleanLinkText.length());
-                                // Also remove any following punctuation/whitespace (like ". " or " ")
-                                while (noteText.length() > 0) {
-                                    lChar32 ch = noteText[0];
-                                    if (ch == '.' || ch == ' ' || ch == ':' || ch == ')' || ch == '-') {
-                                        noteText = noteText.substr(1);
-                                    } else {
-                                        break;
-                                    }
-                                }
-                                noteText.trim();
-                            }
-
-                            // === STEP 2: Strip trailing punctuation to avoid duplication ===
-                            // Check what character follows the link element in the parent's text
-                            lChar32 charAfterLink = 0;
-                            // Find text node that follows this link
-                            ldomNode* nextSibling = enode->getNextSibling();
-                            while (nextSibling) {
-                                if (nextSibling->isText()) {
-                                    lString32 nextText = nextSibling->getText();
-                                    if (!nextText.empty()) {
-                                        charAfterLink = nextText[0];
-                                        break;
-                                    }
-                                }
-                                nextSibling = nextSibling->getNextSibling();
-                            }
-
-                            // Strip trailing punctuation if it matches what follows
-                            if (charAfterLink != 0 && !noteText.empty()) {
-                                lChar32 lastChar = noteText[noteText.length() - 1];
-                                // Check if both are the same punctuation
-                                if (lastChar == charAfterLink &&
-                                    (lastChar == '.' || lastChar == ',' || lastChar == ';' ||
-                                     lastChar == ':' || lastChar == '!' || lastChar == '?')) {
-                                    noteText = noteText.substr(0, noteText.length() - 1);
-                                    noteText.trim();
-                                }
-                            }
-
-                            // === STEP 3: Render link text with link's own styling ===
-                            LVFontRef linkFont = enode->getFont();
-                            css_style_ref_t linkStyle = enode->getStyle();
-                            lUInt32 linkColor = getForegroundColor(linkStyle);
-                            lUInt32 linkBgColor = rm == erm_final ? 0xFFFFFFFF : getBackgroundColor(linkStyle);
-
-                            // Calculate link's valign_dy for superscript if applicable
-                            ldomNode* parent = enode->getParentNode();
-                            lInt16 linkValignDy = 0;
-                            if (linkStyle->vertical_align.type == css_val_unspecified &&
-                                linkStyle->vertical_align.value == css_va_super) {
-                                if (parent && !parent->isNull()) {
-                                    int pfh = parent->getFont()->getHeight();
-                                    linkValignDy = -(pfh / 4); // superscript offset (same as css_va_super case)
-                                }
-                            } else if (linkStyle->vertical_align.type == css_val_unspecified &&
-                                       linkStyle->vertical_align.value == css_va_sub) {
-                                if (parent && !parent->isNull()) {
-                                    int pfh = parent->getFont()->getHeight();
-                                    int pfb = parent->getFont()->getBaseline();
-                                    linkValignDy = (pfh - pfb) * 4 / 5; // subscript offset
-                                }
-                            }
-
-                            txform->AddSourceLine(
-                                    linkText.c_str(), linkText.length(),
-                                    linkColor, linkBgColor,
-                                    linkFont.get(), lang_cfg,
-                                    baseflags | LTEXT_FLAG_OWNTEXT,
-                                    line_h, linkValignDy, 0, enode
-                                    );
-
-                            // === STEP 4: Render footnote content with footnote body's styling ===
-                            if (!noteText.empty()) {
-                                LVFontRef noteFont = noteBody->getFont();
-                                css_style_ref_t noteStyle = noteBody->getStyle();
-                                lUInt32 noteColor = getForegroundColor(noteStyle);
-                                lUInt32 noteBgColor = rm == erm_final ? 0xFFFFFFFF : getBackgroundColor(noteStyle);
-
-                                // Use defaults only if property wasn't set (sentinel value)
-                                // Empty string "" is a valid explicit value (no separator)
-                                // Inline mode: default " (" and ")" separators
-                                // Inline-block mode: no separators by default (footnote is on separate line)
-                                lString32 before, after;
-                                if (isInlineBlockFootnotes) {
-                                    before = (noteStyle->cr_footnote_before == CR_FOOTNOTE_SEP_UNSET) ? U"" : noteStyle->cr_footnote_before;
-                                    after = (noteStyle->cr_footnote_after == CR_FOOTNOTE_SEP_UNSET) ? U"" : noteStyle->cr_footnote_after;
+                            // Detect footnote marker at start of text and apply marker separators
+                            // Markers: digits, symbols (*, †, ‡, §, ¶, #), trailing punctuation (., ), :)
+                            size_t markerEnd = 0;
+                            for (size_t i = 0; i < noteText.length(); i++) {
+                                lChar32 ch = noteText[i];
+                                if ((ch >= '0' && ch <= '9') || ch == '*' ||
+                                    ch == 0x2020 || ch == 0x2021 ||  // † ‡
+                                    ch == 0x00A7 || ch == 0x00B6 ||  // § ¶
+                                    ch == '#' || ch == '.' || ch == ')' || ch == ':') {
+                                    markerEnd = i + 1;
                                 } else {
-                                    before = (noteStyle->cr_footnote_before == CR_FOOTNOTE_SEP_UNSET) ? U" (" : noteStyle->cr_footnote_before;
-                                    after = (noteStyle->cr_footnote_after == CR_FOOTNOTE_SEP_UNSET) ? U")" : noteStyle->cr_footnote_after;
-                                }
-
-                                if (isInlineBlockFootnotes) {
-                                    // INLINE BLOCK MODE: Render footnote as new paragraph on its own line.
-                                    //
-                                    // Supported CSS properties:
-                                    //   - text-indent (first line indent, including hanging)
-                                    //   - text-align (left, right, center, justify)
-                                    //   - line-height
-                                    //   - font properties, color
-                                    //
-                                    // NOT supported (AddSourceLine API limitations):
-                                    //   - margin-left/right (would need per-line width adjustment)
-                                    //   - margin-top/bottom (spacer lines can't be smaller than font height)
-                                    //   - padding
-
-                                    // Get available width for calculations
-                                    int availWidth = fmt->getWidth();
-
-                                    // Calculate note's line-height
-                                    int noteFontSize = noteFont->getSize();
-                                    int noteLineHeight = noteFont->getHeight();
-                                    if (noteStyle->line_height.type == css_val_percent) {
-                                        noteLineHeight = noteFontSize * noteStyle->line_height.value / 100;
-                                    } else if (noteStyle->line_height.type != css_val_inherited &&
-                                               noteStyle->line_height.type != css_val_unspecified) {
-                                        noteLineHeight = lengthToPx(noteBody, noteStyle->line_height, noteFontSize);
-                                    }
-
-                                    // Calculate text-indent for first line
-                                    int noteIndent = 0;
-                                    if (noteStyle->text_indent.type != css_val_unspecified) {
-                                        noteIndent = lengthToPx(noteBody, noteStyle->text_indent, availWidth);
-                                        // Handle "hanging" keyword - lowest bit flag set by lvstsheet
-                                        if (noteStyle->text_indent.value & 0x00000001) {
-                                            noteIndent = -noteIndent;  // Negative = indent all lines but first
-                                        }
-                                    }
-
-                                    // Get text alignment from footnote body style
-                                    // The low 3 bits of flags serve dual purpose: non-zero value means
-                                    // "new paragraph" AND specifies alignment.
-                                    lUInt32 noteFlags = LTEXT_FLAG_OWNTEXT;
-                                    switch (noteStyle->text_align) {
-                                        case css_ta_left:    noteFlags |= LTEXT_ALIGN_LEFT; break;
-                                        case css_ta_right:   noteFlags |= LTEXT_ALIGN_RIGHT; break;
-                                        case css_ta_center:  noteFlags |= LTEXT_ALIGN_CENTER; break;
-                                        case css_ta_justify: noteFlags |= LTEXT_ALIGN_WIDTH; break;
-                                        default:             noteFlags |= LTEXT_ALIGN_LEFT; break;
-                                    }
-
-                                    // Build footnote text with optional separators
-                                    lString32 blockNote = before + noteText + after;
-
-                                    // Add footnote as new paragraph
-                                    txform->AddSourceLine(
-                                            blockNote.c_str(), blockNote.length(),
-                                            noteColor, noteBgColor,
-                                            noteFont.get(), lang_cfg,
-                                            noteFlags,
-                                            noteLineHeight,
-                                            0,  // valign_dy = 0
-                                            noteIndent,
-                                            noteBody
-                                            );
-                                } else {
-                                    // INLINE MODE: footnote flows inline with text (existing behavior)
-                                    lString32 inlineNote = before + noteText + after;
-
-                                    txform->AddSourceLine(
-                                            inlineNote.c_str(), inlineNote.length(),
-                                            noteColor, noteBgColor,
-                                            noteFont.get(), lang_cfg,
-                                            baseflags | LTEXT_FLAG_OWNTEXT,
-                                            line_h,
-                                            0, // valign_dy=0 - NO superscript for footnote content
-                                            0, enode
-                                            );
+                                    break;
                                 }
                             }
 
-                            // Clear alignment bits, then set new paragraph flag if needed.
-                            // Low 3 bits (LTEXT_FLAG_NEWLINE mask) serve dual purpose:
-                            // non-zero = new paragraph, value = alignment (1=left, 2=right, etc.)
-                            baseflags &= ~LTEXT_FLAG_NEWLINE & ~LTEXT_SRC_IS_CLEAR_BOTH;
+                            if (markerEnd > 0) {
+                                lString32 marker = noteText.substr(0, markerEnd);
+                                lString32 text = noteText.substr(markerEnd);
+                                text.trim();
+
+                                lString32 markerBefore = (noteStyle->cr_footnote_marker_before == CR_FOOTNOTE_SEP_UNSET)
+                                    ? U"" : noteStyle->cr_footnote_marker_before;
+                                lString32 markerAfter = (noteStyle->cr_footnote_marker_after == CR_FOOTNOTE_SEP_UNSET)
+                                    ? U": " : noteStyle->cr_footnote_marker_after;
+
+                                noteText = markerBefore + marker + markerAfter + text;
+                            }
+
+                            // Use defaults only if property wasn't set (sentinel value)
+                            // Empty string "" is a valid explicit value (no separator)
+                            // Inline mode: default " (" and ")" separators
+                            // Inline-block mode: no separators by default (footnote is on separate line)
+                            lString32 before, after;
                             if (isInlineBlockFootnotes) {
-                                // Force next content to start on new line (left-aligned)
-                                baseflags |= LTEXT_ALIGN_LEFT;
+                                before = (noteStyle->cr_footnote_before == CR_FOOTNOTE_SEP_UNSET) ? U"" : noteStyle->cr_footnote_before;
+                                after = (noteStyle->cr_footnote_after == CR_FOOTNOTE_SEP_UNSET) ? U"" : noteStyle->cr_footnote_after;
+                            } else {
+                                before = (noteStyle->cr_footnote_before == CR_FOOTNOTE_SEP_UNSET) ? U" (" : noteStyle->cr_footnote_before;
+                                after = (noteStyle->cr_footnote_after == CR_FOOTNOTE_SEP_UNSET) ? U")" : noteStyle->cr_footnote_after;
                             }
-                            // For inline mode: bits stay 0, content continues on same line
-                            return; // Skip normal link processing
+
+                            if (isInlineBlockFootnotes) {
+                                // INLINE BLOCK MODE: Render footnote as new paragraph on its own line.
+                                //
+                                // Supported CSS properties:
+                                //   - text-indent (first line indent, including hanging)
+                                //   - text-align (left, right, center, justify)
+                                //   - line-height
+                                //   - font properties, color
+                                //
+                                // NOT supported (AddSourceLine API limitations):
+                                //   - margin-left/right (would need per-line width adjustment)
+                                //   - margin-top/bottom (spacer lines can't be smaller than font height)
+                                //   - padding
+
+                                // Get available width for calculations
+                                int availWidth = fmt->getWidth();
+
+                                // Calculate note's line-height
+                                int noteFontSize = noteFont->getSize();
+                                int noteLineHeight = noteFont->getHeight();
+                                if (noteStyle->line_height.type == css_val_percent) {
+                                    noteLineHeight = noteFontSize * noteStyle->line_height.value / 100;
+                                } else if (noteStyle->line_height.type != css_val_inherited &&
+                                           noteStyle->line_height.type != css_val_unspecified) {
+                                    noteLineHeight = lengthToPx(noteBody, noteStyle->line_height, noteFontSize);
+                                }
+
+                                // Calculate text-indent for first line
+                                int noteIndent = 0;
+                                if (noteStyle->text_indent.type != css_val_unspecified) {
+                                    noteIndent = lengthToPx(noteBody, noteStyle->text_indent, availWidth);
+                                    // Handle "hanging" keyword - lowest bit flag set by lvstsheet
+                                    if (noteStyle->text_indent.value & 0x00000001) {
+                                        noteIndent = -noteIndent;  // Negative = indent all lines but first
+                                    }
+                                }
+
+                                // Get text alignment from footnote body style
+                                // The low 3 bits of flags serve dual purpose: non-zero value means
+                                // "new paragraph" AND specifies alignment.
+                                lUInt32 noteFlags = LTEXT_FLAG_OWNTEXT;
+                                switch (noteStyle->text_align) {
+                                    case css_ta_left:    noteFlags |= LTEXT_ALIGN_LEFT; break;
+                                    case css_ta_right:   noteFlags |= LTEXT_ALIGN_RIGHT; break;
+                                    case css_ta_center:  noteFlags |= LTEXT_ALIGN_CENTER; break;
+                                    case css_ta_justify: noteFlags |= LTEXT_ALIGN_WIDTH; break;
+                                    default:             noteFlags |= LTEXT_ALIGN_LEFT; break;
+                                }
+
+                                // Build footnote text with optional separators
+                                lString32 blockNote = before + noteText + after;
+
+                                // Add footnote as new paragraph
+                                txform->AddSourceLine(
+                                        blockNote.c_str(), blockNote.length(),
+                                        noteColor, noteBgColor,
+                                        noteFont.get(), lang_cfg,
+                                        noteFlags,
+                                        noteLineHeight,
+                                        0,  // valign_dy = 0
+                                        noteIndent,
+                                        noteBody
+                                        );
+                            } else {
+                                // INLINE MODE: footnote flows inline with text
+                                lString32 inlineNote = before + noteText + after;
+
+                                txform->AddSourceLine(
+                                        inlineNote.c_str(), inlineNote.length(),
+                                        noteColor, noteBgColor,
+                                        noteFont.get(), lang_cfg,
+                                        baseflags | LTEXT_FLAG_OWNTEXT,
+                                        line_h,
+                                        0, // valign_dy=0 - NO superscript for footnote content
+                                        0, enode
+                                        );
+                            }
                         }
+
+                        // Clear alignment bits, then set new paragraph flag if needed.
+                        // Low 3 bits (LTEXT_FLAG_NEWLINE mask) serve dual purpose:
+                        // non-zero = new paragraph, value = alignment (1=left, 2=right, etc.)
+                        baseflags &= ~LTEXT_FLAG_NEWLINE & ~LTEXT_SRC_IS_CLEAR_BOTH;
+                        if (isInlineBlockFootnotes) {
+                            // Force next content to start on new line (left-aligned)
+                            baseflags |= LTEXT_ALIGN_LEFT;
+                        }
+                        // For inline mode: bits stay 0, content continues on same line
+                        return; // Skip normal link processing
                     } // if (isFootnoteTarget)
                 }
             }

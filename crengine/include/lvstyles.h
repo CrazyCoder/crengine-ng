@@ -114,9 +114,11 @@ enum css_style_rec_important_bit
     imp_bit_content,
     imp_bit_cr_hint,
     imp_bit_cr_footnote_before,
-    imp_bit_cr_footnote_after
+    imp_bit_cr_footnote_after,
+    imp_bit_cr_footnote_marker_before,
+    imp_bit_cr_footnote_marker_after
 };
-#define NB_IMP_BITS 70 // The number of lines in the enum above: KEEP IT UPDATED.
+#define NB_IMP_BITS 72 // The number of lines in the enum above: KEEP IT UPDATED.
 
 #define NB_IMP_SLOTS ((NB_IMP_BITS - 1) >> 5) + 1
 // In lvstyles.cpp, we have hardcoded important[0] ... importance[1]
@@ -200,6 +202,8 @@ struct css_style_rec_tag
     css_length_t cr_hint;
     lString32 cr_footnote_before;  // -cr-footnote-before: separator before inline footnote
     lString32 cr_footnote_after;   // -cr-footnote-after: separator after inline footnote
+    lString32 cr_footnote_marker_before;  // -cr-footnote-marker-before: text before footnote marker
+    lString32 cr_footnote_marker_after;   // -cr-footnote-marker-after: text after footnote marker
     // The following should only be used when applying stylesheets while in lvend.cpp setNodeStyle(),
     // and cleaned up there, before the style is cached and shared. They are not serialized.
     lInt8 flags; // bitmap of STYLE_REC_FLAG_*
@@ -258,6 +262,8 @@ struct css_style_rec_tag
             , cr_hint(css_val_inherited, 0)
             , cr_footnote_before(CR_FOOTNOTE_SEP_UNSET)
             , cr_footnote_after(CR_FOOTNOTE_SEP_UNSET)
+            , cr_footnote_marker_before(CR_FOOTNOTE_SEP_UNSET)
+            , cr_footnote_marker_after(CR_FOOTNOTE_SEP_UNSET)
             , flags(0)
             , pseudo_elem_before_style(NULL)
             , pseudo_elem_after_style(NULL) {

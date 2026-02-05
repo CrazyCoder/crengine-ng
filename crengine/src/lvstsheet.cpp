@@ -162,6 +162,8 @@ enum css_decl_code
     cssd_cr_only_if,
     cssd_cr_footnote_before,
     cssd_cr_footnote_after,
+    cssd_cr_footnote_marker_before,
+    cssd_cr_footnote_marker_after,
     cssd_stop
 };
 
@@ -271,6 +273,8 @@ static const char* css_decl_name[] = {
     "-cr-only-if",
     "-cr-footnote-before",
     "-cr-footnote-after",
+    "-cr-footnote-marker-before",
+    "-cr-footnote-marker-after",
     NULL
 };
 
@@ -3018,7 +3022,9 @@ bool LVCssDeclaration::parse(const char*& decl, lUInt32 domVersionRequested, boo
                     }
                 } break;
                 case cssd_cr_footnote_before:
-                case cssd_cr_footnote_after: {
+                case cssd_cr_footnote_after:
+                case cssd_cr_footnote_marker_before:
+                case cssd_cr_footnote_marker_after: {
                     // Parse quoted string value for footnote separators (UTF-8 aware)
                     skip_spaces(decl);
                     if (*decl == '"' || *decl == '\'') {
@@ -3413,6 +3419,26 @@ void LVCssDeclaration::apply(css_style_rec_t* style) {
                         str << (lChar32)(*p++);
                 }
                 style->Apply(str, &style->cr_footnote_after, imp_bit_cr_footnote_after, is_important);
+            } break;
+            case cssd_cr_footnote_marker_before: {
+                int l = *p++;
+                lString32 str;
+                if (l > 0) {
+                    str.reserve(l);
+                    for (int i = 0; i < l; i++)
+                        str << (lChar32)(*p++);
+                }
+                style->Apply(str, &style->cr_footnote_marker_before, imp_bit_cr_footnote_marker_before, is_important);
+            } break;
+            case cssd_cr_footnote_marker_after: {
+                int l = *p++;
+                lString32 str;
+                if (l > 0) {
+                    str.reserve(l);
+                    for (int i = 0; i < l; i++)
+                        str << (lChar32)(*p++);
+                }
+                style->Apply(str, &style->cr_footnote_marker_after, imp_bit_cr_footnote_marker_after, is_important);
             } break;
             case cssd_stop:
                 return;
