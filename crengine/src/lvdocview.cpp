@@ -602,7 +602,7 @@ void LVDocView::setDecimalPointChar(lChar32 decimalPointChar) {
     }
 }
 
-lString32 mergeCssMacros(CRPropRef props) {
+lString32 mergeCssMacros(CRPropRef props, bool addImportant = false) {
     lString8 res = lString8::empty_str;
     for (int i = 0; i < props->getCount(); i++) {
         lString8 n(props->getName(i));
@@ -610,8 +610,15 @@ lString32 mergeCssMacros(CRPropRef props) {
             continue;
         lString32 v = props->getValue(i);
         if (!v.empty()) {
-            if (v.lastChar() != ';')
-                v.append(1, ';');
+            if (addImportant) {
+                // Add !important before semicolon to ensure user styles override embedded styles
+                if (v.lastChar() == ';')
+                    v.erase(v.length() - 1, 1);  // remove trailing semicolon
+                v.append(U" !important;");
+            } else {
+                if (v.lastChar() != ';')
+                    v.append(1, ';');
+            }
             if (v.lastChar() != ' ')
                 v.append(1, ' ');
             res.append(UnicodeToUtf8(v));
@@ -623,7 +630,7 @@ lString32 mergeCssMacros(CRPropRef props) {
 
 /// Merge all CSS macro properties into a formatted multi-line string with proper indentation.
 /// First property appears inline (no leading indent/newline), subsequent properties start on new lines with indent.
-lString32 mergeCssMacrosFormatted(CRPropRef props, const lString8& indent) {
+lString32 mergeCssMacrosFormatted(CRPropRef props, const lString8& indent, bool addImportant = false) {
     lString8 res = lString8::empty_str;
     bool firstProperty = true;
     for (int i = 0; i < props->getCount(); i++) {
@@ -632,8 +639,15 @@ lString32 mergeCssMacrosFormatted(CRPropRef props, const lString8& indent) {
             continue;
         lString32 v = props->getValue(i);
         if (!v.empty()) {
-            if (v.lastChar() != ';')
-                v.append(1, ';');
+            if (addImportant) {
+                // Add !important before semicolon
+                if (v.lastChar() == ';')
+                    v.erase(v.length() - 1, 1);  // remove trailing semicolon
+                v.append(U" !important;");
+            } else {
+                if (v.lastChar() != ';')
+                    v.append(1, ';');
+            }
             if (firstProperty) {
                 // First property: inline, no leading indent/newline
                 res.append(UnicodeToUtf8(v));
@@ -677,7 +691,8 @@ lString8 substituteCssMacros(lString8 src, CRPropRef props) {
             bool err = false;
             for (; *s2 && *s2 != ';' && *s2 != '}' && *s2 != ' ' && *s2 != '\r' && *s2 != '\n' && *s2 != '\t'; s2++) {
                 char ch = *s2;
-                if (ch != '.' && ch != '-' && (ch < 'a' || ch > 'z')) {
+                // Allow '.', '-', 'a-z', and '!' (for .all! suffix)
+                if (ch != '.' && ch != '-' && ch != '!' && (ch < 'a' || ch > 'z')) {
                     err = true;
                 }
             }
@@ -685,10 +700,13 @@ lString8 substituteCssMacros(lString8 src, CRPropRef props) {
                 // substitute variable
                 lString8 prop(s + 1, (lvsize_t)(s2 - s - 1));
                 lString32 v;
-                // $styles.stylename.all will merge all properties like styles.stylename.*
-                if (prop.endsWith(".all")) {
+                // $styles.stylename.all or $styles.stylename.all! will merge all properties
+                // The ! suffix adds !important to each property for higher priority
+                bool addImportant = prop.endsWith(".all!");
+                if (prop.endsWith(".all") || addImportant) {
                     // merge whole branch
-                    v = mergeCssMacros(props->getSubProps(prop.substr(0, prop.length() - 3).c_str()));
+                    int suffixLen = addImportant ? 5 : 4;  // ".all!" or ".all"
+                    v = mergeCssMacros(props->getSubProps(prop.substr(0, prop.length() - suffixLen).c_str()), addImportant);
                     //CRLog::trace("merged %s = %s", prop.c_str(), LCSTR(v));
                 } else {
                     // single property
@@ -715,7 +733,7 @@ lString8 substituteCssMacros(lString8 src, CRPropRef props) {
 }
 
 /// Substitute CSS macros with formatted output for human readability.
-/// Uses proper indentation for multi-property merges ($stylename.all).
+/// Uses proper indentation for multi-property merges ($stylename.all or $stylename.all!).
 lString8 substituteCssMacrosFormatted(lString8 src, CRPropRef props) {
     lString8 res = lString8(src.length());
     const char* srcStart = src.c_str();
@@ -726,7 +744,8 @@ lString8 substituteCssMacrosFormatted(lString8 src, CRPropRef props) {
             bool err = false;
             for (; *s2 && *s2 != ';' && *s2 != '}' && *s2 != ' ' && *s2 != '\r' && *s2 != '\n' && *s2 != '\t'; s2++) {
                 char ch = *s2;
-                if (ch != '.' && ch != '-' && (ch < 'a' || ch > 'z')) {
+                // Allow '.', '-', 'a-z', and '!' (for .all! suffix)
+                if (ch != '.' && ch != '-' && ch != '!' && (ch < 'a' || ch > 'z')) {
                     err = true;
                 }
             }
@@ -734,12 +753,15 @@ lString8 substituteCssMacrosFormatted(lString8 src, CRPropRef props) {
                 // substitute variable
                 lString8 prop(s + 1, (lvsize_t)(s2 - s - 1));
                 lString32 v;
-                // $styles.stylename.all will merge all properties like styles.stylename.*
-                if (prop.endsWith(".all")) {
+                // $styles.stylename.all or $styles.stylename.all! will merge all properties
+                // The ! suffix adds !important to each property for higher priority
+                bool addImportant = prop.endsWith(".all!");
+                if (prop.endsWith(".all") || addImportant) {
                     // Detect indentation at the macro position
                     lString8 indent = detectIndent(srcStart, s);
                     // merge whole branch with formatting
-                    v = mergeCssMacrosFormatted(props->getSubProps(prop.substr(0, prop.length() - 3).c_str()), indent);
+                    int suffixLen = addImportant ? 5 : 4;  // ".all!" or ".all"
+                    v = mergeCssMacrosFormatted(props->getSubProps(prop.substr(0, prop.length() - suffixLen).c_str()), indent, addImportant);
                 } else {
                     // single property - just add semicolon (no newline, template has proper structure)
                     props->getString(prop.c_str(), v);
