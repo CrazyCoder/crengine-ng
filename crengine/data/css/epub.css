@@ -258,7 +258,9 @@ table[align=right i] { float: right; }
 *[role~="doc-note"], *[role~="doc-footnote"], *[role~="doc-rearnote"],
 .footnote, .note, .note1, .note2, .note3 {
     -cr-hint: footnote-inline;
-/*    -cr-footnote-before: " [";
+/*    -cr-footnote-marker-before: "  ";
+    -cr-footnote-marker-after: ": ";
+    -cr-footnote-before: " [";
     -cr-footnote-after: "]";*/
 }
 
