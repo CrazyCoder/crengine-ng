@@ -129,6 +129,12 @@ endif()
 if (CMAKE_PREFIX_PATH)
     link_directories(BEFORE ${CMAKE_PREFIX_PATH}/lib)
 endif()
+set(INTERFACE_LINK_DIRECTORIES)
+if (CMAKE_FIND_ROOT_PATH)
+    foreach (_LIBDIR IN LISTS CMAKE_FIND_ROOT_PATH)
+        list(APPEND INTERFACE_LINK_DIRECTORIES ${_LIBDIR}/lib)
+    endforeach()
+endif()
 
 include(project_checks)
 
