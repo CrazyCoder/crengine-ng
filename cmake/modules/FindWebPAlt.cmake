@@ -25,13 +25,13 @@ mark_as_advanced(
   WebPDemux_LIBRARY
 )
 
-# Append WEBP_ROOT or $ENV{WEBP_ROOT} if set (prioritize the direct cmake var)
+# Append WebP_ROOT or $ENV{WebP_ROOT} if set (prioritize the direct cmake var)
 set(_WEBP_ROOT_SEARCH_DIR "")
 
-if(WEBP_ROOT)
-  list(APPEND _WEBP_ROOT_SEARCH_DIR ${WEBP_ROOT})
+if(WebP_ROOT)
+  list(APPEND _WEBP_ROOT_SEARCH_DIR ${WebP_ROOT})
 else()
-  set(_ENV_WEBP_ROOT $ENV{WEBP_ROOT})
+  set(_ENV_WEBP_ROOT $ENV{WebP_ROOT})
   if(_ENV_WEBP_ROOT)
     list(APPEND _WEBP_ROOT_SEARCH_DIR ${_ENV_WEBP_ROOT})
   endif()
@@ -55,7 +55,7 @@ list(APPEND _WEBP_INCLUDE_SEARCH_DIRS
 )
 
 # Look for a standard webp header file.
-find_path(WebP_INCLUDE_DIR "webp/decode.h"
+find_path(WebP_INCLUDE_DIR NAME "webp/decode.h"
   PATHS ${_WEBP_INCLUDE_SEARCH_DIRS}
   PATH_SUFFIXES include
 )
