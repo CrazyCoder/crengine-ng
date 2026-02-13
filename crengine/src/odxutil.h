@@ -517,7 +517,7 @@ public:
     void setChildrenInfo(const struct item_def_t* tags);
     ldomNode* handleTagOpen(const lChar32* nsname, const lChar32* tagname);
     virtual ldomNode* handleTagOpen(int tagId);
-    void handleAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue) {
+    virtual void handleAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue) {
         CR_UNUSED(nsname);
 
         handleAttribute(attrname, attrvalue);

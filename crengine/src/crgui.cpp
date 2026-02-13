@@ -1055,7 +1055,7 @@ CRMenuSkinRef CRMenu::getSkin() {
     return _skin;
 }
 
-lvPoint CRMenu::getItemSize() {
+lvPoint CRMenu::getCommonItemSize() {
     CRMenuSkinRef skin = getSkin();
     CRRectSkinRef itemSkin = skin->getItemSkin();
     lvRect itemBorders = itemSkin->getBorderWidths();
@@ -1105,7 +1105,7 @@ int CRMenu::getItemHeight() {
 lvPoint CRMenu::getMaxItemSize() {
     CRMenuSkinRef skin = getSkin();
     CRRectSkinRef itemSkin = skin->getItemSkin();
-    lvPoint mySize = getItemSize();
+    lvPoint mySize = getCommonItemSize();
     //int itemHeight = getItemHeight();
     int maxx = 0;
     int maxy = 0;

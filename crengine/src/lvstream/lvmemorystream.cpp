@@ -125,7 +125,7 @@ lverror_t LVMemoryStream::Write(const void* buf, lvsize_t count, lvsize_t* nByte
 lverror_t LVMemoryStream::Seek(lvoffset_t offset, lvseek_origin_t origin, lvpos_t* pNewPos) {
     if (!m_pBuffer)
         return LVERR_FAIL;
-    lvpos_t newpos;
+    lvpos_t newpos = m_pos;
     switch (origin) {
         case LVSEEK_SET:
             newpos = offset;

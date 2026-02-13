@@ -1215,7 +1215,7 @@ public:
     virtual void toggleSubmenuValue();
     virtual int getItemHeight();
     virtual lvPoint getMaxItemSize();
-    virtual lvPoint getItemSize();
+    virtual lvPoint getCommonItemSize();
     virtual lvPoint getSize();
     virtual ~CRMenu() { }
     // CRGUIWindow

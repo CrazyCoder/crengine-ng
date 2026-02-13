@@ -543,10 +543,10 @@ public:
             : docx_ElementHandler(reader, writer, context, docx_el_rPr, rPr_elements)
             , m_rPr(NULL) {
     }
-    ldomNode* handleTagOpen(int tagId);
-    void handleAttribute(const lChar32* attrname, const lChar32* attrvalue);
-    void start(odx_rPr* rPr);
-    void reset();
+    ldomNode* handleTagOpen(int tagId) override;
+    void handleAttribute(const lChar32* attrname, const lChar32* attrvalue) override;
+    void setAndStart(odx_rPr* rPr);
+    void reset() override;
 };
 
 class docx_drawingHandler: public docx_ElementHandler
@@ -603,11 +603,11 @@ public:
             : docx_ElementHandler(reader, writer, context, docx_el_pPr, pPr_elements)
             , m_pPr(NULL) {
     }
-    ldomNode* handleTagOpen(int tagId);
-    void handleAttribute(const lChar32* attrname, const lChar32* attrvalue);
-    void handleTagClose(const lChar32* nsname, const lChar32* tagname);
-    void start(odx_pPr* pPr);
-    void reset();
+    ldomNode* handleTagOpen(int tagId) override;
+    void handleAttribute(const lChar32* attrname, const lChar32* attrvalue) override;
+    void handleTagClose(const lChar32* nsname, const lChar32* tagname) override;
+    void setAndStart(odx_pPr* pPr);
+    void reset() override;
 };
 
 class docx_hyperlinkHandler: public docx_ElementHandler
@@ -747,9 +747,9 @@ public:
             , m_tableHandler(reader, writer, context, titleHandler)
             , m_titleHandler(titleHandler) {
     }
-    ldomNode* handleTagOpen(int tagId);
-    void handleAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue);
-    void handleTagClose(const lChar32* nsname, const lChar32* tagname);
+    ldomNode* handleTagOpen(int tagId) override;
+    void handleAttribute(const lChar32* nsname, const lChar32* attrname, const lChar32* attrvalue) override;
+    void handleTagClose(const lChar32* nsname, const lChar32* tagname) override;
 };
 
 class docx_styleHandler: public docx_ElementHandler
@@ -805,7 +805,7 @@ public:
             , m_pPrHandler(reader, writer, context)
             , m_rPrHandler(reader, writer, context) {
     }
-    void start(docxNumLevel* level) {
+    void setAndStart(docxNumLevel* level) {
         m_lvl = level;
         docx_ElementHandler::start();
     }
@@ -1035,7 +1035,7 @@ void docx_rPrHandler::reset() {
         m_rPr->reset();
 }
 
-void docx_rPrHandler::start(odx_rPr* const rPr) {
+void docx_rPrHandler::setAndStart(odx_rPr* const rPr) {
     m_rPr = rPr;
     docx_ElementHandler::start();
 }
@@ -1069,7 +1069,7 @@ ldomNode* docx_rHandler::handleTagOpen(int tagId) {
             m_state = tagId;
             break;
         case docx_el_rPr:
-            m_rPrHandler.start(&m_rPr);
+            m_rPrHandler.setAndStart(&m_rPr);
             break;
         case docx_el_footnoteRef:
         case docx_el_endnoteRef:
@@ -1316,7 +1316,7 @@ void docx_pPrHandler::reset() {
         m_pPr->reset();
 }
 
-void docx_pPrHandler::start(odx_pPr* pPr) {
+void docx_pPrHandler::setAndStart(odx_pPr* pPr) {
     m_pPr = pPr;
     docx_ElementHandler::start();
 }
@@ -1366,7 +1366,7 @@ ldomNode* docx_pHandler::handleTagOpen(int tagId) {
             break;
             break;
         case docx_el_pPr:
-            m_pPrHandler.start(&m_pPr);
+            m_pPrHandler.setAndStart(&m_pPr);
             break;
         default:
             m_state = tagId;
@@ -1454,10 +1454,10 @@ void docx_documentHandler::handleTagClose(const lChar32* nsname, const lChar32* 
 ldomNode* docx_styleHandler::handleTagOpen(int tagId) {
     switch (tagId) {
         case docx_el_pPr:
-            m_pPrHandler.start(m_style->get_pPrPointer());
+            m_pPrHandler.setAndStart(m_style->get_pPrPointer());
             break;
         case docx_el_rPr:
-            m_rPrHandler.start(m_style->get_rPrPointer());
+            m_rPrHandler.setAndStart(m_style->get_rPrPointer());
             break;
         case docx_el_tblPr:
         case docx_el_trPr:
@@ -1522,10 +1522,10 @@ void docx_styleHandler::start() {
 ldomNode* docx_stylesHandler::handleTagOpen(int tagId) {
     switch (tagId) {
         case docx_el_pPr:
-            m_pPrHandler.start(m_importContext->get_pPrDefault());
+            m_pPrHandler.setAndStart(m_importContext->get_pPrDefault());
             break;
         case docx_el_rPr:
-            m_rPrHandler.start(m_importContext->get_rPrDefault());
+            m_rPrHandler.setAndStart(m_importContext->get_rPrDefault());
             break;
         case docx_el_style:
             m_styleHandler.start();
@@ -1770,10 +1770,10 @@ void docxImportContext::closeList(int level, ldomDocumentWriter* writer) {
 ldomNode* docx_lvlHandler::handleTagOpen(int tagId) {
     switch (tagId) {
         case docx_el_pPr:
-            m_pPrHandler.start(m_lvl->get_pPr());
+            m_pPrHandler.setAndStart(m_lvl->get_pPr());
             break;
         case docx_el_rPr:
-            m_rPrHandler.start(m_lvl->get_rPr());
+            m_rPrHandler.setAndStart(m_lvl->get_rPr());
             break;
         case docx_el_isLgl:
             m_lvl->setLgl(true);
@@ -2153,7 +2153,7 @@ ldomNode* docx_abstractNumHandler::handleTagOpen(int tagId) {
             if (!m_levelRef.isNull())
                 m_abstractNumRef->addLevel(m_levelRef);
             m_levelRef = docxNumLevelRef(new docxNumLevel);
-            m_lvlHandler.start(m_levelRef.get());
+            m_lvlHandler.setAndStart(m_levelRef.get());
             break;
         default:
             m_state = tagId;
@@ -2215,7 +2215,7 @@ ldomNode* docx_numHandler::handleTagOpen(int tagId) {
             if (!m_levelRef.isNull())
                 m_numRef->overrideLevel(m_levelRef);
             m_levelRef = docxNumLevelRef(new docxNumLevel);
-            m_lvlHandler.start(m_levelRef.get());
+            m_lvlHandler.setAndStart(m_levelRef.get());
             break;
         default:
             m_state = tagId;

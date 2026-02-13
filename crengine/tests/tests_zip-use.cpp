@@ -246,8 +246,9 @@ TEST_F(ZipUsageTests, ListContents) {
         const LVContainerItemInfo* item = arc->GetObjectInfo(i);
         EXPECT_STREQ(s_rand1_files_name[i], UnicodeToUtf8(item->GetName()).c_str());
         EXPECT_EQ(s_rand1_files_size[i], item->GetSize());
-        if (item->GetSize() > 0)
+        if (item->GetSize() > 0) {
             EXPECT_GT(item->GetPackSize(), 0);
+        }
     }
 
     CRLog::info("Finished ListContents");
@@ -270,8 +271,9 @@ TEST_F(ZipUsageTests, ReadCyrillicEntries) {
         const LVContainerItemInfo* item = arc->GetObjectInfo(i);
         EXPECT_STREQ(s_rand2_files_name[i], UnicodeToUtf8(item->GetName()).c_str());
         EXPECT_EQ(s_rand2_files_size[i], item->GetSize());
-        if (item->GetSize() > 0)
+        if (item->GetSize() > 0) {
             EXPECT_GT(item->GetPackSize(), 0);
+        }
     }
 
     CRLog::info("Finished ReadCyrillicEntries");
@@ -295,8 +297,9 @@ TEST_F(ZipUsageTests, ListContentsInTruncArc) {
         const LVContainerItemInfo* item = arc->GetObjectInfo(i);
         EXPECT_STREQ(s_rand1_files_name[i], UnicodeToUtf8(item->GetName()).c_str());
         EXPECT_EQ(s_rand1_files_size[i], item->GetSize());
-        if (item->GetSize() > 0)
+        if (item->GetSize() > 0) {
             EXPECT_GT(item->GetPackSize(), 0);
+        }
     }
 
     CRLog::info("Finished ListContentsInTruncArc");
@@ -384,8 +387,9 @@ TEST_F(ZipUsageTests, PackSize) {
         total_pack_size += item->GetPackSize();
         EXPECT_STREQ(s_rand1_files_name[i], UnicodeToUtf8(item->GetName()).c_str());
         EXPECT_EQ(s_rand1_files_size[i], item->GetSize());
-        if (item->GetSize() > 0)
+        if (item->GetSize() > 0) {
             EXPECT_GT(item->GetPackSize(), 0);
+        }
     }
     EXPECT_GT(total_pack_size, 0);
     EXPECT_LT(total_pack_size, total_unpack_size);
