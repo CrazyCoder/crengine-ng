@@ -774,8 +774,8 @@ public:
         _format = UNKNOWN;
         stream->SetPos(0);
         lUInt32 fsize = stream->GetSize();
-        PDBHdr hdr = { 0 };
-        PDBRecordEntry entry;
+        PDBHdr hdr {};
+        PDBRecordEntry entry {};
         if (!hdr.read(stream))
             return false;
         if (hdr.recordCount == 0)
