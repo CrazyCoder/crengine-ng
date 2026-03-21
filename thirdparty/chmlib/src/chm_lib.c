@@ -178,13 +178,6 @@ typedef int64_t                 Int64;
 typedef uint64_t                UInt64;
 #endif
 
-/* GCC */
-#ifdef __GNUC__
-#define memcmp __builtin_memcmp
-#define memcpy __builtin_memcpy
-#define strlen __builtin_strlen
-#endif
-
 //#if defined(WIN32)
 static int myffs(unsigned int val)
 {
