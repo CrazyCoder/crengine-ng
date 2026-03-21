@@ -412,7 +412,6 @@ typedef LVFastRef<docxNumLevel> docxNumLevelRef;
 class docxAbstractNum: public LVRefCounter
 {
 private:
-    docx_multilevel_type m_multilevel;
     css_length_t m_abstractNumId;
     LVHashTable<lUInt32, docxNumLevelRef> m_levels;
 public:
@@ -2279,8 +2278,7 @@ void docxAbstractNum::addLevel(docxNumLevelRef docxLevel) {
 }
 
 docxAbstractNum::docxAbstractNum()
-        : m_multilevel(docx_singlelevel)
-        , m_abstractNumId(css_val_unspecified, 0)
+        : m_abstractNumId(css_val_unspecified, 0)
         , m_levels(10) {
 }
 
