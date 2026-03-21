@@ -32,14 +32,12 @@ private:
     bool lastText;
     bool newBlock;
     lChar32 delimiter;
-    int maxLen;
     lString32 text;
 public:
     ldomTextCollector(lChar32 blockDelimiter, int maxTextLen)
             : lastText(false)
             , newBlock(true)
-            , delimiter(blockDelimiter)
-            , maxLen(maxTextLen) {
+            , delimiter(blockDelimiter) {
     }
     /// destructor
     virtual ~ldomTextCollector() { }
