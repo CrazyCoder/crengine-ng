@@ -2319,21 +2319,18 @@ int PreProcessXmlString(lChar32* str, int len, lUInt32 flags, const lChar32* enc
                     else {
                         // Binary search (usually takes 5 to 12 iterations)
                         int left = 0;
-                        int right = sizeof(def_entity_table) / sizeof((def_entity_table)[0]) - 1; // ignore last NULL
-                        int middle;
-                        int iters = 0;
+                        int right = sizeof(def_entity_table) / sizeof(def_entity_table[0]) - 1; // ignore last NULL
                         while (left < right) {
-                            iters++;
-                            middle = (left + right) / 2;
+                            int middle = (left + right) / 2;
                             int res = lStr_cmp(entname, def_entity_table[middle].name);
-                            if (res == 0) {
+                            if (res < 0) {
+                                right = middle;
+                            } else if (res > 0) {
+                                left = middle + 1;
+                            } else {
                                 code = def_entity_table[middle].code;
                                 code2 = def_entity_table[middle].code2;
                                 break;
-                            } else if (res < 0) {
-                                right = middle;
-                            } else {
-                                left = middle + 1;
                             }
                         }
                     }
