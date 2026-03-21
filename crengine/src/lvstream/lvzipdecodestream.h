@@ -34,7 +34,6 @@ class LVZipDecodeStream: public LVNamedStream
 {
 private:
     LVStreamRef m_stream;
-    lvsize_t m_start;
     lvsize_t m_packsize;
     lvsize_t m_unpacksize;
     z_stream_s m_zstream;
@@ -48,7 +47,7 @@ private:
     lUInt32 m_originalCRC;
     lUInt32 m_decodedCRC;
 
-    LVZipDecodeStream(LVStreamRef stream, lvsize_t start, lvsize_t packsize, lvsize_t unpacksize, lUInt32 crc);
+    LVZipDecodeStream(LVStreamRef stream, lvsize_t packsize, lvsize_t unpacksize, lUInt32 crc);
 
     ~LVZipDecodeStream();
 

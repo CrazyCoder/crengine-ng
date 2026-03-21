@@ -36,9 +36,8 @@
 #define ARC_INBUF_SIZE  5000
 #define ARC_OUTBUF_SIZE 10000
 
-LVZipDecodeStream::LVZipDecodeStream(LVStreamRef stream, lvsize_t start, lvsize_t packsize, lvsize_t unpacksize, lUInt32 crc)
+LVZipDecodeStream::LVZipDecodeStream(LVStreamRef stream, lvsize_t packsize, lvsize_t unpacksize, lUInt32 crc)
         : m_stream(stream)
-        , m_start(start)
         , m_packsize(packsize)
         , m_unpacksize(unpacksize)
         , m_inbytesleft(0)
@@ -388,8 +387,7 @@ LVStream* LVZipDecodeStream::Create(LVStreamRef stream, lvpos_t pos, lString32 n
     } else if (hdr.getMethod() == 8) {
         // deflate
         LVStreamRef srcStream(new LVStreamFragment(stream, pos, packSize));
-        LVZipDecodeStream* res = new LVZipDecodeStream(srcStream, pos,
-                                                       packSize, unpSize, hdr.getCRC());
+        LVZipDecodeStream* res = new LVZipDecodeStream(srcStream, packSize, unpSize, hdr.getCRC());
         res->SetName(name.c_str());
         return res;
     } else {
